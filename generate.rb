@@ -186,14 +186,17 @@ def generate_struct(message)
     code
 end
 
+# generate messages module.
 File.open(TARGET_FILE, "w") do |file|
     file.write File.read("./data/preamble.rs")
     messages.each { |msg| file.write generate_struct(msg) } 
 end
 
+# generate parser module.
+# TODO
+
 if system 'which rustfmt'
-    system 'rustfmt ./src/messages.rs'
-    File.unlink './src/messages.rs.bk'
+    system 'rustfmt --write-mode overwrite ./src/messages.rs'
 else
     puts "Warning: rustfmt not installed, please install and rerun!"
 end
