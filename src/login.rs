@@ -9,16 +9,16 @@ use std::str::FromStr;
 
 pub struct LoginRequest {
     /// User first name
-    first_name: String,
+    pub first_name: String,
     /// User last name
-    last_name: String,
+    pub last_name: String,
     /// Hashed password
-    password_hash: String,
+    pub password_hash: String,
     /// Start location ("last", "home", or: named region and location)
-    start: String,
+    pub start: String,
 }
 
-fn hash_password(password_raw: &str) -> String {
+pub fn hash_password(password_raw: &str) -> String {
     // Hash the password.
     let mut digest = Md5::new();
     digest.input_str(password_raw);
@@ -41,6 +41,7 @@ pub enum LoginError {
 
 impl From<::xmlrpc::RequestError> for LoginError {
     fn from(err: ::xmlrpc::RequestError) -> LoginError {
+        println!("error: {:?}", err);
         match err {
             ::xmlrpc::RequestError::HyperError(e) => LoginError::HyperError(e),
             ::xmlrpc::RequestError::ParseError(_) => LoginError::UrlParseError,
@@ -60,6 +61,7 @@ impl From<::std::net::AddrParseError> for LoginError {
     }
 }
 
+#[derive(Debug)]
 pub struct LoginResponse {
     pub look_at: Vector3<f32>,
     pub circuit_code: i32,
@@ -136,7 +138,7 @@ fn test_extract_vector3() {
 }
 
 impl LoginRequest {
-    fn perform(&self, url: &str) -> Result<LoginResponse, LoginError> {
+    pub fn perform(&self, url: &str) -> Result<LoginResponse, LoginError> {
         let mut data: BTreeMap<String, XmlValue> = BTreeMap::new();
         data.insert("first".to_string(), XmlValue::from(&self.first_name[..]));
         data.insert("last".to_string(), XmlValue::from(&self.last_name[..]));

@@ -8,5 +8,5 @@ extern crate xmlrpc;
 
 mod messages;
 //mod parser;
-mod login;
+pub mod login;
 
