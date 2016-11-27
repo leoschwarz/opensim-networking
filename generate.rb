@@ -191,3 +191,10 @@ File.open(TARGET_FILE, "w") do |file|
     messages.each { |msg| file.write generate_struct(msg) } 
 end
 
+if system 'which rustfmt'
+    system 'rustfmt ./src/messages.rs'
+    File.unlink './src/messages.rs.bk'
+else
+    puts "Warning: rustfmt not installed, please install and rerun!"
+end
+
