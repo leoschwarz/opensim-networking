@@ -1,0 +1,8 @@
+[package]
+name = "tokio-opensim"
+version = "0.1.0"
+authors = ["Leo Schwarz <mail@leoschwarz.com>"]
+
+[dependencies]
+nalgebra = "0.10.1"
+
