@@ -206,7 +206,7 @@ def generate_field_writer(field, source)
     if %w[u8 u16 u32 u64 i8 i16 i32 i64].include? field.r_type
         t = field.r_type
         "try!(buffer.write_#{t}::<LittleEndian>(#{source}.#{field.r_name}));\n"
-    elsif field.r_type == "LLUuid"
+    elsif field.r_type == "Uuid"
         "try!(buffer.write(#{source}.#{field.r_name}.as_bytes()));\n"
     else
         raise "No rule for field writer generation of field: #{field}"
