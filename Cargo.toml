@@ -11,5 +11,6 @@ regex = "0.1.80"
 rust-crypto = "0.2.36"
 #tokio-proto = { git = "https://github.com/tokio-rs/tokio-proto" }
 url = "1.2.3"
-xmlrpc = "0.3.0"
+xmlrpc = { git = "https://github.com/leoschwarz/xml-rpc-rs" }
+#xmlrpc = "0.3.1" <- min version
 

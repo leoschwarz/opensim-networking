@@ -74,7 +74,7 @@ pub struct LoginResponse {
 
 impl LoginResponse {
     fn extract_vector3(raw: &str) -> Result<Vector3<f32>, LoginError> {
-        let re = Regex::new(r"\[r([0-9\.]+),r([0-9\.]+),r([0-9\.]+)\]").unwrap();
+        let re = Regex::new(r"\[r([0-9\.-]+),r([0-9\.-]+),r([0-9\.-]+)\]").unwrap();
         match re.captures(raw) {
             Some(caps) => {
                 let x = try!(caps.at(1).unwrap().parse::<f32>());
