@@ -1,8 +1,8 @@
 extern crate crypto;
 extern crate hyper;
+extern crate mio;
 extern crate nalgebra;
 extern crate regex;
-extern crate tokio_proto;
 extern crate url;
 extern crate xmlrpc;
 
