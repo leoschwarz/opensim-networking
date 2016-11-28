@@ -24,8 +24,8 @@ DATA_TYPES = {
     "U8" => "u8", "U16" => "u16", "U32" => "u32", "U64" => "u64",
     "S8" => "i8", "S16" => "i16", "S32" => "i32", "S64" => "i64",
     "F32" => "f32", "F64" => "f64",
-    "LLUUID" => "LLUUID",
-    "IPADDR" => "IpAddr", "IPPORT" => "IpPort",
+    "LLUUID" => "Uuid",
+    "IPADDR" => "Ip4Addr", "IPPORT" => "Ip4Port",
     "LLVector3" => "Vector3<f32>", "LLVector3d" => "Vector3<f64>", "LLVector4" => "Vector4<f32>",
     "LLQuaternion" => "Quaternion<f32>",
     "BOOL" => "bool"
@@ -163,7 +163,7 @@ def generate_struct(message)
         name = "#{message.name}_#{block.name}"
         code << "pub struct #{name} {\n"
         block.fields.each do |field|
-            code << "\t#{field.r_name}: #{field.r_type},\n"
+            code << "\tpub #{field.r_name}: #{field.r_type},\n"
         end
         code << "}\n\n"
     end
@@ -174,11 +174,11 @@ def generate_struct(message)
     message.blocks.each do |block|
         block_name = "#{message.name}_#{block.name}"
         if block.quantity.downcase == "single"
-            code << "\t#{block.name.underscore}: #{block_name},\n"
+            code << "\tpub #{block.name.underscore}: #{block_name},\n"
         elsif block.quantity.downcase == "multiple"
-            code << "\t#{block.name.underscore}: [#{block_name}; #{block.quantity_count}],\n"
+            code << "\tpub #{block.name.underscore}: [#{block_name}; #{block.quantity_count}],\n"
         elsif block.quantity.downcase == "variable"
-            code << "\t#{block.name.underscore}: Vec<#{block_name}>,\n"
+            code << "\tpub #{block.name.underscore}: Vec<#{block_name}>,\n"
         end
     end
 
@@ -194,6 +194,24 @@ end
 
 # generate parser module.
 # TODO
+
+#####################
+# Generate writers. #
+#####################
+
+# For a given field a single line writing the field once to a writer called `writer`.
+# Since it is possible that we will enumerate over multiple sources in loops, the source
+# object is provided here as an argument (of type string)
+def generate_field_writer(field, source)
+    if %w[u8 u16 u32 u64 i8 i16 i32 i64].include? field.r_type
+        t = field.r_type
+        "try!(buffer.write_#{t}::<LittleEndian>(#{source}.#{field.r_name}));\n"
+    elsif field.r_type == "LLUuid"
+        "try!(buffer.write(#{source}.#{field.r_name}.as_bytes()));\n"
+    else
+        raise "No rule for field writer generation of field: #{field}"
+    end
+end
 
 if system 'which rustfmt'
     system 'rustfmt --write-mode overwrite ./src/messages.rs'

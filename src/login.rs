@@ -6,6 +6,7 @@ use nalgebra::Vector3;
 use regex::Regex;
 use std::net::Ipv4Addr as IpAddr;
 use std::str::FromStr;
+use Uuid;
 
 pub struct LoginRequest {
     /// User first name
@@ -61,14 +62,21 @@ impl From<::std::net::AddrParseError> for LoginError {
     }
 }
 
+impl From<::uuid::ParseError> for LoginError {
+    fn from(_: ::uuid::ParseError) -> LoginError {
+        LoginError::InvalidResponse
+    }
+}
+
 #[derive(Debug)]
 pub struct LoginResponse {
     pub look_at: Vector3<f32>,
-    pub circuit_code: i32,
-    pub session_id: String,
+    pub circuit_code: u32,
+    pub session_id: Uuid,
+    pub agent_id: Uuid,
 
     pub sim_ip: IpAddr,
-    pub sim_port: i32
+    pub sim_port: u16
 }
 
 impl LoginResponse {
@@ -92,11 +100,15 @@ impl LoginResponse {
             _ => return Err(LoginError::InvalidResponse)
         };
         let circuit_code = match response.get("circuit_code") {
-            Some(&XmlValue::Int(code)) => code,
+            Some(&XmlValue::Int(code)) => code as u32,
             _ => return Err(LoginError::InvalidResponse)
         };
         let session_id = match response.get("session_id") {
-            Some(&XmlValue::String(ref id)) => id.clone(),
+            Some(&XmlValue::String(ref id)) => try!(Uuid::parse_str(id)),
+            _ => return Err(LoginError::InvalidResponse)
+        };
+        let agent_id = match response.get("agent_id") {
+            Some(&XmlValue::String(ref id)) => try!(Uuid::parse_str(id)),
             _ => return Err(LoginError::InvalidResponse)
         };
         let sim_ip = match response.get("sim_ip") {
@@ -104,7 +116,7 @@ impl LoginResponse {
             _ => return Err(LoginError::InvalidResponse)
         };
         let sim_port = match response.get("sim_port") {
-            Some(&XmlValue::Int(port)) => port,
+            Some(&XmlValue::Int(port)) => port as u16,
             _ => return Err(LoginError::InvalidResponse)
         };
 
@@ -112,6 +124,7 @@ impl LoginResponse {
             look_at: look_at,
             circuit_code: circuit_code,
             session_id: session_id,
+            agent_id: agent_id,
             sim_ip: sim_ip,
             sim_port: sim_port
         })

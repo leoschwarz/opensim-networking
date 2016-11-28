@@ -4,6 +4,7 @@ version = "0.1.0"
 authors = ["Leo Schwarz <mail@leoschwarz.com>"]
 
 [dependencies]
+byteorder = "0.5"
 hyper = "0.9.12"
 mio = "0.6"
 nalgebra = "0.10.1"
@@ -11,6 +12,7 @@ regex = "0.1.80"
 rust-crypto = "0.2.36"
 #tokio-proto = { git = "https://github.com/tokio-rs/tokio-proto" }
 url = "1.2.3"
-xmlrpc = { git = "https://github.com/leoschwarz/xml-rpc-rs" }
-#xmlrpc = "0.3.1" <- min version
+uuid = "0.3.1"
+#xmlrpc = { git = "https://github.com/leoschwarz/xml-rpc-rs" }
+xmlrpc = "0.3.1"
 
