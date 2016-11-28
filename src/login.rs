@@ -31,8 +31,8 @@ pub fn hash_password(password_raw: &str) -> String {
 pub enum LoginError {
     /// There was a HTTP error.
     HyperError(::hyper::error::Error),
-    /// There was an error parsing the provided URL.
-    UrlParseError,
+    /// There was an error with parsing the response.
+    ParserError,
     /// The server returned an explicit failure as response.
     Fail,
     /// The server returned an invalid XML-RPC response.
@@ -44,7 +44,7 @@ impl From<::xmlrpc::RequestError> for LoginError {
         println!("error: {:?}", err);
         match err {
             ::xmlrpc::RequestError::HyperError(e) => LoginError::HyperError(e),
-            ::xmlrpc::RequestError::ParseError(_) => LoginError::UrlParseError,
+            ::xmlrpc::RequestError::ParseError(_) => LoginError::ParserError,
         }
     }
 }
@@ -148,7 +148,7 @@ impl LoginRequest {
         data.insert("channel".to_string(), XmlValue::from("tokio-opensim"));
         data.insert("platform".to_string(), XmlValue::from("Linux"));
 
-        let client = ::hyper::Client::new(); 
+        let client = ::hyper::Client::new();
 
         let result = try!(::xmlrpc::Request::new("login_to_simulator")
             .arg(XmlValue::Struct(data)).call(&client, url));
