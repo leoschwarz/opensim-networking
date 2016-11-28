@@ -66,7 +66,6 @@ pub struct LoginResponse {
     pub look_at: Vector3<f32>,
     pub circuit_code: i32,
     pub session_id: String,
-    pub secure_session_id: String,
 
     pub sim_ip: IpAddr,
     pub sim_port: i32
@@ -100,10 +99,6 @@ impl LoginResponse {
             Some(&XmlValue::String(ref id)) => id.clone(),
             _ => return Err(LoginError::InvalidResponse)
         };
-        let secure_session_id = match response.get("secure_session_id") {
-            Some(&XmlValue::String(ref id)) => id.clone(),
-            _ => return Err(LoginError::InvalidResponse)
-        };
         let sim_ip = match response.get("sim_ip") {
             Some(&XmlValue::String(ref ip_raw)) => try!(IpAddr::from_str(ip_raw)),
             _ => return Err(LoginError::InvalidResponse)
@@ -117,7 +112,6 @@ impl LoginResponse {
             look_at: look_at,
             circuit_code: circuit_code,
             session_id: session_id,
-            secure_session_id: secure_session_id,
             sim_ip: sim_ip,
             sim_port: sim_port
         })
