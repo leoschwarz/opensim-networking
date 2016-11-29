@@ -85,6 +85,10 @@ class Block
         @message = message
     end
 
+    def ll_name
+        @name
+    end
+
     # Rust struct name.
     def r_name
         "#{@message.name}_#{@name}"
@@ -286,7 +290,7 @@ def generate_message_impl(message)
 
     message.blocks.each do |block|
         if block.quantity == "Single"
-            out << "\t\t// Block #{block.r_name}\n"
+            out << "\t\t// Block #{block.ll_name}\n"
             block.fields.each do |field|
                 line = generate_field_writer(field, "self.#{block.f_name}")
                 if line
