@@ -4,6 +4,7 @@ version = "0.1.0"
 authors = ["Leo Schwarz <mail@leoschwarz.com>"]
 
 [dependencies]
+bitflags = "0.7.0"
 byteorder = "0.5"
 hyper = "0.9.12"
 mio = "0.6"

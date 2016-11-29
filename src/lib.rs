@@ -1,3 +1,5 @@
+#[macro_use]
+extern crate bitflags;
 extern crate byteorder;
 extern crate crypto;
 extern crate hyper;
