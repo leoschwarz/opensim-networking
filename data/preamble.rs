@@ -1,5 +1,6 @@
 use {Vector3, Vector4, Quaternion, Ip4Addr, Ip4Port, Uuid};
 use std::io::Write;
+use byteorder::{LittleEndian, BigEndian, WriteBytesExt};
 
 pub enum WriteMessageError {
     IoError(::std::io::Error)

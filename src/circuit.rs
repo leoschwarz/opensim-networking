@@ -9,6 +9,7 @@ use messages::Message;
 use std::io::Write;
 use byteorder::{LittleEndian, BigEndian, WriteBytesExt};
 use messages::WriteMessageResult;
+/*
 impl Message for UseCircuitCode {
     fn write_to<W: Write>(&self, buffer: &mut W) -> WriteMessageResult {
         // Write message number.
@@ -21,7 +22,7 @@ impl Message for UseCircuitCode {
         try!(buffer.write(self.circuit_code.id.as_bytes()));
         Ok(())
     }
-}
+}*/
 
 
 bitflags! {
@@ -110,7 +111,6 @@ impl Circuit {
         packet.enable_flags(PACKET_RELIABLE);
 
         // TODO send and wait
-
     }
 
     fn send_message<M: Message>(&self, msg: &M) {

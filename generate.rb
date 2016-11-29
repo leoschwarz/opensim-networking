@@ -28,7 +28,8 @@ DATA_TYPES = {
     "IPADDR" => "Ip4Addr", "IPPORT" => "Ip4Port",
     "LLVector3" => "Vector3<f32>", "LLVector3d" => "Vector3<f64>", "LLVector4" => "Vector4<f32>",
     "LLQuaternion" => "Quaternion<f32>",
-    "BOOL" => "bool"
+    "BOOL" => "bool",
+    "Variable" => "Vec<u8>"
 }
 
 class Field
@@ -57,8 +58,6 @@ class Field
     def r_type
         if DATA_TYPES.has_key? @type
             return DATA_TYPES[@type]
-        elsif @type == "Variable"
-            return "Vec<u8>"
         elsif @type == "Fixed"
             return "[u8; #{@count}]"
         else
@@ -68,6 +67,10 @@ class Field
 
     def ll_type
         @type
+    end
+
+    def to_s
+        "[Field: #{{name: @name, type: @type, count: @count}.inspect}]"
     end
 end
 
@@ -112,7 +115,7 @@ def extract_message(lines)
     message = OpenStruct.new({
         name: msg_name,
         frequency: msg_freq,
-        id: msg_id,
+        id: msg_id, # string, fixed id packages have an id of format 0xFFFF_FFFB which is parsed as string
         trust: msg_trust,
         encoding: msg_enc,
         blocks: []
@@ -202,11 +205,6 @@ def generate_struct(message)
     code
 end
 
-# generate messages module.
-File.open(TARGET_FILE, "w") do |file|
-    file.write File.read("./data/preamble.rs")
-    messages.each { |msg| file.write generate_struct(msg) } 
-end
 
 # generate parser module.
 # TODO
@@ -218,13 +216,16 @@ end
 # Returns the byte array for a given message that can be written after the header
 # to indicate the type of the message.
 def generate_message_id_bytes(message)
-    full = message.id.to_s(16).rjust(8, "0")
+    full = message.id.to_i.to_s(16).rjust(8, "0")
     if message.frequency == "High"
         "[0x#{full[6..7]}]"
     elsif message.frequency == "Medium"
         "[0xff, 0x#{full[6..7]}]"
     elsif message.frequency == "Low"
         "[0xff, 0xff, 0x#{full[4..5]}, 0x#{full[6..7]}]"
+    elsif message.frequency == "Fixed"
+        full = message.id[2..9]
+        "[0xff, 0xff, 0xff, 0x#{full[6..7]}]"
     else
         raise "Can't generate message type bytes for message: #{message}"
     end
@@ -236,14 +237,16 @@ end
 def generate_field_writer(field, source)
     value = "#{source}.#{field.r_name}"
     r_type = field.r_type
-    if %w[u8 u16 u32 u64 i8 i16 i32 i64].include? r_type
+    if %w[u16 u32 u64 i16 i32 i64].include? r_type
         "try!(buffer.write_#{r_type}::<LittleEndian>(#{value}));\n"
+    elsif %w[u8 i8].include? r_type
+        "try!(buffer.write_#{r_type}(#{value}));\n"
     elsif %w[f32 f64].include? r_type
-        "try!(buffer.write_#{r_type}::<LittleEndian>(#{r_type}));\n"
+        "try!(buffer.write_#{r_type}::<LittleEndian>(#{value}));\n"
     elsif r_type == "Uuid"
         "try!(buffer.write(#{value}.as_bytes()));\n"
     elsif r_type == "Ip4Addr"
-        "try!(buffer.write(#{value}.octets()));\n"
+        "try!(buffer.write(&#{value}.octets()));\n"
     elsif r_type == "Ip4Port"
         "try!(buffer.write_u16::<LittleEndian>(#{value}));\n"
     elsif r_type == "Vector3<f32>" or r_type == "Vector3<f64>"
@@ -265,6 +268,10 @@ def generate_field_writer(field, source)
         # becomse a relevant issue.
     elsif r_type == "bool"
         "try!(buffer.write_u8(#{value} as u8));\n"
+    elsif r_type == "Vec<u8>"
+        "try!(buffer.write(&#{value}[..]));\n"
+    elsif r_type[0...4] == "[u8;"
+        "try!(buffer.write(&#{value}));\n"
     else
         raise "No rule for field writer generation of field: #{field}"
     end
@@ -279,8 +286,16 @@ def generate_message_impl(message)
 
     message.blocks.each do |block|
         if block.quantity == "Single"
-            out << "\t\t// Block #{block.r_name}"
-            out << "TODO"
+            out << "\t\t// Block #{block.r_name}\n"
+            block.fields.each do |field|
+                line = generate_field_writer(field, "self.#{block.f_name}")
+                if line
+                    out << "\t\t" + line
+                else
+                    puts "Didn't implement message: #{message.name}"
+                    return ""
+                end
+            end
         else
             puts "Write implementation for blocks with quantity other than single not yet available."
             return ""
@@ -289,7 +304,19 @@ def generate_message_impl(message)
 
     out << "\tOk(())\n"
     out << "\t}\n"
+    out << "}\n\n"
     out
+end
+
+# generate messages module.
+File.open(TARGET_FILE, "w") do |file|
+    file.write File.read("./data/preamble.rs")
+    messages.each { |msg| file.write generate_struct(msg) }
+    file.write "// Message IMPLEMENTATIONS\n\n\n\n"
+    messages.each do |msg|
+        code = generate_message_impl(msg)
+        file.write code unless code.empty?
+    end
 end
 
 if system 'which rustfmt'
