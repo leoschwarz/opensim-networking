@@ -1,4 +1,4 @@
-use {Vector3, Vector4, Quaternion, Ip4Addr, Ip4Port, Uuid};
+use {Vector3, Vector4, Quaternion, UnitQuaternion, Ip4Addr, Ip4Port, Uuid};
 use std::io::Write;
 use byteorder::{LittleEndian, BigEndian, WriteBytesExt};
 

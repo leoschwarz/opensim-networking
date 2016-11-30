@@ -105,12 +105,10 @@ def generate_field_writer(field, source)
         "try!(buffer.write_f32::<LittleEndian>(#{value}.z));\n" +
         "try!(buffer.write_f32::<LittleEndian>(#{value}.w));\n"
     elsif r_type == "Quaternion<f32>"
-        puts "WARNING: Writing Quaternions is not yet implemented."
-        nil
-        # TODO: This one might be a bit more tricky:
-        # can we just use a polar decomposition and discard the norm part?
-        # I don't really know much about Quaternions so postponed until it
-        # becomse a relevant issue.
+        "let normed_#{field.r_name} = UnitQuaternion::new(&#{value}).unwrap();\n" +
+        "try!(buffer.write_f32::<LittleEndian>(normed_#{field.r_name}.i));\n" +
+        "try!(buffer.write_f32::<LittleEndian>(normed_#{field.r_name}.j));\n" +
+        "try!(buffer.write_f32::<LittleEndian>(normed_#{field.r_name}.k));\n"
     elsif r_type == "bool"
         "try!(buffer.write_u8(#{value} as u8));\n"
     elsif r_type == "Vec<u8>"
@@ -133,13 +131,7 @@ def generate_message_impl(message)
         if block.quantity == "Single"
             out << "\t\t// Block #{block.ll_name}\n"
             block.fields.each do |field|
-                line = generate_field_writer(field, "self.#{block.f_name}")
-                if line
-                    out << "\t\t" + line
-                else
-                    puts "Didn't implement message: #{message.name}"
-                    return ""
-                end
+                out << "\t\t" + generate_field_writer(field, "self.#{block.f_name}")
             end
         else
             puts "Write implementation for blocks with quantity other than single not yet available."

@@ -1,4 +1,4 @@
-use {Vector3, Vector4, Quaternion, Ip4Addr, Ip4Port, Uuid};
+use {Vector3, Vector4, Quaternion, UnitQuaternion, Ip4Addr, Ip4Port, Uuid};
 use std::io::Write;
 use byteorder::{LittleEndian, BigEndian, WriteBytesExt};
 
@@ -9183,6 +9183,41 @@ impl Message for AgentResume {
     }
 }
 
+impl Message for AgentUpdate {
+    fn write_to<W: Write>(&self, buffer: &mut W) -> WriteMessageResult {
+        // Write the message number.
+        try!(buffer.write(&[0x04]));
+        // Block AgentData
+        try!(buffer.write(self.agent_data.agent_id.as_bytes()));
+        try!(buffer.write(self.agent_data.session_id.as_bytes()));
+        let normed_body_rotation = UnitQuaternion::new(&self.agent_data.body_rotation).unwrap();
+        try!(buffer.write_f32::<LittleEndian>(normed_body_rotation.i));
+        try!(buffer.write_f32::<LittleEndian>(normed_body_rotation.j));
+        try!(buffer.write_f32::<LittleEndian>(normed_body_rotation.k));
+        let normed_head_rotation = UnitQuaternion::new(&self.agent_data.head_rotation).unwrap();
+        try!(buffer.write_f32::<LittleEndian>(normed_head_rotation.i));
+        try!(buffer.write_f32::<LittleEndian>(normed_head_rotation.j));
+        try!(buffer.write_f32::<LittleEndian>(normed_head_rotation.k));
+        try!(buffer.write_u8(self.agent_data.state));
+        try!(buffer.write_f32::<LittleEndian>(self.agent_data.camera_center.x));
+        try!(buffer.write_f32::<LittleEndian>(self.agent_data.camera_center.y));
+        try!(buffer.write_f32::<LittleEndian>(self.agent_data.camera_center.z));
+        try!(buffer.write_f32::<LittleEndian>(self.agent_data.camera_at_axis.x));
+        try!(buffer.write_f32::<LittleEndian>(self.agent_data.camera_at_axis.y));
+        try!(buffer.write_f32::<LittleEndian>(self.agent_data.camera_at_axis.z));
+        try!(buffer.write_f32::<LittleEndian>(self.agent_data.camera_left_axis.x));
+        try!(buffer.write_f32::<LittleEndian>(self.agent_data.camera_left_axis.y));
+        try!(buffer.write_f32::<LittleEndian>(self.agent_data.camera_left_axis.z));
+        try!(buffer.write_f32::<LittleEndian>(self.agent_data.camera_up_axis.x));
+        try!(buffer.write_f32::<LittleEndian>(self.agent_data.camera_up_axis.y));
+        try!(buffer.write_f32::<LittleEndian>(self.agent_data.camera_up_axis.z));
+        try!(buffer.write_f32::<LittleEndian>(self.agent_data.far));
+        try!(buffer.write_u32::<LittleEndian>(self.agent_data.control_flags));
+        try!(buffer.write_u8(self.agent_data.flags));
+        Ok(())
+    }
+}
+
 impl Message for ChatFromViewer {
     fn write_to<W: Write>(&self, buffer: &mut W) -> WriteMessageResult {
         // Write the message number.
@@ -9316,6 +9351,57 @@ impl Message for SetAlwaysRun {
     }
 }
 
+impl Message for ObjectAdd {
+    fn write_to<W: Write>(&self, buffer: &mut W) -> WriteMessageResult {
+        // Write the message number.
+        try!(buffer.write(&[0xff, 0x01]));
+        // Block AgentData
+        try!(buffer.write(self.agent_data.agent_id.as_bytes()));
+        try!(buffer.write(self.agent_data.session_id.as_bytes()));
+        try!(buffer.write(self.agent_data.group_id.as_bytes()));
+        // Block ObjectData
+        try!(buffer.write_u8(self.object_data.p_code));
+        try!(buffer.write_u8(self.object_data.material));
+        try!(buffer.write_u32::<LittleEndian>(self.object_data.add_flags));
+        try!(buffer.write_u8(self.object_data.path_curve));
+        try!(buffer.write_u8(self.object_data.profile_curve));
+        try!(buffer.write_u16::<LittleEndian>(self.object_data.path_begin));
+        try!(buffer.write_u16::<LittleEndian>(self.object_data.path_end));
+        try!(buffer.write_u8(self.object_data.path_scale_x));
+        try!(buffer.write_u8(self.object_data.path_scale_y));
+        try!(buffer.write_u8(self.object_data.path_shear_x));
+        try!(buffer.write_u8(self.object_data.path_shear_y));
+        try!(buffer.write_i8(self.object_data.path_twist));
+        try!(buffer.write_i8(self.object_data.path_twist_begin));
+        try!(buffer.write_i8(self.object_data.path_radius_offset));
+        try!(buffer.write_i8(self.object_data.path_taper_x));
+        try!(buffer.write_i8(self.object_data.path_taper_y));
+        try!(buffer.write_u8(self.object_data.path_revolutions));
+        try!(buffer.write_i8(self.object_data.path_skew));
+        try!(buffer.write_u16::<LittleEndian>(self.object_data.profile_begin));
+        try!(buffer.write_u16::<LittleEndian>(self.object_data.profile_end));
+        try!(buffer.write_u16::<LittleEndian>(self.object_data.profile_hollow));
+        try!(buffer.write_u8(self.object_data.bypass_raycast));
+        try!(buffer.write_f32::<LittleEndian>(self.object_data.ray_start.x));
+        try!(buffer.write_f32::<LittleEndian>(self.object_data.ray_start.y));
+        try!(buffer.write_f32::<LittleEndian>(self.object_data.ray_start.z));
+        try!(buffer.write_f32::<LittleEndian>(self.object_data.ray_end.x));
+        try!(buffer.write_f32::<LittleEndian>(self.object_data.ray_end.y));
+        try!(buffer.write_f32::<LittleEndian>(self.object_data.ray_end.z));
+        try!(buffer.write(self.object_data.ray_target_id.as_bytes()));
+        try!(buffer.write_u8(self.object_data.ray_end_is_intersection));
+        try!(buffer.write_f32::<LittleEndian>(self.object_data.scale.x));
+        try!(buffer.write_f32::<LittleEndian>(self.object_data.scale.y));
+        try!(buffer.write_f32::<LittleEndian>(self.object_data.scale.z));
+        let normed_rotation = UnitQuaternion::new(&self.object_data.rotation).unwrap();
+        try!(buffer.write_f32::<LittleEndian>(normed_rotation.i));
+        try!(buffer.write_f32::<LittleEndian>(normed_rotation.j));
+        try!(buffer.write_f32::<LittleEndian>(normed_rotation.k));
+        try!(buffer.write_u8(self.object_data.state));
+        Ok(())
+    }
+}
+
 impl Message for ObjectFlagUpdate {
     fn write_to<W: Write>(&self, buffer: &mut W) -> WriteMessageResult {
         // Write the message number.
@@ -9367,6 +9453,23 @@ impl Message for ObjectSpinStart {
         try!(buffer.write(self.agent_data.session_id.as_bytes()));
         // Block ObjectData
         try!(buffer.write(self.object_data.object_id.as_bytes()));
+        Ok(())
+    }
+}
+
+impl Message for ObjectSpinUpdate {
+    fn write_to<W: Write>(&self, buffer: &mut W) -> WriteMessageResult {
+        // Write the message number.
+        try!(buffer.write(&[0xff, 0xff, 0x00, 0x79]));
+        // Block AgentData
+        try!(buffer.write(self.agent_data.agent_id.as_bytes()));
+        try!(buffer.write(self.agent_data.session_id.as_bytes()));
+        // Block ObjectData
+        try!(buffer.write(self.object_data.object_id.as_bytes()));
+        let normed_rotation = UnitQuaternion::new(&self.object_data.rotation).unwrap();
+        try!(buffer.write_f32::<LittleEndian>(normed_rotation.i));
+        try!(buffer.write_f32::<LittleEndian>(normed_rotation.j));
+        try!(buffer.write_f32::<LittleEndian>(normed_rotation.k));
         Ok(())
     }
 }
@@ -9937,6 +10040,32 @@ impl Message for AbortXfer {
         // Block XferID
         try!(buffer.write_u64::<LittleEndian>(self.xfer_id.id));
         try!(buffer.write_i32::<LittleEndian>(self.xfer_id.result));
+        Ok(())
+    }
+}
+
+impl Message for AvatarSitResponse {
+    fn write_to<W: Write>(&self, buffer: &mut W) -> WriteMessageResult {
+        // Write the message number.
+        try!(buffer.write(&[0x15]));
+        // Block SitObject
+        try!(buffer.write(self.sit_object.id.as_bytes()));
+        // Block SitTransform
+        try!(buffer.write_u8(self.sit_transform.auto_pilot as u8));
+        try!(buffer.write_f32::<LittleEndian>(self.sit_transform.sit_position.x));
+        try!(buffer.write_f32::<LittleEndian>(self.sit_transform.sit_position.y));
+        try!(buffer.write_f32::<LittleEndian>(self.sit_transform.sit_position.z));
+        let normed_sit_rotation = UnitQuaternion::new(&self.sit_transform.sit_rotation).unwrap();
+        try!(buffer.write_f32::<LittleEndian>(normed_sit_rotation.i));
+        try!(buffer.write_f32::<LittleEndian>(normed_sit_rotation.j));
+        try!(buffer.write_f32::<LittleEndian>(normed_sit_rotation.k));
+        try!(buffer.write_f32::<LittleEndian>(self.sit_transform.camera_eye_offset.x));
+        try!(buffer.write_f32::<LittleEndian>(self.sit_transform.camera_eye_offset.y));
+        try!(buffer.write_f32::<LittleEndian>(self.sit_transform.camera_eye_offset.z));
+        try!(buffer.write_f32::<LittleEndian>(self.sit_transform.camera_at_offset.x));
+        try!(buffer.write_f32::<LittleEndian>(self.sit_transform.camera_at_offset.y));
+        try!(buffer.write_f32::<LittleEndian>(self.sit_transform.camera_at_offset.z));
+        try!(buffer.write_u8(self.sit_transform.force_mouselook as u8));
         Ok(())
     }
 }
@@ -11077,6 +11206,31 @@ impl Message for ScriptReset {
         // Block Script
         try!(buffer.write(self.script.object_id.as_bytes()));
         try!(buffer.write(self.script.item_id.as_bytes()));
+        Ok(())
+    }
+}
+
+impl Message for ScriptSensorRequest {
+    fn write_to<W: Write>(&self, buffer: &mut W) -> WriteMessageResult {
+        // Write the message number.
+        try!(buffer.write(&[0xff, 0xff, 0x00, 0xf7]));
+        // Block Requester
+        try!(buffer.write(self.requester.source_id.as_bytes()));
+        try!(buffer.write(self.requester.request_id.as_bytes()));
+        try!(buffer.write(self.requester.search_id.as_bytes()));
+        try!(buffer.write_f32::<LittleEndian>(self.requester.search_pos.x));
+        try!(buffer.write_f32::<LittleEndian>(self.requester.search_pos.y));
+        try!(buffer.write_f32::<LittleEndian>(self.requester.search_pos.z));
+        let normed_search_dir = UnitQuaternion::new(&self.requester.search_dir).unwrap();
+        try!(buffer.write_f32::<LittleEndian>(normed_search_dir.i));
+        try!(buffer.write_f32::<LittleEndian>(normed_search_dir.j));
+        try!(buffer.write_f32::<LittleEndian>(normed_search_dir.k));
+        try!(buffer.write(&self.requester.search_name[..]));
+        try!(buffer.write_i32::<LittleEndian>(self.requester.type_));
+        try!(buffer.write_f32::<LittleEndian>(self.requester.range));
+        try!(buffer.write_f32::<LittleEndian>(self.requester.arc));
+        try!(buffer.write_u64::<LittleEndian>(self.requester.region_handle));
+        try!(buffer.write_u8(self.requester.search_regions));
         Ok(())
     }
 }

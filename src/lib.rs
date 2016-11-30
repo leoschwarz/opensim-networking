@@ -11,7 +11,7 @@ extern crate uuid;
 extern crate xmlrpc;
 
 // Type definitions.
-pub use nalgebra::{Vector3, Vector4, Quaternion};
+pub use nalgebra::{Vector3, Vector4, Quaternion, UnitQuaternion};
 pub use std::net::Ipv4Addr as Ip4Addr;
 
 pub type Ip4Port = u16;
