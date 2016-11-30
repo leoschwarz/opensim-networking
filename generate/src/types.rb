@@ -73,6 +73,8 @@ class Block
     end
 
     # Rust struct name.
+    # We are combing the message name with the block name to avoid name clashes of blocks
+    # with the same name but different specifications.
     def r_name
         "#{@message.name}_#{@name}"
     end

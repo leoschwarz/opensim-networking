@@ -24,7 +24,6 @@ puts "Found specifications for #{messages.size} messages.\n\n"
 
 def generate_struct(message)
     # Generate block definitions,
-    # to avoid name clashes block names are {messagename}_{blockname}
     code = ""
     message.blocks.each do |block|
         code << "pub struct #{block.r_name} {\n"
