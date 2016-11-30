@@ -2,17 +2,22 @@
 require 'ostruct'
 require 'active_support/inflector'
 
-# This is a code generator to create Rust structs for all messages defined
-# by the second life protocol.
+############################################################################
+# This is a code generator to create Rust structs for all messages defined #
+# by the second life protocol.                                             #
+############################################################################
 
-TARGET_FILE="./src/messages.rs"
+cur_dir = File.dirname(__FILE__)
+TARGET_FILE = File.expand_path(File.join(cur_dir, "../src/messages.rs"))
+MESSAGE_TEMPLATE_FILE = File.expand_path(File.join(cur_dir, "./message_template.msg"))
+PREAMBLE_FILE = File.expand_path(File.join(cur_dir, "./preamble.rs"))
 
 #########################################
 # PARSING of the message template file. #
 #########################################
 
 # Extract lines which are not empty or comments
-lines = File.read("./data/message_template.msg").lines
+lines = File.read(MESSAGE_TEMPLATE_FILE).lines
     .map{|l| l.gsub(%r{//(.*)$}, "")}
     .map(&:strip)
     .select{|l| not l.empty? and not l[0..1] == "//"}
@@ -314,7 +319,7 @@ end
 
 # generate messages module.
 File.open(TARGET_FILE, "w") do |file|
-    file.write File.read("./data/preamble.rs")
+    file.write File.read(PREAMBLE_FILE)
     messages.each { |msg| file.write generate_struct(msg) }
     file.write "// Message IMPLEMENTATIONS\n\n\n\n"
     messages.each do |msg|
@@ -324,7 +329,7 @@ File.open(TARGET_FILE, "w") do |file|
 end
 
 if system 'which rustfmt'
-    system 'rustfmt --write-mode overwrite ./src/messages.rs'
+    system "rustfmt --write-mode overwrite '#{TARGET_FILE}'"
 else
     puts "Warning: rustfmt not installed, please install and rerun!"
 end
