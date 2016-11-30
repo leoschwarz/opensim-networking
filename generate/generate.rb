@@ -123,24 +123,44 @@ end
 def generate_message_impl(message)
     out = ""
     out << "impl Message for #{message.name} {\n"
+
+    # Writer
+    #########
     out << "\tfn write_to<W: Write>(&self, buffer: &mut W) -> WriteMessageResult {\n"
     out << "\t\t// Write the message number.\n"
     out << "\t\ttry!(buffer.write(&#{generate_message_id_bytes(message)}));\n"
-
     message.blocks.each do |block|
+        out << "\t\t// Block #{block.ll_name}\n"
         if block.quantity == "Single"
-            out << "\t\t// Block #{block.ll_name}\n"
             block.fields.each do |field|
                 out << "\t\t" + generate_field_writer(field, "self.#{block.f_name}")
             end
+        elsif block.quantity == "Multiple"
+            out << "\t\tfor i in 0..#{block.quantity_count} {\n"
+            block.fields.each do |field|
+                out << "\t\t\t" + generate_field_writer(field, "self.#{block.f_name}[i]")
+            end
+            out << "\t\t}\n"
+        elsif block.quantity == "Variable"
+            out << "\t\ttry!(buffer.write_u8(self.#{block.f_name}.len() as u8));\n"
+            out << "\t\tfor item in &self.#{block.f_name} {\n"
+            block.fields.each do |field|
+                out << "\t\t\t" + generate_field_writer(field, "item")
+            end
+            out << "\t\t}\n"
         else
             puts "Write implementation for blocks with quantity other than single not yet available."
             return ""
         end
     end
-
     out << "\tOk(())\n"
     out << "\t}\n"
+
+    # Reader
+    #########
+
+    # TODO
+
     out << "}\n\n"
     out
 end

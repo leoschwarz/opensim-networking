@@ -8290,6 +8290,35 @@ pub struct LinkInventoryItem {
 
 
 
+impl Message for TestMessage {
+    fn write_to<W: Write>(&self, buffer: &mut W) -> WriteMessageResult {
+        // Write the message number.
+        try!(buffer.write(&[0xff, 0xff, 0x00, 0x01]));
+        // Block TestBlock1
+        try!(buffer.write_u32::<LittleEndian>(self.test_block1.test1));
+        // Block NeighborBlock
+        for i in 0..4 {
+            try!(buffer.write_u32::<LittleEndian>(self.neighbor_block[i].test0));
+            try!(buffer.write_u32::<LittleEndian>(self.neighbor_block[i].test1));
+            try!(buffer.write_u32::<LittleEndian>(self.neighbor_block[i].test2));
+        }
+        Ok(())
+    }
+}
+
+impl Message for PacketAck {
+    fn write_to<W: Write>(&self, buffer: &mut W) -> WriteMessageResult {
+        // Write the message number.
+        try!(buffer.write(&[0xff, 0xff, 0xff, 0xFB]));
+        // Block Packets
+        try!(buffer.write_u8(self.packets.len() as u8));
+        for item in &self.packets {
+            try!(buffer.write_u32::<LittleEndian>(item.id));
+        }
+        Ok(())
+    }
+}
+
 impl Message for OpenCircuit {
     fn write_to<W: Write>(&self, buffer: &mut W) -> WriteMessageResult {
         // Write the message number.
@@ -8354,6 +8383,47 @@ impl Message for UseCircuitCode {
     }
 }
 
+impl Message for NeighborList {
+    fn write_to<W: Write>(&self, buffer: &mut W) -> WriteMessageResult {
+        // Write the message number.
+        try!(buffer.write(&[0x03]));
+        // Block NeighborBlock
+        for i in 0..4 {
+            try!(buffer.write(&self.neighbor_block[i].ip.octets()));
+            try!(buffer.write_u16::<LittleEndian>(self.neighbor_block[i].port));
+            try!(buffer.write(&self.neighbor_block[i].public_ip.octets()));
+            try!(buffer.write_u16::<LittleEndian>(self.neighbor_block[i].public_port));
+            try!(buffer.write(self.neighbor_block[i].region_id.as_bytes()));
+            try!(buffer.write(&self.neighbor_block[i].name[..]));
+            try!(buffer.write_u8(self.neighbor_block[i].sim_access));
+        }
+        Ok(())
+    }
+}
+
+impl Message for AvatarTextureUpdate {
+    fn write_to<W: Write>(&self, buffer: &mut W) -> WriteMessageResult {
+        // Write the message number.
+        try!(buffer.write(&[0xff, 0xff, 0x00, 0x04]));
+        // Block AgentData
+        try!(buffer.write(self.agent_data.agent_id.as_bytes()));
+        try!(buffer.write_u8(self.agent_data.textures_changed as u8));
+        // Block WearableData
+        try!(buffer.write_u8(self.wearable_data.len() as u8));
+        for item in &self.wearable_data {
+            try!(buffer.write(item.cache_id.as_bytes()));
+            try!(buffer.write_u8(item.texture_index));
+            try!(buffer.write(&item.host_name[..]));
+        }
+        // Block TextureData
+        try!(buffer.write_u8(self.texture_data.len() as u8));
+        for item in &self.texture_data {
+            try!(buffer.write(item.texture_id.as_bytes()));
+        }
+        Ok(())
+    }
+}
+
 impl Message for SimulatorMapUpdate {
     fn write_to<W: Write>(&self, buffer: &mut W) -> WriteMessageResult {
         // Write the message number.
@@ -8412,10 +8482,132 @@ impl Message for SimulatorReady {
     }
 }
 
+impl Message for TelehubInfo {
+    fn write_to<W: Write>(&self, buffer: &mut W) -> WriteMessageResult {
+        // Write the message number.
+        try!(buffer.write(&[0xff, 0xff, 0x00, 0x0a]));
+        // Block TelehubBlock
+        try!(buffer.write(self.telehub_block.object_id.as_bytes()));
+        try!(buffer.write(&self.telehub_block.object_name[..]));
+        try!(buffer.write_f32::<LittleEndian>(self.telehub_block.telehub_pos.x));
+        try!(buffer.write_f32::<LittleEndian>(self.telehub_block.telehub_pos.y));
+        try!(buffer.write_f32::<LittleEndian>(self.telehub_block.telehub_pos.z));
+        let normed_telehub_rot = UnitQuaternion::new(&self.telehub_block.telehub_rot).unwrap();
+        try!(buffer.write_f32::<LittleEndian>(normed_telehub_rot.i));
+        try!(buffer.write_f32::<LittleEndian>(normed_telehub_rot.j));
+        try!(buffer.write_f32::<LittleEndian>(normed_telehub_rot.k));
+        // Block SpawnPointBlock
+        try!(buffer.write_u8(self.spawn_point_block.len() as u8));
+        for item in &self.spawn_point_block {
+            try!(buffer.write_f32::<LittleEndian>(item.spawn_point_pos.x));
+            try!(buffer.write_f32::<LittleEndian>(item.spawn_point_pos.y));
+            try!(buffer.write_f32::<LittleEndian>(item.spawn_point_pos.z));
+        }
+        Ok(())
+    }
+}
+
+impl Message for SimulatorPresentAtLocation {
+    fn write_to<W: Write>(&self, buffer: &mut W) -> WriteMessageResult {
+        // Write the message number.
+        try!(buffer.write(&[0xff, 0xff, 0x00, 0x0b]));
+        // Block SimulatorPublicHostBlock
+        try!(buffer.write_u16::<LittleEndian>(self.simulator_public_host_block.port));
+        try!(buffer.write(&self.simulator_public_host_block.simulator_ip.octets()));
+        try!(buffer.write_u32::<LittleEndian>(self.simulator_public_host_block.grid_x));
+        try!(buffer.write_u32::<LittleEndian>(self.simulator_public_host_block.grid_y));
+        // Block NeighborBlock
+        for i in 0..4 {
+            try!(buffer.write(&self.neighbor_block[i].ip.octets()));
+            try!(buffer.write_u16::<LittleEndian>(self.neighbor_block[i].port));
+        }
+        // Block SimulatorBlock
+        try!(buffer.write(&self.simulator_block.sim_name[..]));
+        try!(buffer.write_u8(self.simulator_block.sim_access));
+        try!(buffer.write_u32::<LittleEndian>(self.simulator_block.region_flags));
+        try!(buffer.write(self.simulator_block.region_id.as_bytes()));
+        try!(buffer.write_u32::<LittleEndian>(self.simulator_block.estate_id));
+        try!(buffer.write_u32::<LittleEndian>(self.simulator_block.parent_estate_id));
+        // Block TelehubBlock
+        try!(buffer.write_u8(self.telehub_block.len() as u8));
+        for item in &self.telehub_block {
+            try!(buffer.write_u8(item.has_telehub as u8));
+            try!(buffer.write_f32::<LittleEndian>(item.telehub_pos.x));
+            try!(buffer.write_f32::<LittleEndian>(item.telehub_pos.y));
+            try!(buffer.write_f32::<LittleEndian>(item.telehub_pos.z));
+        }
+        Ok(())
+    }
+}
+
+impl Message for SimulatorLoad {
+    fn write_to<W: Write>(&self, buffer: &mut W) -> WriteMessageResult {
+        // Write the message number.
+        try!(buffer.write(&[0xff, 0xff, 0x00, 0x0c]));
+        // Block SimulatorLoad
+        try!(buffer.write_f32::<LittleEndian>(self.simulator_load.time_dilation));
+        try!(buffer.write_i32::<LittleEndian>(self.simulator_load.agent_count));
+        try!(buffer.write_u8(self.simulator_load.can_accept_agents as u8));
+        // Block AgentList
+        try!(buffer.write_u8(self.agent_list.len() as u8));
+        for item in &self.agent_list {
+            try!(buffer.write_u32::<LittleEndian>(item.circuit_code));
+            try!(buffer.write_u8(item.x));
+            try!(buffer.write_u8(item.y));
+        }
+        Ok(())
+    }
+}
+
 impl Message for SimulatorShutdownRequest {
     fn write_to<W: Write>(&self, buffer: &mut W) -> WriteMessageResult {
         // Write the message number.
         try!(buffer.write(&[0xff, 0xff, 0x00, 0x0d]));
+        Ok(())
+    }
+}
+
+impl Message for RegionPresenceRequestByRegionID {
+    fn write_to<W: Write>(&self, buffer: &mut W) -> WriteMessageResult {
+        // Write the message number.
+        try!(buffer.write(&[0xff, 0xff, 0x00, 0x0e]));
+        // Block RegionData
+        try!(buffer.write_u8(self.region_data.len() as u8));
+        for item in &self.region_data {
+            try!(buffer.write(item.region_id.as_bytes()));
+        }
+        Ok(())
+    }
+}
+
+impl Message for RegionPresenceRequestByHandle {
+    fn write_to<W: Write>(&self, buffer: &mut W) -> WriteMessageResult {
+        // Write the message number.
+        try!(buffer.write(&[0xff, 0xff, 0x00, 0x0f]));
+        // Block RegionData
+        try!(buffer.write_u8(self.region_data.len() as u8));
+        for item in &self.region_data {
+            try!(buffer.write_u64::<LittleEndian>(item.region_handle));
+        }
+        Ok(())
+    }
+}
+
+impl Message for RegionPresenceResponse {
+    fn write_to<W: Write>(&self, buffer: &mut W) -> WriteMessageResult {
+        // Write the message number.
+        try!(buffer.write(&[0xff, 0xff, 0x00, 0x10]));
+        // Block RegionData
+        try!(buffer.write_u8(self.region_data.len() as u8));
+        for item in &self.region_data {
+            try!(buffer.write(item.region_id.as_bytes()));
+            try!(buffer.write_u64::<LittleEndian>(item.region_handle));
+            try!(buffer.write(&item.internal_region_ip.octets()));
+            try!(buffer.write(&item.external_region_ip.octets()));
+            try!(buffer.write_u16::<LittleEndian>(item.region_port));
+            try!(buffer.write_f64::<LittleEndian>(item.valid_until));
+            try!(buffer.write(&item.message[..]));
+        }
         Ok(())
     }
 }
@@ -8609,6 +8801,24 @@ impl Message for AvatarPickerRequestBackend {
     }
 }
 
+impl Message for AvatarPickerReply {
+    fn write_to<W: Write>(&self, buffer: &mut W) -> WriteMessageResult {
+        // Write the message number.
+        try!(buffer.write(&[0xff, 0xff, 0x00, 0x1c]));
+        // Block AgentData
+        try!(buffer.write(self.agent_data.agent_id.as_bytes()));
+        try!(buffer.write(self.agent_data.query_id.as_bytes()));
+        // Block Data
+        try!(buffer.write_u8(self.data.len() as u8));
+        for item in &self.data {
+            try!(buffer.write(item.avatar_id.as_bytes()));
+            try!(buffer.write(&item.first_name[..]));
+            try!(buffer.write(&item.last_name[..]));
+        }
+        Ok(())
+    }
+}
+
 impl Message for PlacesQuery {
     fn write_to<W: Write>(&self, buffer: &mut W) -> WriteMessageResult {
         // Write the message number.
@@ -8624,6 +8834,36 @@ impl Message for PlacesQuery {
         try!(buffer.write_u32::<LittleEndian>(self.query_data.query_flags));
         try!(buffer.write_i8(self.query_data.category));
         try!(buffer.write(&self.query_data.sim_name[..]));
+        Ok(())
+    }
+}
+
+impl Message for PlacesReply {
+    fn write_to<W: Write>(&self, buffer: &mut W) -> WriteMessageResult {
+        // Write the message number.
+        try!(buffer.write(&[0xff, 0xff, 0x00, 0x1e]));
+        // Block AgentData
+        try!(buffer.write(self.agent_data.agent_id.as_bytes()));
+        try!(buffer.write(self.agent_data.query_id.as_bytes()));
+        // Block TransactionData
+        try!(buffer.write(self.transaction_data.transaction_id.as_bytes()));
+        // Block QueryData
+        try!(buffer.write_u8(self.query_data.len() as u8));
+        for item in &self.query_data {
+            try!(buffer.write(item.owner_id.as_bytes()));
+            try!(buffer.write(&item.name[..]));
+            try!(buffer.write(&item.desc[..]));
+            try!(buffer.write_i32::<LittleEndian>(item.actual_area));
+            try!(buffer.write_i32::<LittleEndian>(item.billable_area));
+            try!(buffer.write_u8(item.flags));
+            try!(buffer.write_f32::<LittleEndian>(item.global_x));
+            try!(buffer.write_f32::<LittleEndian>(item.global_y));
+            try!(buffer.write_f32::<LittleEndian>(item.global_z));
+            try!(buffer.write(&item.sim_name[..]));
+            try!(buffer.write(item.snapshot_id.as_bytes()));
+            try!(buffer.write_f32::<LittleEndian>(item.dwell));
+            try!(buffer.write_i32::<LittleEndian>(item.price));
+        }
         Ok(())
     }
 }
@@ -8698,6 +8938,104 @@ impl Message for DirPlacesQueryBackend {
     }
 }
 
+impl Message for DirPlacesReply {
+    fn write_to<W: Write>(&self, buffer: &mut W) -> WriteMessageResult {
+        // Write the message number.
+        try!(buffer.write(&[0xff, 0xff, 0x00, 0x23]));
+        // Block AgentData
+        try!(buffer.write(self.agent_data.agent_id.as_bytes()));
+        // Block QueryData
+        try!(buffer.write_u8(self.query_data.len() as u8));
+        for item in &self.query_data {
+            try!(buffer.write(item.query_id.as_bytes()));
+        }
+        // Block QueryReplies
+        try!(buffer.write_u8(self.query_replies.len() as u8));
+        for item in &self.query_replies {
+            try!(buffer.write(item.parcel_id.as_bytes()));
+            try!(buffer.write(&item.name[..]));
+            try!(buffer.write_u8(item.for_sale as u8));
+            try!(buffer.write_u8(item.auction as u8));
+            try!(buffer.write_f32::<LittleEndian>(item.dwell));
+        }
+        // Block StatusData
+        try!(buffer.write_u8(self.status_data.len() as u8));
+        for item in &self.status_data {
+            try!(buffer.write_u32::<LittleEndian>(item.status));
+        }
+        Ok(())
+    }
+}
+
+impl Message for DirPeopleReply {
+    fn write_to<W: Write>(&self, buffer: &mut W) -> WriteMessageResult {
+        // Write the message number.
+        try!(buffer.write(&[0xff, 0xff, 0x00, 0x24]));
+        // Block AgentData
+        try!(buffer.write(self.agent_data.agent_id.as_bytes()));
+        // Block QueryData
+        try!(buffer.write(self.query_data.query_id.as_bytes()));
+        // Block QueryReplies
+        try!(buffer.write_u8(self.query_replies.len() as u8));
+        for item in &self.query_replies {
+            try!(buffer.write(item.agent_id.as_bytes()));
+            try!(buffer.write(&item.first_name[..]));
+            try!(buffer.write(&item.last_name[..]));
+            try!(buffer.write(&item.group[..]));
+            try!(buffer.write_u8(item.online as u8));
+            try!(buffer.write_i32::<LittleEndian>(item.reputation));
+        }
+        Ok(())
+    }
+}
+
+impl Message for DirEventsReply {
+    fn write_to<W: Write>(&self, buffer: &mut W) -> WriteMessageResult {
+        // Write the message number.
+        try!(buffer.write(&[0xff, 0xff, 0x00, 0x25]));
+        // Block AgentData
+        try!(buffer.write(self.agent_data.agent_id.as_bytes()));
+        // Block QueryData
+        try!(buffer.write(self.query_data.query_id.as_bytes()));
+        // Block QueryReplies
+        try!(buffer.write_u8(self.query_replies.len() as u8));
+        for item in &self.query_replies {
+            try!(buffer.write(item.owner_id.as_bytes()));
+            try!(buffer.write(&item.name[..]));
+            try!(buffer.write_u32::<LittleEndian>(item.event_id));
+            try!(buffer.write(&item.date[..]));
+            try!(buffer.write_u32::<LittleEndian>(item.unix_time));
+            try!(buffer.write_u32::<LittleEndian>(item.event_flags));
+        }
+        // Block StatusData
+        try!(buffer.write_u8(self.status_data.len() as u8));
+        for item in &self.status_data {
+            try!(buffer.write_u32::<LittleEndian>(item.status));
+        }
+        Ok(())
+    }
+}
+
+impl Message for DirGroupsReply {
+    fn write_to<W: Write>(&self, buffer: &mut W) -> WriteMessageResult {
+        // Write the message number.
+        try!(buffer.write(&[0xff, 0xff, 0x00, 0x26]));
+        // Block AgentData
+        try!(buffer.write(self.agent_data.agent_id.as_bytes()));
+        // Block QueryData
+        try!(buffer.write(self.query_data.query_id.as_bytes()));
+        // Block QueryReplies
+        try!(buffer.write_u8(self.query_replies.len() as u8));
+        for item in &self.query_replies {
+            try!(buffer.write(item.group_id.as_bytes()));
+            try!(buffer.write(&item.group_name[..]));
+            try!(buffer.write_i32::<LittleEndian>(item.members));
+            try!(buffer.write_f32::<LittleEndian>(item.search_order));
+        }
+        Ok(())
+    }
+}
+
 impl Message for DirClassifiedQuery {
     fn write_to<W: Write>(&self, buffer: &mut W) -> WriteMessageResult {
         // Write the message number.
@@ -8729,6 +9067,50 @@ impl Message for DirClassifiedQueryBackend {
         try!(buffer.write_u32::<LittleEndian>(self.query_data.estate_id));
         try!(buffer.write_u8(self.query_data.godlike as u8));
         try!(buffer.write_i32::<LittleEndian>(self.query_data.query_start));
+        Ok(())
+    }
+}
+
+impl Message for DirClassifiedReply {
+    fn write_to<W: Write>(&self, buffer: &mut W) -> WriteMessageResult {
+        // Write the message number.
+        try!(buffer.write(&[0xff, 0xff, 0x00, 0x29]));
+        // Block AgentData
+        try!(buffer.write(self.agent_data.agent_id.as_bytes()));
+        // Block QueryData
+        try!(buffer.write(self.query_data.query_id.as_bytes()));
+        // Block QueryReplies
+        try!(buffer.write_u8(self.query_replies.len() as u8));
+        for item in &self.query_replies {
+            try!(buffer.write(item.classified_id.as_bytes()));
+            try!(buffer.write(&item.name[..]));
+            try!(buffer.write_u8(item.classified_flags));
+            try!(buffer.write_u32::<LittleEndian>(item.creation_date));
+            try!(buffer.write_u32::<LittleEndian>(item.expiration_date));
+            try!(buffer.write_i32::<LittleEndian>(item.price_for_listing));
+        }
+        // Block StatusData
+        try!(buffer.write_u8(self.status_data.len() as u8));
+        for item in &self.status_data {
+            try!(buffer.write_u32::<LittleEndian>(item.status));
+        }
+        Ok(())
+    }
+}
+
+impl Message for AvatarClassifiedReply {
+    fn write_to<W: Write>(&self, buffer: &mut W) -> WriteMessageResult {
+        // Write the message number.
+        try!(buffer.write(&[0xff, 0xff, 0x00, 0x2a]));
+        // Block AgentData
+        try!(buffer.write(self.agent_data.agent_id.as_bytes()));
+        try!(buffer.write(self.agent_data.target_id.as_bytes()));
+        // Block Data
+        try!(buffer.write_u8(self.data.len() as u8));
+        for item in &self.data {
+            try!(buffer.write(item.classified_id.as_bytes()));
+            try!(buffer.write(&item.name[..]));
+        }
         Ok(())
     }
 }
@@ -8862,6 +9244,28 @@ impl Message for DirLandQueryBackend {
     }
 }
 
+impl Message for DirLandReply {
+    fn write_to<W: Write>(&self, buffer: &mut W) -> WriteMessageResult {
+        // Write the message number.
+        try!(buffer.write(&[0xff, 0xff, 0x00, 0x32]));
+        // Block AgentData
+        try!(buffer.write(self.agent_data.agent_id.as_bytes()));
+        // Block QueryData
+        try!(buffer.write(self.query_data.query_id.as_bytes()));
+        // Block QueryReplies
+        try!(buffer.write_u8(self.query_replies.len() as u8));
+        for item in &self.query_replies {
+            try!(buffer.write(item.parcel_id.as_bytes()));
+            try!(buffer.write(&item.name[..]));
+            try!(buffer.write_u8(item.auction as u8));
+            try!(buffer.write_u8(item.for_sale as u8));
+            try!(buffer.write_i32::<LittleEndian>(item.sale_price));
+            try!(buffer.write_i32::<LittleEndian>(item.actual_area));
+        }
+        Ok(())
+    }
+}
+
 impl Message for DirPopularQuery {
     fn write_to<W: Write>(&self, buffer: &mut W) -> WriteMessageResult {
         // Write the message number.
@@ -8887,6 +9291,25 @@ impl Message for DirPopularQueryBackend {
         try!(buffer.write_u32::<LittleEndian>(self.query_data.query_flags));
         try!(buffer.write_u32::<LittleEndian>(self.query_data.estate_id));
         try!(buffer.write_u8(self.query_data.godlike as u8));
+        Ok(())
+    }
+}
+
+impl Message for DirPopularReply {
+    fn write_to<W: Write>(&self, buffer: &mut W) -> WriteMessageResult {
+        // Write the message number.
+        try!(buffer.write(&[0xff, 0xff, 0x00, 0x35]));
+        // Block AgentData
+        try!(buffer.write(self.agent_data.agent_id.as_bytes()));
+        // Block QueryData
+        try!(buffer.write(self.query_data.query_id.as_bytes()));
+        // Block QueryReplies
+        try!(buffer.write_u8(self.query_replies.len() as u8));
+        for item in &self.query_replies {
+            try!(buffer.write(item.parcel_id.as_bytes()));
+            try!(buffer.write(&item.name[..]));
+            try!(buffer.write_f32::<LittleEndian>(item.dwell));
+        }
         Ok(())
     }
 }
@@ -8943,6 +9366,22 @@ impl Message for ParcelObjectOwnersRequest {
     }
 }
 
+impl Message for ParcelObjectOwnersReply {
+    fn write_to<W: Write>(&self, buffer: &mut W) -> WriteMessageResult {
+        // Write the message number.
+        try!(buffer.write(&[0xff, 0xff, 0x00, 0x39]));
+        // Block Data
+        try!(buffer.write_u8(self.data.len() as u8));
+        for item in &self.data {
+            try!(buffer.write(item.owner_id.as_bytes()));
+            try!(buffer.write_u8(item.is_group_owned as u8));
+            try!(buffer.write_i32::<LittleEndian>(item.count));
+            try!(buffer.write_u8(item.online_status as u8));
+        }
+        Ok(())
+    }
+}
+
 impl Message for GroupNoticesListRequest {
     fn write_to<W: Write>(&self, buffer: &mut W) -> WriteMessageResult {
         // Write the message number.
@@ -8952,6 +9391,27 @@ impl Message for GroupNoticesListRequest {
         try!(buffer.write(self.agent_data.session_id.as_bytes()));
         // Block Data
         try!(buffer.write(self.data.group_id.as_bytes()));
+        Ok(())
+    }
+}
+
+impl Message for GroupNoticesListReply {
+    fn write_to<W: Write>(&self, buffer: &mut W) -> WriteMessageResult {
+        // Write the message number.
+        try!(buffer.write(&[0xff, 0xff, 0x00, 0x3b]));
+        // Block AgentData
+        try!(buffer.write(self.agent_data.agent_id.as_bytes()));
+        try!(buffer.write(self.agent_data.group_id.as_bytes()));
+        // Block Data
+        try!(buffer.write_u8(self.data.len() as u8));
+        for item in &self.data {
+            try!(buffer.write(item.notice_id.as_bytes()));
+            try!(buffer.write_u32::<LittleEndian>(item.timestamp));
+            try!(buffer.write(&item.from_name[..]));
+            try!(buffer.write(&item.subject[..]));
+            try!(buffer.write_u8(item.has_attachment as u8));
+            try!(buffer.write_u8(item.asset_type));
+        }
         Ok(())
     }
 }
@@ -9114,6 +9574,25 @@ impl Message for TeleportFinish {
     }
 }
 
+impl Message for StartLure {
+    fn write_to<W: Write>(&self, buffer: &mut W) -> WriteMessageResult {
+        // Write the message number.
+        try!(buffer.write(&[0xff, 0xff, 0x00, 0x46]));
+        // Block AgentData
+        try!(buffer.write(self.agent_data.agent_id.as_bytes()));
+        try!(buffer.write(self.agent_data.session_id.as_bytes()));
+        // Block Info
+        try!(buffer.write_u8(self.info.lure_type));
+        try!(buffer.write(&self.info.message[..]));
+        // Block TargetData
+        try!(buffer.write_u8(self.target_data.len() as u8));
+        for item in &self.target_data {
+            try!(buffer.write(item.target_id.as_bytes()));
+        }
+        Ok(())
+    }
+}
+
 impl Message for TeleportLureRequest {
     fn write_to<W: Write>(&self, buffer: &mut W) -> WriteMessageResult {
         // Write the message number.
@@ -9144,6 +9623,57 @@ impl Message for TeleportStart {
         try!(buffer.write(&[0xff, 0xff, 0x00, 0x49]));
         // Block Info
         try!(buffer.write_u32::<LittleEndian>(self.info.teleport_flags));
+        Ok(())
+    }
+}
+
+impl Message for TeleportFailed {
+    fn write_to<W: Write>(&self, buffer: &mut W) -> WriteMessageResult {
+        // Write the message number.
+        try!(buffer.write(&[0xff, 0xff, 0x00, 0x4a]));
+        // Block Info
+        try!(buffer.write(self.info.agent_id.as_bytes()));
+        try!(buffer.write(&self.info.reason[..]));
+        // Block AlertInfo
+        try!(buffer.write_u8(self.alert_info.len() as u8));
+        for item in &self.alert_info {
+            try!(buffer.write(&item.message[..]));
+            try!(buffer.write(&item.extra_params[..]));
+        }
+        Ok(())
+    }
+}
+
+impl Message for Undo {
+    fn write_to<W: Write>(&self, buffer: &mut W) -> WriteMessageResult {
+        // Write the message number.
+        try!(buffer.write(&[0xff, 0xff, 0x00, 0x4b]));
+        // Block AgentData
+        try!(buffer.write(self.agent_data.agent_id.as_bytes()));
+        try!(buffer.write(self.agent_data.session_id.as_bytes()));
+        try!(buffer.write(self.agent_data.group_id.as_bytes()));
+        // Block ObjectData
+        try!(buffer.write_u8(self.object_data.len() as u8));
+        for item in &self.object_data {
+            try!(buffer.write(item.object_id.as_bytes()));
+        }
+        Ok(())
+    }
+}
+
+impl Message for Redo {
+    fn write_to<W: Write>(&self, buffer: &mut W) -> WriteMessageResult {
+        // Write the message number.
+        try!(buffer.write(&[0xff, 0xff, 0x00, 0x4c]));
+        // Block AgentData
+        try!(buffer.write(self.agent_data.agent_id.as_bytes()));
+        try!(buffer.write(self.agent_data.session_id.as_bytes()));
+        try!(buffer.write(self.agent_data.group_id.as_bytes()));
+        // Block ObjectData
+        try!(buffer.write_u8(self.object_data.len() as u8));
+        for item in &self.object_data {
+            try!(buffer.write(item.object_id.as_bytes()));
+        }
         Ok(())
     }
 }
@@ -9279,6 +9809,56 @@ impl Message for AgentHeightWidth {
     }
 }
 
+impl Message for AgentSetAppearance {
+    fn write_to<W: Write>(&self, buffer: &mut W) -> WriteMessageResult {
+        // Write the message number.
+        try!(buffer.write(&[0xff, 0xff, 0x00, 0x54]));
+        // Block AgentData
+        try!(buffer.write(self.agent_data.agent_id.as_bytes()));
+        try!(buffer.write(self.agent_data.session_id.as_bytes()));
+        try!(buffer.write_u32::<LittleEndian>(self.agent_data.serial_num));
+        try!(buffer.write_f32::<LittleEndian>(self.agent_data.size.x));
+        try!(buffer.write_f32::<LittleEndian>(self.agent_data.size.y));
+        try!(buffer.write_f32::<LittleEndian>(self.agent_data.size.z));
+        // Block WearableData
+        try!(buffer.write_u8(self.wearable_data.len() as u8));
+        for item in &self.wearable_data {
+            try!(buffer.write(item.cache_id.as_bytes()));
+            try!(buffer.write_u8(item.texture_index));
+        }
+        // Block ObjectData
+        try!(buffer.write(&self.object_data.texture_entry[..]));
+        // Block VisualParam
+        try!(buffer.write_u8(self.visual_param.len() as u8));
+        for item in &self.visual_param {
+            try!(buffer.write_u8(item.param_value));
+        }
+        Ok(())
+    }
+}
+
+impl Message for AgentAnimation {
+    fn write_to<W: Write>(&self, buffer: &mut W) -> WriteMessageResult {
+        // Write the message number.
+        try!(buffer.write(&[0x05]));
+        // Block AgentData
+        try!(buffer.write(self.agent_data.agent_id.as_bytes()));
+        try!(buffer.write(self.agent_data.session_id.as_bytes()));
+        // Block AnimationList
+        try!(buffer.write_u8(self.animation_list.len() as u8));
+        for item in &self.animation_list {
+            try!(buffer.write(item.anim_id.as_bytes()));
+            try!(buffer.write_u8(item.start_anim as u8));
+        }
+        // Block PhysicalAvatarEventList
+        try!(buffer.write_u8(self.physical_avatar_event_list.len() as u8));
+        for item in &self.physical_avatar_event_list {
+            try!(buffer.write(&item.type_data[..]));
+        }
+        Ok(())
+    }
+}
+
 impl Message for AgentRequestSit {
     fn write_to<W: Write>(&self, buffer: &mut W) -> WriteMessageResult {
         // Write the message number.
@@ -9315,6 +9895,26 @@ impl Message for AgentQuitCopy {
         try!(buffer.write(self.agent_data.session_id.as_bytes()));
         // Block FuseBlock
         try!(buffer.write_u32::<LittleEndian>(self.fuse_block.viewer_circuit_code));
+        Ok(())
+    }
+}
+
+impl Message for RequestImage {
+    fn write_to<W: Write>(&self, buffer: &mut W) -> WriteMessageResult {
+        // Write the message number.
+        try!(buffer.write(&[0x08]));
+        // Block AgentData
+        try!(buffer.write(self.agent_data.agent_id.as_bytes()));
+        try!(buffer.write(self.agent_data.session_id.as_bytes()));
+        // Block RequestImage
+        try!(buffer.write_u8(self.request_image.len() as u8));
+        for item in &self.request_image {
+            try!(buffer.write(item.image.as_bytes()));
+            try!(buffer.write_i8(item.discard_level));
+            try!(buffer.write_f32::<LittleEndian>(item.download_priority));
+            try!(buffer.write_u32::<LittleEndian>(item.packet));
+            try!(buffer.write_u8(item.type_));
+        }
         Ok(())
     }
 }
@@ -9402,6 +10002,167 @@ impl Message for ObjectAdd {
     }
 }
 
+impl Message for ObjectDelete {
+    fn write_to<W: Write>(&self, buffer: &mut W) -> WriteMessageResult {
+        // Write the message number.
+        try!(buffer.write(&[0xff, 0xff, 0x00, 0x59]));
+        // Block AgentData
+        try!(buffer.write(self.agent_data.agent_id.as_bytes()));
+        try!(buffer.write(self.agent_data.session_id.as_bytes()));
+        try!(buffer.write_u8(self.agent_data.force as u8));
+        // Block ObjectData
+        try!(buffer.write_u8(self.object_data.len() as u8));
+        for item in &self.object_data {
+            try!(buffer.write_u32::<LittleEndian>(item.object_local_id));
+        }
+        Ok(())
+    }
+}
+
+impl Message for ObjectDuplicate {
+    fn write_to<W: Write>(&self, buffer: &mut W) -> WriteMessageResult {
+        // Write the message number.
+        try!(buffer.write(&[0xff, 0xff, 0x00, 0x5a]));
+        // Block AgentData
+        try!(buffer.write(self.agent_data.agent_id.as_bytes()));
+        try!(buffer.write(self.agent_data.session_id.as_bytes()));
+        try!(buffer.write(self.agent_data.group_id.as_bytes()));
+        // Block SharedData
+        try!(buffer.write_f32::<LittleEndian>(self.shared_data.offset.x));
+        try!(buffer.write_f32::<LittleEndian>(self.shared_data.offset.y));
+        try!(buffer.write_f32::<LittleEndian>(self.shared_data.offset.z));
+        try!(buffer.write_u32::<LittleEndian>(self.shared_data.duplicate_flags));
+        // Block ObjectData
+        try!(buffer.write_u8(self.object_data.len() as u8));
+        for item in &self.object_data {
+            try!(buffer.write_u32::<LittleEndian>(item.object_local_id));
+        }
+        Ok(())
+    }
+}
+
+impl Message for ObjectDuplicateOnRay {
+    fn write_to<W: Write>(&self, buffer: &mut W) -> WriteMessageResult {
+        // Write the message number.
+        try!(buffer.write(&[0xff, 0xff, 0x00, 0x5b]));
+        // Block AgentData
+        try!(buffer.write(self.agent_data.agent_id.as_bytes()));
+        try!(buffer.write(self.agent_data.session_id.as_bytes()));
+        try!(buffer.write(self.agent_data.group_id.as_bytes()));
+        try!(buffer.write_f32::<LittleEndian>(self.agent_data.ray_start.x));
+        try!(buffer.write_f32::<LittleEndian>(self.agent_data.ray_start.y));
+        try!(buffer.write_f32::<LittleEndian>(self.agent_data.ray_start.z));
+        try!(buffer.write_f32::<LittleEndian>(self.agent_data.ray_end.x));
+        try!(buffer.write_f32::<LittleEndian>(self.agent_data.ray_end.y));
+        try!(buffer.write_f32::<LittleEndian>(self.agent_data.ray_end.z));
+        try!(buffer.write_u8(self.agent_data.bypass_raycast as u8));
+        try!(buffer.write_u8(self.agent_data.ray_end_is_intersection as u8));
+        try!(buffer.write_u8(self.agent_data.copy_centers as u8));
+        try!(buffer.write_u8(self.agent_data.copy_rotates as u8));
+        try!(buffer.write(self.agent_data.ray_target_id.as_bytes()));
+        try!(buffer.write_u32::<LittleEndian>(self.agent_data.duplicate_flags));
+        // Block ObjectData
+        try!(buffer.write_u8(self.object_data.len() as u8));
+        for item in &self.object_data {
+            try!(buffer.write_u32::<LittleEndian>(item.object_local_id));
+        }
+        Ok(())
+    }
+}
+
+impl Message for MultipleObjectUpdate {
+    fn write_to<W: Write>(&self, buffer: &mut W) -> WriteMessageResult {
+        // Write the message number.
+        try!(buffer.write(&[0xff, 0x02]));
+        // Block AgentData
+        try!(buffer.write(self.agent_data.agent_id.as_bytes()));
+        try!(buffer.write(self.agent_data.session_id.as_bytes()));
+        // Block ObjectData
+        try!(buffer.write_u8(self.object_data.len() as u8));
+        for item in &self.object_data {
+            try!(buffer.write_u32::<LittleEndian>(item.object_local_id));
+            try!(buffer.write_u8(item.type_));
+            try!(buffer.write(&item.data[..]));
+        }
+        Ok(())
+    }
+}
+
+impl Message for RequestMultipleObjects {
+    fn write_to<W: Write>(&self, buffer: &mut W) -> WriteMessageResult {
+        // Write the message number.
+        try!(buffer.write(&[0xff, 0x03]));
+        // Block AgentData
+        try!(buffer.write(self.agent_data.agent_id.as_bytes()));
+        try!(buffer.write(self.agent_data.session_id.as_bytes()));
+        // Block ObjectData
+        try!(buffer.write_u8(self.object_data.len() as u8));
+        for item in &self.object_data {
+            try!(buffer.write_u8(item.cache_miss_type));
+            try!(buffer.write_u32::<LittleEndian>(item.id));
+        }
+        Ok(())
+    }
+}
+
+impl Message for ObjectPosition {
+    fn write_to<W: Write>(&self, buffer: &mut W) -> WriteMessageResult {
+        // Write the message number.
+        try!(buffer.write(&[0xff, 0x04]));
+        // Block AgentData
+        try!(buffer.write(self.agent_data.agent_id.as_bytes()));
+        try!(buffer.write(self.agent_data.session_id.as_bytes()));
+        // Block ObjectData
+        try!(buffer.write_u8(self.object_data.len() as u8));
+        for item in &self.object_data {
+            try!(buffer.write_u32::<LittleEndian>(item.object_local_id));
+            try!(buffer.write_f32::<LittleEndian>(item.position.x));
+            try!(buffer.write_f32::<LittleEndian>(item.position.y));
+            try!(buffer.write_f32::<LittleEndian>(item.position.z));
+        }
+        Ok(())
+    }
+}
+
+impl Message for ObjectScale {
+    fn write_to<W: Write>(&self, buffer: &mut W) -> WriteMessageResult {
+        // Write the message number.
+        try!(buffer.write(&[0xff, 0xff, 0x00, 0x5c]));
+        // Block AgentData
+        try!(buffer.write(self.agent_data.agent_id.as_bytes()));
+        try!(buffer.write(self.agent_data.session_id.as_bytes()));
+        // Block ObjectData
+        try!(buffer.write_u8(self.object_data.len() as u8));
+        for item in &self.object_data {
+            try!(buffer.write_u32::<LittleEndian>(item.object_local_id));
+            try!(buffer.write_f32::<LittleEndian>(item.scale.x));
+            try!(buffer.write_f32::<LittleEndian>(item.scale.y));
+            try!(buffer.write_f32::<LittleEndian>(item.scale.z));
+        }
+        Ok(())
+    }
+}
+
+impl Message for ObjectRotation {
+    fn write_to<W: Write>(&self, buffer: &mut W) -> WriteMessageResult {
+        // Write the message number.
+        try!(buffer.write(&[0xff, 0xff, 0x00, 0x5d]));
+        // Block AgentData
+        try!(buffer.write(self.agent_data.agent_id.as_bytes()));
+        try!(buffer.write(self.agent_data.session_id.as_bytes()));
+        // Block ObjectData
+        try!(buffer.write_u8(self.object_data.len() as u8));
+        for item in &self.object_data {
+            try!(buffer.write_u32::<LittleEndian>(item.object_local_id));
+            let normed_rotation = UnitQuaternion::new(&item.rotation).unwrap();
+            try!(buffer.write_f32::<LittleEndian>(normed_rotation.i));
+            try!(buffer.write_f32::<LittleEndian>(normed_rotation.j));
+            try!(buffer.write_f32::<LittleEndian>(normed_rotation.k));
+        }
+        Ok(())
+    }
+}
+
 impl Message for ObjectFlagUpdate {
     fn write_to<W: Write>(&self, buffer: &mut W) -> WriteMessageResult {
         // Write the message number.
@@ -9414,6 +10175,169 @@ impl Message for ObjectFlagUpdate {
         try!(buffer.write_u8(self.agent_data.is_temporary as u8));
         try!(buffer.write_u8(self.agent_data.is_phantom as u8));
         try!(buffer.write_u8(self.agent_data.casts_shadows as u8));
+        Ok(())
+    }
+}
+
+impl Message for ObjectClickAction {
+    fn write_to<W: Write>(&self, buffer: &mut W) -> WriteMessageResult {
+        // Write the message number.
+        try!(buffer.write(&[0xff, 0xff, 0x00, 0x5f]));
+        // Block AgentData
+        try!(buffer.write(self.agent_data.agent_id.as_bytes()));
+        try!(buffer.write(self.agent_data.session_id.as_bytes()));
+        // Block ObjectData
+        try!(buffer.write_u8(self.object_data.len() as u8));
+        for item in &self.object_data {
+            try!(buffer.write_u32::<LittleEndian>(item.object_local_id));
+            try!(buffer.write_u8(item.click_action));
+        }
+        Ok(())
+    }
+}
+
+impl Message for ObjectImage {
+    fn write_to<W: Write>(&self, buffer: &mut W) -> WriteMessageResult {
+        // Write the message number.
+        try!(buffer.write(&[0xff, 0xff, 0x00, 0x60]));
+        // Block AgentData
+        try!(buffer.write(self.agent_data.agent_id.as_bytes()));
+        try!(buffer.write(self.agent_data.session_id.as_bytes()));
+        // Block ObjectData
+        try!(buffer.write_u8(self.object_data.len() as u8));
+        for item in &self.object_data {
+            try!(buffer.write_u32::<LittleEndian>(item.object_local_id));
+            try!(buffer.write(&item.media_url[..]));
+            try!(buffer.write(&item.texture_entry[..]));
+        }
+        Ok(())
+    }
+}
+
+impl Message for ObjectMaterial {
+    fn write_to<W: Write>(&self, buffer: &mut W) -> WriteMessageResult {
+        // Write the message number.
+        try!(buffer.write(&[0xff, 0xff, 0x00, 0x61]));
+        // Block AgentData
+        try!(buffer.write(self.agent_data.agent_id.as_bytes()));
+        try!(buffer.write(self.agent_data.session_id.as_bytes()));
+        // Block ObjectData
+        try!(buffer.write_u8(self.object_data.len() as u8));
+        for item in &self.object_data {
+            try!(buffer.write_u32::<LittleEndian>(item.object_local_id));
+            try!(buffer.write_u8(item.material));
+        }
+        Ok(())
+    }
+}
+
+impl Message for ObjectShape {
+    fn write_to<W: Write>(&self, buffer: &mut W) -> WriteMessageResult {
+        // Write the message number.
+        try!(buffer.write(&[0xff, 0xff, 0x00, 0x62]));
+        // Block AgentData
+        try!(buffer.write(self.agent_data.agent_id.as_bytes()));
+        try!(buffer.write(self.agent_data.session_id.as_bytes()));
+        // Block ObjectData
+        try!(buffer.write_u8(self.object_data.len() as u8));
+        for item in &self.object_data {
+            try!(buffer.write_u32::<LittleEndian>(item.object_local_id));
+            try!(buffer.write_u8(item.path_curve));
+            try!(buffer.write_u8(item.profile_curve));
+            try!(buffer.write_u16::<LittleEndian>(item.path_begin));
+            try!(buffer.write_u16::<LittleEndian>(item.path_end));
+            try!(buffer.write_u8(item.path_scale_x));
+            try!(buffer.write_u8(item.path_scale_y));
+            try!(buffer.write_u8(item.path_shear_x));
+            try!(buffer.write_u8(item.path_shear_y));
+            try!(buffer.write_i8(item.path_twist));
+            try!(buffer.write_i8(item.path_twist_begin));
+            try!(buffer.write_i8(item.path_radius_offset));
+            try!(buffer.write_i8(item.path_taper_x));
+            try!(buffer.write_i8(item.path_taper_y));
+            try!(buffer.write_u8(item.path_revolutions));
+            try!(buffer.write_i8(item.path_skew));
+            try!(buffer.write_u16::<LittleEndian>(item.profile_begin));
+            try!(buffer.write_u16::<LittleEndian>(item.profile_end));
+            try!(buffer.write_u16::<LittleEndian>(item.profile_hollow));
+        }
+        Ok(())
+    }
+}
+
+impl Message for ObjectExtraParams {
+    fn write_to<W: Write>(&self, buffer: &mut W) -> WriteMessageResult {
+        // Write the message number.
+        try!(buffer.write(&[0xff, 0xff, 0x00, 0x63]));
+        // Block AgentData
+        try!(buffer.write(self.agent_data.agent_id.as_bytes()));
+        try!(buffer.write(self.agent_data.session_id.as_bytes()));
+        // Block ObjectData
+        try!(buffer.write_u8(self.object_data.len() as u8));
+        for item in &self.object_data {
+            try!(buffer.write_u32::<LittleEndian>(item.object_local_id));
+            try!(buffer.write_u16::<LittleEndian>(item.param_type));
+            try!(buffer.write_u8(item.param_in_use as u8));
+            try!(buffer.write_u32::<LittleEndian>(item.param_size));
+            try!(buffer.write(&item.param_data[..]));
+        }
+        Ok(())
+    }
+}
+
+impl Message for ObjectOwner {
+    fn write_to<W: Write>(&self, buffer: &mut W) -> WriteMessageResult {
+        // Write the message number.
+        try!(buffer.write(&[0xff, 0xff, 0x00, 0x64]));
+        // Block AgentData
+        try!(buffer.write(self.agent_data.agent_id.as_bytes()));
+        try!(buffer.write(self.agent_data.session_id.as_bytes()));
+        // Block HeaderData
+        try!(buffer.write_u8(self.header_data.override_ as u8));
+        try!(buffer.write(self.header_data.owner_id.as_bytes()));
+        try!(buffer.write(self.header_data.group_id.as_bytes()));
+        // Block ObjectData
+        try!(buffer.write_u8(self.object_data.len() as u8));
+        for item in &self.object_data {
+            try!(buffer.write_u32::<LittleEndian>(item.object_local_id));
+        }
+        Ok(())
+    }
+}
+
+impl Message for ObjectGroup {
+    fn write_to<W: Write>(&self, buffer: &mut W) -> WriteMessageResult {
+        // Write the message number.
+        try!(buffer.write(&[0xff, 0xff, 0x00, 0x65]));
+        // Block AgentData
+        try!(buffer.write(self.agent_data.agent_id.as_bytes()));
+        try!(buffer.write(self.agent_data.session_id.as_bytes()));
+        try!(buffer.write(self.agent_data.group_id.as_bytes()));
+        // Block ObjectData
+        try!(buffer.write_u8(self.object_data.len() as u8));
+        for item in &self.object_data {
+            try!(buffer.write_u32::<LittleEndian>(item.object_local_id));
+        }
+        Ok(())
+    }
+}
+
+impl Message for ObjectBuy {
+    fn write_to<W: Write>(&self, buffer: &mut W) -> WriteMessageResult {
+        // Write the message number.
+        try!(buffer.write(&[0xff, 0xff, 0x00, 0x66]));
+        // Block AgentData
+        try!(buffer.write(self.agent_data.agent_id.as_bytes()));
+        try!(buffer.write(self.agent_data.session_id.as_bytes()));
+        try!(buffer.write(self.agent_data.group_id.as_bytes()));
+        try!(buffer.write(self.agent_data.category_id.as_bytes()));
+        // Block ObjectData
+        try!(buffer.write_u8(self.object_data.len() as u8));
+        for item in &self.object_data {
+            try!(buffer.write_u32::<LittleEndian>(item.object_local_id));
+            try!(buffer.write_u8(item.sale_type));
+            try!(buffer.write_i32::<LittleEndian>(item.sale_price));
+        }
         Ok(())
     }
 }
@@ -9440,6 +10364,322 @@ impl Message for DerezContainer {
         // Block Data
         try!(buffer.write(self.data.object_id.as_bytes()));
         try!(buffer.write_u8(self.data.delete as u8));
+        Ok(())
+    }
+}
+
+impl Message for ObjectPermissions {
+    fn write_to<W: Write>(&self, buffer: &mut W) -> WriteMessageResult {
+        // Write the message number.
+        try!(buffer.write(&[0xff, 0xff, 0x00, 0x69]));
+        // Block AgentData
+        try!(buffer.write(self.agent_data.agent_id.as_bytes()));
+        try!(buffer.write(self.agent_data.session_id.as_bytes()));
+        // Block HeaderData
+        try!(buffer.write_u8(self.header_data.override_ as u8));
+        // Block ObjectData
+        try!(buffer.write_u8(self.object_data.len() as u8));
+        for item in &self.object_data {
+            try!(buffer.write_u32::<LittleEndian>(item.object_local_id));
+            try!(buffer.write_u8(item.field));
+            try!(buffer.write_u8(item.set));
+            try!(buffer.write_u32::<LittleEndian>(item.mask));
+        }
+        Ok(())
+    }
+}
+
+impl Message for ObjectSaleInfo {
+    fn write_to<W: Write>(&self, buffer: &mut W) -> WriteMessageResult {
+        // Write the message number.
+        try!(buffer.write(&[0xff, 0xff, 0x00, 0x6a]));
+        // Block AgentData
+        try!(buffer.write(self.agent_data.agent_id.as_bytes()));
+        try!(buffer.write(self.agent_data.session_id.as_bytes()));
+        // Block ObjectData
+        try!(buffer.write_u8(self.object_data.len() as u8));
+        for item in &self.object_data {
+            try!(buffer.write_u32::<LittleEndian>(item.local_id));
+            try!(buffer.write_u8(item.sale_type));
+            try!(buffer.write_i32::<LittleEndian>(item.sale_price));
+        }
+        Ok(())
+    }
+}
+
+impl Message for ObjectName {
+    fn write_to<W: Write>(&self, buffer: &mut W) -> WriteMessageResult {
+        // Write the message number.
+        try!(buffer.write(&[0xff, 0xff, 0x00, 0x6b]));
+        // Block AgentData
+        try!(buffer.write(self.agent_data.agent_id.as_bytes()));
+        try!(buffer.write(self.agent_data.session_id.as_bytes()));
+        // Block ObjectData
+        try!(buffer.write_u8(self.object_data.len() as u8));
+        for item in &self.object_data {
+            try!(buffer.write_u32::<LittleEndian>(item.local_id));
+            try!(buffer.write(&item.name[..]));
+        }
+        Ok(())
+    }
+}
+
+impl Message for ObjectDescription {
+    fn write_to<W: Write>(&self, buffer: &mut W) -> WriteMessageResult {
+        // Write the message number.
+        try!(buffer.write(&[0xff, 0xff, 0x00, 0x6c]));
+        // Block AgentData
+        try!(buffer.write(self.agent_data.agent_id.as_bytes()));
+        try!(buffer.write(self.agent_data.session_id.as_bytes()));
+        // Block ObjectData
+        try!(buffer.write_u8(self.object_data.len() as u8));
+        for item in &self.object_data {
+            try!(buffer.write_u32::<LittleEndian>(item.local_id));
+            try!(buffer.write(&item.description[..]));
+        }
+        Ok(())
+    }
+}
+
+impl Message for ObjectCategory {
+    fn write_to<W: Write>(&self, buffer: &mut W) -> WriteMessageResult {
+        // Write the message number.
+        try!(buffer.write(&[0xff, 0xff, 0x00, 0x6d]));
+        // Block AgentData
+        try!(buffer.write(self.agent_data.agent_id.as_bytes()));
+        try!(buffer.write(self.agent_data.session_id.as_bytes()));
+        // Block ObjectData
+        try!(buffer.write_u8(self.object_data.len() as u8));
+        for item in &self.object_data {
+            try!(buffer.write_u32::<LittleEndian>(item.local_id));
+            try!(buffer.write_u32::<LittleEndian>(item.category));
+        }
+        Ok(())
+    }
+}
+
+impl Message for ObjectSelect {
+    fn write_to<W: Write>(&self, buffer: &mut W) -> WriteMessageResult {
+        // Write the message number.
+        try!(buffer.write(&[0xff, 0xff, 0x00, 0x6e]));
+        // Block AgentData
+        try!(buffer.write(self.agent_data.agent_id.as_bytes()));
+        try!(buffer.write(self.agent_data.session_id.as_bytes()));
+        // Block ObjectData
+        try!(buffer.write_u8(self.object_data.len() as u8));
+        for item in &self.object_data {
+            try!(buffer.write_u32::<LittleEndian>(item.object_local_id));
+        }
+        Ok(())
+    }
+}
+
+impl Message for ObjectDeselect {
+    fn write_to<W: Write>(&self, buffer: &mut W) -> WriteMessageResult {
+        // Write the message number.
+        try!(buffer.write(&[0xff, 0xff, 0x00, 0x6f]));
+        // Block AgentData
+        try!(buffer.write(self.agent_data.agent_id.as_bytes()));
+        try!(buffer.write(self.agent_data.session_id.as_bytes()));
+        // Block ObjectData
+        try!(buffer.write_u8(self.object_data.len() as u8));
+        for item in &self.object_data {
+            try!(buffer.write_u32::<LittleEndian>(item.object_local_id));
+        }
+        Ok(())
+    }
+}
+
+impl Message for ObjectAttach {
+    fn write_to<W: Write>(&self, buffer: &mut W) -> WriteMessageResult {
+        // Write the message number.
+        try!(buffer.write(&[0xff, 0xff, 0x00, 0x70]));
+        // Block AgentData
+        try!(buffer.write(self.agent_data.agent_id.as_bytes()));
+        try!(buffer.write(self.agent_data.session_id.as_bytes()));
+        try!(buffer.write_u8(self.agent_data.attachment_point));
+        // Block ObjectData
+        try!(buffer.write_u8(self.object_data.len() as u8));
+        for item in &self.object_data {
+            try!(buffer.write_u32::<LittleEndian>(item.object_local_id));
+            let normed_rotation = UnitQuaternion::new(&item.rotation).unwrap();
+            try!(buffer.write_f32::<LittleEndian>(normed_rotation.i));
+            try!(buffer.write_f32::<LittleEndian>(normed_rotation.j));
+            try!(buffer.write_f32::<LittleEndian>(normed_rotation.k));
+        }
+        Ok(())
+    }
+}
+
+impl Message for ObjectDetach {
+    fn write_to<W: Write>(&self, buffer: &mut W) -> WriteMessageResult {
+        // Write the message number.
+        try!(buffer.write(&[0xff, 0xff, 0x00, 0x71]));
+        // Block AgentData
+        try!(buffer.write(self.agent_data.agent_id.as_bytes()));
+        try!(buffer.write(self.agent_data.session_id.as_bytes()));
+        // Block ObjectData
+        try!(buffer.write_u8(self.object_data.len() as u8));
+        for item in &self.object_data {
+            try!(buffer.write_u32::<LittleEndian>(item.object_local_id));
+        }
+        Ok(())
+    }
+}
+
+impl Message for ObjectDrop {
+    fn write_to<W: Write>(&self, buffer: &mut W) -> WriteMessageResult {
+        // Write the message number.
+        try!(buffer.write(&[0xff, 0xff, 0x00, 0x72]));
+        // Block AgentData
+        try!(buffer.write(self.agent_data.agent_id.as_bytes()));
+        try!(buffer.write(self.agent_data.session_id.as_bytes()));
+        // Block ObjectData
+        try!(buffer.write_u8(self.object_data.len() as u8));
+        for item in &self.object_data {
+            try!(buffer.write_u32::<LittleEndian>(item.object_local_id));
+        }
+        Ok(())
+    }
+}
+
+impl Message for ObjectLink {
+    fn write_to<W: Write>(&self, buffer: &mut W) -> WriteMessageResult {
+        // Write the message number.
+        try!(buffer.write(&[0xff, 0xff, 0x00, 0x73]));
+        // Block AgentData
+        try!(buffer.write(self.agent_data.agent_id.as_bytes()));
+        try!(buffer.write(self.agent_data.session_id.as_bytes()));
+        // Block ObjectData
+        try!(buffer.write_u8(self.object_data.len() as u8));
+        for item in &self.object_data {
+            try!(buffer.write_u32::<LittleEndian>(item.object_local_id));
+        }
+        Ok(())
+    }
+}
+
+impl Message for ObjectDelink {
+    fn write_to<W: Write>(&self, buffer: &mut W) -> WriteMessageResult {
+        // Write the message number.
+        try!(buffer.write(&[0xff, 0xff, 0x00, 0x74]));
+        // Block AgentData
+        try!(buffer.write(self.agent_data.agent_id.as_bytes()));
+        try!(buffer.write(self.agent_data.session_id.as_bytes()));
+        // Block ObjectData
+        try!(buffer.write_u8(self.object_data.len() as u8));
+        for item in &self.object_data {
+            try!(buffer.write_u32::<LittleEndian>(item.object_local_id));
+        }
+        Ok(())
+    }
+}
+
+impl Message for ObjectGrab {
+    fn write_to<W: Write>(&self, buffer: &mut W) -> WriteMessageResult {
+        // Write the message number.
+        try!(buffer.write(&[0xff, 0xff, 0x00, 0x75]));
+        // Block AgentData
+        try!(buffer.write(self.agent_data.agent_id.as_bytes()));
+        try!(buffer.write(self.agent_data.session_id.as_bytes()));
+        // Block ObjectData
+        try!(buffer.write_u32::<LittleEndian>(self.object_data.local_id));
+        try!(buffer.write_f32::<LittleEndian>(self.object_data.grab_offset.x));
+        try!(buffer.write_f32::<LittleEndian>(self.object_data.grab_offset.y));
+        try!(buffer.write_f32::<LittleEndian>(self.object_data.grab_offset.z));
+        // Block SurfaceInfo
+        try!(buffer.write_u8(self.surface_info.len() as u8));
+        for item in &self.surface_info {
+            try!(buffer.write_f32::<LittleEndian>(item.uv_coord.x));
+            try!(buffer.write_f32::<LittleEndian>(item.uv_coord.y));
+            try!(buffer.write_f32::<LittleEndian>(item.uv_coord.z));
+            try!(buffer.write_f32::<LittleEndian>(item.st_coord.x));
+            try!(buffer.write_f32::<LittleEndian>(item.st_coord.y));
+            try!(buffer.write_f32::<LittleEndian>(item.st_coord.z));
+            try!(buffer.write_i32::<LittleEndian>(item.face_index));
+            try!(buffer.write_f32::<LittleEndian>(item.position.x));
+            try!(buffer.write_f32::<LittleEndian>(item.position.y));
+            try!(buffer.write_f32::<LittleEndian>(item.position.z));
+            try!(buffer.write_f32::<LittleEndian>(item.normal.x));
+            try!(buffer.write_f32::<LittleEndian>(item.normal.y));
+            try!(buffer.write_f32::<LittleEndian>(item.normal.z));
+            try!(buffer.write_f32::<LittleEndian>(item.binormal.x));
+            try!(buffer.write_f32::<LittleEndian>(item.binormal.y));
+            try!(buffer.write_f32::<LittleEndian>(item.binormal.z));
+        }
+        Ok(())
+    }
+}
+
+impl Message for ObjectGrabUpdate {
+    fn write_to<W: Write>(&self, buffer: &mut W) -> WriteMessageResult {
+        // Write the message number.
+        try!(buffer.write(&[0xff, 0xff, 0x00, 0x76]));
+        // Block AgentData
+        try!(buffer.write(self.agent_data.agent_id.as_bytes()));
+        try!(buffer.write(self.agent_data.session_id.as_bytes()));
+        // Block ObjectData
+        try!(buffer.write(self.object_data.object_id.as_bytes()));
+        try!(buffer.write_f32::<LittleEndian>(self.object_data.grab_offset_initial.x));
+        try!(buffer.write_f32::<LittleEndian>(self.object_data.grab_offset_initial.y));
+        try!(buffer.write_f32::<LittleEndian>(self.object_data.grab_offset_initial.z));
+        try!(buffer.write_f32::<LittleEndian>(self.object_data.grab_position.x));
+        try!(buffer.write_f32::<LittleEndian>(self.object_data.grab_position.y));
+        try!(buffer.write_f32::<LittleEndian>(self.object_data.grab_position.z));
+        try!(buffer.write_u32::<LittleEndian>(self.object_data.time_since_last));
+        // Block SurfaceInfo
+        try!(buffer.write_u8(self.surface_info.len() as u8));
+        for item in &self.surface_info {
+            try!(buffer.write_f32::<LittleEndian>(item.uv_coord.x));
+            try!(buffer.write_f32::<LittleEndian>(item.uv_coord.y));
+            try!(buffer.write_f32::<LittleEndian>(item.uv_coord.z));
+            try!(buffer.write_f32::<LittleEndian>(item.st_coord.x));
+            try!(buffer.write_f32::<LittleEndian>(item.st_coord.y));
+            try!(buffer.write_f32::<LittleEndian>(item.st_coord.z));
+            try!(buffer.write_i32::<LittleEndian>(item.face_index));
+            try!(buffer.write_f32::<LittleEndian>(item.position.x));
+            try!(buffer.write_f32::<LittleEndian>(item.position.y));
+            try!(buffer.write_f32::<LittleEndian>(item.position.z));
+            try!(buffer.write_f32::<LittleEndian>(item.normal.x));
+            try!(buffer.write_f32::<LittleEndian>(item.normal.y));
+            try!(buffer.write_f32::<LittleEndian>(item.normal.z));
+            try!(buffer.write_f32::<LittleEndian>(item.binormal.x));
+            try!(buffer.write_f32::<LittleEndian>(item.binormal.y));
+            try!(buffer.write_f32::<LittleEndian>(item.binormal.z));
+        }
+        Ok(())
+    }
+}
+
+impl Message for ObjectDeGrab {
+    fn write_to<W: Write>(&self, buffer: &mut W) -> WriteMessageResult {
+        // Write the message number.
+        try!(buffer.write(&[0xff, 0xff, 0x00, 0x77]));
+        // Block AgentData
+        try!(buffer.write(self.agent_data.agent_id.as_bytes()));
+        try!(buffer.write(self.agent_data.session_id.as_bytes()));
+        // Block ObjectData
+        try!(buffer.write_u32::<LittleEndian>(self.object_data.local_id));
+        // Block SurfaceInfo
+        try!(buffer.write_u8(self.surface_info.len() as u8));
+        for item in &self.surface_info {
+            try!(buffer.write_f32::<LittleEndian>(item.uv_coord.x));
+            try!(buffer.write_f32::<LittleEndian>(item.uv_coord.y));
+            try!(buffer.write_f32::<LittleEndian>(item.uv_coord.z));
+            try!(buffer.write_f32::<LittleEndian>(item.st_coord.x));
+            try!(buffer.write_f32::<LittleEndian>(item.st_coord.y));
+            try!(buffer.write_f32::<LittleEndian>(item.st_coord.z));
+            try!(buffer.write_i32::<LittleEndian>(item.face_index));
+            try!(buffer.write_f32::<LittleEndian>(item.position.x));
+            try!(buffer.write_f32::<LittleEndian>(item.position.y));
+            try!(buffer.write_f32::<LittleEndian>(item.position.z));
+            try!(buffer.write_f32::<LittleEndian>(item.normal.x));
+            try!(buffer.write_f32::<LittleEndian>(item.normal.y));
+            try!(buffer.write_f32::<LittleEndian>(item.normal.z));
+            try!(buffer.write_f32::<LittleEndian>(item.binormal.x));
+            try!(buffer.write_f32::<LittleEndian>(item.binormal.y));
+            try!(buffer.write_f32::<LittleEndian>(item.binormal.z));
+        }
         Ok(())
     }
 }
@@ -9483,6 +10723,53 @@ impl Message for ObjectSpinStop {
         try!(buffer.write(self.agent_data.session_id.as_bytes()));
         // Block ObjectData
         try!(buffer.write(self.object_data.object_id.as_bytes()));
+        Ok(())
+    }
+}
+
+impl Message for ObjectExportSelected {
+    fn write_to<W: Write>(&self, buffer: &mut W) -> WriteMessageResult {
+        // Write the message number.
+        try!(buffer.write(&[0xff, 0xff, 0x00, 0x7b]));
+        // Block AgentData
+        try!(buffer.write(self.agent_data.agent_id.as_bytes()));
+        try!(buffer.write(self.agent_data.request_id.as_bytes()));
+        try!(buffer.write_i16::<LittleEndian>(self.agent_data.volume_detail));
+        // Block ObjectData
+        try!(buffer.write_u8(self.object_data.len() as u8));
+        for item in &self.object_data {
+            try!(buffer.write(item.object_id.as_bytes()));
+        }
+        Ok(())
+    }
+}
+
+impl Message for ModifyLand {
+    fn write_to<W: Write>(&self, buffer: &mut W) -> WriteMessageResult {
+        // Write the message number.
+        try!(buffer.write(&[0xff, 0xff, 0x00, 0x7c]));
+        // Block AgentData
+        try!(buffer.write(self.agent_data.agent_id.as_bytes()));
+        try!(buffer.write(self.agent_data.session_id.as_bytes()));
+        // Block ModifyBlock
+        try!(buffer.write_u8(self.modify_block.action));
+        try!(buffer.write_u8(self.modify_block.brush_size));
+        try!(buffer.write_f32::<LittleEndian>(self.modify_block.seconds));
+        try!(buffer.write_f32::<LittleEndian>(self.modify_block.height));
+        // Block ParcelData
+        try!(buffer.write_u8(self.parcel_data.len() as u8));
+        for item in &self.parcel_data {
+            try!(buffer.write_i32::<LittleEndian>(item.local_id));
+            try!(buffer.write_f32::<LittleEndian>(item.west));
+            try!(buffer.write_f32::<LittleEndian>(item.south));
+            try!(buffer.write_f32::<LittleEndian>(item.east));
+            try!(buffer.write_f32::<LittleEndian>(item.north));
+        }
+        // Block ModifyBlockExtended
+        try!(buffer.write_u8(self.modify_block_extended.len() as u8));
+        for item in &self.modify_block_extended {
+            try!(buffer.write_f32::<LittleEndian>(item.brush_size));
+        }
         Ok(())
     }
 }
@@ -9574,6 +10861,54 @@ impl Message for TrackAgent {
     }
 }
 
+impl Message for ViewerStats {
+    fn write_to<W: Write>(&self, buffer: &mut W) -> WriteMessageResult {
+        // Write the message number.
+        try!(buffer.write(&[0xff, 0xff, 0x00, 0x83]));
+        // Block AgentData
+        try!(buffer.write(self.agent_data.agent_id.as_bytes()));
+        try!(buffer.write(self.agent_data.session_id.as_bytes()));
+        try!(buffer.write(&self.agent_data.ip.octets()));
+        try!(buffer.write_u32::<LittleEndian>(self.agent_data.start_time));
+        try!(buffer.write_f32::<LittleEndian>(self.agent_data.run_time));
+        try!(buffer.write_f32::<LittleEndian>(self.agent_data.sim_fps));
+        try!(buffer.write_f32::<LittleEndian>(self.agent_data.fps));
+        try!(buffer.write_u8(self.agent_data.agents_in_view));
+        try!(buffer.write_f32::<LittleEndian>(self.agent_data.ping));
+        try!(buffer.write_f64::<LittleEndian>(self.agent_data.meters_traveled));
+        try!(buffer.write_i32::<LittleEndian>(self.agent_data.regions_visited));
+        try!(buffer.write_u32::<LittleEndian>(self.agent_data.sys_ram));
+        try!(buffer.write(&self.agent_data.sys_os[..]));
+        try!(buffer.write(&self.agent_data.sys_cpu[..]));
+        try!(buffer.write(&self.agent_data.sys_gpu[..]));
+        // Block DownloadTotals
+        try!(buffer.write_u32::<LittleEndian>(self.download_totals.world));
+        try!(buffer.write_u32::<LittleEndian>(self.download_totals.objects));
+        try!(buffer.write_u32::<LittleEndian>(self.download_totals.textures));
+        // Block NetStats
+        for i in 0..2 {
+            try!(buffer.write_u32::<LittleEndian>(self.net_stats[i].bytes));
+            try!(buffer.write_u32::<LittleEndian>(self.net_stats[i].packets));
+            try!(buffer.write_u32::<LittleEndian>(self.net_stats[i].compressed));
+            try!(buffer.write_u32::<LittleEndian>(self.net_stats[i].savings));
+        }
+        // Block FailStats
+        try!(buffer.write_u32::<LittleEndian>(self.fail_stats.send_packet));
+        try!(buffer.write_u32::<LittleEndian>(self.fail_stats.dropped));
+        try!(buffer.write_u32::<LittleEndian>(self.fail_stats.resent));
+        try!(buffer.write_u32::<LittleEndian>(self.fail_stats.failed_resends));
+        try!(buffer.write_u32::<LittleEndian>(self.fail_stats.off_circuit));
+        try!(buffer.write_u32::<LittleEndian>(self.fail_stats.invalid));
+        // Block MiscStats
+        try!(buffer.write_u8(self.misc_stats.len() as u8));
+        for item in &self.misc_stats {
+            try!(buffer.write_u32::<LittleEndian>(item.type_));
+            try!(buffer.write_f64::<LittleEndian>(item.value));
+        }
+        Ok(())
+    }
+}
+
 impl Message for ScriptAnswerYes {
     fn write_to<W: Write>(&self, buffer: &mut W) -> WriteMessageResult {
         // Write the message number.
@@ -9615,6 +10950,22 @@ impl Message for UserReport {
     }
 }
 
+impl Message for AlertMessage {
+    fn write_to<W: Write>(&self, buffer: &mut W) -> WriteMessageResult {
+        // Write the message number.
+        try!(buffer.write(&[0xff, 0xff, 0x00, 0x86]));
+        // Block AlertData
+        try!(buffer.write(&self.alert_data.message[..]));
+        // Block AlertInfo
+        try!(buffer.write_u8(self.alert_info.len() as u8));
+        for item in &self.alert_info {
+            try!(buffer.write(&item.message[..]));
+            try!(buffer.write(&item.extra_params[..]));
+        }
+        Ok(())
+    }
+}
+
 impl Message for AgentAlertMessage {
     fn write_to<W: Write>(&self, buffer: &mut W) -> WriteMessageResult {
         // Write the message number.
@@ -9624,6 +10975,23 @@ impl Message for AgentAlertMessage {
         // Block AlertData
         try!(buffer.write_u8(self.alert_data.modal as u8));
         try!(buffer.write(&self.alert_data.message[..]));
+        Ok(())
+    }
+}
+
+impl Message for MeanCollisionAlert {
+    fn write_to<W: Write>(&self, buffer: &mut W) -> WriteMessageResult {
+        // Write the message number.
+        try!(buffer.write(&[0xff, 0xff, 0x00, 0x88]));
+        // Block MeanCollision
+        try!(buffer.write_u8(self.mean_collision.len() as u8));
+        for item in &self.mean_collision {
+            try!(buffer.write(item.victim.as_bytes()));
+            try!(buffer.write(item.perp.as_bytes()));
+            try!(buffer.write_u32::<LittleEndian>(item.time));
+            try!(buffer.write_f32::<LittleEndian>(item.mag));
+            try!(buffer.write_u8(item.type_));
+        }
         Ok(())
     }
 }
@@ -9663,6 +11031,27 @@ impl Message for ChatFromSimulator {
         try!(buffer.write_f32::<LittleEndian>(self.chat_data.position.y));
         try!(buffer.write_f32::<LittleEndian>(self.chat_data.position.z));
         try!(buffer.write(&self.chat_data.message[..]));
+        Ok(())
+    }
+}
+
+impl Message for SimStats {
+    fn write_to<W: Write>(&self, buffer: &mut W) -> WriteMessageResult {
+        // Write the message number.
+        try!(buffer.write(&[0xff, 0xff, 0x00, 0x8c]));
+        // Block Region
+        try!(buffer.write_u32::<LittleEndian>(self.region.region_x));
+        try!(buffer.write_u32::<LittleEndian>(self.region.region_y));
+        try!(buffer.write_u32::<LittleEndian>(self.region.region_flags));
+        try!(buffer.write_u32::<LittleEndian>(self.region.object_capacity));
+        // Block Stat
+        try!(buffer.write_u8(self.stat.len() as u8));
+        for item in &self.stat {
+            try!(buffer.write_u32::<LittleEndian>(item.stat_id));
+            try!(buffer.write_f32::<LittleEndian>(item.stat_value));
+        }
+        // Block PidStat
+        try!(buffer.write_i32::<LittleEndian>(self.pid_stat.pid));
         Ok(())
     }
 }
@@ -9826,6 +11215,29 @@ impl Message for RegionHandshakeReply {
     }
 }
 
+impl Message for CoarseLocationUpdate {
+    fn write_to<W: Write>(&self, buffer: &mut W) -> WriteMessageResult {
+        // Write the message number.
+        try!(buffer.write(&[0xff, 0x06]));
+        // Block Location
+        try!(buffer.write_u8(self.location.len() as u8));
+        for item in &self.location {
+            try!(buffer.write_u8(item.x));
+            try!(buffer.write_u8(item.y));
+            try!(buffer.write_u8(item.z));
+        }
+        // Block Index
+        try!(buffer.write_i16::<LittleEndian>(self.index.you));
+        try!(buffer.write_i16::<LittleEndian>(self.index.prey));
+        // Block AgentData
+        try!(buffer.write_u8(self.agent_data.len() as u8));
+        for item in &self.agent_data {
+            try!(buffer.write(item.agent_id.as_bytes()));
+        }
+        Ok(())
+    }
+}
+
 impl Message for ImageData {
     fn write_to<W: Write>(&self, buffer: &mut W) -> WriteMessageResult {
         // Write the message number.
@@ -9862,6 +11274,138 @@ impl Message for LayerData {
         try!(buffer.write_u8(self.layer_id.type_));
         // Block LayerData
         try!(buffer.write(&self.layer_data.data[..]));
+        Ok(())
+    }
+}
+
+impl Message for ObjectUpdate {
+    fn write_to<W: Write>(&self, buffer: &mut W) -> WriteMessageResult {
+        // Write the message number.
+        try!(buffer.write(&[0x0c]));
+        // Block RegionData
+        try!(buffer.write_u64::<LittleEndian>(self.region_data.region_handle));
+        try!(buffer.write_u16::<LittleEndian>(self.region_data.time_dilation));
+        // Block ObjectData
+        try!(buffer.write_u8(self.object_data.len() as u8));
+        for item in &self.object_data {
+            try!(buffer.write_u32::<LittleEndian>(item.id));
+            try!(buffer.write_u8(item.state));
+            try!(buffer.write(item.full_id.as_bytes()));
+            try!(buffer.write_u32::<LittleEndian>(item.crc));
+            try!(buffer.write_u8(item.p_code));
+            try!(buffer.write_u8(item.material));
+            try!(buffer.write_u8(item.click_action));
+            try!(buffer.write_f32::<LittleEndian>(item.scale.x));
+            try!(buffer.write_f32::<LittleEndian>(item.scale.y));
+            try!(buffer.write_f32::<LittleEndian>(item.scale.z));
+            try!(buffer.write(&item.object_data[..]));
+            try!(buffer.write_u32::<LittleEndian>(item.parent_id));
+            try!(buffer.write_u32::<LittleEndian>(item.update_flags));
+            try!(buffer.write_u8(item.path_curve));
+            try!(buffer.write_u8(item.profile_curve));
+            try!(buffer.write_u16::<LittleEndian>(item.path_begin));
+            try!(buffer.write_u16::<LittleEndian>(item.path_end));
+            try!(buffer.write_u8(item.path_scale_x));
+            try!(buffer.write_u8(item.path_scale_y));
+            try!(buffer.write_u8(item.path_shear_x));
+            try!(buffer.write_u8(item.path_shear_y));
+            try!(buffer.write_i8(item.path_twist));
+            try!(buffer.write_i8(item.path_twist_begin));
+            try!(buffer.write_i8(item.path_radius_offset));
+            try!(buffer.write_i8(item.path_taper_x));
+            try!(buffer.write_i8(item.path_taper_y));
+            try!(buffer.write_u8(item.path_revolutions));
+            try!(buffer.write_i8(item.path_skew));
+            try!(buffer.write_u16::<LittleEndian>(item.profile_begin));
+            try!(buffer.write_u16::<LittleEndian>(item.profile_end));
+            try!(buffer.write_u16::<LittleEndian>(item.profile_hollow));
+            try!(buffer.write(&item.texture_entry[..]));
+            try!(buffer.write(&item.texture_anim[..]));
+            try!(buffer.write(&item.name_value[..]));
+            try!(buffer.write(&item.data[..]));
+            try!(buffer.write(&item.text[..]));
+            try!(buffer.write(&item.text_color));
+            try!(buffer.write(&item.media_url[..]));
+            try!(buffer.write(&item.ps_block[..]));
+            try!(buffer.write(&item.extra_params[..]));
+            try!(buffer.write(item.sound.as_bytes()));
+            try!(buffer.write(item.owner_id.as_bytes()));
+            try!(buffer.write_f32::<LittleEndian>(item.gain));
+            try!(buffer.write_u8(item.flags));
+            try!(buffer.write_f32::<LittleEndian>(item.radius));
+            try!(buffer.write_u8(item.joint_type));
+            try!(buffer.write_f32::<LittleEndian>(item.joint_pivot.x));
+            try!(buffer.write_f32::<LittleEndian>(item.joint_pivot.y));
+            try!(buffer.write_f32::<LittleEndian>(item.joint_pivot.z));
+            try!(buffer.write_f32::<LittleEndian>(item.joint_axis_or_anchor.x));
+            try!(buffer.write_f32::<LittleEndian>(item.joint_axis_or_anchor.y));
+            try!(buffer.write_f32::<LittleEndian>(item.joint_axis_or_anchor.z));
+        }
+        Ok(())
+    }
+}
+
+impl Message for ObjectUpdateCompressed {
+    fn write_to<W: Write>(&self, buffer: &mut W) -> WriteMessageResult {
+        // Write the message number.
+        try!(buffer.write(&[0x0d]));
+        // Block RegionData
+        try!(buffer.write_u64::<LittleEndian>(self.region_data.region_handle));
+        try!(buffer.write_u16::<LittleEndian>(self.region_data.time_dilation));
+        // Block ObjectData
+        try!(buffer.write_u8(self.object_data.len() as u8));
+        for item in &self.object_data {
+            try!(buffer.write_u32::<LittleEndian>(item.update_flags));
+            try!(buffer.write(&item.data[..]));
+        }
+        Ok(())
+    }
+}
+
+impl Message for ObjectUpdateCached {
+    fn write_to<W: Write>(&self, buffer: &mut W) -> WriteMessageResult {
+        // Write the message number.
+        try!(buffer.write(&[0x0e]));
+        // Block RegionData
+        try!(buffer.write_u64::<LittleEndian>(self.region_data.region_handle));
+        try!(buffer.write_u16::<LittleEndian>(self.region_data.time_dilation));
+        // Block ObjectData
+        try!(buffer.write_u8(self.object_data.len() as u8));
+        for item in &self.object_data {
+            try!(buffer.write_u32::<LittleEndian>(item.id));
+            try!(buffer.write_u32::<LittleEndian>(item.crc));
+            try!(buffer.write_u32::<LittleEndian>(item.update_flags));
+        }
+        Ok(())
+    }
+}
+
+impl Message for ImprovedTerseObjectUpdate {
+    fn write_to<W: Write>(&self, buffer: &mut W) -> WriteMessageResult {
+        // Write the message number.
+        try!(buffer.write(&[0x0f]));
+        // Block RegionData
+        try!(buffer.write_u64::<LittleEndian>(self.region_data.region_handle));
+        try!(buffer.write_u16::<LittleEndian>(self.region_data.time_dilation));
+        // Block ObjectData
+        try!(buffer.write_u8(self.object_data.len() as u8));
+        for item in &self.object_data {
+            try!(buffer.write(&item.data[..]));
+            try!(buffer.write(&item.texture_entry[..]));
+        }
+        Ok(())
+    }
+}
+
+impl Message for KillObject {
+    fn write_to<W: Write>(&self, buffer: &mut W) -> WriteMessageResult {
+        // Write the message number.
+        try!(buffer.write(&[0x10]));
+        // Block ObjectData
+        try!(buffer.write_u8(self.object_data.len() as u8));
+        for item in &self.object_data {
+            try!(buffer.write_u32::<LittleEndian>(item.id));
+        }
         Ok(())
     }
 }
@@ -10044,6 +11588,50 @@ impl Message for AbortXfer {
     }
 }
 
+impl Message for AvatarAnimation {
+    fn write_to<W: Write>(&self, buffer: &mut W) -> WriteMessageResult {
+        // Write the message number.
+        try!(buffer.write(&[0x14]));
+        // Block Sender
+        try!(buffer.write(self.sender.id.as_bytes()));
+        // Block AnimationList
+        try!(buffer.write_u8(self.animation_list.len() as u8));
+        for item in &self.animation_list {
+            try!(buffer.write(item.anim_id.as_bytes()));
+            try!(buffer.write_i32::<LittleEndian>(item.anim_sequence_id));
+        }
+        // Block AnimationSourceList
+        try!(buffer.write_u8(self.animation_source_list.len() as u8));
+        for item in &self.animation_source_list {
+            try!(buffer.write(item.object_id.as_bytes()));
+        }
+        // Block PhysicalAvatarEventList
+        try!(buffer.write_u8(self.physical_avatar_event_list.len() as u8));
+        for item in &self.physical_avatar_event_list {
+            try!(buffer.write(&item.type_data[..]));
+        }
+        Ok(())
+    }
+}
+
+impl Message for AvatarAppearance {
+    fn write_to<W: Write>(&self, buffer: &mut W) -> WriteMessageResult {
+        // Write the message number.
+        try!(buffer.write(&[0xff, 0xff, 0x00, 0x9e]));
+        // Block Sender
+        try!(buffer.write(self.sender.id.as_bytes()));
+        try!(buffer.write_u8(self.sender.is_trial as u8));
+        // Block ObjectData
+        try!(buffer.write(&self.object_data.texture_entry[..]));
+        // Block VisualParam
+        try!(buffer.write_u8(self.visual_param.len() as u8));
+        for item in &self.visual_param {
+            try!(buffer.write_u8(item.param_value));
+        }
+        Ok(())
+    }
+}
+
 impl Message for AvatarSitResponse {
     fn write_to<W: Write>(&self, buffer: &mut W) -> WriteMessageResult {
         // Write the message number.
@@ -10070,6 +11658,22 @@ impl Message for AvatarSitResponse {
     }
 }
 
+impl Message for SetFollowCamProperties {
+    fn write_to<W: Write>(&self, buffer: &mut W) -> WriteMessageResult {
+        // Write the message number.
+        try!(buffer.write(&[0xff, 0xff, 0x00, 0x9f]));
+        // Block ObjectData
+        try!(buffer.write(self.object_data.object_id.as_bytes()));
+        // Block CameraProperty
+        try!(buffer.write_u8(self.camera_property.len() as u8));
+        for item in &self.camera_property {
+            try!(buffer.write_i32::<LittleEndian>(item.type_));
+            try!(buffer.write_f32::<LittleEndian>(item.value));
+        }
+        Ok(())
+    }
+}
+
 impl Message for ClearFollowCamProperties {
     fn write_to<W: Write>(&self, buffer: &mut W) -> WriteMessageResult {
         // Write the message number.
@@ -10089,6 +11693,45 @@ impl Message for CameraConstraint {
         try!(buffer.write_f32::<LittleEndian>(self.camera_collide_plane.plane.y));
         try!(buffer.write_f32::<LittleEndian>(self.camera_collide_plane.plane.z));
         try!(buffer.write_f32::<LittleEndian>(self.camera_collide_plane.plane.w));
+        Ok(())
+    }
+}
+
+impl Message for ObjectProperties {
+    fn write_to<W: Write>(&self, buffer: &mut W) -> WriteMessageResult {
+        // Write the message number.
+        try!(buffer.write(&[0xff, 0x09]));
+        // Block ObjectData
+        try!(buffer.write_u8(self.object_data.len() as u8));
+        for item in &self.object_data {
+            try!(buffer.write(item.object_id.as_bytes()));
+            try!(buffer.write(item.creator_id.as_bytes()));
+            try!(buffer.write(item.owner_id.as_bytes()));
+            try!(buffer.write(item.group_id.as_bytes()));
+            try!(buffer.write_u64::<LittleEndian>(item.creation_date));
+            try!(buffer.write_u32::<LittleEndian>(item.base_mask));
+            try!(buffer.write_u32::<LittleEndian>(item.owner_mask));
+            try!(buffer.write_u32::<LittleEndian>(item.group_mask));
+            try!(buffer.write_u32::<LittleEndian>(item.everyone_mask));
+            try!(buffer.write_u32::<LittleEndian>(item.next_owner_mask));
+            try!(buffer.write_i32::<LittleEndian>(item.ownership_cost));
+            try!(buffer.write_u8(item.sale_type));
+            try!(buffer.write_i32::<LittleEndian>(item.sale_price));
+            try!(buffer.write_u8(item.aggregate_perms));
+            try!(buffer.write_u8(item.aggregate_perm_textures));
+            try!(buffer.write_u8(item.aggregate_perm_textures_owner));
+            try!(buffer.write_u32::<LittleEndian>(item.category));
+            try!(buffer.write_i16::<LittleEndian>(item.inventory_serial));
+            try!(buffer.write(item.item_id.as_bytes()));
+            try!(buffer.write(item.folder_id.as_bytes()));
+            try!(buffer.write(item.from_task_id.as_bytes()));
+            try!(buffer.write(item.last_owner_id.as_bytes()));
+            try!(buffer.write(&item.name[..]));
+            try!(buffer.write(&item.description[..]));
+            try!(buffer.write(&item.touch_name[..]));
+            try!(buffer.write(&item.sit_name[..]));
+            try!(buffer.write(&item.texture_id[..]));
+        }
         Ok(())
     }
 }
@@ -10124,6 +11767,22 @@ impl Message for RequestPayPrice {
         try!(buffer.write(&[0xff, 0xff, 0x00, 0xa1]));
         // Block ObjectData
         try!(buffer.write(self.object_data.object_id.as_bytes()));
+        Ok(())
+    }
+}
+
+impl Message for PayPriceReply {
+    fn write_to<W: Write>(&self, buffer: &mut W) -> WriteMessageResult {
+        // Write the message number.
+        try!(buffer.write(&[0xff, 0xff, 0x00, 0xa2]));
+        // Block ObjectData
+        try!(buffer.write(self.object_data.object_id.as_bytes()));
+        try!(buffer.write_i32::<LittleEndian>(self.object_data.default_pay_price));
+        // Block ButtonData
+        try!(buffer.write_u8(self.button_data.len() as u8));
+        for item in &self.button_data {
+            try!(buffer.write_i32::<LittleEndian>(item.pay_button));
+        }
         Ok(())
     }
 }
@@ -10164,6 +11823,19 @@ impl Message for GodKickUser {
         try!(buffer.write(self.user_info.agent_id.as_bytes()));
         try!(buffer.write_u32::<LittleEndian>(self.user_info.kick_flags));
         try!(buffer.write(&self.user_info.reason[..]));
+        Ok(())
+    }
+}
+
+impl Message for SystemKickUser {
+    fn write_to<W: Write>(&self, buffer: &mut W) -> WriteMessageResult {
+        // Write the message number.
+        try!(buffer.write(&[0xff, 0xff, 0x00, 0xa6]));
+        // Block AgentInfo
+        try!(buffer.write_u8(self.agent_info.len() as u8));
+        for item in &self.agent_info {
+            try!(buffer.write(item.agent_id.as_bytes()));
+        }
         Ok(())
     }
 }
@@ -10259,6 +11931,29 @@ impl Message for AvatarInterestsReply {
     }
 }
 
+impl Message for AvatarGroupsReply {
+    fn write_to<W: Write>(&self, buffer: &mut W) -> WriteMessageResult {
+        // Write the message number.
+        try!(buffer.write(&[0xff, 0xff, 0x00, 0xad]));
+        // Block AgentData
+        try!(buffer.write(self.agent_data.agent_id.as_bytes()));
+        try!(buffer.write(self.agent_data.avatar_id.as_bytes()));
+        // Block GroupData
+        try!(buffer.write_u8(self.group_data.len() as u8));
+        for item in &self.group_data {
+            try!(buffer.write_u64::<LittleEndian>(item.group_powers));
+            try!(buffer.write_u8(item.accept_notices as u8));
+            try!(buffer.write(&item.group_title[..]));
+            try!(buffer.write(item.group_id.as_bytes()));
+            try!(buffer.write(&item.group_name[..]));
+            try!(buffer.write(item.group_insignia_id.as_bytes()));
+        }
+        // Block NewGroupData
+        try!(buffer.write_u8(self.new_group_data.list_in_profile as u8));
+        Ok(())
+    }
+}
+
 impl Message for AvatarPropertiesUpdate {
     fn write_to<W: Write>(&self, buffer: &mut W) -> WriteMessageResult {
         // Write the message number.
@@ -10318,6 +12013,23 @@ impl Message for AvatarNotesUpdate {
         // Block Data
         try!(buffer.write(self.data.target_id.as_bytes()));
         try!(buffer.write(&self.data.notes[..]));
+        Ok(())
+    }
+}
+
+impl Message for AvatarPicksReply {
+    fn write_to<W: Write>(&self, buffer: &mut W) -> WriteMessageResult {
+        // Write the message number.
+        try!(buffer.write(&[0xff, 0xff, 0x00, 0xb2]));
+        // Block AgentData
+        try!(buffer.write(self.agent_data.agent_id.as_bytes()));
+        try!(buffer.write(self.agent_data.target_id.as_bytes()));
+        // Block Data
+        try!(buffer.write_u8(self.data.len() as u8));
+        for item in &self.data {
+            try!(buffer.write(item.pick_id.as_bytes()));
+            try!(buffer.write(&item.pick_name[..]));
+        }
         Ok(())
     }
 }
@@ -10492,6 +12204,47 @@ impl Message for ScriptQuestion {
         try!(buffer.write(&self.data.object_name[..]));
         try!(buffer.write(&self.data.object_owner[..]));
         try!(buffer.write_i32::<LittleEndian>(self.data.questions));
+        Ok(())
+    }
+}
+
+impl Message for ScriptControlChange {
+    fn write_to<W: Write>(&self, buffer: &mut W) -> WriteMessageResult {
+        // Write the message number.
+        try!(buffer.write(&[0xff, 0xff, 0x00, 0xbd]));
+        // Block Data
+        try!(buffer.write_u8(self.data.len() as u8));
+        for item in &self.data {
+            try!(buffer.write_u8(item.take_controls as u8));
+            try!(buffer.write_u32::<LittleEndian>(item.controls));
+            try!(buffer.write_u8(item.pass_to_agent as u8));
+        }
+        Ok(())
+    }
+}
+
+impl Message for ScriptDialog {
+    fn write_to<W: Write>(&self, buffer: &mut W) -> WriteMessageResult {
+        // Write the message number.
+        try!(buffer.write(&[0xff, 0xff, 0x00, 0xbe]));
+        // Block Data
+        try!(buffer.write(self.data.object_id.as_bytes()));
+        try!(buffer.write(&self.data.first_name[..]));
+        try!(buffer.write(&self.data.last_name[..]));
+        try!(buffer.write(&self.data.object_name[..]));
+        try!(buffer.write(&self.data.message[..]));
+        try!(buffer.write_i32::<LittleEndian>(self.data.chat_channel));
+        try!(buffer.write(self.data.image_id.as_bytes()));
+        // Block Buttons
+        try!(buffer.write_u8(self.buttons.len() as u8));
+        for item in &self.buttons {
+            try!(buffer.write(&item.button_label[..]));
+        }
+        // Block OwnerData
+        try!(buffer.write_u8(self.owner_data.len() as u8));
+        for item in &self.owner_data {
+            try!(buffer.write(item.owner_id.as_bytes()));
+        }
         Ok(())
     }
 }
@@ -10715,6 +12468,30 @@ impl Message for ParcelPropertiesUpdate {
     }
 }
 
+impl Message for ParcelReturnObjects {
+    fn write_to<W: Write>(&self, buffer: &mut W) -> WriteMessageResult {
+        // Write the message number.
+        try!(buffer.write(&[0xff, 0xff, 0x00, 0xc7]));
+        // Block AgentData
+        try!(buffer.write(self.agent_data.agent_id.as_bytes()));
+        try!(buffer.write(self.agent_data.session_id.as_bytes()));
+        // Block ParcelData
+        try!(buffer.write_i32::<LittleEndian>(self.parcel_data.local_id));
+        try!(buffer.write_u32::<LittleEndian>(self.parcel_data.return_type));
+        // Block TaskIDs
+        try!(buffer.write_u8(self.task_i_ds.len() as u8));
+        for item in &self.task_i_ds {
+            try!(buffer.write(item.task_id.as_bytes()));
+        }
+        // Block OwnerIDs
+        try!(buffer.write_u8(self.owner_i_ds.len() as u8));
+        for item in &self.owner_i_ds {
+            try!(buffer.write(item.owner_id.as_bytes()));
+        }
+        Ok(())
+    }
+}
+
 impl Message for ParcelSetOtherCleanTime {
     fn write_to<W: Write>(&self, buffer: &mut W) -> WriteMessageResult {
         // Write the message number.
@@ -10725,6 +12502,49 @@ impl Message for ParcelSetOtherCleanTime {
         // Block ParcelData
         try!(buffer.write_i32::<LittleEndian>(self.parcel_data.local_id));
         try!(buffer.write_i32::<LittleEndian>(self.parcel_data.other_clean_time));
+        Ok(())
+    }
+}
+
+impl Message for ParcelDisableObjects {
+    fn write_to<W: Write>(&self, buffer: &mut W) -> WriteMessageResult {
+        // Write the message number.
+        try!(buffer.write(&[0xff, 0xff, 0x00, 0xc9]));
+        // Block AgentData
+        try!(buffer.write(self.agent_data.agent_id.as_bytes()));
+        try!(buffer.write(self.agent_data.session_id.as_bytes()));
+        // Block ParcelData
+        try!(buffer.write_i32::<LittleEndian>(self.parcel_data.local_id));
+        try!(buffer.write_u32::<LittleEndian>(self.parcel_data.return_type));
+        // Block TaskIDs
+        try!(buffer.write_u8(self.task_i_ds.len() as u8));
+        for item in &self.task_i_ds {
+            try!(buffer.write(item.task_id.as_bytes()));
+        }
+        // Block OwnerIDs
+        try!(buffer.write_u8(self.owner_i_ds.len() as u8));
+        for item in &self.owner_i_ds {
+            try!(buffer.write(item.owner_id.as_bytes()));
+        }
+        Ok(())
+    }
+}
+
+impl Message for ParcelSelectObjects {
+    fn write_to<W: Write>(&self, buffer: &mut W) -> WriteMessageResult {
+        // Write the message number.
+        try!(buffer.write(&[0xff, 0xff, 0x00, 0xca]));
+        // Block AgentData
+        try!(buffer.write(self.agent_data.agent_id.as_bytes()));
+        try!(buffer.write(self.agent_data.session_id.as_bytes()));
+        // Block ParcelData
+        try!(buffer.write_i32::<LittleEndian>(self.parcel_data.local_id));
+        try!(buffer.write_u32::<LittleEndian>(self.parcel_data.return_type));
+        // Block ReturnIDs
+        try!(buffer.write_u8(self.return_i_ds.len() as u8));
+        for item in &self.return_i_ds {
+            try!(buffer.write(item.return_id.as_bytes()));
+        }
         Ok(())
     }
 }
@@ -10749,6 +12569,21 @@ impl Message for EstateCovenantReply {
         try!(buffer.write_u32::<LittleEndian>(self.data.covenant_timestamp));
         try!(buffer.write(&self.data.estate_name[..]));
         try!(buffer.write(self.data.estate_owner_id.as_bytes()));
+        Ok(())
+    }
+}
+
+impl Message for ForceObjectSelect {
+    fn write_to<W: Write>(&self, buffer: &mut W) -> WriteMessageResult {
+        // Write the message number.
+        try!(buffer.write(&[0xff, 0xff, 0x00, 0xcd]));
+        // Block Header
+        try!(buffer.write_u8(self.header.reset_list as u8));
+        // Block Data
+        try!(buffer.write_u8(self.data.len() as u8));
+        for item in &self.data {
+            try!(buffer.write_u32::<LittleEndian>(item.local_id));
+        }
         Ok(())
     }
 }
@@ -10789,6 +12624,29 @@ impl Message for ParcelReclaim {
         try!(buffer.write(self.agent_data.session_id.as_bytes()));
         // Block Data
         try!(buffer.write_i32::<LittleEndian>(self.data.local_id));
+        Ok(())
+    }
+}
+
+impl Message for ParcelClaim {
+    fn write_to<W: Write>(&self, buffer: &mut W) -> WriteMessageResult {
+        // Write the message number.
+        try!(buffer.write(&[0xff, 0xff, 0x00, 0xd1]));
+        // Block AgentData
+        try!(buffer.write(self.agent_data.agent_id.as_bytes()));
+        try!(buffer.write(self.agent_data.session_id.as_bytes()));
+        // Block Data
+        try!(buffer.write(self.data.group_id.as_bytes()));
+        try!(buffer.write_u8(self.data.is_group_owned as u8));
+        try!(buffer.write_u8(self.data.final_ as u8));
+        // Block ParcelData
+        try!(buffer.write_u8(self.parcel_data.len() as u8));
+        for item in &self.parcel_data {
+            try!(buffer.write_f32::<LittleEndian>(item.west));
+            try!(buffer.write_f32::<LittleEndian>(item.south));
+            try!(buffer.write_f32::<LittleEndian>(item.east));
+            try!(buffer.write_f32::<LittleEndian>(item.north));
+        }
         Ok(())
     }
 }
@@ -10887,6 +12745,50 @@ impl Message for ParcelAccessListRequest {
     }
 }
 
+impl Message for ParcelAccessListReply {
+    fn write_to<W: Write>(&self, buffer: &mut W) -> WriteMessageResult {
+        // Write the message number.
+        try!(buffer.write(&[0xff, 0xff, 0x00, 0xd8]));
+        // Block Data
+        try!(buffer.write(self.data.agent_id.as_bytes()));
+        try!(buffer.write_i32::<LittleEndian>(self.data.sequence_id));
+        try!(buffer.write_u32::<LittleEndian>(self.data.flags));
+        try!(buffer.write_i32::<LittleEndian>(self.data.local_id));
+        // Block List
+        try!(buffer.write_u8(self.list.len() as u8));
+        for item in &self.list {
+            try!(buffer.write(item.id.as_bytes()));
+            try!(buffer.write_i32::<LittleEndian>(item.time));
+            try!(buffer.write_u32::<LittleEndian>(item.flags));
+        }
+        Ok(())
+    }
+}
+
+impl Message for ParcelAccessListUpdate {
+    fn write_to<W: Write>(&self, buffer: &mut W) -> WriteMessageResult {
+        // Write the message number.
+        try!(buffer.write(&[0xff, 0xff, 0x00, 0xd9]));
+        // Block AgentData
+        try!(buffer.write(self.agent_data.agent_id.as_bytes()));
+        try!(buffer.write(self.agent_data.session_id.as_bytes()));
+        // Block Data
+        try!(buffer.write_u32::<LittleEndian>(self.data.flags));
+        try!(buffer.write_i32::<LittleEndian>(self.data.local_id));
+        try!(buffer.write(self.data.transaction_id.as_bytes()));
+        try!(buffer.write_i32::<LittleEndian>(self.data.sequence_id));
+        try!(buffer.write_i32::<LittleEndian>(self.data.sections));
+        // Block List
+        try!(buffer.write_u8(self.list.len() as u8));
+        for item in &self.list {
+            try!(buffer.write(item.id.as_bytes()));
+            try!(buffer.write_i32::<LittleEndian>(item.time));
+            try!(buffer.write_u32::<LittleEndian>(item.flags));
+        }
+        Ok(())
+    }
+}
+
 impl Message for ParcelDwellRequest {
     fn write_to<W: Write>(&self, buffer: &mut W) -> WriteMessageResult {
         // Write the message number.
@@ -10971,6 +12873,83 @@ impl Message for UpdateParcel {
     }
 }
 
+impl Message for RemoveParcel {
+    fn write_to<W: Write>(&self, buffer: &mut W) -> WriteMessageResult {
+        // Write the message number.
+        try!(buffer.write(&[0xff, 0xff, 0x00, 0xde]));
+        // Block ParcelData
+        try!(buffer.write_u8(self.parcel_data.len() as u8));
+        for item in &self.parcel_data {
+            try!(buffer.write(item.parcel_id.as_bytes()));
+        }
+        Ok(())
+    }
+}
+
+impl Message for MergeParcel {
+    fn write_to<W: Write>(&self, buffer: &mut W) -> WriteMessageResult {
+        // Write the message number.
+        try!(buffer.write(&[0xff, 0xff, 0x00, 0xdf]));
+        // Block MasterParcelData
+        try!(buffer.write(self.master_parcel_data.master_id.as_bytes()));
+        // Block SlaveParcelData
+        try!(buffer.write_u8(self.slave_parcel_data.len() as u8));
+        for item in &self.slave_parcel_data {
+            try!(buffer.write(item.slave_id.as_bytes()));
+        }
+        Ok(())
+    }
+}
+
+impl Message for LogParcelChanges {
+    fn write_to<W: Write>(&self, buffer: &mut W) -> WriteMessageResult {
+        // Write the message number.
+        try!(buffer.write(&[0xff, 0xff, 0x00, 0xe0]));
+        // Block AgentData
+        try!(buffer.write(self.agent_data.agent_id.as_bytes()));
+        // Block RegionData
+        try!(buffer.write_u64::<LittleEndian>(self.region_data.region_handle));
+        // Block ParcelData
+        try!(buffer.write_u8(self.parcel_data.len() as u8));
+        for item in &self.parcel_data {
+            try!(buffer.write(item.parcel_id.as_bytes()));
+            try!(buffer.write(item.owner_id.as_bytes()));
+            try!(buffer.write_u8(item.is_owner_group as u8));
+            try!(buffer.write_i32::<LittleEndian>(item.actual_area));
+            try!(buffer.write_i8(item.action));
+            try!(buffer.write(item.transaction_id.as_bytes()));
+        }
+        Ok(())
+    }
+}
+
+impl Message for CheckParcelSales {
+    fn write_to<W: Write>(&self, buffer: &mut W) -> WriteMessageResult {
+        // Write the message number.
+        try!(buffer.write(&[0xff, 0xff, 0x00, 0xe1]));
+        // Block RegionData
+        try!(buffer.write_u8(self.region_data.len() as u8));
+        for item in &self.region_data {
+            try!(buffer.write_u64::<LittleEndian>(item.region_handle));
+        }
+        Ok(())
+    }
+}
+
+impl Message for ParcelSales {
+    fn write_to<W: Write>(&self, buffer: &mut W) -> WriteMessageResult {
+        // Write the message number.
+        try!(buffer.write(&[0xff, 0xff, 0x00, 0xe2]));
+        // Block ParcelData
+        try!(buffer.write_u8(self.parcel_data.len() as u8));
+        for item in &self.parcel_data {
+            try!(buffer.write(item.parcel_id.as_bytes()));
+            try!(buffer.write(item.buyer_id.as_bytes()));
+        }
+        Ok(())
+    }
+}
+
 impl Message for ParcelGodMarkAsContent {
     fn write_to<W: Write>(&self, buffer: &mut W) -> WriteMessageResult {
         // Write the message number.
@@ -11023,6 +13002,114 @@ impl Message for ConfirmAuctionStart {
     }
 }
 
+impl Message for CompleteAuction {
+    fn write_to<W: Write>(&self, buffer: &mut W) -> WriteMessageResult {
+        // Write the message number.
+        try!(buffer.write(&[0xff, 0xff, 0x00, 0xe7]));
+        // Block ParcelData
+        try!(buffer.write_u8(self.parcel_data.len() as u8));
+        for item in &self.parcel_data {
+            try!(buffer.write(item.parcel_id.as_bytes()));
+        }
+        Ok(())
+    }
+}
+
+impl Message for CancelAuction {
+    fn write_to<W: Write>(&self, buffer: &mut W) -> WriteMessageResult {
+        // Write the message number.
+        try!(buffer.write(&[0xff, 0xff, 0x00, 0xe8]));
+        // Block ParcelData
+        try!(buffer.write_u8(self.parcel_data.len() as u8));
+        for item in &self.parcel_data {
+            try!(buffer.write(item.parcel_id.as_bytes()));
+        }
+        Ok(())
+    }
+}
+
+impl Message for CheckParcelAuctions {
+    fn write_to<W: Write>(&self, buffer: &mut W) -> WriteMessageResult {
+        // Write the message number.
+        try!(buffer.write(&[0xff, 0xff, 0x00, 0xe9]));
+        // Block RegionData
+        try!(buffer.write_u8(self.region_data.len() as u8));
+        for item in &self.region_data {
+            try!(buffer.write_u64::<LittleEndian>(item.region_handle));
+        }
+        Ok(())
+    }
+}
+
+impl Message for ParcelAuctions {
+    fn write_to<W: Write>(&self, buffer: &mut W) -> WriteMessageResult {
+        // Write the message number.
+        try!(buffer.write(&[0xff, 0xff, 0x00, 0xea]));
+        // Block ParcelData
+        try!(buffer.write_u8(self.parcel_data.len() as u8));
+        for item in &self.parcel_data {
+            try!(buffer.write(item.parcel_id.as_bytes()));
+            try!(buffer.write(item.winner_id.as_bytes()));
+        }
+        Ok(())
+    }
+}
+
+impl Message for UUIDNameRequest {
+    fn write_to<W: Write>(&self, buffer: &mut W) -> WriteMessageResult {
+        // Write the message number.
+        try!(buffer.write(&[0xff, 0xff, 0x00, 0xeb]));
+        // Block UUIDNameBlock
+        try!(buffer.write_u8(self.uuid_name_block.len() as u8));
+        for item in &self.uuid_name_block {
+            try!(buffer.write(item.id.as_bytes()));
+        }
+        Ok(())
+    }
+}
+
+impl Message for UUIDNameReply {
+    fn write_to<W: Write>(&self, buffer: &mut W) -> WriteMessageResult {
+        // Write the message number.
+        try!(buffer.write(&[0xff, 0xff, 0x00, 0xec]));
+        // Block UUIDNameBlock
+        try!(buffer.write_u8(self.uuid_name_block.len() as u8));
+        for item in &self.uuid_name_block {
+            try!(buffer.write(item.id.as_bytes()));
+            try!(buffer.write(&item.first_name[..]));
+            try!(buffer.write(&item.last_name[..]));
+        }
+        Ok(())
+    }
+}
+
+impl Message for UUIDGroupNameRequest {
+    fn write_to<W: Write>(&self, buffer: &mut W) -> WriteMessageResult {
+        // Write the message number.
+        try!(buffer.write(&[0xff, 0xff, 0x00, 0xed]));
+        // Block UUIDNameBlock
+        try!(buffer.write_u8(self.uuid_name_block.len() as u8));
+        for item in &self.uuid_name_block {
+            try!(buffer.write(item.id.as_bytes()));
+        }
+        Ok(())
+    }
+}
+
+impl Message for UUIDGroupNameReply {
+    fn write_to<W: Write>(&self, buffer: &mut W) -> WriteMessageResult {
+        // Write the message number.
+        try!(buffer.write(&[0xff, 0xff, 0x00, 0xee]));
+        // Block UUIDNameBlock
+        try!(buffer.write_u8(self.uuid_name_block.len() as u8));
+        for item in &self.uuid_name_block {
+            try!(buffer.write(item.id.as_bytes()));
+            try!(buffer.write(&item.group_name[..]));
+        }
+        Ok(())
+    }
+}
+
 impl Message for ChatPass {
     fn write_to<W: Write>(&self, buffer: &mut W) -> WriteMessageResult {
         // Write the message number.
@@ -11063,6 +13150,100 @@ impl Message for SimStatus {
         // Block SimStatus
         try!(buffer.write_u8(self.sim_status.can_accept_agents as u8));
         try!(buffer.write_u8(self.sim_status.can_accept_tasks as u8));
+        Ok(())
+    }
+}
+
+impl Message for ChildAgentUpdate {
+    fn write_to<W: Write>(&self, buffer: &mut W) -> WriteMessageResult {
+        // Write the message number.
+        try!(buffer.write(&[0x19]));
+        // Block AgentData
+        try!(buffer.write_u64::<LittleEndian>(self.agent_data.region_handle));
+        try!(buffer.write_u32::<LittleEndian>(self.agent_data.viewer_circuit_code));
+        try!(buffer.write(self.agent_data.agent_id.as_bytes()));
+        try!(buffer.write(self.agent_data.session_id.as_bytes()));
+        try!(buffer.write_f32::<LittleEndian>(self.agent_data.agent_pos.x));
+        try!(buffer.write_f32::<LittleEndian>(self.agent_data.agent_pos.y));
+        try!(buffer.write_f32::<LittleEndian>(self.agent_data.agent_pos.z));
+        try!(buffer.write_f32::<LittleEndian>(self.agent_data.agent_vel.x));
+        try!(buffer.write_f32::<LittleEndian>(self.agent_data.agent_vel.y));
+        try!(buffer.write_f32::<LittleEndian>(self.agent_data.agent_vel.z));
+        try!(buffer.write_f32::<LittleEndian>(self.agent_data.center.x));
+        try!(buffer.write_f32::<LittleEndian>(self.agent_data.center.y));
+        try!(buffer.write_f32::<LittleEndian>(self.agent_data.center.z));
+        try!(buffer.write_f32::<LittleEndian>(self.agent_data.size.x));
+        try!(buffer.write_f32::<LittleEndian>(self.agent_data.size.y));
+        try!(buffer.write_f32::<LittleEndian>(self.agent_data.size.z));
+        try!(buffer.write_f32::<LittleEndian>(self.agent_data.at_axis.x));
+        try!(buffer.write_f32::<LittleEndian>(self.agent_data.at_axis.y));
+        try!(buffer.write_f32::<LittleEndian>(self.agent_data.at_axis.z));
+        try!(buffer.write_f32::<LittleEndian>(self.agent_data.left_axis.x));
+        try!(buffer.write_f32::<LittleEndian>(self.agent_data.left_axis.y));
+        try!(buffer.write_f32::<LittleEndian>(self.agent_data.left_axis.z));
+        try!(buffer.write_f32::<LittleEndian>(self.agent_data.up_axis.x));
+        try!(buffer.write_f32::<LittleEndian>(self.agent_data.up_axis.y));
+        try!(buffer.write_f32::<LittleEndian>(self.agent_data.up_axis.z));
+        try!(buffer.write_u8(self.agent_data.changed_grid as u8));
+        try!(buffer.write_f32::<LittleEndian>(self.agent_data.far));
+        try!(buffer.write_f32::<LittleEndian>(self.agent_data.aspect));
+        try!(buffer.write(&self.agent_data.throttles[..]));
+        try!(buffer.write_u32::<LittleEndian>(self.agent_data.locomotion_state));
+        let normed_head_rotation = UnitQuaternion::new(&self.agent_data.head_rotation).unwrap();
+        try!(buffer.write_f32::<LittleEndian>(normed_head_rotation.i));
+        try!(buffer.write_f32::<LittleEndian>(normed_head_rotation.j));
+        try!(buffer.write_f32::<LittleEndian>(normed_head_rotation.k));
+        let normed_body_rotation = UnitQuaternion::new(&self.agent_data.body_rotation).unwrap();
+        try!(buffer.write_f32::<LittleEndian>(normed_body_rotation.i));
+        try!(buffer.write_f32::<LittleEndian>(normed_body_rotation.j));
+        try!(buffer.write_f32::<LittleEndian>(normed_body_rotation.k));
+        try!(buffer.write_u32::<LittleEndian>(self.agent_data.control_flags));
+        try!(buffer.write_f32::<LittleEndian>(self.agent_data.energy_level));
+        try!(buffer.write_u8(self.agent_data.god_level));
+        try!(buffer.write_u8(self.agent_data.always_run as u8));
+        try!(buffer.write(self.agent_data.prey_agent.as_bytes()));
+        try!(buffer.write_u8(self.agent_data.agent_access));
+        try!(buffer.write(&self.agent_data.agent_textures[..]));
+        try!(buffer.write(self.agent_data.active_group_id.as_bytes()));
+        // Block GroupData
+        try!(buffer.write_u8(self.group_data.len() as u8));
+        for item in &self.group_data {
+            try!(buffer.write(item.group_id.as_bytes()));
+            try!(buffer.write_u64::<LittleEndian>(item.group_powers));
+            try!(buffer.write_u8(item.accept_notices as u8));
+        }
+        // Block AnimationData
+        try!(buffer.write_u8(self.animation_data.len() as u8));
+        for item in &self.animation_data {
+            try!(buffer.write(item.animation.as_bytes()));
+            try!(buffer.write(item.object_id.as_bytes()));
+        }
+        // Block GranterBlock
+        try!(buffer.write_u8(self.granter_block.len() as u8));
+        for item in &self.granter_block {
+            try!(buffer.write(item.granter_id.as_bytes()));
+        }
+        // Block NVPairData
+        try!(buffer.write_u8(self.nv_pair_data.len() as u8));
+        for item in &self.nv_pair_data {
+            try!(buffer.write(&item.nv_pairs[..]));
+        }
+        // Block VisualParam
+        try!(buffer.write_u8(self.visual_param.len() as u8));
+        for item in &self.visual_param {
+            try!(buffer.write_u8(item.param_value));
+        }
+        // Block AgentAccess
+        try!(buffer.write_u8(self.agent_access.len() as u8));
+        for item in &self.agent_access {
+            try!(buffer.write_u8(item.agent_legacy_access));
+            try!(buffer.write_u8(item.agent_max_access));
+        }
+        // Block AgentInfo
+        try!(buffer.write_u8(self.agent_info.len() as u8));
+        for item in &self.agent_info {
+            try!(buffer.write_u32::<LittleEndian>(item.flags));
+        }
         Ok(())
     }
 }
@@ -11235,6 +13416,36 @@ impl Message for ScriptSensorRequest {
     }
 }
 
+impl Message for ScriptSensorReply {
+    fn write_to<W: Write>(&self, buffer: &mut W) -> WriteMessageResult {
+        // Write the message number.
+        try!(buffer.write(&[0xff, 0xff, 0x00, 0xf8]));
+        // Block Requester
+        try!(buffer.write(self.requester.source_id.as_bytes()));
+        // Block SensedData
+        try!(buffer.write_u8(self.sensed_data.len() as u8));
+        for item in &self.sensed_data {
+            try!(buffer.write(item.object_id.as_bytes()));
+            try!(buffer.write(item.owner_id.as_bytes()));
+            try!(buffer.write(item.group_id.as_bytes()));
+            try!(buffer.write_f32::<LittleEndian>(item.position.x));
+            try!(buffer.write_f32::<LittleEndian>(item.position.y));
+            try!(buffer.write_f32::<LittleEndian>(item.position.z));
+            try!(buffer.write_f32::<LittleEndian>(item.velocity.x));
+            try!(buffer.write_f32::<LittleEndian>(item.velocity.y));
+            try!(buffer.write_f32::<LittleEndian>(item.velocity.z));
+            let normed_rotation = UnitQuaternion::new(&item.rotation).unwrap();
+            try!(buffer.write_f32::<LittleEndian>(normed_rotation.i));
+            try!(buffer.write_f32::<LittleEndian>(normed_rotation.j));
+            try!(buffer.write_f32::<LittleEndian>(normed_rotation.k));
+            try!(buffer.write(&item.name[..]));
+            try!(buffer.write_i32::<LittleEndian>(item.type_));
+            try!(buffer.write_f32::<LittleEndian>(item.range));
+        }
+        Ok(())
+    }
+}
+
 impl Message for CompleteAgentMovement {
     fn write_to<W: Write>(&self, buffer: &mut W) -> WriteMessageResult {
         // Write the message number.
@@ -11293,6 +13504,22 @@ impl Message for LogoutRequest {
     }
 }
 
+impl Message for LogoutReply {
+    fn write_to<W: Write>(&self, buffer: &mut W) -> WriteMessageResult {
+        // Write the message number.
+        try!(buffer.write(&[0xff, 0xff, 0x00, 0xfd]));
+        // Block AgentData
+        try!(buffer.write(self.agent_data.agent_id.as_bytes()));
+        try!(buffer.write(self.agent_data.session_id.as_bytes()));
+        // Block InventoryData
+        try!(buffer.write_u8(self.inventory_data.len() as u8));
+        for item in &self.inventory_data {
+            try!(buffer.write(item.item_id.as_bytes()));
+        }
+        Ok(())
+    }
+}
+
 impl Message for ImprovedInstantMessage {
     fn write_to<W: Write>(&self, buffer: &mut W) -> WriteMessageResult {
         // Write the message number.
@@ -11330,6 +13557,24 @@ impl Message for RetrieveInstantMessages {
     }
 }
 
+impl Message for FindAgent {
+    fn write_to<W: Write>(&self, buffer: &mut W) -> WriteMessageResult {
+        // Write the message number.
+        try!(buffer.write(&[0xff, 0xff, 0x01, 0x00]));
+        // Block AgentBlock
+        try!(buffer.write(self.agent_block.hunter.as_bytes()));
+        try!(buffer.write(self.agent_block.prey.as_bytes()));
+        try!(buffer.write(&self.agent_block.space_ip.octets()));
+        // Block LocationBlock
+        try!(buffer.write_u8(self.location_block.len() as u8));
+        for item in &self.location_block {
+            try!(buffer.write_f64::<LittleEndian>(item.global_x));
+            try!(buffer.write_f64::<LittleEndian>(item.global_y));
+        }
+        Ok(())
+    }
+}
+
 impl Message for RequestGodlikePowers {
     fn write_to<W: Write>(&self, buffer: &mut W) -> WriteMessageResult {
         // Write the message number.
@@ -11354,6 +13599,66 @@ impl Message for GrantGodlikePowers {
         // Block GrantData
         try!(buffer.write_u8(self.grant_data.god_level));
         try!(buffer.write(self.grant_data.token.as_bytes()));
+        Ok(())
+    }
+}
+
+impl Message for GodlikeMessage {
+    fn write_to<W: Write>(&self, buffer: &mut W) -> WriteMessageResult {
+        // Write the message number.
+        try!(buffer.write(&[0xff, 0xff, 0x01, 0x03]));
+        // Block AgentData
+        try!(buffer.write(self.agent_data.agent_id.as_bytes()));
+        try!(buffer.write(self.agent_data.session_id.as_bytes()));
+        try!(buffer.write(self.agent_data.transaction_id.as_bytes()));
+        // Block MethodData
+        try!(buffer.write(&self.method_data.method[..]));
+        try!(buffer.write(self.method_data.invoice.as_bytes()));
+        // Block ParamList
+        try!(buffer.write_u8(self.param_list.len() as u8));
+        for item in &self.param_list {
+            try!(buffer.write(&item.parameter[..]));
+        }
+        Ok(())
+    }
+}
+
+impl Message for EstateOwnerMessage {
+    fn write_to<W: Write>(&self, buffer: &mut W) -> WriteMessageResult {
+        // Write the message number.
+        try!(buffer.write(&[0xff, 0xff, 0x01, 0x04]));
+        // Block AgentData
+        try!(buffer.write(self.agent_data.agent_id.as_bytes()));
+        try!(buffer.write(self.agent_data.session_id.as_bytes()));
+        try!(buffer.write(self.agent_data.transaction_id.as_bytes()));
+        // Block MethodData
+        try!(buffer.write(&self.method_data.method[..]));
+        try!(buffer.write(self.method_data.invoice.as_bytes()));
+        // Block ParamList
+        try!(buffer.write_u8(self.param_list.len() as u8));
+        for item in &self.param_list {
+            try!(buffer.write(&item.parameter[..]));
+        }
+        Ok(())
+    }
+}
+
+impl Message for GenericMessage {
+    fn write_to<W: Write>(&self, buffer: &mut W) -> WriteMessageResult {
+        // Write the message number.
+        try!(buffer.write(&[0xff, 0xff, 0x01, 0x05]));
+        // Block AgentData
+        try!(buffer.write(self.agent_data.agent_id.as_bytes()));
+        try!(buffer.write(self.agent_data.session_id.as_bytes()));
+        try!(buffer.write(self.agent_data.transaction_id.as_bytes()));
+        // Block MethodData
+        try!(buffer.write(&self.method_data.method[..]));
+        try!(buffer.write(self.method_data.invoice.as_bytes()));
+        // Block ParamList
+        try!(buffer.write_u8(self.param_list.len() as u8));
+        for item in &self.param_list {
+            try!(buffer.write(&item.parameter[..]));
+        }
         Ok(())
     }
 }
@@ -11401,6 +13706,174 @@ impl Message for RemoveMuteListEntry {
     }
 }
 
+impl Message for CopyInventoryFromNotecard {
+    fn write_to<W: Write>(&self, buffer: &mut W) -> WriteMessageResult {
+        // Write the message number.
+        try!(buffer.write(&[0xff, 0xff, 0x01, 0x09]));
+        // Block AgentData
+        try!(buffer.write(self.agent_data.agent_id.as_bytes()));
+        try!(buffer.write(self.agent_data.session_id.as_bytes()));
+        // Block NotecardData
+        try!(buffer.write(self.notecard_data.notecard_item_id.as_bytes()));
+        try!(buffer.write(self.notecard_data.object_id.as_bytes()));
+        // Block InventoryData
+        try!(buffer.write_u8(self.inventory_data.len() as u8));
+        for item in &self.inventory_data {
+            try!(buffer.write(item.item_id.as_bytes()));
+            try!(buffer.write(item.folder_id.as_bytes()));
+        }
+        Ok(())
+    }
+}
+
+impl Message for UpdateInventoryItem {
+    fn write_to<W: Write>(&self, buffer: &mut W) -> WriteMessageResult {
+        // Write the message number.
+        try!(buffer.write(&[0xff, 0xff, 0x01, 0x0a]));
+        // Block AgentData
+        try!(buffer.write(self.agent_data.agent_id.as_bytes()));
+        try!(buffer.write(self.agent_data.session_id.as_bytes()));
+        try!(buffer.write(self.agent_data.transaction_id.as_bytes()));
+        // Block InventoryData
+        try!(buffer.write_u8(self.inventory_data.len() as u8));
+        for item in &self.inventory_data {
+            try!(buffer.write(item.item_id.as_bytes()));
+            try!(buffer.write(item.folder_id.as_bytes()));
+            try!(buffer.write_u32::<LittleEndian>(item.callback_id));
+            try!(buffer.write(item.creator_id.as_bytes()));
+            try!(buffer.write(item.owner_id.as_bytes()));
+            try!(buffer.write(item.group_id.as_bytes()));
+            try!(buffer.write_u32::<LittleEndian>(item.base_mask));
+            try!(buffer.write_u32::<LittleEndian>(item.owner_mask));
+            try!(buffer.write_u32::<LittleEndian>(item.group_mask));
+            try!(buffer.write_u32::<LittleEndian>(item.everyone_mask));
+            try!(buffer.write_u32::<LittleEndian>(item.next_owner_mask));
+            try!(buffer.write_u8(item.group_owned as u8));
+            try!(buffer.write(item.transaction_id.as_bytes()));
+            try!(buffer.write_i8(item.type_));
+            try!(buffer.write_i8(item.inv_type));
+            try!(buffer.write_u32::<LittleEndian>(item.flags));
+            try!(buffer.write_u8(item.sale_type));
+            try!(buffer.write_i32::<LittleEndian>(item.sale_price));
+            try!(buffer.write(&item.name[..]));
+            try!(buffer.write(&item.description[..]));
+            try!(buffer.write_i32::<LittleEndian>(item.creation_date));
+            try!(buffer.write_u32::<LittleEndian>(item.crc));
+        }
+        Ok(())
+    }
+}
+
+impl Message for UpdateCreateInventoryItem {
+    fn write_to<W: Write>(&self, buffer: &mut W) -> WriteMessageResult {
+        // Write the message number.
+        try!(buffer.write(&[0xff, 0xff, 0x01, 0x0b]));
+        // Block AgentData
+        try!(buffer.write(self.agent_data.agent_id.as_bytes()));
+        try!(buffer.write_u8(self.agent_data.sim_approved as u8));
+        try!(buffer.write(self.agent_data.transaction_id.as_bytes()));
+        // Block InventoryData
+        try!(buffer.write_u8(self.inventory_data.len() as u8));
+        for item in &self.inventory_data {
+            try!(buffer.write(item.item_id.as_bytes()));
+            try!(buffer.write(item.folder_id.as_bytes()));
+            try!(buffer.write_u32::<LittleEndian>(item.callback_id));
+            try!(buffer.write(item.creator_id.as_bytes()));
+            try!(buffer.write(item.owner_id.as_bytes()));
+            try!(buffer.write(item.group_id.as_bytes()));
+            try!(buffer.write_u32::<LittleEndian>(item.base_mask));
+            try!(buffer.write_u32::<LittleEndian>(item.owner_mask));
+            try!(buffer.write_u32::<LittleEndian>(item.group_mask));
+            try!(buffer.write_u32::<LittleEndian>(item.everyone_mask));
+            try!(buffer.write_u32::<LittleEndian>(item.next_owner_mask));
+            try!(buffer.write_u8(item.group_owned as u8));
+            try!(buffer.write(item.asset_id.as_bytes()));
+            try!(buffer.write_i8(item.type_));
+            try!(buffer.write_i8(item.inv_type));
+            try!(buffer.write_u32::<LittleEndian>(item.flags));
+            try!(buffer.write_u8(item.sale_type));
+            try!(buffer.write_i32::<LittleEndian>(item.sale_price));
+            try!(buffer.write(&item.name[..]));
+            try!(buffer.write(&item.description[..]));
+            try!(buffer.write_i32::<LittleEndian>(item.creation_date));
+            try!(buffer.write_u32::<LittleEndian>(item.crc));
+        }
+        Ok(())
+    }
+}
+
+impl Message for MoveInventoryItem {
+    fn write_to<W: Write>(&self, buffer: &mut W) -> WriteMessageResult {
+        // Write the message number.
+        try!(buffer.write(&[0xff, 0xff, 0x01, 0x0c]));
+        // Block AgentData
+        try!(buffer.write(self.agent_data.agent_id.as_bytes()));
+        try!(buffer.write(self.agent_data.session_id.as_bytes()));
+        try!(buffer.write_u8(self.agent_data.stamp as u8));
+        // Block InventoryData
+        try!(buffer.write_u8(self.inventory_data.len() as u8));
+        for item in &self.inventory_data {
+            try!(buffer.write(item.item_id.as_bytes()));
+            try!(buffer.write(item.folder_id.as_bytes()));
+            try!(buffer.write(&item.new_name[..]));
+        }
+        Ok(())
+    }
+}
+
+impl Message for CopyInventoryItem {
+    fn write_to<W: Write>(&self, buffer: &mut W) -> WriteMessageResult {
+        // Write the message number.
+        try!(buffer.write(&[0xff, 0xff, 0x01, 0x0d]));
+        // Block AgentData
+        try!(buffer.write(self.agent_data.agent_id.as_bytes()));
+        try!(buffer.write(self.agent_data.session_id.as_bytes()));
+        // Block InventoryData
+        try!(buffer.write_u8(self.inventory_data.len() as u8));
+        for item in &self.inventory_data {
+            try!(buffer.write_u32::<LittleEndian>(item.callback_id));
+            try!(buffer.write(item.old_agent_id.as_bytes()));
+            try!(buffer.write(item.old_item_id.as_bytes()));
+            try!(buffer.write(item.new_folder_id.as_bytes()));
+            try!(buffer.write(&item.new_name[..]));
+        }
+        Ok(())
+    }
+}
+
+impl Message for RemoveInventoryItem {
+    fn write_to<W: Write>(&self, buffer: &mut W) -> WriteMessageResult {
+        // Write the message number.
+        try!(buffer.write(&[0xff, 0xff, 0x01, 0x0e]));
+        // Block AgentData
+        try!(buffer.write(self.agent_data.agent_id.as_bytes()));
+        try!(buffer.write(self.agent_data.session_id.as_bytes()));
+        // Block InventoryData
+        try!(buffer.write_u8(self.inventory_data.len() as u8));
+        for item in &self.inventory_data {
+            try!(buffer.write(item.item_id.as_bytes()));
+        }
+        Ok(())
+    }
+}
+
+impl Message for ChangeInventoryItemFlags {
+    fn write_to<W: Write>(&self, buffer: &mut W) -> WriteMessageResult {
+        // Write the message number.
+        try!(buffer.write(&[0xff, 0xff, 0x01, 0x0f]));
+        // Block AgentData
+        try!(buffer.write(self.agent_data.agent_id.as_bytes()));
+        try!(buffer.write(self.agent_data.session_id.as_bytes()));
+        // Block InventoryData
+        try!(buffer.write_u8(self.inventory_data.len() as u8));
+        for item in &self.inventory_data {
+            try!(buffer.write(item.item_id.as_bytes()));
+            try!(buffer.write_u32::<LittleEndian>(item.flags));
+        }
+        Ok(())
+    }
+}
+
 impl Message for SaveAssetIntoInventory {
     fn write_to<W: Write>(&self, buffer: &mut W) -> WriteMessageResult {
         // Write the message number.
@@ -11430,6 +13903,59 @@ impl Message for CreateInventoryFolder {
     }
 }
 
+impl Message for UpdateInventoryFolder {
+    fn write_to<W: Write>(&self, buffer: &mut W) -> WriteMessageResult {
+        // Write the message number.
+        try!(buffer.write(&[0xff, 0xff, 0x01, 0x12]));
+        // Block AgentData
+        try!(buffer.write(self.agent_data.agent_id.as_bytes()));
+        try!(buffer.write(self.agent_data.session_id.as_bytes()));
+        // Block FolderData
+        try!(buffer.write_u8(self.folder_data.len() as u8));
+        for item in &self.folder_data {
+            try!(buffer.write(item.folder_id.as_bytes()));
+            try!(buffer.write(item.parent_id.as_bytes()));
+            try!(buffer.write_i8(item.type_));
+            try!(buffer.write(&item.name[..]));
+        }
+        Ok(())
+    }
+}
+
+impl Message for MoveInventoryFolder {
+    fn write_to<W: Write>(&self, buffer: &mut W) -> WriteMessageResult {
+        // Write the message number.
+        try!(buffer.write(&[0xff, 0xff, 0x01, 0x13]));
+        // Block AgentData
+        try!(buffer.write(self.agent_data.agent_id.as_bytes()));
+        try!(buffer.write(self.agent_data.session_id.as_bytes()));
+        try!(buffer.write_u8(self.agent_data.stamp as u8));
+        // Block InventoryData
+        try!(buffer.write_u8(self.inventory_data.len() as u8));
+        for item in &self.inventory_data {
+            try!(buffer.write(item.folder_id.as_bytes()));
+            try!(buffer.write(item.parent_id.as_bytes()));
+        }
+        Ok(())
+    }
+}
+
+impl Message for RemoveInventoryFolder {
+    fn write_to<W: Write>(&self, buffer: &mut W) -> WriteMessageResult {
+        // Write the message number.
+        try!(buffer.write(&[0xff, 0xff, 0x01, 0x14]));
+        // Block AgentData
+        try!(buffer.write(self.agent_data.agent_id.as_bytes()));
+        try!(buffer.write(self.agent_data.session_id.as_bytes()));
+        // Block FolderData
+        try!(buffer.write_u8(self.folder_data.len() as u8));
+        for item in &self.folder_data {
+            try!(buffer.write(item.folder_id.as_bytes()));
+        }
+        Ok(())
+    }
+}
+
 impl Message for FetchInventoryDescendents {
     fn write_to<W: Write>(&self, buffer: &mut W) -> WriteMessageResult {
         // Write the message number.
@@ -11443,6 +13969,150 @@ impl Message for FetchInventoryDescendents {
         try!(buffer.write_i32::<LittleEndian>(self.inventory_data.sort_order));
         try!(buffer.write_u8(self.inventory_data.fetch_folders as u8));
         try!(buffer.write_u8(self.inventory_data.fetch_items as u8));
+        Ok(())
+    }
+}
+
+impl Message for InventoryDescendents {
+    fn write_to<W: Write>(&self, buffer: &mut W) -> WriteMessageResult {
+        // Write the message number.
+        try!(buffer.write(&[0xff, 0xff, 0x01, 0x16]));
+        // Block AgentData
+        try!(buffer.write(self.agent_data.agent_id.as_bytes()));
+        try!(buffer.write(self.agent_data.folder_id.as_bytes()));
+        try!(buffer.write(self.agent_data.owner_id.as_bytes()));
+        try!(buffer.write_i32::<LittleEndian>(self.agent_data.version));
+        try!(buffer.write_i32::<LittleEndian>(self.agent_data.descendents));
+        // Block FolderData
+        try!(buffer.write_u8(self.folder_data.len() as u8));
+        for item in &self.folder_data {
+            try!(buffer.write(item.folder_id.as_bytes()));
+            try!(buffer.write(item.parent_id.as_bytes()));
+            try!(buffer.write_i8(item.type_));
+            try!(buffer.write(&item.name[..]));
+        }
+        // Block ItemData
+        try!(buffer.write_u8(self.item_data.len() as u8));
+        for item in &self.item_data {
+            try!(buffer.write(item.item_id.as_bytes()));
+            try!(buffer.write(item.folder_id.as_bytes()));
+            try!(buffer.write(item.creator_id.as_bytes()));
+            try!(buffer.write(item.owner_id.as_bytes()));
+            try!(buffer.write(item.group_id.as_bytes()));
+            try!(buffer.write_u32::<LittleEndian>(item.base_mask));
+            try!(buffer.write_u32::<LittleEndian>(item.owner_mask));
+            try!(buffer.write_u32::<LittleEndian>(item.group_mask));
+            try!(buffer.write_u32::<LittleEndian>(item.everyone_mask));
+            try!(buffer.write_u32::<LittleEndian>(item.next_owner_mask));
+            try!(buffer.write_u8(item.group_owned as u8));
+            try!(buffer.write(item.asset_id.as_bytes()));
+            try!(buffer.write_i8(item.type_));
+            try!(buffer.write_i8(item.inv_type));
+            try!(buffer.write_u32::<LittleEndian>(item.flags));
+            try!(buffer.write_u8(item.sale_type));
+            try!(buffer.write_i32::<LittleEndian>(item.sale_price));
+            try!(buffer.write(&item.name[..]));
+            try!(buffer.write(&item.description[..]));
+            try!(buffer.write_i32::<LittleEndian>(item.creation_date));
+            try!(buffer.write_u32::<LittleEndian>(item.crc));
+        }
+        Ok(())
+    }
+}
+
+impl Message for FetchInventory {
+    fn write_to<W: Write>(&self, buffer: &mut W) -> WriteMessageResult {
+        // Write the message number.
+        try!(buffer.write(&[0xff, 0xff, 0x01, 0x17]));
+        // Block AgentData
+        try!(buffer.write(self.agent_data.agent_id.as_bytes()));
+        try!(buffer.write(self.agent_data.session_id.as_bytes()));
+        // Block InventoryData
+        try!(buffer.write_u8(self.inventory_data.len() as u8));
+        for item in &self.inventory_data {
+            try!(buffer.write(item.owner_id.as_bytes()));
+            try!(buffer.write(item.item_id.as_bytes()));
+        }
+        Ok(())
+    }
+}
+
+impl Message for FetchInventoryReply {
+    fn write_to<W: Write>(&self, buffer: &mut W) -> WriteMessageResult {
+        // Write the message number.
+        try!(buffer.write(&[0xff, 0xff, 0x01, 0x18]));
+        // Block AgentData
+        try!(buffer.write(self.agent_data.agent_id.as_bytes()));
+        // Block InventoryData
+        try!(buffer.write_u8(self.inventory_data.len() as u8));
+        for item in &self.inventory_data {
+            try!(buffer.write(item.item_id.as_bytes()));
+            try!(buffer.write(item.folder_id.as_bytes()));
+            try!(buffer.write(item.creator_id.as_bytes()));
+            try!(buffer.write(item.owner_id.as_bytes()));
+            try!(buffer.write(item.group_id.as_bytes()));
+            try!(buffer.write_u32::<LittleEndian>(item.base_mask));
+            try!(buffer.write_u32::<LittleEndian>(item.owner_mask));
+            try!(buffer.write_u32::<LittleEndian>(item.group_mask));
+            try!(buffer.write_u32::<LittleEndian>(item.everyone_mask));
+            try!(buffer.write_u32::<LittleEndian>(item.next_owner_mask));
+            try!(buffer.write_u8(item.group_owned as u8));
+            try!(buffer.write(item.asset_id.as_bytes()));
+            try!(buffer.write_i8(item.type_));
+            try!(buffer.write_i8(item.inv_type));
+            try!(buffer.write_u32::<LittleEndian>(item.flags));
+            try!(buffer.write_u8(item.sale_type));
+            try!(buffer.write_i32::<LittleEndian>(item.sale_price));
+            try!(buffer.write(&item.name[..]));
+            try!(buffer.write(&item.description[..]));
+            try!(buffer.write_i32::<LittleEndian>(item.creation_date));
+            try!(buffer.write_u32::<LittleEndian>(item.crc));
+        }
+        Ok(())
+    }
+}
+
+impl Message for BulkUpdateInventory {
+    fn write_to<W: Write>(&self, buffer: &mut W) -> WriteMessageResult {
+        // Write the message number.
+        try!(buffer.write(&[0xff, 0xff, 0x01, 0x19]));
+        // Block AgentData
+        try!(buffer.write(self.agent_data.agent_id.as_bytes()));
+        try!(buffer.write(self.agent_data.transaction_id.as_bytes()));
+        // Block FolderData
+        try!(buffer.write_u8(self.folder_data.len() as u8));
+        for item in &self.folder_data {
+            try!(buffer.write(item.folder_id.as_bytes()));
+            try!(buffer.write(item.parent_id.as_bytes()));
+            try!(buffer.write_i8(item.type_));
+            try!(buffer.write(&item.name[..]));
+        }
+        // Block ItemData
+        try!(buffer.write_u8(self.item_data.len() as u8));
+        for item in &self.item_data {
+            try!(buffer.write(item.item_id.as_bytes()));
+            try!(buffer.write_u32::<LittleEndian>(item.callback_id));
+            try!(buffer.write(item.folder_id.as_bytes()));
+            try!(buffer.write(item.creator_id.as_bytes()));
+            try!(buffer.write(item.owner_id.as_bytes()));
+            try!(buffer.write(item.group_id.as_bytes()));
+            try!(buffer.write_u32::<LittleEndian>(item.base_mask));
+            try!(buffer.write_u32::<LittleEndian>(item.owner_mask));
+            try!(buffer.write_u32::<LittleEndian>(item.group_mask));
+            try!(buffer.write_u32::<LittleEndian>(item.everyone_mask));
+            try!(buffer.write_u32::<LittleEndian>(item.next_owner_mask));
+            try!(buffer.write_u8(item.group_owned as u8));
+            try!(buffer.write(item.asset_id.as_bytes()));
+            try!(buffer.write_i8(item.type_));
+            try!(buffer.write_i8(item.inv_type));
+            try!(buffer.write_u32::<LittleEndian>(item.flags));
+            try!(buffer.write_u8(item.sale_type));
+            try!(buffer.write_i32::<LittleEndian>(item.sale_price));
+            try!(buffer.write(&item.name[..]));
+            try!(buffer.write(&item.description[..]));
+            try!(buffer.write_i32::<LittleEndian>(item.creation_date));
+            try!(buffer.write_u32::<LittleEndian>(item.crc));
+        }
         Ok(())
     }
 }
@@ -11468,6 +14138,27 @@ impl Message for InventoryAssetResponse {
         try!(buffer.write(self.query_data.query_id.as_bytes()));
         try!(buffer.write(self.query_data.asset_id.as_bytes()));
         try!(buffer.write_u8(self.query_data.is_readable as u8));
+        Ok(())
+    }
+}
+
+impl Message for RemoveInventoryObjects {
+    fn write_to<W: Write>(&self, buffer: &mut W) -> WriteMessageResult {
+        // Write the message number.
+        try!(buffer.write(&[0xff, 0xff, 0x01, 0x1c]));
+        // Block AgentData
+        try!(buffer.write(self.agent_data.agent_id.as_bytes()));
+        try!(buffer.write(self.agent_data.session_id.as_bytes()));
+        // Block FolderData
+        try!(buffer.write_u8(self.folder_data.len() as u8));
+        for item in &self.folder_data {
+            try!(buffer.write(item.folder_id.as_bytes()));
+        }
+        // Block ItemData
+        try!(buffer.write_u8(self.item_data.len() as u8));
+        for item in &self.item_data {
+            try!(buffer.write(item.item_id.as_bytes()));
+        }
         Ok(())
     }
 }
@@ -11575,6 +14266,29 @@ impl Message for ReplyTaskInventory {
     }
 }
 
+impl Message for DeRezObject {
+    fn write_to<W: Write>(&self, buffer: &mut W) -> WriteMessageResult {
+        // Write the message number.
+        try!(buffer.write(&[0xff, 0xff, 0x01, 0x23]));
+        // Block AgentData
+        try!(buffer.write(self.agent_data.agent_id.as_bytes()));
+        try!(buffer.write(self.agent_data.session_id.as_bytes()));
+        // Block AgentBlock
+        try!(buffer.write(self.agent_block.group_id.as_bytes()));
+        try!(buffer.write_u8(self.agent_block.destination));
+        try!(buffer.write(self.agent_block.destination_id.as_bytes()));
+        try!(buffer.write(self.agent_block.transaction_id.as_bytes()));
+        try!(buffer.write_u8(self.agent_block.packet_count));
+        try!(buffer.write_u8(self.agent_block.packet_number));
+        // Block ObjectData
+        try!(buffer.write_u8(self.object_data.len() as u8));
+        for item in &self.object_data {
+            try!(buffer.write_u32::<LittleEndian>(item.object_local_id));
+        }
+        Ok(())
+    }
+}
+
 impl Message for DeRezAck {
     fn write_to<W: Write>(&self, buffer: &mut W) -> WriteMessageResult {
         // Write the message number.
@@ -11637,6 +14351,61 @@ impl Message for RezObject {
     }
 }
 
+impl Message for RezObjectFromNotecard {
+    fn write_to<W: Write>(&self, buffer: &mut W) -> WriteMessageResult {
+        // Write the message number.
+        try!(buffer.write(&[0xff, 0xff, 0x01, 0x26]));
+        // Block AgentData
+        try!(buffer.write(self.agent_data.agent_id.as_bytes()));
+        try!(buffer.write(self.agent_data.session_id.as_bytes()));
+        try!(buffer.write(self.agent_data.group_id.as_bytes()));
+        // Block RezData
+        try!(buffer.write(self.rez_data.from_task_id.as_bytes()));
+        try!(buffer.write_u8(self.rez_data.bypass_raycast));
+        try!(buffer.write_f32::<LittleEndian>(self.rez_data.ray_start.x));
+        try!(buffer.write_f32::<LittleEndian>(self.rez_data.ray_start.y));
+        try!(buffer.write_f32::<LittleEndian>(self.rez_data.ray_start.z));
+        try!(buffer.write_f32::<LittleEndian>(self.rez_data.ray_end.x));
+        try!(buffer.write_f32::<LittleEndian>(self.rez_data.ray_end.y));
+        try!(buffer.write_f32::<LittleEndian>(self.rez_data.ray_end.z));
+        try!(buffer.write(self.rez_data.ray_target_id.as_bytes()));
+        try!(buffer.write_u8(self.rez_data.ray_end_is_intersection as u8));
+        try!(buffer.write_u8(self.rez_data.rez_selected as u8));
+        try!(buffer.write_u8(self.rez_data.remove_item as u8));
+        try!(buffer.write_u32::<LittleEndian>(self.rez_data.item_flags));
+        try!(buffer.write_u32::<LittleEndian>(self.rez_data.group_mask));
+        try!(buffer.write_u32::<LittleEndian>(self.rez_data.everyone_mask));
+        try!(buffer.write_u32::<LittleEndian>(self.rez_data.next_owner_mask));
+        // Block NotecardData
+        try!(buffer.write(self.notecard_data.notecard_item_id.as_bytes()));
+        try!(buffer.write(self.notecard_data.object_id.as_bytes()));
+        // Block InventoryData
+        try!(buffer.write_u8(self.inventory_data.len() as u8));
+        for item in &self.inventory_data {
+            try!(buffer.write(item.item_id.as_bytes()));
+        }
+        Ok(())
+    }
+}
+
+impl Message for TransferInventory {
+    fn write_to<W: Write>(&self, buffer: &mut W) -> WriteMessageResult {
+        // Write the message number.
+        try!(buffer.write(&[0xff, 0xff, 0x01, 0x27]));
+        // Block InfoBlock
+        try!(buffer.write(self.info_block.source_id.as_bytes()));
+        try!(buffer.write(self.info_block.dest_id.as_bytes()));
+        try!(buffer.write(self.info_block.transaction_id.as_bytes()));
+        // Block InventoryBlock
+        try!(buffer.write_u8(self.inventory_block.len() as u8));
+        for item in &self.inventory_block {
+            try!(buffer.write(item.inventory_id.as_bytes()));
+            try!(buffer.write_i8(item.type_));
+        }
+        Ok(())
+    }
+}
+
 impl Message for TransferInventoryAck {
     fn write_to<W: Write>(&self, buffer: &mut W) -> WriteMessageResult {
         // Write the message number.
@@ -11644,6 +14413,24 @@ impl Message for TransferInventoryAck {
         // Block InfoBlock
         try!(buffer.write(self.info_block.transaction_id.as_bytes()));
         try!(buffer.write(self.info_block.inventory_id.as_bytes()));
+        Ok(())
+    }
+}
+
+impl Message for AcceptFriendship {
+    fn write_to<W: Write>(&self, buffer: &mut W) -> WriteMessageResult {
+        // Write the message number.
+        try!(buffer.write(&[0xff, 0xff, 0x01, 0x29]));
+        // Block AgentData
+        try!(buffer.write(self.agent_data.agent_id.as_bytes()));
+        try!(buffer.write(self.agent_data.session_id.as_bytes()));
+        // Block TransactionBlock
+        try!(buffer.write(self.transaction_block.transaction_id.as_bytes()));
+        // Block FolderData
+        try!(buffer.write_u8(self.folder_data.len() as u8));
+        for item in &self.folder_data {
+            try!(buffer.write(item.folder_id.as_bytes()));
+        }
         Ok(())
     }
 }
@@ -11695,6 +14482,24 @@ impl Message for OfferCallingCard {
         // Block AgentBlock
         try!(buffer.write(self.agent_block.dest_id.as_bytes()));
         try!(buffer.write(self.agent_block.transaction_id.as_bytes()));
+        Ok(())
+    }
+}
+
+impl Message for AcceptCallingCard {
+    fn write_to<W: Write>(&self, buffer: &mut W) -> WriteMessageResult {
+        // Write the message number.
+        try!(buffer.write(&[0xff, 0xff, 0x01, 0x2e]));
+        // Block AgentData
+        try!(buffer.write(self.agent_data.agent_id.as_bytes()));
+        try!(buffer.write(self.agent_data.session_id.as_bytes()));
+        // Block TransactionBlock
+        try!(buffer.write(self.transaction_block.transaction_id.as_bytes()));
+        // Block FolderData
+        try!(buffer.write_u8(self.folder_data.len() as u8));
+        for item in &self.folder_data {
+            try!(buffer.write(item.folder_id.as_bytes()));
+        }
         Ok(())
     }
 }
@@ -11941,6 +14746,43 @@ impl Message for RoutedMoneyBalanceReply {
     }
 }
 
+impl Message for ActivateGestures {
+    fn write_to<W: Write>(&self, buffer: &mut W) -> WriteMessageResult {
+        // Write the message number.
+        try!(buffer.write(&[0xff, 0xff, 0x01, 0x3c]));
+        // Block AgentData
+        try!(buffer.write(self.agent_data.agent_id.as_bytes()));
+        try!(buffer.write(self.agent_data.session_id.as_bytes()));
+        try!(buffer.write_u32::<LittleEndian>(self.agent_data.flags));
+        // Block Data
+        try!(buffer.write_u8(self.data.len() as u8));
+        for item in &self.data {
+            try!(buffer.write(item.item_id.as_bytes()));
+            try!(buffer.write(item.asset_id.as_bytes()));
+            try!(buffer.write_u32::<LittleEndian>(item.gesture_flags));
+        }
+        Ok(())
+    }
+}
+
+impl Message for DeactivateGestures {
+    fn write_to<W: Write>(&self, buffer: &mut W) -> WriteMessageResult {
+        // Write the message number.
+        try!(buffer.write(&[0xff, 0xff, 0x01, 0x3d]));
+        // Block AgentData
+        try!(buffer.write(self.agent_data.agent_id.as_bytes()));
+        try!(buffer.write(self.agent_data.session_id.as_bytes()));
+        try!(buffer.write_u32::<LittleEndian>(self.agent_data.flags));
+        // Block Data
+        try!(buffer.write_u8(self.data.len() as u8));
+        for item in &self.data {
+            try!(buffer.write(item.item_id.as_bytes()));
+            try!(buffer.write_u32::<LittleEndian>(item.gesture_flags));
+        }
+        Ok(())
+    }
+}
+
 impl Message for MuteListUpdate {
     fn write_to<W: Write>(&self, buffer: &mut W) -> WriteMessageResult {
         // Write the message number.
@@ -11958,6 +14800,65 @@ impl Message for UseCachedMuteList {
         try!(buffer.write(&[0xff, 0xff, 0x01, 0x3f]));
         // Block AgentData
         try!(buffer.write(self.agent_data.agent_id.as_bytes()));
+        Ok(())
+    }
+}
+
+impl Message for GrantUserRights {
+    fn write_to<W: Write>(&self, buffer: &mut W) -> WriteMessageResult {
+        // Write the message number.
+        try!(buffer.write(&[0xff, 0xff, 0x01, 0x40]));
+        // Block AgentData
+        try!(buffer.write(self.agent_data.agent_id.as_bytes()));
+        try!(buffer.write(self.agent_data.session_id.as_bytes()));
+        // Block Rights
+        try!(buffer.write_u8(self.rights.len() as u8));
+        for item in &self.rights {
+            try!(buffer.write(item.agent_related.as_bytes()));
+            try!(buffer.write_i32::<LittleEndian>(item.related_rights));
+        }
+        Ok(())
+    }
+}
+
+impl Message for ChangeUserRights {
+    fn write_to<W: Write>(&self, buffer: &mut W) -> WriteMessageResult {
+        // Write the message number.
+        try!(buffer.write(&[0xff, 0xff, 0x01, 0x41]));
+        // Block AgentData
+        try!(buffer.write(self.agent_data.agent_id.as_bytes()));
+        // Block Rights
+        try!(buffer.write_u8(self.rights.len() as u8));
+        for item in &self.rights {
+            try!(buffer.write(item.agent_related.as_bytes()));
+            try!(buffer.write_i32::<LittleEndian>(item.related_rights));
+        }
+        Ok(())
+    }
+}
+
+impl Message for OnlineNotification {
+    fn write_to<W: Write>(&self, buffer: &mut W) -> WriteMessageResult {
+        // Write the message number.
+        try!(buffer.write(&[0xff, 0xff, 0x01, 0x42]));
+        // Block AgentBlock
+        try!(buffer.write_u8(self.agent_block.len() as u8));
+        for item in &self.agent_block {
+            try!(buffer.write(item.agent_id.as_bytes()));
+        }
+        Ok(())
+    }
+}
+
+impl Message for OfflineNotification {
+    fn write_to<W: Write>(&self, buffer: &mut W) -> WriteMessageResult {
+        // Write the message number.
+        try!(buffer.write(&[0xff, 0xff, 0x01, 0x43]));
+        // Block AgentBlock
+        try!(buffer.write_u8(self.agent_block.len() as u8));
+        for item in &self.agent_block {
+            try!(buffer.write(item.agent_id.as_bytes()));
+        }
         Ok(())
     }
 }
@@ -12017,6 +14918,52 @@ impl Message for SetCPURatio {
         try!(buffer.write(&[0xff, 0xff, 0x01, 0x47]));
         // Block Data
         try!(buffer.write_u8(self.data.ratio));
+        Ok(())
+    }
+}
+
+impl Message for SimCrashed {
+    fn write_to<W: Write>(&self, buffer: &mut W) -> WriteMessageResult {
+        // Write the message number.
+        try!(buffer.write(&[0xff, 0xff, 0x01, 0x48]));
+        // Block Data
+        try!(buffer.write_u32::<LittleEndian>(self.data.region_x));
+        try!(buffer.write_u32::<LittleEndian>(self.data.region_y));
+        // Block Users
+        try!(buffer.write_u8(self.users.len() as u8));
+        for item in &self.users {
+            try!(buffer.write(item.agent_id.as_bytes()));
+        }
+        Ok(())
+    }
+}
+
+impl Message for NameValuePair {
+    fn write_to<W: Write>(&self, buffer: &mut W) -> WriteMessageResult {
+        // Write the message number.
+        try!(buffer.write(&[0xff, 0xff, 0x01, 0x49]));
+        // Block TaskData
+        try!(buffer.write(self.task_data.id.as_bytes()));
+        // Block NameValueData
+        try!(buffer.write_u8(self.name_value_data.len() as u8));
+        for item in &self.name_value_data {
+            try!(buffer.write(&item.nv_pair[..]));
+        }
+        Ok(())
+    }
+}
+
+impl Message for RemoveNameValuePair {
+    fn write_to<W: Write>(&self, buffer: &mut W) -> WriteMessageResult {
+        // Write the message number.
+        try!(buffer.write(&[0xff, 0xff, 0x01, 0x4a]));
+        // Block TaskData
+        try!(buffer.write(self.task_data.id.as_bytes()));
+        // Block NameValueData
+        try!(buffer.write_u8(self.name_value_data.len() as u8));
+        for item in &self.name_value_data {
+            try!(buffer.write(&item.nv_pair[..]));
+        }
         Ok(())
     }
 }
@@ -12116,6 +15063,21 @@ impl Message for AttachedSoundGainChange {
     }
 }
 
+impl Message for PreloadSound {
+    fn write_to<W: Write>(&self, buffer: &mut W) -> WriteMessageResult {
+        // Write the message number.
+        try!(buffer.write(&[0xff, 0x0f]));
+        // Block DataBlock
+        try!(buffer.write_u8(self.data_block.len() as u8));
+        for item in &self.data_block {
+            try!(buffer.write(item.object_id.as_bytes()));
+            try!(buffer.write(item.owner_id.as_bytes()));
+            try!(buffer.write(item.sound_id.as_bytes()));
+        }
+        Ok(())
+    }
+}
+
 impl Message for AssetUploadRequest {
     fn write_to<W: Write>(&self, buffer: &mut W) -> WriteMessageResult {
         // Write the message number.
@@ -12183,6 +15145,35 @@ impl Message for InternalScriptMail {
     }
 }
 
+impl Message for ScriptDataRequest {
+    fn write_to<W: Write>(&self, buffer: &mut W) -> WriteMessageResult {
+        // Write the message number.
+        try!(buffer.write(&[0xff, 0xff, 0x01, 0x51]));
+        // Block DataBlock
+        try!(buffer.write_u8(self.data_block.len() as u8));
+        for item in &self.data_block {
+            try!(buffer.write_u64::<LittleEndian>(item.hash));
+            try!(buffer.write_i8(item.request_type));
+            try!(buffer.write(&item.request[..]));
+        }
+        Ok(())
+    }
+}
+
+impl Message for ScriptDataReply {
+    fn write_to<W: Write>(&self, buffer: &mut W) -> WriteMessageResult {
+        // Write the message number.
+        try!(buffer.write(&[0xff, 0xff, 0x01, 0x52]));
+        // Block DataBlock
+        try!(buffer.write_u8(self.data_block.len() as u8));
+        for item in &self.data_block {
+            try!(buffer.write_u64::<LittleEndian>(item.hash));
+            try!(buffer.write(&item.reply[..]));
+        }
+        Ok(())
+    }
+}
+
 impl Message for CreateGroupRequest {
     fn write_to<W: Write>(&self, buffer: &mut W) -> WriteMessageResult {
         // Write the message number.
@@ -12237,6 +15228,25 @@ impl Message for UpdateGroupInfo {
     }
 }
 
+impl Message for GroupRoleChanges {
+    fn write_to<W: Write>(&self, buffer: &mut W) -> WriteMessageResult {
+        // Write the message number.
+        try!(buffer.write(&[0xff, 0xff, 0x01, 0x56]));
+        // Block AgentData
+        try!(buffer.write(self.agent_data.agent_id.as_bytes()));
+        try!(buffer.write(self.agent_data.session_id.as_bytes()));
+        try!(buffer.write(self.agent_data.group_id.as_bytes()));
+        // Block RoleChange
+        try!(buffer.write_u8(self.role_change.len() as u8));
+        for item in &self.role_change {
+            try!(buffer.write(item.role_id.as_bytes()));
+            try!(buffer.write(item.member_id.as_bytes()));
+            try!(buffer.write_u32::<LittleEndian>(item.change));
+        }
+        Ok(())
+    }
+}
+
 impl Message for JoinGroupRequest {
     fn write_to<W: Write>(&self, buffer: &mut W) -> WriteMessageResult {
         // Write the message number.
@@ -12259,6 +15269,24 @@ impl Message for JoinGroupReply {
         // Block GroupData
         try!(buffer.write(self.group_data.group_id.as_bytes()));
         try!(buffer.write_u8(self.group_data.success as u8));
+        Ok(())
+    }
+}
+
+impl Message for EjectGroupMemberRequest {
+    fn write_to<W: Write>(&self, buffer: &mut W) -> WriteMessageResult {
+        // Write the message number.
+        try!(buffer.write(&[0xff, 0xff, 0x01, 0x59]));
+        // Block AgentData
+        try!(buffer.write(self.agent_data.agent_id.as_bytes()));
+        try!(buffer.write(self.agent_data.session_id.as_bytes()));
+        // Block GroupData
+        try!(buffer.write(self.group_data.group_id.as_bytes()));
+        // Block EjectData
+        try!(buffer.write_u8(self.eject_data.len() as u8));
+        for item in &self.eject_data {
+            try!(buffer.write(item.ejectee_id.as_bytes()));
+        }
         Ok(())
     }
 }
@@ -12299,6 +15327,25 @@ impl Message for LeaveGroupReply {
         // Block GroupData
         try!(buffer.write(self.group_data.group_id.as_bytes()));
         try!(buffer.write_u8(self.group_data.success as u8));
+        Ok(())
+    }
+}
+
+impl Message for InviteGroupRequest {
+    fn write_to<W: Write>(&self, buffer: &mut W) -> WriteMessageResult {
+        // Write the message number.
+        try!(buffer.write(&[0xff, 0xff, 0x01, 0x5d]));
+        // Block AgentData
+        try!(buffer.write(self.agent_data.agent_id.as_bytes()));
+        try!(buffer.write(self.agent_data.session_id.as_bytes()));
+        // Block GroupData
+        try!(buffer.write(self.group_data.group_id.as_bytes()));
+        // Block InviteData
+        try!(buffer.write_u8(self.invite_data.len() as u8));
+        for item in &self.invite_data {
+            try!(buffer.write(item.invitee_id.as_bytes()));
+            try!(buffer.write(item.role_id.as_bytes()));
+        }
         Ok(())
     }
 }
@@ -12421,6 +15468,28 @@ impl Message for GroupAccountDetailsRequest {
     }
 }
 
+impl Message for GroupAccountDetailsReply {
+    fn write_to<W: Write>(&self, buffer: &mut W) -> WriteMessageResult {
+        // Write the message number.
+        try!(buffer.write(&[0xff, 0xff, 0x01, 0x64]));
+        // Block AgentData
+        try!(buffer.write(self.agent_data.agent_id.as_bytes()));
+        try!(buffer.write(self.agent_data.group_id.as_bytes()));
+        // Block MoneyData
+        try!(buffer.write(self.money_data.request_id.as_bytes()));
+        try!(buffer.write_i32::<LittleEndian>(self.money_data.interval_days));
+        try!(buffer.write_i32::<LittleEndian>(self.money_data.current_interval));
+        try!(buffer.write(&self.money_data.start_date[..]));
+        // Block HistoryData
+        try!(buffer.write_u8(self.history_data.len() as u8));
+        for item in &self.history_data {
+            try!(buffer.write(&item.description[..]));
+            try!(buffer.write_i32::<LittleEndian>(item.amount));
+        }
+        Ok(())
+    }
+}
+
 impl Message for GroupAccountTransactionsRequest {
     fn write_to<W: Write>(&self, buffer: &mut W) -> WriteMessageResult {
         // Write the message number.
@@ -12433,6 +15502,31 @@ impl Message for GroupAccountTransactionsRequest {
         try!(buffer.write(self.money_data.request_id.as_bytes()));
         try!(buffer.write_i32::<LittleEndian>(self.money_data.interval_days));
         try!(buffer.write_i32::<LittleEndian>(self.money_data.current_interval));
+        Ok(())
+    }
+}
+
+impl Message for GroupAccountTransactionsReply {
+    fn write_to<W: Write>(&self, buffer: &mut W) -> WriteMessageResult {
+        // Write the message number.
+        try!(buffer.write(&[0xff, 0xff, 0x01, 0x66]));
+        // Block AgentData
+        try!(buffer.write(self.agent_data.agent_id.as_bytes()));
+        try!(buffer.write(self.agent_data.group_id.as_bytes()));
+        // Block MoneyData
+        try!(buffer.write(self.money_data.request_id.as_bytes()));
+        try!(buffer.write_i32::<LittleEndian>(self.money_data.interval_days));
+        try!(buffer.write_i32::<LittleEndian>(self.money_data.current_interval));
+        try!(buffer.write(&self.money_data.start_date[..]));
+        // Block HistoryData
+        try!(buffer.write_u8(self.history_data.len() as u8));
+        for item in &self.history_data {
+            try!(buffer.write(&item.time[..]));
+            try!(buffer.write(&item.user[..]));
+            try!(buffer.write_i32::<LittleEndian>(item.type_));
+            try!(buffer.write(&item.item[..]));
+            try!(buffer.write_i32::<LittleEndian>(item.amount));
+        }
         Ok(())
     }
 }
@@ -12452,6 +15546,34 @@ impl Message for GroupActiveProposalsRequest {
     }
 }
 
+impl Message for GroupActiveProposalItemReply {
+    fn write_to<W: Write>(&self, buffer: &mut W) -> WriteMessageResult {
+        // Write the message number.
+        try!(buffer.write(&[0xff, 0xff, 0x01, 0x68]));
+        // Block AgentData
+        try!(buffer.write(self.agent_data.agent_id.as_bytes()));
+        try!(buffer.write(self.agent_data.group_id.as_bytes()));
+        // Block TransactionData
+        try!(buffer.write(self.transaction_data.transaction_id.as_bytes()));
+        try!(buffer.write_u32::<LittleEndian>(self.transaction_data.total_num_items));
+        // Block ProposalData
+        try!(buffer.write_u8(self.proposal_data.len() as u8));
+        for item in &self.proposal_data {
+            try!(buffer.write(item.vote_id.as_bytes()));
+            try!(buffer.write(item.vote_initiator.as_bytes()));
+            try!(buffer.write(&item.terse_date_id[..]));
+            try!(buffer.write(&item.start_date_time[..]));
+            try!(buffer.write(&item.end_date_time[..]));
+            try!(buffer.write_u8(item.already_voted as u8));
+            try!(buffer.write(&item.vote_cast[..]));
+            try!(buffer.write_f32::<LittleEndian>(item.majority));
+            try!(buffer.write_i32::<LittleEndian>(item.quorum));
+            try!(buffer.write(&item.proposal_text[..]));
+        }
+        Ok(())
+    }
+}
+
 impl Message for GroupVoteHistoryRequest {
     fn write_to<W: Write>(&self, buffer: &mut W) -> WriteMessageResult {
         // Write the message number.
@@ -12463,6 +15585,38 @@ impl Message for GroupVoteHistoryRequest {
         try!(buffer.write(self.group_data.group_id.as_bytes()));
         // Block TransactionData
         try!(buffer.write(self.transaction_data.transaction_id.as_bytes()));
+        Ok(())
+    }
+}
+
+impl Message for GroupVoteHistoryItemReply {
+    fn write_to<W: Write>(&self, buffer: &mut W) -> WriteMessageResult {
+        // Write the message number.
+        try!(buffer.write(&[0xff, 0xff, 0x01, 0x6a]));
+        // Block AgentData
+        try!(buffer.write(self.agent_data.agent_id.as_bytes()));
+        try!(buffer.write(self.agent_data.group_id.as_bytes()));
+        // Block TransactionData
+        try!(buffer.write(self.transaction_data.transaction_id.as_bytes()));
+        try!(buffer.write_u32::<LittleEndian>(self.transaction_data.total_num_items));
+        // Block HistoryItemData
+        try!(buffer.write(self.history_item_data.vote_id.as_bytes()));
+        try!(buffer.write(&self.history_item_data.terse_date_id[..]));
+        try!(buffer.write(&self.history_item_data.start_date_time[..]));
+        try!(buffer.write(&self.history_item_data.end_date_time[..]));
+        try!(buffer.write(self.history_item_data.vote_initiator.as_bytes()));
+        try!(buffer.write(&self.history_item_data.vote_type[..]));
+        try!(buffer.write(&self.history_item_data.vote_result[..]));
+        try!(buffer.write_f32::<LittleEndian>(self.history_item_data.majority));
+        try!(buffer.write_i32::<LittleEndian>(self.history_item_data.quorum));
+        try!(buffer.write(&self.history_item_data.proposal_text[..]));
+        // Block VoteItem
+        try!(buffer.write_u8(self.vote_item.len() as u8));
+        for item in &self.vote_item {
+            try!(buffer.write(item.candidate_id.as_bytes()));
+            try!(buffer.write(&item.vote_cast[..]));
+            try!(buffer.write_i32::<LittleEndian>(item.num_votes));
+        }
         Ok(())
     }
 }
@@ -12517,6 +15671,30 @@ impl Message for GroupMembersRequest {
         // Block GroupData
         try!(buffer.write(self.group_data.group_id.as_bytes()));
         try!(buffer.write(self.group_data.request_id.as_bytes()));
+        Ok(())
+    }
+}
+
+impl Message for GroupMembersReply {
+    fn write_to<W: Write>(&self, buffer: &mut W) -> WriteMessageResult {
+        // Write the message number.
+        try!(buffer.write(&[0xff, 0xff, 0x01, 0x6f]));
+        // Block AgentData
+        try!(buffer.write(self.agent_data.agent_id.as_bytes()));
+        // Block GroupData
+        try!(buffer.write(self.group_data.group_id.as_bytes()));
+        try!(buffer.write(self.group_data.request_id.as_bytes()));
+        try!(buffer.write_i32::<LittleEndian>(self.group_data.member_count));
+        // Block MemberData
+        try!(buffer.write_u8(self.member_data.len() as u8));
+        for item in &self.member_data {
+            try!(buffer.write(item.agent_id.as_bytes()));
+            try!(buffer.write_i32::<LittleEndian>(item.contribution));
+            try!(buffer.write(&item.online_status[..]));
+            try!(buffer.write_u64::<LittleEndian>(item.agent_powers));
+            try!(buffer.write(&item.title[..]));
+            try!(buffer.write_u8(item.is_owner as u8));
+        }
         Ok(())
     }
 }
@@ -12577,6 +15755,30 @@ impl Message for GroupRoleDataRequest {
     }
 }
 
+impl Message for GroupRoleDataReply {
+    fn write_to<W: Write>(&self, buffer: &mut W) -> WriteMessageResult {
+        // Write the message number.
+        try!(buffer.write(&[0xff, 0xff, 0x01, 0x74]));
+        // Block AgentData
+        try!(buffer.write(self.agent_data.agent_id.as_bytes()));
+        // Block GroupData
+        try!(buffer.write(self.group_data.group_id.as_bytes()));
+        try!(buffer.write(self.group_data.request_id.as_bytes()));
+        try!(buffer.write_i32::<LittleEndian>(self.group_data.role_count));
+        // Block RoleData
+        try!(buffer.write_u8(self.role_data.len() as u8));
+        for item in &self.role_data {
+            try!(buffer.write(item.role_id.as_bytes()));
+            try!(buffer.write(&item.name[..]));
+            try!(buffer.write(&item.title[..]));
+            try!(buffer.write(&item.description[..]));
+            try!(buffer.write_u64::<LittleEndian>(item.powers));
+            try!(buffer.write_u32::<LittleEndian>(item.members));
+        }
+        Ok(())
+    }
+}
+
 impl Message for GroupRoleMembersRequest {
     fn write_to<W: Write>(&self, buffer: &mut W) -> WriteMessageResult {
         // Write the message number.
@@ -12587,6 +15789,25 @@ impl Message for GroupRoleMembersRequest {
         // Block GroupData
         try!(buffer.write(self.group_data.group_id.as_bytes()));
         try!(buffer.write(self.group_data.request_id.as_bytes()));
+        Ok(())
+    }
+}
+
+impl Message for GroupRoleMembersReply {
+    fn write_to<W: Write>(&self, buffer: &mut W) -> WriteMessageResult {
+        // Write the message number.
+        try!(buffer.write(&[0xff, 0xff, 0x01, 0x76]));
+        // Block AgentData
+        try!(buffer.write(self.agent_data.agent_id.as_bytes()));
+        try!(buffer.write(self.agent_data.group_id.as_bytes()));
+        try!(buffer.write(self.agent_data.request_id.as_bytes()));
+        try!(buffer.write_u32::<LittleEndian>(self.agent_data.total_pairs));
+        // Block MemberData
+        try!(buffer.write_u8(self.member_data.len() as u8));
+        for item in &self.member_data {
+            try!(buffer.write(item.role_id.as_bytes()));
+            try!(buffer.write(item.member_id.as_bytes()));
+        }
         Ok(())
     }
 }
@@ -12604,6 +15825,25 @@ impl Message for GroupTitlesRequest {
     }
 }
 
+impl Message for GroupTitlesReply {
+    fn write_to<W: Write>(&self, buffer: &mut W) -> WriteMessageResult {
+        // Write the message number.
+        try!(buffer.write(&[0xff, 0xff, 0x01, 0x78]));
+        // Block AgentData
+        try!(buffer.write(self.agent_data.agent_id.as_bytes()));
+        try!(buffer.write(self.agent_data.group_id.as_bytes()));
+        try!(buffer.write(self.agent_data.request_id.as_bytes()));
+        // Block GroupData
+        try!(buffer.write_u8(self.group_data.len() as u8));
+        for item in &self.group_data {
+            try!(buffer.write(&item.title[..]));
+            try!(buffer.write(item.role_id.as_bytes()));
+            try!(buffer.write_u8(item.selected as u8));
+        }
+        Ok(())
+    }
+}
+
 impl Message for GroupTitleUpdate {
     fn write_to<W: Write>(&self, buffer: &mut W) -> WriteMessageResult {
         // Write the message number.
@@ -12613,6 +15853,28 @@ impl Message for GroupTitleUpdate {
         try!(buffer.write(self.agent_data.session_id.as_bytes()));
         try!(buffer.write(self.agent_data.group_id.as_bytes()));
         try!(buffer.write(self.agent_data.title_role_id.as_bytes()));
+        Ok(())
+    }
+}
+
+impl Message for GroupRoleUpdate {
+    fn write_to<W: Write>(&self, buffer: &mut W) -> WriteMessageResult {
+        // Write the message number.
+        try!(buffer.write(&[0xff, 0xff, 0x01, 0x7a]));
+        // Block AgentData
+        try!(buffer.write(self.agent_data.agent_id.as_bytes()));
+        try!(buffer.write(self.agent_data.session_id.as_bytes()));
+        try!(buffer.write(self.agent_data.group_id.as_bytes()));
+        // Block RoleData
+        try!(buffer.write_u8(self.role_data.len() as u8));
+        for item in &self.role_data {
+            try!(buffer.write(item.role_id.as_bytes()));
+            try!(buffer.write(&item.name[..]));
+            try!(buffer.write(&item.description[..]));
+            try!(buffer.write(&item.title[..]));
+            try!(buffer.write_u64::<LittleEndian>(item.powers));
+            try!(buffer.write_u8(item.update_type));
+        }
         Ok(())
     }
 }
@@ -12651,6 +15913,79 @@ impl Message for AgentWearablesRequest {
     }
 }
 
+impl Message for AgentWearablesUpdate {
+    fn write_to<W: Write>(&self, buffer: &mut W) -> WriteMessageResult {
+        // Write the message number.
+        try!(buffer.write(&[0xff, 0xff, 0x01, 0x7e]));
+        // Block AgentData
+        try!(buffer.write(self.agent_data.agent_id.as_bytes()));
+        try!(buffer.write(self.agent_data.session_id.as_bytes()));
+        try!(buffer.write_u32::<LittleEndian>(self.agent_data.serial_num));
+        // Block WearableData
+        try!(buffer.write_u8(self.wearable_data.len() as u8));
+        for item in &self.wearable_data {
+            try!(buffer.write(item.item_id.as_bytes()));
+            try!(buffer.write(item.asset_id.as_bytes()));
+            try!(buffer.write_u8(item.wearable_type));
+        }
+        Ok(())
+    }
+}
+
+impl Message for AgentIsNowWearing {
+    fn write_to<W: Write>(&self, buffer: &mut W) -> WriteMessageResult {
+        // Write the message number.
+        try!(buffer.write(&[0xff, 0xff, 0x01, 0x7f]));
+        // Block AgentData
+        try!(buffer.write(self.agent_data.agent_id.as_bytes()));
+        try!(buffer.write(self.agent_data.session_id.as_bytes()));
+        // Block WearableData
+        try!(buffer.write_u8(self.wearable_data.len() as u8));
+        for item in &self.wearable_data {
+            try!(buffer.write(item.item_id.as_bytes()));
+            try!(buffer.write_u8(item.wearable_type));
+        }
+        Ok(())
+    }
+}
+
+impl Message for AgentCachedTexture {
+    fn write_to<W: Write>(&self, buffer: &mut W) -> WriteMessageResult {
+        // Write the message number.
+        try!(buffer.write(&[0xff, 0xff, 0x01, 0x80]));
+        // Block AgentData
+        try!(buffer.write(self.agent_data.agent_id.as_bytes()));
+        try!(buffer.write(self.agent_data.session_id.as_bytes()));
+        try!(buffer.write_i32::<LittleEndian>(self.agent_data.serial_num));
+        // Block WearableData
+        try!(buffer.write_u8(self.wearable_data.len() as u8));
+        for item in &self.wearable_data {
+            try!(buffer.write(item.id.as_bytes()));
+            try!(buffer.write_u8(item.texture_index));
+        }
+        Ok(())
+    }
+}
+
+impl Message for AgentCachedTextureResponse {
+    fn write_to<W: Write>(&self, buffer: &mut W) -> WriteMessageResult {
+        // Write the message number.
+        try!(buffer.write(&[0xff, 0xff, 0x01, 0x81]));
+        // Block AgentData
+        try!(buffer.write(self.agent_data.agent_id.as_bytes()));
+        try!(buffer.write(self.agent_data.session_id.as_bytes()));
+        try!(buffer.write_i32::<LittleEndian>(self.agent_data.serial_num));
+        // Block WearableData
+        try!(buffer.write_u8(self.wearable_data.len() as u8));
+        for item in &self.wearable_data {
+            try!(buffer.write(item.texture_id.as_bytes()));
+            try!(buffer.write_u8(item.texture_index));
+            try!(buffer.write(&item.host_name[..]));
+        }
+        Ok(())
+    }
+}
+
 impl Message for AgentDataUpdateRequest {
     fn write_to<W: Write>(&self, buffer: &mut W) -> WriteMessageResult {
         // Write the message number.
@@ -12678,6 +16013,42 @@ impl Message for AgentDataUpdate {
     }
 }
 
+impl Message for GroupDataUpdate {
+    fn write_to<W: Write>(&self, buffer: &mut W) -> WriteMessageResult {
+        // Write the message number.
+        try!(buffer.write(&[0xff, 0xff, 0x01, 0x84]));
+        // Block AgentGroupData
+        try!(buffer.write_u8(self.agent_group_data.len() as u8));
+        for item in &self.agent_group_data {
+            try!(buffer.write(item.agent_id.as_bytes()));
+            try!(buffer.write(item.group_id.as_bytes()));
+            try!(buffer.write_u64::<LittleEndian>(item.agent_powers));
+            try!(buffer.write(&item.group_title[..]));
+        }
+        Ok(())
+    }
+}
+
+impl Message for AgentGroupDataUpdate {
+    fn write_to<W: Write>(&self, buffer: &mut W) -> WriteMessageResult {
+        // Write the message number.
+        try!(buffer.write(&[0xff, 0xff, 0x01, 0x85]));
+        // Block AgentData
+        try!(buffer.write(self.agent_data.agent_id.as_bytes()));
+        // Block GroupData
+        try!(buffer.write_u8(self.group_data.len() as u8));
+        for item in &self.group_data {
+            try!(buffer.write(item.group_id.as_bytes()));
+            try!(buffer.write_u64::<LittleEndian>(item.group_powers));
+            try!(buffer.write_u8(item.accept_notices as u8));
+            try!(buffer.write(item.group_insignia_id.as_bytes()));
+            try!(buffer.write_i32::<LittleEndian>(item.contribution));
+            try!(buffer.write(&item.group_name[..]));
+        }
+        Ok(())
+    }
+}
+
 impl Message for AgentDropGroup {
     fn write_to<W: Write>(&self, buffer: &mut W) -> WriteMessageResult {
         // Write the message number.
@@ -12685,6 +16056,45 @@ impl Message for AgentDropGroup {
         // Block AgentData
         try!(buffer.write(self.agent_data.agent_id.as_bytes()));
         try!(buffer.write(self.agent_data.group_id.as_bytes()));
+        Ok(())
+    }
+}
+
+impl Message for LogTextMessage {
+    fn write_to<W: Write>(&self, buffer: &mut W) -> WriteMessageResult {
+        // Write the message number.
+        try!(buffer.write(&[0xff, 0xff, 0x01, 0x87]));
+        // Block DataBlock
+        try!(buffer.write_u8(self.data_block.len() as u8));
+        for item in &self.data_block {
+            try!(buffer.write(item.from_agent_id.as_bytes()));
+            try!(buffer.write(item.to_agent_id.as_bytes()));
+            try!(buffer.write_f64::<LittleEndian>(item.global_x));
+            try!(buffer.write_f64::<LittleEndian>(item.global_y));
+            try!(buffer.write_u32::<LittleEndian>(item.time));
+            try!(buffer.write(&item.message[..]));
+        }
+        Ok(())
+    }
+}
+
+impl Message for ViewerEffect {
+    fn write_to<W: Write>(&self, buffer: &mut W) -> WriteMessageResult {
+        // Write the message number.
+        try!(buffer.write(&[0xff, 0x11]));
+        // Block AgentData
+        try!(buffer.write(self.agent_data.agent_id.as_bytes()));
+        try!(buffer.write(self.agent_data.session_id.as_bytes()));
+        // Block Effect
+        try!(buffer.write_u8(self.effect.len() as u8));
+        for item in &self.effect {
+            try!(buffer.write(item.id.as_bytes()));
+            try!(buffer.write(item.agent_id.as_bytes()));
+            try!(buffer.write_u8(item.type_));
+            try!(buffer.write_f32::<LittleEndian>(item.duration));
+            try!(buffer.write(&item.color));
+            try!(buffer.write(&item.type_data[..]));
+        }
         Ok(())
     }
 }
@@ -12739,6 +16149,34 @@ impl Message for RezSingleAttachmentFromInv {
     }
 }
 
+impl Message for RezMultipleAttachmentsFromInv {
+    fn write_to<W: Write>(&self, buffer: &mut W) -> WriteMessageResult {
+        // Write the message number.
+        try!(buffer.write(&[0xff, 0xff, 0x01, 0x8c]));
+        // Block AgentData
+        try!(buffer.write(self.agent_data.agent_id.as_bytes()));
+        try!(buffer.write(self.agent_data.session_id.as_bytes()));
+        // Block HeaderData
+        try!(buffer.write(self.header_data.compound_msg_id.as_bytes()));
+        try!(buffer.write_u8(self.header_data.total_objects));
+        try!(buffer.write_u8(self.header_data.first_detach_all as u8));
+        // Block ObjectData
+        try!(buffer.write_u8(self.object_data.len() as u8));
+        for item in &self.object_data {
+            try!(buffer.write(item.item_id.as_bytes()));
+            try!(buffer.write(item.owner_id.as_bytes()));
+            try!(buffer.write_u8(item.attachment_pt));
+            try!(buffer.write_u32::<LittleEndian>(item.item_flags));
+            try!(buffer.write_u32::<LittleEndian>(item.group_mask));
+            try!(buffer.write_u32::<LittleEndian>(item.everyone_mask));
+            try!(buffer.write_u32::<LittleEndian>(item.next_owner_mask));
+            try!(buffer.write(&item.name[..]));
+            try!(buffer.write(&item.description[..]));
+        }
+        Ok(())
+    }
+}
+
 impl Message for DetachAttachmentIntoInv {
     fn write_to<W: Write>(&self, buffer: &mut W) -> WriteMessageResult {
         // Write the message number.
@@ -12746,6 +16184,25 @@ impl Message for DetachAttachmentIntoInv {
         // Block ObjectData
         try!(buffer.write(self.object_data.agent_id.as_bytes()));
         try!(buffer.write(self.object_data.item_id.as_bytes()));
+        Ok(())
+    }
+}
+
+impl Message for CreateNewOutfitAttachments {
+    fn write_to<W: Write>(&self, buffer: &mut W) -> WriteMessageResult {
+        // Write the message number.
+        try!(buffer.write(&[0xff, 0xff, 0x01, 0x8e]));
+        // Block AgentData
+        try!(buffer.write(self.agent_data.agent_id.as_bytes()));
+        try!(buffer.write(self.agent_data.session_id.as_bytes()));
+        // Block HeaderData
+        try!(buffer.write(self.header_data.new_folder_id.as_bytes()));
+        // Block ObjectData
+        try!(buffer.write_u8(self.object_data.len() as u8));
+        for item in &self.object_data {
+            try!(buffer.write(item.old_item_id.as_bytes()));
+            try!(buffer.write(item.old_folder_id.as_bytes()));
+        }
         Ok(())
     }
 }
@@ -12789,6 +16246,20 @@ impl Message for UpdateUserInfo {
     }
 }
 
+impl Message for ParcelRename {
+    fn write_to<W: Write>(&self, buffer: &mut W) -> WriteMessageResult {
+        // Write the message number.
+        try!(buffer.write(&[0xff, 0xff, 0x01, 0x92]));
+        // Block ParcelData
+        try!(buffer.write_u8(self.parcel_data.len() as u8));
+        for item in &self.parcel_data {
+            try!(buffer.write(item.parcel_id.as_bytes()));
+            try!(buffer.write(&item.new_name[..]));
+        }
+        Ok(())
+    }
+}
+
 impl Message for InitiateDownload {
     fn write_to<W: Write>(&self, buffer: &mut W) -> WriteMessageResult {
         // Write the message number.
@@ -12798,6 +16269,23 @@ impl Message for InitiateDownload {
         // Block FileData
         try!(buffer.write(&self.file_data.sim_filename[..]));
         try!(buffer.write(&self.file_data.viewer_filename[..]));
+        Ok(())
+    }
+}
+
+impl Message for SystemMessage {
+    fn write_to<W: Write>(&self, buffer: &mut W) -> WriteMessageResult {
+        // Write the message number.
+        try!(buffer.write(&[0xff, 0xff, 0x01, 0x94]));
+        // Block MethodData
+        try!(buffer.write(&self.method_data.method[..]));
+        try!(buffer.write(self.method_data.invoice.as_bytes()));
+        try!(buffer.write(&self.method_data.digest));
+        // Block ParamList
+        try!(buffer.write_u8(self.param_list.len() as u8));
+        for item in &self.param_list {
+            try!(buffer.write(&item.parameter[..]));
+        }
         Ok(())
     }
 }
@@ -12812,6 +16300,26 @@ impl Message for MapLayerRequest {
         try!(buffer.write_u32::<LittleEndian>(self.agent_data.flags));
         try!(buffer.write_u32::<LittleEndian>(self.agent_data.estate_id));
         try!(buffer.write_u8(self.agent_data.godlike as u8));
+        Ok(())
+    }
+}
+
+impl Message for MapLayerReply {
+    fn write_to<W: Write>(&self, buffer: &mut W) -> WriteMessageResult {
+        // Write the message number.
+        try!(buffer.write(&[0xff, 0xff, 0x01, 0x96]));
+        // Block AgentData
+        try!(buffer.write(self.agent_data.agent_id.as_bytes()));
+        try!(buffer.write_u32::<LittleEndian>(self.agent_data.flags));
+        // Block LayerData
+        try!(buffer.write_u8(self.layer_data.len() as u8));
+        for item in &self.layer_data {
+            try!(buffer.write_u32::<LittleEndian>(item.left));
+            try!(buffer.write_u32::<LittleEndian>(item.right));
+            try!(buffer.write_u32::<LittleEndian>(item.top));
+            try!(buffer.write_u32::<LittleEndian>(item.bottom));
+            try!(buffer.write(item.image_id.as_bytes()));
+        }
         Ok(())
     }
 }
@@ -12851,6 +16359,29 @@ impl Message for MapNameRequest {
     }
 }
 
+impl Message for MapBlockReply {
+    fn write_to<W: Write>(&self, buffer: &mut W) -> WriteMessageResult {
+        // Write the message number.
+        try!(buffer.write(&[0xff, 0xff, 0x01, 0x99]));
+        // Block AgentData
+        try!(buffer.write(self.agent_data.agent_id.as_bytes()));
+        try!(buffer.write_u32::<LittleEndian>(self.agent_data.flags));
+        // Block Data
+        try!(buffer.write_u8(self.data.len() as u8));
+        for item in &self.data {
+            try!(buffer.write_u16::<LittleEndian>(item.x));
+            try!(buffer.write_u16::<LittleEndian>(item.y));
+            try!(buffer.write(&item.name[..]));
+            try!(buffer.write_u8(item.access));
+            try!(buffer.write_u32::<LittleEndian>(item.region_flags));
+            try!(buffer.write_u8(item.water_height));
+            try!(buffer.write_u8(item.agents));
+            try!(buffer.write(item.map_image_id.as_bytes()));
+        }
+        Ok(())
+    }
+}
+
 impl Message for MapItemRequest {
     fn write_to<W: Write>(&self, buffer: &mut W) -> WriteMessageResult {
         // Write the message number.
@@ -12864,6 +16395,29 @@ impl Message for MapItemRequest {
         // Block RequestData
         try!(buffer.write_u32::<LittleEndian>(self.request_data.item_type));
         try!(buffer.write_u64::<LittleEndian>(self.request_data.region_handle));
+        Ok(())
+    }
+}
+
+impl Message for MapItemReply {
+    fn write_to<W: Write>(&self, buffer: &mut W) -> WriteMessageResult {
+        // Write the message number.
+        try!(buffer.write(&[0xff, 0xff, 0x01, 0x9b]));
+        // Block AgentData
+        try!(buffer.write(self.agent_data.agent_id.as_bytes()));
+        try!(buffer.write_u32::<LittleEndian>(self.agent_data.flags));
+        // Block RequestData
+        try!(buffer.write_u32::<LittleEndian>(self.request_data.item_type));
+        // Block Data
+        try!(buffer.write_u8(self.data.len() as u8));
+        for item in &self.data {
+            try!(buffer.write_u32::<LittleEndian>(item.x));
+            try!(buffer.write_u32::<LittleEndian>(item.y));
+            try!(buffer.write(item.id.as_bytes()));
+            try!(buffer.write_i32::<LittleEndian>(item.extra));
+            try!(buffer.write_i32::<LittleEndian>(item.extra2));
+            try!(buffer.write(&item.name[..]));
+        }
         Ok(())
     }
 }
@@ -13021,6 +16575,30 @@ impl Message for LandStatRequest {
     }
 }
 
+impl Message for LandStatReply {
+    fn write_to<W: Write>(&self, buffer: &mut W) -> WriteMessageResult {
+        // Write the message number.
+        try!(buffer.write(&[0xff, 0xff, 0x01, 0xa6]));
+        // Block RequestData
+        try!(buffer.write_u32::<LittleEndian>(self.request_data.report_type));
+        try!(buffer.write_u32::<LittleEndian>(self.request_data.request_flags));
+        try!(buffer.write_u32::<LittleEndian>(self.request_data.total_object_count));
+        // Block ReportData
+        try!(buffer.write_u8(self.report_data.len() as u8));
+        for item in &self.report_data {
+            try!(buffer.write_u32::<LittleEndian>(item.task_local_id));
+            try!(buffer.write(item.task_id.as_bytes()));
+            try!(buffer.write_f32::<LittleEndian>(item.location_x));
+            try!(buffer.write_f32::<LittleEndian>(item.location_y));
+            try!(buffer.write_f32::<LittleEndian>(item.location_z));
+            try!(buffer.write_f32::<LittleEndian>(item.score));
+            try!(buffer.write(&item.task_name[..]));
+            try!(buffer.write(&item.owner_name[..]));
+        }
+        Ok(())
+    }
+}
+
 impl Message for Error {
     fn write_to<W: Write>(&self, buffer: &mut W) -> WriteMessageResult {
         // Write the message number.
@@ -13034,6 +16612,23 @@ impl Message for Error {
         try!(buffer.write(&self.data.system[..]));
         try!(buffer.write(&self.data.message[..]));
         try!(buffer.write(&self.data.data[..]));
+        Ok(())
+    }
+}
+
+impl Message for ObjectIncludeInSearch {
+    fn write_to<W: Write>(&self, buffer: &mut W) -> WriteMessageResult {
+        // Write the message number.
+        try!(buffer.write(&[0xff, 0xff, 0x01, 0xa8]));
+        // Block AgentData
+        try!(buffer.write(self.agent_data.agent_id.as_bytes()));
+        try!(buffer.write(self.agent_data.session_id.as_bytes()));
+        // Block ObjectData
+        try!(buffer.write_u8(self.object_data.len() as u8));
+        for item in &self.object_data {
+            try!(buffer.write_u32::<LittleEndian>(item.object_local_id));
+            try!(buffer.write_u8(item.include_in_search as u8));
+        }
         Ok(())
     }
 }
