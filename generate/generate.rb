@@ -27,6 +27,7 @@ def generate_struct(message)
     # Generate block definitions,
     code = ""
     message.blocks.each do |block|
+        code << "#[derive(Debug)]\n"
         code << "pub struct #{block.r_name} {\n"
         block.fields.each do |field|
             code << "\tpub #{field.r_name}: #{field.r_type},\n"
@@ -35,6 +36,7 @@ def generate_struct(message)
     end
 
     # Generate message definition.
+    code << "#[derive(Debug)]\n"
     code << "pub struct #{message.name} {\n"
 
     message.blocks.each do |block|
@@ -53,7 +55,7 @@ end
 
 def generate_message_types_enum(messages)
     code = ""
-    code << "pub enum MessageType {\n"
+    code << "pub enum MessageInstance {\n"
     messages.each do |message|
         code << "\t#{message.name}(#{message.name}),\n"
     end
@@ -93,12 +95,10 @@ end
 def generate_field_writer(field, source)
     value = "#{source}.#{field.r_name}"
     r_type = field.r_type
-    if %w[u16 u32 u64 i16 i32 i64].include? r_type
+    if %w[u16 u32 u64 i16 i32 i64 f32 f64].include? r_type
         "try!(buffer.write_#{r_type}::<LittleEndian>(#{value}));\n"
     elsif %w[u8 i8].include? r_type
         "try!(buffer.write_#{r_type}(#{value}));\n"
-    elsif %w[f32 f64].include? r_type
-        "try!(buffer.write_#{r_type}::<LittleEndian>(#{value}));\n"
     elsif r_type == "Uuid"
         "try!(buffer.write(#{value}.as_bytes()));\n"
     elsif r_type == "Ip4Addr"
@@ -131,13 +131,66 @@ def generate_field_writer(field, source)
     end
 end
 
+def generate_field_reader(field)
+    r_type = field.r_type
+    if %w[u16 u32 u64 i16 i32 i64 f32 f64].include? r_type
+        "try!(buffer.read_#{r_type}::<LittleEndian>())"
+    elsif %w[u8 i8].include? r_type
+        "try!(buffer.read_#{r_type}())"
+    elsif r_type == "Uuid"
+        "{ let mut raw = [0; 4]; try!(buffer.read_exact(&mut raw)); try!(Uuid::from_bytes(&raw)) }"
+    elsif r_type == "Ip4Addr"
+        "{ let mut raw = [0; 4]; try!(buffer.read_exact(&mut raw)); Ip4Addr::from(raw) }"
+    elsif r_type == "Ip4Port"
+        "try!(buffer.read_u16::<LittleEndian>())"
+    elsif r_type == "Vector3<f32>" or r_type == "Vector3<f64>"
+        f_type = r_type[8..10]
+        "Vector3::new(try!(buffer.read_#{f_type}::<LittleEndian>()),
+                      try!(buffer.read_#{f_type}::<LittleEndian>()),
+                      try!(buffer.read_#{f_type}::<LittleEndian>()))"
+    elsif r_type == "Vector4<f32>"
+        "Vector4::new(try!(buffer.read_f32::<LittleEndian>()),
+                      try!(buffer.read_f32::<LittleEndian>()),
+                      try!(buffer.read_f32::<LittleEndian>()),
+                      try!(buffer.read_f32::<LittleEndian>()))"
+    elsif r_type == "Quaternion<f32>"
+        "Quaternion::from_parts(1., Vector3::new(
+            try!(buffer.read_f32::<LittleEndian>()),
+            try!(buffer.read_f32::<LittleEndian>()),
+            try!(buffer.read_f32::<LittleEndian>())
+        ))"
+    elsif r_type == "bool"
+        "try!(buffer.read_u8()) == 1"
+    elsif r_type == "Vec<u8>"
+        "{ let n = try!(buffer.read_u8()) as usize; let mut raw = vec![0; n]; try!(buffer.read_exact(&mut raw)); raw }"
+    elsif r_type[0...4] == "[u8;"
+        "{ let mut raw = [0; #{field.count}]; try!(buffer.read_exact(&mut raw)); raw }"
+    else
+        raise "No rule for field reader generation of field: #{field}"
+    end
+end
+
+def generate_block_reader_impl(block)
+    out = ""
+    out << "impl #{block.r_name} {\n"
+    out << "\tfn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError> where R: Read {\n"
+    out << "\t\tOk(#{block.r_name} {\n"
+    block.fields.each do |field|
+        out << "\t\t\t#{field.r_name}: #{generate_field_reader(field)},\n"
+    end
+    out << "\t\t})\n"
+    out << "\t}\n"
+    out << "}\n\n"
+    out
+end
+
 def generate_message_impl(message)
     out = ""
     out << "impl Message for #{message.name} {\n"
 
     # Writer
     #########
-    out << "\tfn write_to<W: Write>(&self, buffer: &mut W) -> WriteMessageResult {\n"
+    out << "\tfn write_to<W: ?Sized>(&self, buffer: &mut W) -> WriteMessageResult where W: Write {\n"
     out << "\t\t// Write the message number.\n"
     out << "\t\ttry!(buffer.write(&#{generate_message_id_bytes(message)}));\n"
     message.blocks.each do |block|
@@ -160,15 +213,43 @@ def generate_message_impl(message)
             end
             out << "\t\t}\n"
         else
-            puts "Write implementation for blocks with quantity other than single not yet available."
-            return ""
+            raise "Invalid block quantity: #{block.quantity}"
         end
     end
     out << "\tOk(())\n"
-    out << "\t}\n"
+    out << "\t}\n\n"
 
     # Reader
     #########
+    out << "\tfn read_from<R: ?Sized>(buffer: &mut R) -> Result<Box<Self>, ReadMessageError> where R: Read {\n"
+    message.blocks.each do |block|
+        out << "\t\t// Block #{block.ll_name}\n"
+        if block.quantity == "Single"
+            out << "\t\tlet #{block.f_name} = try!(#{block.r_name}::read_from(buffer));\n"
+        elsif block.quantity == "Multiple"
+            out << "\t\tlet #{block.f_name} = [\n"
+            block.quantity_count.to_i.times do
+                out << "\t\t\ttry!(#{block.r_name}::read_from(buffer)),\n"
+            end
+            out << "\t\t];\n"
+        elsif block.quantity == "Variable"
+            count_var = "_#{block.f_name}_count"
+            out << "\t\tlet mut #{block.f_name} = Vec::new();\n"
+            out << "\t\tlet #{count_var} = try!(buffer.read_u8());\n"
+            out << "\t\tfor _ in 0..#{count_var} {\n"
+            out << "\t\t\t#{block.f_name}.push(try!(#{block.r_name}::read_from(buffer)));\n"
+            out << "\t\t}\n"
+        else
+            puts "Read implementation for blocks with quantity other than Single not implemented yet."
+            return ""
+        end
+    end
+    out << "\t\tOk(Box::new(#{message.name} {\n"
+    message.blocks.each do |block|
+        out << "\t\t\t#{block.f_name}: #{block.f_name},\n"
+    end
+    out << "\t\t}))\n"
+    out << "\t}\n"
 
     # TODO
 
@@ -189,6 +270,13 @@ File.open(TARGET_FILE, "w") do |file|
     file.write File.read(PREAMBLE_FILE)
     messages.each { |msg| file.write generate_struct(msg) }
     file.write generate_message_types_enum(messages)
+    file.write "\n\n// Block IMPLEMENTATIONS\n\n\n\n"
+    messages.each do |message|
+        message.blocks.each do |block|
+            file.write generate_block_reader_impl(block)
+        end
+    end
+
     file.write "\n\n// Message IMPLEMENTATIONS\n\n\n\n"
     messages.each do |msg|
         code = generate_message_impl(msg)
