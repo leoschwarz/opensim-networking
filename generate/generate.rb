@@ -263,18 +263,36 @@ def generate_read_func(messages)
     out << "fn read_message<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadMessageError> where R: Read {\n"
 
     out << "\t// High frequency messages.\n"
-    out << "\tmatch try!(buffer.bytes().next()) {\n"
+    out << "\tmatch try!(buffer.read_u8()) {\n"
     messages.each do |message|
         if message.frequency == "High"
             out << "\t\t#{message.id_byte 0} => return #{message.name}::read_from(buffer),\n"
         end
     end
     out << "\t\t0xff => {},\n"
-    out << "\t\t_ => return ReadMessageError::UnknownMessageNumber\n"
-    out << "\t}\n"
+    out << "\t\t_ => return Err(ReadMessageError::UnknownMessageNumber)\n"
+    out << "\t}\n\n"
 
+    out << "\t// Medium frequency messages.\n"
+    out << "\tmatch try!(buffer.read_u8()) {\n"
+    messages.each do |message|
+        if message.frequency == "Medium"
+            out << "\t\t#{message.id_byte 1} => return #{message.name}::read_from(buffer),\n"
+        end
+    end
+    out << "\t\t0xff => {},\n"
+    out << "\t\t_ => return Err(ReadMessageError::UnknownMessageNumber)\n"
+    out << "\t}\n\n"
 
-    out << "Err(ReadMessageError::UnknownMessageNumber)\n"
+    out << "\t// Low and fixed frequency messages.\n"
+    out << "\tmatch try!(buffer.read_u16::<BigEndian>()) {\n"
+    messages.each do |message|
+        if message.frequency == "Low" or message.frequency == "Fixed"
+            out << "\t\t#{message.id_byte 2}#{message.id_byte(3)[2..3]} => return #{message.name}::read_from(buffer),\n"
+        end
+    end
+    out << "\t\t_ => return Err(ReadMessageError::UnknownMessageNumber)\n"
+    out << "\t}\n\n"
 
     out << "}\n\n"
     out
@@ -292,7 +310,7 @@ File.open(TARGET_FILE, "w") do |file|
     INFO
     file.write File.read(PREAMBLE_FILE)
     
-#    file.write generate_read_func(messages)
+    file.write generate_read_func(messages)
     
     messages.each { |msg| file.write generate_struct(msg) }
     file.write generate_message_types_enum(messages)
