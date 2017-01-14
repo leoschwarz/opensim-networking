@@ -1,29 +1,11 @@
-use {Ip4Addr, Ip4Port, Uuid};
+use {Ip4Addr, IpPort, Uuid};
 
-use messages::{UseCircuitCode, UseCircuitCode_CircuitCode};
+use messages::{Message, UseCircuitCode, UseCircuitCode_CircuitCode, WriteMessageResult};
 use login::LoginResponse;
 
-
-// TODO: Generate these implementations automatically later.
-use messages::Message;
-use std::io::Write;
 use byteorder::{LittleEndian, BigEndian, WriteBytesExt};
-use messages::WriteMessageResult;
-/*
-impl Message for UseCircuitCode {
-    fn write_to<W: Write>(&self, buffer: &mut W) -> WriteMessageResult {
-        // Write message number.
-        // 1, 2, or 4 bytes long for high, medium, low or fixed
-        try!(buffer.write(&[0xff, 0xff, 0x00, 0x01]));
-
-        // Write message body.
-        try!(buffer.write_u32::<LittleEndian>(self.circuit_code.code));
-        try!(buffer.write(self.circuit_code.session_id.as_bytes()));
-        try!(buffer.write(self.circuit_code.id.as_bytes()));
-        Ok(())
-    }
-}*/
-
+use std::io::Write;
+use std::net::UdpSocket;
 
 bitflags! {
     pub flags PacketFlags: u16 {
@@ -45,7 +27,7 @@ bitflags! {
 pub struct Packet<M: Message> {
     message: M,
     flags: PacketFlags,
-    sequence_number: u32
+    sequence_number: u32,
 }
 
 impl<M: Message> Packet<M> {
@@ -53,7 +35,7 @@ impl<M: Message> Packet<M> {
         Packet {
             message: m,
             flags: PacketFlags::empty(),
-            sequence_number: seq_number
+            sequence_number: seq_number,
         }
     }
 
@@ -77,6 +59,14 @@ impl<M: Message> Packet<M> {
         self.message.write_to(buffer);
     }
 
+    /// TODO: Optimize this in the future.
+    ///       This function will potentially get a lot of use.
+    fn send(&self, socket: &UdpSocket) {
+        let mut buf = Vec::new();
+        self.write_to(&mut buf);
+        socket.send(&buf[..]);
+    }
+
     /// Enable the provided flags.
     fn enable_flags(&mut self, flags: PacketFlags) {
         self.flags.insert(flags);
@@ -89,33 +79,60 @@ impl<M: Message> Packet<M> {
 }
 
 /// We only consider viewer <-> simulator circuits.
+/// TODO: Once there is IPv6 support in the opensim server, implement support for both v4 and v6.
+///       This was not done yet since we would have to abort the code if we got IPv6 addresses
+///       anywhere and would make the API less realiable.
 pub struct Circuit {
-    ip: Ip4Addr,
-    port: Ip4Port,
-    sequence_number: u32
+    sim_ip: Ip4Addr,
+    sim_port: IpPort,
+    sim_socket: UdpSocket,
+    //local_ip: Ip4Addr,
+    //local_port: IpPort,
+    sequence_number: u32,
+}
+
+pub enum CircuitInitiationError {
+    IO(::std::io::Error),
+}
+
+impl From<::std::io::Error> for CircuitInitiationError {
+    fn from(err: ::std::io::Error) -> Self {
+        CircuitInitiationError::IO(err)
+    }
 }
 
 impl Circuit {
-    fn initiate(login_res: &LoginResponse) {
+    fn initiate(login_res: LoginResponse,
+          /*      local_ip: Ip4Addr,
+                local_port: IpPort*/)
+                -> Result<Circuit, CircuitInitiationError> {
+        // Open the sockets.
+        //let mut local_socket = try!(UdpSocket::bind((local_ip, local_port)));
+        let mut remote_socket = try!(UdpSocket::bind((login_res.sim_ip, login_res.sim_port)));
+
         // Use the circuit code.
         let msg = UseCircuitCode {
             circuit_code: UseCircuitCode_CircuitCode {
                 code: login_res.circuit_code,
                 session_id: login_res.session_id.clone(),
-                id: login_res.agent_id.clone()
-            }
+                id: login_res.agent_id.clone(),
+            },
         };
 
         // Send the packet and wait for ack.
         let mut packet = Packet::new(msg, 1);
         packet.enable_flags(PACKET_RELIABLE);
+        packet.send(&remote_socket);
 
-        // TODO send and wait
+        Ok(Circuit {
+            sim_ip: login_res.sim_ip,
+            sim_port: login_res.sim_port,
+            sim_socket: remote_socket,
+            sequence_number: 1
+        })
     }
 
     fn send_message<M: Message>(&self, msg: &M) {
-        // TODO: which socket does this get written to?!
+        // TODO
     }
-
 }
-

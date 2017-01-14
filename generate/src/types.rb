@@ -8,7 +8,7 @@ TYPE_CONVERSIONS = {
     "S8" => "i8", "S16" => "i16", "S32" => "i32", "S64" => "i64",
     "F32" => "f32", "F64" => "f64",
     "LLUUID" => "Uuid",
-    "IPADDR" => "Ip4Addr", "IPPORT" => "Ip4Port",
+    "IPADDR" => "Ip4Addr", "IPPORT" => "IpPort",
     "LLVector3" => "Vector3<f32>", "LLVector3d" => "Vector3<f64>", "LLVector4" => "Vector4<f32>",
     "LLQuaternion" => "Quaternion<f32>",
     "BOOL" => "bool",

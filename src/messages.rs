@@ -4,7 +4,7 @@
 /// / If you want to change the file, edit the generator script `generate/generate.rb`. /
 ///
 
-use {Vector3, Vector4, Quaternion, UnitQuaternion, Ip4Addr, Ip4Port, Uuid};
+use {Vector3, Vector4, Quaternion, UnitQuaternion, Ip4Addr, IpPort, Uuid};
 use std::io::{Read, Write};
 use byteorder::{LittleEndian, BigEndian, ReadBytesExt, WriteBytesExt};
 
@@ -99,7 +99,7 @@ pub struct PacketAck {
 #[derive(Debug)]
 pub struct OpenCircuit_CircuitInfo {
     pub ip: Ip4Addr,
-    pub port: Ip4Port,
+    pub port: IpPort,
 }
 
 #[derive(Debug)]
@@ -165,9 +165,9 @@ pub struct UseCircuitCode {
 #[derive(Debug)]
 pub struct NeighborList_NeighborBlock {
     pub ip: Ip4Addr,
-    pub port: Ip4Port,
+    pub port: IpPort,
     pub public_ip: Ip4Addr,
-    pub public_port: Ip4Port,
+    pub public_port: IpPort,
     pub region_id: Uuid,
     pub name: Vec<u8>,
     pub sim_access: u8,
@@ -284,7 +284,7 @@ pub struct TelehubInfo {
 
 #[derive(Debug)]
 pub struct SimulatorPresentAtLocation_SimulatorPublicHostBlock {
-    pub port: Ip4Port,
+    pub port: IpPort,
     pub simulator_ip: Ip4Addr,
     pub grid_x: u32,
     pub grid_y: u32,
@@ -293,7 +293,7 @@ pub struct SimulatorPresentAtLocation_SimulatorPublicHostBlock {
 #[derive(Debug)]
 pub struct SimulatorPresentAtLocation_NeighborBlock {
     pub ip: Ip4Addr,
-    pub port: Ip4Port,
+    pub port: IpPort,
 }
 
 #[derive(Debug)]
@@ -375,7 +375,7 @@ pub struct RegionPresenceResponse_RegionData {
     pub region_handle: u64,
     pub internal_region_ip: Ip4Addr,
     pub external_region_ip: Ip4Addr,
-    pub region_port: Ip4Port,
+    pub region_port: IpPort,
     pub valid_until: f64,
     pub message: Vec<u8>,
 }
@@ -1516,7 +1516,7 @@ pub struct TeleportFinish_Info {
     pub agent_id: Uuid,
     pub location_id: u32,
     pub sim_ip: Ip4Addr,
-    pub sim_port: Ip4Port,
+    pub sim_port: IpPort,
     pub region_handle: u64,
     pub seed_capability: Vec<u8>,
     pub sim_access: u8,
@@ -3585,7 +3585,7 @@ pub struct CrossedRegion_AgentData {
 #[derive(Debug)]
 pub struct CrossedRegion_RegionData {
     pub sim_ip: Ip4Addr,
-    pub sim_port: Ip4Port,
+    pub sim_port: IpPort,
     pub region_handle: u64,
     pub seed_capability: Vec<u8>,
 }
@@ -3624,7 +3624,7 @@ pub struct SimulatorViewerTimeMessage {
 pub struct EnableSimulator_SimulatorInfo {
     pub handle: u64,
     pub ip: Ip4Addr,
-    pub port: Ip4Port,
+    pub port: IpPort,
 }
 
 #[derive(Debug)]
@@ -3978,7 +3978,7 @@ pub struct PayPriceReply {
 #[derive(Debug)]
 pub struct KickUser_TargetBlock {
     pub target_ip: Ip4Addr,
-    pub target_port: Ip4Port,
+    pub target_port: IpPort,
 }
 
 #[derive(Debug)]
@@ -7366,7 +7366,7 @@ pub struct MoneyBalanceReply {
 #[derive(Debug)]
 pub struct RoutedMoneyBalanceReply_TargetBlock {
     pub target_ip: Ip4Addr,
-    pub target_port: Ip4Port,
+    pub target_port: IpPort,
 }
 
 #[derive(Debug)]
@@ -7561,7 +7561,7 @@ pub struct SetStartLocation {
 
 #[derive(Debug)]
 pub struct NetTest_NetBlock {
-    pub port: Ip4Port,
+    pub port: IpPort,
 }
 
 #[derive(Debug)]
@@ -9443,7 +9443,7 @@ pub struct RpcScriptRequestInbound {
 #[derive(Debug)]
 pub struct RpcScriptRequestInboundForward_DataBlock {
     pub rpc_server_ip: Ip4Addr,
-    pub rpc_server_port: Ip4Port,
+    pub rpc_server_port: IpPort,
     pub task_id: Uuid,
     pub item_id: Uuid,
     pub channel_id: Uuid,
@@ -9475,7 +9475,7 @@ pub struct RpcScriptReplyInbound {
 #[derive(Debug)]
 pub struct ScriptMailRegistration_DataBlock {
     pub target_ip: Vec<u8>,
-    pub target_port: Ip4Port,
+    pub target_port: IpPort,
     pub task_id: Uuid,
     pub flags: u32,
 }

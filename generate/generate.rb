@@ -103,7 +103,7 @@ def generate_field_writer(field, source)
         "try!(buffer.write(#{value}.as_bytes()));\n"
     elsif r_type == "Ip4Addr"
         "try!(buffer.write(&#{value}.octets()));\n"
-    elsif r_type == "Ip4Port"
+    elsif r_type == "IpPort"
         "try!(buffer.write_u16::<LittleEndian>(#{value}));\n"
     elsif r_type == "Vector3<f32>" or r_type == "Vector3<f64>"
         f_type = r_type[8..10]
@@ -141,7 +141,7 @@ def generate_field_reader(field)
         "{ let mut raw = [0; 4]; try!(buffer.read_exact(&mut raw)); try!(Uuid::from_bytes(&raw)) }"
     elsif r_type == "Ip4Addr"
         "{ let mut raw = [0; 4]; try!(buffer.read_exact(&mut raw)); Ip4Addr::from(raw) }"
-    elsif r_type == "Ip4Port"
+    elsif r_type == "IpPort"
         "try!(buffer.read_u16::<LittleEndian>())"
     elsif r_type == "Vector3<f32>" or r_type == "Vector3<f64>"
         f_type = r_type[8..10]
