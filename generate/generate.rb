@@ -329,7 +329,8 @@ File.open(TARGET_FILE, "w") do |file|
 end
 
 if system 'which rustfmt'
-    system "rustfmt --write-mode overwrite '#{TARGET_FILE}'"
+    dir = File.absolute_path File.dirname(__FILE__)
+    system "rustfmt --write-mode overwrite --config-path=#{dir} '#{TARGET_FILE}'"
 else
     puts "Warning: rustfmt not installed, please install and rerun!"
 end

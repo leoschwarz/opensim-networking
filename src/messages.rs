@@ -50,8 +50,7 @@ pub trait Message {
     /// When this function is invoked it is assumed that the message number has
     /// already been read from the buffer object and the body of the message
     /// is at the initial buffer position.
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadMessageError>
-        where R: Read;
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadMessageError> where R: Read;
 }
 
 fn read_message<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadMessageError>
@@ -10906,11 +10905,10 @@ impl TelehubInfo_TelehubBlock {
             telehub_pos: Vector3::new(try!(buffer.read_f32::<LittleEndian>()),
                                       try!(buffer.read_f32::<LittleEndian>()),
                                       try!(buffer.read_f32::<LittleEndian>())),
-            telehub_rot:
-                Quaternion::from_parts(1.,
-                                       Vector3::new(try!(buffer.read_f32::<LittleEndian>()),
-                                                    try!(buffer.read_f32::<LittleEndian>()),
-                                                    try!(buffer.read_f32::<LittleEndian>()))),
+            telehub_rot: Quaternion::from_parts(1.,
+                                                Vector3::new(try!(buffer.read_f32::<LittleEndian>()),
+                                                             try!(buffer.read_f32::<LittleEndian>()),
+                                                             try!(buffer.read_f32::<LittleEndian>()))),
         })
     }
 }
@@ -12817,9 +12815,7 @@ impl ParcelObjectOwnersRequest_ParcelData {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
         where R: Read
     {
-        Ok(ParcelObjectOwnersRequest_ParcelData {
-            local_id: try!(buffer.read_i32::<LittleEndian>()),
-        })
+        Ok(ParcelObjectOwnersRequest_ParcelData { local_id: try!(buffer.read_i32::<LittleEndian>()) })
     }
 }
 
@@ -13524,16 +13520,14 @@ impl AgentUpdate_AgentData {
                 try!(buffer.read_exact(&mut raw));
                 try!(Uuid::from_bytes(&raw))
             },
-            body_rotation:
-                Quaternion::from_parts(1.,
-                                       Vector3::new(try!(buffer.read_f32::<LittleEndian>()),
-                                                    try!(buffer.read_f32::<LittleEndian>()),
-                                                    try!(buffer.read_f32::<LittleEndian>()))),
-            head_rotation:
-                Quaternion::from_parts(1.,
-                                       Vector3::new(try!(buffer.read_f32::<LittleEndian>()),
-                                                    try!(buffer.read_f32::<LittleEndian>()),
-                                                    try!(buffer.read_f32::<LittleEndian>()))),
+            body_rotation: Quaternion::from_parts(1.,
+                                                  Vector3::new(try!(buffer.read_f32::<LittleEndian>()),
+                                                               try!(buffer.read_f32::<LittleEndian>()),
+                                                               try!(buffer.read_f32::<LittleEndian>()))),
+            head_rotation: Quaternion::from_parts(1.,
+                                                  Vector3::new(try!(buffer.read_f32::<LittleEndian>()),
+                                                               try!(buffer.read_f32::<LittleEndian>()),
+                                                               try!(buffer.read_f32::<LittleEndian>()))),
             state: try!(buffer.read_u8()),
             camera_center: Vector3::new(try!(buffer.read_f32::<LittleEndian>()),
                                         try!(buffer.read_f32::<LittleEndian>()),
@@ -14158,9 +14152,7 @@ impl ObjectDuplicateOnRay_ObjectData {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
         where R: Read
     {
-        Ok(ObjectDuplicateOnRay_ObjectData {
-            object_local_id: try!(buffer.read_u32::<LittleEndian>()),
-        })
+        Ok(ObjectDuplicateOnRay_ObjectData { object_local_id: try!(buffer.read_u32::<LittleEndian>()) })
     }
 }
 
@@ -16180,9 +16172,7 @@ impl NearestLandingRegionUpdated_RegionData {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
         where R: Read
     {
-        Ok(NearestLandingRegionUpdated_RegionData {
-            region_handle: try!(buffer.read_u64::<LittleEndian>()),
-        })
+        Ok(NearestLandingRegionUpdated_RegionData { region_handle: try!(buffer.read_u64::<LittleEndian>()) })
     }
 }
 
@@ -16190,9 +16180,7 @@ impl TeleportLandingStatusChanged_RegionData {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
         where R: Read
     {
-        Ok(TeleportLandingStatusChanged_RegionData {
-            region_handle: try!(buffer.read_u64::<LittleEndian>()),
-        })
+        Ok(TeleportLandingStatusChanged_RegionData { region_handle: try!(buffer.read_u64::<LittleEndian>()) })
     }
 }
 
@@ -17076,11 +17064,10 @@ impl AvatarSitResponse_SitTransform {
             sit_position: Vector3::new(try!(buffer.read_f32::<LittleEndian>()),
                                        try!(buffer.read_f32::<LittleEndian>()),
                                        try!(buffer.read_f32::<LittleEndian>())),
-            sit_rotation:
-                Quaternion::from_parts(1.,
-                                       Vector3::new(try!(buffer.read_f32::<LittleEndian>()),
-                                                    try!(buffer.read_f32::<LittleEndian>()),
-                                                    try!(buffer.read_f32::<LittleEndian>()))),
+            sit_rotation: Quaternion::from_parts(1.,
+                                                 Vector3::new(try!(buffer.read_f32::<LittleEndian>()),
+                                                              try!(buffer.read_f32::<LittleEndian>()),
+                                                              try!(buffer.read_f32::<LittleEndian>()))),
             camera_eye_offset: Vector3::new(try!(buffer.read_f32::<LittleEndian>()),
                                             try!(buffer.read_f32::<LittleEndian>()),
                                             try!(buffer.read_f32::<LittleEndian>())),
@@ -18056,9 +18043,7 @@ impl EventNotificationAddRequest_EventData {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
         where R: Read
     {
-        Ok(EventNotificationAddRequest_EventData {
-            event_id: try!(buffer.read_u32::<LittleEndian>()),
-        })
+        Ok(EventNotificationAddRequest_EventData { event_id: try!(buffer.read_u32::<LittleEndian>()) })
     }
 }
 
@@ -18085,9 +18070,7 @@ impl EventNotificationRemoveRequest_EventData {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
         where R: Read
     {
-        Ok(EventNotificationRemoveRequest_EventData {
-            event_id: try!(buffer.read_u32::<LittleEndian>()),
-        })
+        Ok(EventNotificationRemoveRequest_EventData { event_id: try!(buffer.read_u32::<LittleEndian>()) })
     }
 }
 
@@ -18827,9 +18810,7 @@ impl ParcelProperties_AgeVerificationBlock {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
         where R: Read
     {
-        Ok(ParcelProperties_AgeVerificationBlock {
-            region_deny_age_unverified: try!(buffer.read_u8()) == 1,
-        })
+        Ok(ParcelProperties_AgeVerificationBlock { region_deny_age_unverified: try!(buffer.read_u8()) == 1 })
     }
 }
 
@@ -20041,9 +20022,7 @@ impl CheckParcelAuctions_RegionData {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
         where R: Read
     {
-        Ok(CheckParcelAuctions_RegionData {
-            region_handle: try!(buffer.read_u64::<LittleEndian>()),
-        })
+        Ok(CheckParcelAuctions_RegionData { region_handle: try!(buffer.read_u64::<LittleEndian>()) })
     }
 }
 
@@ -20255,16 +20234,14 @@ impl ChildAgentUpdate_AgentData {
                 raw
             },
             locomotion_state: try!(buffer.read_u32::<LittleEndian>()),
-            head_rotation:
-                Quaternion::from_parts(1.,
-                                       Vector3::new(try!(buffer.read_f32::<LittleEndian>()),
-                                                    try!(buffer.read_f32::<LittleEndian>()),
-                                                    try!(buffer.read_f32::<LittleEndian>()))),
-            body_rotation:
-                Quaternion::from_parts(1.,
-                                       Vector3::new(try!(buffer.read_f32::<LittleEndian>()),
-                                                    try!(buffer.read_f32::<LittleEndian>()),
-                                                    try!(buffer.read_f32::<LittleEndian>()))),
+            head_rotation: Quaternion::from_parts(1.,
+                                                  Vector3::new(try!(buffer.read_f32::<LittleEndian>()),
+                                                               try!(buffer.read_f32::<LittleEndian>()),
+                                                               try!(buffer.read_f32::<LittleEndian>()))),
+            body_rotation: Quaternion::from_parts(1.,
+                                                  Vector3::new(try!(buffer.read_f32::<LittleEndian>()),
+                                                               try!(buffer.read_f32::<LittleEndian>()),
+                                                               try!(buffer.read_f32::<LittleEndian>()))),
             control_flags: try!(buffer.read_u32::<LittleEndian>()),
             energy_level: try!(buffer.read_f32::<LittleEndian>()),
             god_level: try!(buffer.read_u8()),
@@ -20651,11 +20628,10 @@ impl ScriptSensorRequest_Requester {
             search_pos: Vector3::new(try!(buffer.read_f32::<LittleEndian>()),
                                      try!(buffer.read_f32::<LittleEndian>()),
                                      try!(buffer.read_f32::<LittleEndian>())),
-            search_dir:
-                Quaternion::from_parts(1.,
-                                       Vector3::new(try!(buffer.read_f32::<LittleEndian>()),
-                                                    try!(buffer.read_f32::<LittleEndian>()),
-                                                    try!(buffer.read_f32::<LittleEndian>()))),
+            search_dir: Quaternion::from_parts(1.,
+                                               Vector3::new(try!(buffer.read_f32::<LittleEndian>()),
+                                                            try!(buffer.read_f32::<LittleEndian>()),
+                                                            try!(buffer.read_f32::<LittleEndian>()))),
             search_name: {
                 let n = try!(buffer.read_u8()) as usize;
                 let mut raw = vec![0; n];
@@ -28704,9 +28680,7 @@ impl Message for RegionPresenceResponse {
         for _ in 0.._region_data_count {
             region_data.push(try!(RegionPresenceResponse_RegionData::read_from(buffer)));
         }
-        Ok(MessageInstance::RegionPresenceResponse(RegionPresenceResponse {
-            region_data: region_data,
-        }))
+        Ok(MessageInstance::RegionPresenceResponse(RegionPresenceResponse { region_data: region_data }))
     }
 }
 
@@ -28904,9 +28878,7 @@ impl Message for SetSimPresenceInDatabase {
     {
         // Block SimData
         let sim_data = try!(SetSimPresenceInDatabase_SimData::read_from(buffer));
-        Ok(MessageInstance::SetSimPresenceInDatabase(SetSimPresenceInDatabase {
-            sim_data: sim_data,
-        }))
+        Ok(MessageInstance::SetSimPresenceInDatabase(SetSimPresenceInDatabase { sim_data: sim_data }))
     }
 }
 
@@ -31203,9 +31175,7 @@ impl Message for RebakeAvatarTextures {
     {
         // Block TextureData
         let texture_data = try!(RebakeAvatarTextures_TextureData::read_from(buffer));
-        Ok(MessageInstance::RebakeAvatarTextures(RebakeAvatarTextures {
-            texture_data: texture_data,
-        }))
+        Ok(MessageInstance::RebakeAvatarTextures(RebakeAvatarTextures { texture_data: texture_data }))
     }
 }
 
@@ -32842,9 +32812,7 @@ impl Message for VelocityInterpolateOff {
     {
         // Block AgentData
         let agent_data = try!(VelocityInterpolateOff_AgentData::read_from(buffer));
-        Ok(MessageInstance::VelocityInterpolateOff(VelocityInterpolateOff {
-            agent_data: agent_data,
-        }))
+        Ok(MessageInstance::VelocityInterpolateOff(VelocityInterpolateOff { agent_data: agent_data }))
     }
 }
 
@@ -32893,9 +32861,7 @@ impl Message for ReportAutosaveCrash {
     {
         // Block AutosaveData
         let autosave_data = try!(ReportAutosaveCrash_AutosaveData::read_from(buffer));
-        Ok(MessageInstance::ReportAutosaveCrash(ReportAutosaveCrash {
-            autosave_data: autosave_data,
-        }))
+        Ok(MessageInstance::ReportAutosaveCrash(ReportAutosaveCrash { autosave_data: autosave_data }))
     }
 }
 
@@ -33223,9 +33189,7 @@ impl Message for MeanCollisionAlert {
         for _ in 0.._mean_collision_count {
             mean_collision.push(try!(MeanCollisionAlert_MeanCollision::read_from(buffer)));
         }
-        Ok(MessageInstance::MeanCollisionAlert(MeanCollisionAlert {
-            mean_collision: mean_collision,
-        }))
+        Ok(MessageInstance::MeanCollisionAlert(MeanCollisionAlert { mean_collision: mean_collision }))
     }
 }
 
@@ -33487,8 +33451,7 @@ impl Message for NearestLandingRegionReply {
         where R: Read
     {
         // Block LandingRegionData
-        let landing_region_data =
-            try!(NearestLandingRegionReply_LandingRegionData::read_from(buffer));
+        let landing_region_data = try!(NearestLandingRegionReply_LandingRegionData::read_from(buffer));
         Ok(MessageInstance::NearestLandingRegionReply(NearestLandingRegionReply {
             landing_region_data: landing_region_data,
         }))
@@ -34048,9 +34011,7 @@ impl Message for SimulatorViewerTimeMessage {
     {
         // Block TimeInfo
         let time_info = try!(SimulatorViewerTimeMessage_TimeInfo::read_from(buffer));
-        Ok(MessageInstance::SimulatorViewerTimeMessage(SimulatorViewerTimeMessage {
-            time_info: time_info,
-        }))
+        Ok(MessageInstance::SimulatorViewerTimeMessage(SimulatorViewerTimeMessage { time_info: time_info }))
     }
 }
 
@@ -34109,9 +34070,7 @@ impl Message for ConfirmEnableSimulator {
     {
         // Block AgentData
         let agent_data = try!(ConfirmEnableSimulator_AgentData::read_from(buffer));
-        Ok(MessageInstance::ConfirmEnableSimulator(ConfirmEnableSimulator {
-            agent_data: agent_data,
-        }))
+        Ok(MessageInstance::ConfirmEnableSimulator(ConfirmEnableSimulator { agent_data: agent_data }))
     }
 }
 
@@ -34496,9 +34455,7 @@ impl Message for ClearFollowCamProperties {
     {
         // Block ObjectData
         let object_data = try!(ClearFollowCamProperties_ObjectData::read_from(buffer));
-        Ok(MessageInstance::ClearFollowCamProperties(ClearFollowCamProperties {
-            object_data: object_data,
-        }))
+        Ok(MessageInstance::ClearFollowCamProperties(ClearFollowCamProperties { object_data: object_data }))
     }
 }
 
@@ -34521,9 +34478,7 @@ impl Message for CameraConstraint {
     {
         // Block CameraCollidePlane
         let camera_collide_plane = try!(CameraConstraint_CameraCollidePlane::read_from(buffer));
-        Ok(MessageInstance::CameraConstraint(CameraConstraint {
-            camera_collide_plane: camera_collide_plane,
-        }))
+        Ok(MessageInstance::CameraConstraint(CameraConstraint { camera_collide_plane: camera_collide_plane }))
     }
 }
 
@@ -34611,9 +34566,7 @@ impl Message for ObjectPropertiesFamily {
     {
         // Block ObjectData
         let object_data = try!(ObjectPropertiesFamily_ObjectData::read_from(buffer));
-        Ok(MessageInstance::ObjectPropertiesFamily(ObjectPropertiesFamily {
-            object_data: object_data,
-        }))
+        Ok(MessageInstance::ObjectPropertiesFamily(ObjectPropertiesFamily { object_data: object_data }))
     }
 }
 
@@ -34850,9 +34803,7 @@ impl Message for AvatarPropertiesRequest {
     {
         // Block AgentData
         let agent_data = try!(AvatarPropertiesRequest_AgentData::read_from(buffer));
-        Ok(MessageInstance::AvatarPropertiesRequest(AvatarPropertiesRequest {
-            agent_data: agent_data,
-        }))
+        Ok(MessageInstance::AvatarPropertiesRequest(AvatarPropertiesRequest { agent_data: agent_data }))
     }
 }
 
@@ -35604,9 +35555,7 @@ impl Message for ForceScriptControlRelease {
     {
         // Block AgentData
         let agent_data = try!(ForceScriptControlRelease_AgentData::read_from(buffer));
-        Ok(MessageInstance::ForceScriptControlRelease(ForceScriptControlRelease {
-            agent_data: agent_data,
-        }))
+        Ok(MessageInstance::ForceScriptControlRelease(ForceScriptControlRelease { agent_data: agent_data }))
     }
 }
 
@@ -37157,9 +37106,7 @@ impl Message for UUIDGroupNameRequest {
         for _ in 0.._uuid_name_block_count {
             uuid_name_block.push(try!(UUIDGroupNameRequest_UUIDNameBlock::read_from(buffer)));
         }
-        Ok(MessageInstance::UUIDGroupNameRequest(UUIDGroupNameRequest {
-            uuid_name_block: uuid_name_block,
-        }))
+        Ok(MessageInstance::UUIDGroupNameRequest(UUIDGroupNameRequest { uuid_name_block: uuid_name_block }))
     }
 }
 
@@ -37187,9 +37134,7 @@ impl Message for UUIDGroupNameReply {
         for _ in 0.._uuid_name_block_count {
             uuid_name_block.push(try!(UUIDGroupNameReply_UUIDNameBlock::read_from(buffer)));
         }
-        Ok(MessageInstance::UUIDGroupNameReply(UUIDGroupNameReply {
-            uuid_name_block: uuid_name_block,
-        }))
+        Ok(MessageInstance::UUIDGroupNameReply(UUIDGroupNameReply { uuid_name_block: uuid_name_block }))
     }
 }
 
@@ -37486,9 +37431,7 @@ impl Message for ChildAgentPositionUpdate {
     {
         // Block AgentData
         let agent_data = try!(ChildAgentPositionUpdate_AgentData::read_from(buffer));
-        Ok(MessageInstance::ChildAgentPositionUpdate(ChildAgentPositionUpdate {
-            agent_data: agent_data,
-        }))
+        Ok(MessageInstance::ChildAgentPositionUpdate(ChildAgentPositionUpdate { agent_data: agent_data }))
     }
 }
 
@@ -37960,9 +37903,7 @@ impl Message for RetrieveInstantMessages {
     {
         // Block AgentData
         let agent_data = try!(RetrieveInstantMessages_AgentData::read_from(buffer));
-        Ok(MessageInstance::RetrieveInstantMessages(RetrieveInstantMessages {
-            agent_data: agent_data,
-        }))
+        Ok(MessageInstance::RetrieveInstantMessages(RetrieveInstantMessages { agent_data: agent_data }))
     }
 }
 
@@ -39055,9 +38996,7 @@ impl Message for InventoryAssetResponse {
     {
         // Block QueryData
         let query_data = try!(InventoryAssetResponse_QueryData::read_from(buffer));
-        Ok(MessageInstance::InventoryAssetResponse(InventoryAssetResponse {
-            query_data: query_data,
-        }))
+        Ok(MessageInstance::InventoryAssetResponse(InventoryAssetResponse { query_data: query_data }))
     }
 }
 
@@ -39295,9 +39234,7 @@ impl Message for ReplyTaskInventory {
     {
         // Block InventoryData
         let inventory_data = try!(ReplyTaskInventory_InventoryData::read_from(buffer));
-        Ok(MessageInstance::ReplyTaskInventory(ReplyTaskInventory {
-            inventory_data: inventory_data,
-        }))
+        Ok(MessageInstance::ReplyTaskInventory(ReplyTaskInventory { inventory_data: inventory_data }))
     }
 }
 
@@ -39969,9 +39906,7 @@ impl Message for RegionHandleRequest {
     {
         // Block RequestBlock
         let request_block = try!(RegionHandleRequest_RequestBlock::read_from(buffer));
-        Ok(MessageInstance::RegionHandleRequest(RegionHandleRequest {
-            request_block: request_block,
-        }))
+        Ok(MessageInstance::RegionHandleRequest(RegionHandleRequest { request_block: request_block }))
     }
 }
 
@@ -39992,9 +39927,7 @@ impl Message for RegionIDAndHandleReply {
     {
         // Block ReplyBlock
         let reply_block = try!(RegionIDAndHandleReply_ReplyBlock::read_from(buffer));
-        Ok(MessageInstance::RegionIDAndHandleReply(RegionIDAndHandleReply {
-            reply_block: reply_block,
-        }))
+        Ok(MessageInstance::RegionIDAndHandleReply(RegionIDAndHandleReply { reply_block: reply_block }))
     }
 }
 
@@ -40445,8 +40378,7 @@ impl Message for SetStartLocationRequest {
         // Block AgentData
         let agent_data = try!(SetStartLocationRequest_AgentData::read_from(buffer));
         // Block StartLocationData
-        let start_location_data =
-            try!(SetStartLocationRequest_StartLocationData::read_from(buffer));
+        let start_location_data = try!(SetStartLocationRequest_StartLocationData::read_from(buffer));
         Ok(MessageInstance::SetStartLocationRequest(SetStartLocationRequest {
             agent_data: agent_data,
             start_location_data: start_location_data,
@@ -40479,9 +40411,7 @@ impl Message for SetStartLocation {
     {
         // Block StartLocationData
         let start_location_data = try!(SetStartLocation_StartLocationData::read_from(buffer));
-        Ok(MessageInstance::SetStartLocation(SetStartLocation {
-            start_location_data: start_location_data,
-        }))
+        Ok(MessageInstance::SetStartLocation(SetStartLocation { start_location_data: start_location_data }))
     }
 }
 
@@ -40785,9 +40715,7 @@ impl Message for AttachedSoundGainChange {
     {
         // Block DataBlock
         let data_block = try!(AttachedSoundGainChange_DataBlock::read_from(buffer));
-        Ok(MessageInstance::AttachedSoundGainChange(AttachedSoundGainChange {
-            data_block: data_block,
-        }))
+        Ok(MessageInstance::AttachedSoundGainChange(AttachedSoundGainChange { data_block: data_block }))
     }
 }
 
@@ -41749,8 +41677,7 @@ impl Message for GroupActiveProposalItemReply {
         // Block AgentData
         let agent_data = try!(GroupActiveProposalItemReply_AgentData::read_from(buffer));
         // Block TransactionData
-        let transaction_data =
-            try!(GroupActiveProposalItemReply_TransactionData::read_from(buffer));
+        let transaction_data = try!(GroupActiveProposalItemReply_TransactionData::read_from(buffer));
         // Block ProposalData
         let mut proposal_data = Vec::new();
         let _proposal_data_count = try!(buffer.read_u8());
@@ -42377,9 +42304,7 @@ impl Message for LiveHelpGroupRequest {
     {
         // Block RequestData
         let request_data = try!(LiveHelpGroupRequest_RequestData::read_from(buffer));
-        Ok(MessageInstance::LiveHelpGroupRequest(LiveHelpGroupRequest {
-            request_data: request_data,
-        }))
+        Ok(MessageInstance::LiveHelpGroupRequest(LiveHelpGroupRequest { request_data: request_data }))
     }
 }
 
@@ -42592,9 +42517,7 @@ impl Message for AgentDataUpdateRequest {
     {
         // Block AgentData
         let agent_data = try!(AgentDataUpdateRequest_AgentData::read_from(buffer));
-        Ok(MessageInstance::AgentDataUpdateRequest(AgentDataUpdateRequest {
-            agent_data: agent_data,
-        }))
+        Ok(MessageInstance::AgentDataUpdateRequest(AgentDataUpdateRequest { agent_data: agent_data }))
     }
 }
 
@@ -42946,9 +42869,7 @@ impl Message for DetachAttachmentIntoInv {
     {
         // Block ObjectData
         let object_data = try!(DetachAttachmentIntoInv_ObjectData::read_from(buffer));
-        Ok(MessageInstance::DetachAttachmentIntoInv(DetachAttachmentIntoInv {
-            object_data: object_data,
-        }))
+        Ok(MessageInstance::DetachAttachmentIntoInv(DetachAttachmentIntoInv { object_data: object_data }))
     }
 }
 
@@ -43591,9 +43512,7 @@ impl Message for ScriptMailRegistration {
     {
         // Block DataBlock
         let data_block = try!(ScriptMailRegistration_DataBlock::read_from(buffer));
-        Ok(MessageInstance::ScriptMailRegistration(ScriptMailRegistration {
-            data_block: data_block,
-        }))
+        Ok(MessageInstance::ScriptMailRegistration(ScriptMailRegistration { data_block: data_block }))
     }
 }
 
