@@ -89,6 +89,7 @@ class Message
     attr_accessor :blocks, :id, :frequency
     # Both LL and Rust version are exactly the same.
     attr_accessor :name
+    attr_accessor :comments
 
     def initialize(fields)
         @name = fields[:name]
@@ -98,6 +99,7 @@ class Message
         @trust = fields[:trust]
         @encoding = fields[:encoding]
         @blocks = fields[:blocks]
+        @comments = fields[:comments]
     end
 
     # Returns a hexadecimal string (with '0x' prefix) of the n-th byte of the id.

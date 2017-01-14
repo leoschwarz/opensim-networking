@@ -562,6 +562,7 @@ pub struct TestMessage_NeighborBlock {
     pub test2: u32,
 }
 
+
 #[derive(Debug)]
 pub struct TestMessage {
     pub test_block1: TestMessage_TestBlock1,
@@ -574,6 +575,7 @@ pub struct PacketAck_Packets {
     pub id: u32,
 }
 
+/// Packet Ack - Ack a list of packets sent reliable
 #[derive(Debug)]
 pub struct PacketAck {
     pub packets: Vec<PacketAck_Packets>,
@@ -586,12 +588,14 @@ pub struct OpenCircuit_CircuitInfo {
     pub port: IpPort,
 }
 
+/// OpenCircuit - Tells the recipient's messaging system to open the descibed circuit
 #[derive(Debug)]
 pub struct OpenCircuit {
     pub circuit_info: OpenCircuit_CircuitInfo,
 }
 
 
+/// CloseCircuit - Tells the recipient's messaging system to close the descibed circuit
 #[derive(Debug)]
 pub struct CloseCircuit {
 }
@@ -603,6 +607,9 @@ pub struct StartPingCheck_PingID {
     pub oldest_unacked: u32,
 }
 
+/// StartPingCheck - used to measure circuit ping times
+/// PingID is used to determine how backlogged the ping was that was
+/// returned (or how hosed the other side is)
 #[derive(Debug)]
 pub struct StartPingCheck {
     pub ping_id: StartPingCheck_PingID,
@@ -613,6 +620,7 @@ pub struct StartPingCheck {
 pub struct CompletePingCheck_PingID {
     pub ping_id: u8,
 }
+
 
 #[derive(Debug)]
 pub struct CompletePingCheck {
@@ -627,6 +635,10 @@ pub struct AddCircuitCode_CircuitCode {
     pub agent_id: Uuid,
 }
 
+/// space->sim
+/// sim->sim
+/// AddCircuitCode - Tells the recipient's messaging system that this code
+/// is for a legal circuit
 #[derive(Debug)]
 pub struct AddCircuitCode {
     pub circuit_code: AddCircuitCode_CircuitCode,
@@ -640,6 +652,12 @@ pub struct UseCircuitCode_CircuitCode {
     pub id: Uuid,
 }
 
+/// viewer->sim
+/// UseCircuitCode - Attempts to provide the recipient with IP and Port
+/// info. In the case of viewers, the id is the session id. For other
+/// machines it may be null. The session id will always be the session
+/// id of the process, which every server will generate on startup and
+/// the viewer will be handed after login.
 #[derive(Debug)]
 pub struct UseCircuitCode {
     pub circuit_code: UseCircuitCode_CircuitCode,
@@ -657,6 +675,7 @@ pub struct NeighborList_NeighborBlock {
     pub sim_access: u8,
 }
 
+/// Neighbor List - Passed anytime neighbors change
 #[derive(Debug)]
 pub struct NeighborList {
     pub neighbor_block: [NeighborList_NeighborBlock; 4],
@@ -681,6 +700,9 @@ pub struct AvatarTextureUpdate_TextureData {
     pub texture_id: Uuid,
 }
 
+/// AvatarTextureUpdate
+/// simulator -> dataserver
+/// reliable
 #[derive(Debug)]
 pub struct AvatarTextureUpdate {
     pub agent_data: AvatarTextureUpdate_AgentData,
@@ -694,6 +716,9 @@ pub struct SimulatorMapUpdate_MapData {
     pub flags: u32,
 }
 
+/// SimulatorMapUpdate
+/// simulator -> dataserver
+/// reliable
 #[derive(Debug)]
 pub struct SimulatorMapUpdate {
     pub map_data: SimulatorMapUpdate_MapData,
@@ -707,17 +732,27 @@ pub struct SimulatorSetMap_MapData {
     pub map_image: Uuid,
 }
 
+/// SimulatorSetMap
+/// simulator -> dataserver
+/// reliable
+/// Used to upload a map image into the database (currently used only for Land For Sale)
 #[derive(Debug)]
 pub struct SimulatorSetMap {
     pub map_data: SimulatorSetMap_MapData,
 }
 
 
+/// SubscribeLoad
+/// spaceserver -> simulator
+/// reliable
 #[derive(Debug)]
 pub struct SubscribeLoad {
 }
 
 
+/// UnsubscribeLoad
+/// spaceserver -> simulator
+/// reliable
 #[derive(Debug)]
 pub struct UnsubscribeLoad {
 }
@@ -739,6 +774,8 @@ pub struct SimulatorReady_TelehubBlock {
     pub telehub_pos: Vector3<f32>,
 }
 
+/// SimulatorReady - indicates the sim has finished loading its state
+/// and is ready to receive updates from others
 #[derive(Debug)]
 pub struct SimulatorReady {
     pub simulator_block: SimulatorReady_SimulatorBlock,
@@ -759,6 +796,9 @@ pub struct TelehubInfo_SpawnPointBlock {
     pub spawn_point_pos: Vector3<f32>,
 }
 
+/// TelehubInfo - fill in the UI for telehub creation floater.
+/// sim -> viewer
+/// reliable
 #[derive(Debug)]
 pub struct TelehubInfo {
     pub telehub_block: TelehubInfo_TelehubBlock,
@@ -796,6 +836,8 @@ pub struct SimulatorPresentAtLocation_TelehubBlock {
     pub telehub_pos: Vector3<f32>,
 }
 
+/// SimulatorPresentAtLocation - indicates that the sim is present at a grid
+/// location and passes what it believes its neighbors are
 #[derive(Debug)]
 pub struct SimulatorPresentAtLocation {
     pub simulator_public_host_block: SimulatorPresentAtLocation_SimulatorPublicHostBlock,
@@ -819,6 +861,9 @@ pub struct SimulatorLoad_AgentList {
     pub y: u8,
 }
 
+/// SimulatorLoad
+/// simulator -> spaceserver
+/// reliable
 #[derive(Debug)]
 pub struct SimulatorLoad {
     pub simulator_load: SimulatorLoad_SimulatorLoad,
@@ -826,6 +871,7 @@ pub struct SimulatorLoad {
 }
 
 
+/// Simulator Shutdown Request - Tells spaceserver that a simulator is trying to shutdown
 #[derive(Debug)]
 pub struct SimulatorShutdownRequest {
 }
@@ -836,6 +882,7 @@ pub struct RegionPresenceRequestByRegionID_RegionData {
     pub region_id: Uuid,
 }
 
+/// sim -> dataserver
 #[derive(Debug)]
 pub struct RegionPresenceRequestByRegionID {
     pub region_data: Vec<RegionPresenceRequestByRegionID_RegionData>,
@@ -847,6 +894,7 @@ pub struct RegionPresenceRequestByHandle_RegionData {
     pub region_handle: u64,
 }
 
+/// sim -> dataserver
 #[derive(Debug)]
 pub struct RegionPresenceRequestByHandle {
     pub region_data: Vec<RegionPresenceRequestByHandle_RegionData>,
@@ -864,6 +912,7 @@ pub struct RegionPresenceResponse_RegionData {
     pub message: Vec<u8>,
 }
 
+/// dataserver -> sim
 #[derive(Debug)]
 pub struct RegionPresenceResponse {
     pub region_data: Vec<RegionPresenceResponse_RegionData>,
@@ -878,6 +927,7 @@ pub struct UpdateSimulator_SimulatorInfo {
     pub sim_access: u8,
 }
 
+/// Updates SimName, EstateID and SimAccess using RegionID as a key
 #[derive(Debug)]
 pub struct UpdateSimulator {
     pub simulator_info: UpdateSimulator_SimulatorInfo,
@@ -896,6 +946,7 @@ pub struct LogDwellTime_DwellInfo {
     pub avg_viewer_fps: u8,
 }
 
+/// record dwell time.
 #[derive(Debug)]
 pub struct LogDwellTime {
     pub dwell_info: LogDwellTime_DwellInfo,
@@ -909,6 +960,7 @@ pub struct FeatureDisabled_FailureInfo {
     pub transaction_id: Uuid,
 }
 
+/// Disabled feature response message
 #[derive(Debug)]
 pub struct FeatureDisabled {
     pub failure_info: FeatureDisabled_FailureInfo,
@@ -930,6 +982,9 @@ pub struct LogFailedMoneyTransaction_TransactionData {
     pub failure_type: u8,
 }
 
+/// record lost money transactions.  This message could be generated
+/// from either the simulator or the dataserver, depending on how
+/// the transaction failed.
 #[derive(Debug)]
 pub struct LogFailedMoneyTransaction {
     pub transaction_data: LogFailedMoneyTransaction_TransactionData,
@@ -957,6 +1012,8 @@ pub struct UserReportInternal_ReportData {
     pub version_string: Vec<u8>,
 }
 
+/// complaint/bug-report - sim -> dataserver. see UserReport for details.
+/// reliable
 #[derive(Debug)]
 pub struct UserReportInternal {
     pub report_data: UserReportInternal_ReportData,
@@ -975,6 +1032,10 @@ pub struct SetSimStatusInDatabase_Data {
     pub status: Vec<u8>,
 }
 
+/// SetSimStatusInDatabase
+/// alters the "simulator" table in the database
+/// sim -> dataserver
+/// reliable
 #[derive(Debug)]
 pub struct SetSimStatusInDatabase {
     pub data: SetSimStatusInDatabase_Data,
@@ -993,12 +1054,17 @@ pub struct SetSimPresenceInDatabase_SimData {
     pub status: Vec<u8>,
 }
 
+/// SetSimPresenceInDatabase
+/// updates the "presence" table in the database to ensure
+/// that a given simulator is present and valid for a set amount of
+/// time
 #[derive(Debug)]
 pub struct SetSimPresenceInDatabase {
     pub sim_data: SetSimPresenceInDatabase_SimData,
 }
 
 
+/// once we use local stats, this will include a region handle
 #[derive(Debug)]
 pub struct EconomyDataRequest {
 }
@@ -1025,6 +1091,7 @@ pub struct EconomyData_Info {
     pub price_group_create: i32,
 }
 
+/// dataserver to sim, response w/ econ data
 #[derive(Debug)]
 pub struct EconomyData {
     pub info: EconomyData_Info,
@@ -1043,6 +1110,10 @@ pub struct AvatarPickerRequest_Data {
     pub name: Vec<u8>,
 }
 
+/// AvatarPickerRequest
+/// Get a list of names to select a person
+/// viewer -> sim -> data
+/// reliable
 #[derive(Debug)]
 pub struct AvatarPickerRequest {
     pub agent_data: AvatarPickerRequest_AgentData,
@@ -1063,6 +1134,7 @@ pub struct AvatarPickerRequestBackend_Data {
     pub name: Vec<u8>,
 }
 
+/// backend implementation which tracks if the user is a god.
 #[derive(Debug)]
 pub struct AvatarPickerRequestBackend {
     pub agent_data: AvatarPickerRequestBackend_AgentData,
@@ -1083,6 +1155,9 @@ pub struct AvatarPickerReply_Data {
     pub last_name: Vec<u8>,
 }
 
+/// AvatarPickerReply
+/// List of names to select a person
+/// reliable
 #[derive(Debug)]
 pub struct AvatarPickerReply {
     pub agent_data: AvatarPickerReply_AgentData,
@@ -1110,6 +1185,9 @@ pub struct PlacesQuery_QueryData {
     pub sim_name: Vec<u8>,
 }
 
+/// PlacesQuery
+/// Used for getting a list of places for the group land panel
+/// and the user land holdings panel.  NOT for the directory.
 #[derive(Debug)]
 pub struct PlacesQuery {
     pub agent_data: PlacesQuery_AgentData,
@@ -1146,6 +1224,12 @@ pub struct PlacesReply_QueryData {
     pub price: i32,
 }
 
+/// PlacesReply
+/// dataserver -> simulator -> viewer
+/// If the user has specified a location, use that to compute
+/// global x,y,z.  Otherwise, use center of the AABB.
+/// reliable
+/// {	ProductSKU		Variable	1	}
 #[derive(Debug)]
 pub struct PlacesReply {
     pub agent_data: PlacesReply_AgentData,
@@ -1168,6 +1252,8 @@ pub struct DirFindQuery_QueryData {
     pub query_start: i32,
 }
 
+/// DirFindQuery viewer->sim
+/// Message to start asking questions for the directory
 #[derive(Debug)]
 pub struct DirFindQuery {
     pub agent_data: DirFindQuery_AgentData,
@@ -1190,6 +1276,8 @@ pub struct DirFindQueryBackend_QueryData {
     pub godlike: bool,
 }
 
+/// DirFindQueryBackend sim->data
+/// Trusted message generated by receipt of DirFindQuery to sim.
 #[derive(Debug)]
 pub struct DirFindQueryBackend {
     pub agent_data: DirFindQueryBackend_AgentData,
@@ -1213,6 +1301,8 @@ pub struct DirPlacesQuery_QueryData {
     pub query_start: i32,
 }
 
+/// DirPlacesQuery viewer->sim
+/// Used for the Find directory of places
 #[derive(Debug)]
 pub struct DirPlacesQuery {
     pub agent_data: DirPlacesQuery_AgentData,
@@ -1237,6 +1327,8 @@ pub struct DirPlacesQueryBackend_QueryData {
     pub query_start: i32,
 }
 
+/// DirPlacesQueryBackend sim->dataserver
+/// Used for the Find directory of places.
 #[derive(Debug)]
 pub struct DirPlacesQueryBackend {
     pub agent_data: DirPlacesQueryBackend_AgentData,
@@ -1268,6 +1360,10 @@ pub struct DirPlacesReply_StatusData {
     pub status: u32,
 }
 
+/// DirPlacesReply dataserver->sim->viewer
+/// If the user has specified a location, use that to compute
+/// global x,y,z.  Otherwise, use center of the AABB.
+/// reliable
 #[derive(Debug)]
 pub struct DirPlacesReply {
     pub agent_data: DirPlacesReply_AgentData,
@@ -1297,6 +1393,7 @@ pub struct DirPeopleReply_QueryReplies {
     pub reputation: i32,
 }
 
+/// DirPeopleReply
 #[derive(Debug)]
 pub struct DirPeopleReply {
     pub agent_data: DirPeopleReply_AgentData,
@@ -1330,6 +1427,7 @@ pub struct DirEventsReply_StatusData {
     pub status: u32,
 }
 
+/// DirEventsReply
 #[derive(Debug)]
 pub struct DirEventsReply {
     pub agent_data: DirEventsReply_AgentData,
@@ -1357,6 +1455,9 @@ pub struct DirGroupsReply_QueryReplies {
     pub search_order: f32,
 }
 
+/// DirGroupsReply
+/// dataserver -> userserver -> viewer
+/// reliable
 #[derive(Debug)]
 pub struct DirGroupsReply {
     pub agent_data: DirGroupsReply_AgentData,
@@ -1380,6 +1481,8 @@ pub struct DirClassifiedQuery_QueryData {
     pub query_start: i32,
 }
 
+/// DirClassifiedQuery viewer->sim
+/// reliable
 #[derive(Debug)]
 pub struct DirClassifiedQuery {
     pub agent_data: DirClassifiedQuery_AgentData,
@@ -1403,6 +1506,8 @@ pub struct DirClassifiedQueryBackend_QueryData {
     pub query_start: i32,
 }
 
+/// DirClassifiedQueryBackend sim->dataserver
+/// reliable
 #[derive(Debug)]
 pub struct DirClassifiedQueryBackend {
     pub agent_data: DirClassifiedQueryBackend_AgentData,
@@ -1435,6 +1540,8 @@ pub struct DirClassifiedReply_StatusData {
     pub status: u32,
 }
 
+/// DirClassifiedReply dataserver->sim->viewer
+/// reliable
 #[derive(Debug)]
 pub struct DirClassifiedReply {
     pub agent_data: DirClassifiedReply_AgentData,
@@ -1456,6 +1563,11 @@ pub struct AvatarClassifiedReply_Data {
     pub name: Vec<u8>,
 }
 
+/// AvatarClassifiedReply
+/// dataserver -> simulator -> viewer
+/// Send the header information for this avatar's classifieds
+/// This fills in the tabs of the Classifieds panel.
+/// reliable
 #[derive(Debug)]
 pub struct AvatarClassifiedReply {
     pub agent_data: AvatarClassifiedReply_AgentData,
@@ -1474,6 +1586,10 @@ pub struct ClassifiedInfoRequest_Data {
     pub classified_id: Uuid,
 }
 
+/// ClassifiedInfoRequest
+/// viewer -> simulator
+/// simulator -> dataserver
+/// reliable
 #[derive(Debug)]
 pub struct ClassifiedInfoRequest {
     pub agent_data: ClassifiedInfoRequest_AgentData,
@@ -1505,6 +1621,10 @@ pub struct ClassifiedInfoReply_Data {
     pub price_for_listing: i32,
 }
 
+/// ClassifiedInfoReply
+/// dataserver -> simulator
+/// simulator -> viewer
+/// reliable
 #[derive(Debug)]
 pub struct ClassifiedInfoReply {
     pub agent_data: ClassifiedInfoReply_AgentData,
@@ -1532,6 +1652,11 @@ pub struct ClassifiedInfoUpdate_Data {
     pub price_for_listing: i32,
 }
 
+/// ClassifiedInfoUpdate
+/// Update a classified.  ParcelID and EstateID are set
+/// on the simulator as the message passes through.
+/// viewer -> simulator -> dataserver
+/// reliable
 #[derive(Debug)]
 pub struct ClassifiedInfoUpdate {
     pub agent_data: ClassifiedInfoUpdate_AgentData,
@@ -1550,6 +1675,10 @@ pub struct ClassifiedDelete_Data {
     pub classified_id: Uuid,
 }
 
+/// ClassifiedDelete
+/// Delete a classified from the database.
+/// viewer -> simulator -> dataserver
+/// reliable
 #[derive(Debug)]
 pub struct ClassifiedDelete {
     pub agent_data: ClassifiedDelete_AgentData,
@@ -1569,6 +1698,12 @@ pub struct ClassifiedGodDelete_Data {
     pub query_id: Uuid,
 }
 
+/// ClassifiedGodDelete
+/// Delete a classified from the database.
+/// QueryID is needed so database can send a repeat list of
+/// classified.
+/// viewer -> simulator -> dataserver
+/// reliable
 #[derive(Debug)]
 pub struct ClassifiedGodDelete {
     pub agent_data: ClassifiedGodDelete_AgentData,
@@ -1592,6 +1727,9 @@ pub struct DirLandQuery_QueryData {
     pub query_start: i32,
 }
 
+/// DirLandQuery viewer->sim
+/// Special query for the land for sale/auction panel.
+/// reliable
 #[derive(Debug)]
 pub struct DirLandQuery {
     pub agent_data: DirLandQuery_AgentData,
@@ -1616,6 +1754,8 @@ pub struct DirLandQueryBackend_QueryData {
     pub godlike: bool,
 }
 
+/// DirLandQueryBackend sim->dataserver
+/// Special query for the land for sale/auction panel.
 #[derive(Debug)]
 pub struct DirLandQueryBackend {
     pub agent_data: DirLandQueryBackend_AgentData,
@@ -1643,6 +1783,10 @@ pub struct DirLandReply_QueryReplies {
     pub actual_area: i32,
 }
 
+/// DirLandReply
+/// dataserver -> simulator -> viewer
+/// reliable
+/// {	ProductSKU		Variable 1	}
 #[derive(Debug)]
 pub struct DirLandReply {
     pub agent_data: DirLandReply_AgentData,
@@ -1663,6 +1807,9 @@ pub struct DirPopularQuery_QueryData {
     pub query_flags: u32,
 }
 
+/// DEPRECATED: DirPopularQuery viewer->sim
+/// Special query for the land for sale/auction panel.
+/// reliable
 #[derive(Debug)]
 pub struct DirPopularQuery {
     pub agent_data: DirPopularQuery_AgentData,
@@ -1683,6 +1830,9 @@ pub struct DirPopularQueryBackend_QueryData {
     pub godlike: bool,
 }
 
+/// DEPRECATED: DirPopularQueryBackend sim->dataserver
+/// Special query for the land for sale/auction panel.
+/// reliable
 #[derive(Debug)]
 pub struct DirPopularQueryBackend {
     pub agent_data: DirPopularQueryBackend_AgentData,
@@ -1707,6 +1857,9 @@ pub struct DirPopularReply_QueryReplies {
     pub dwell: f32,
 }
 
+/// DEPRECATED: DirPopularReply
+/// dataserver -> simulator -> viewer
+/// reliable
 #[derive(Debug)]
 pub struct DirPopularReply {
     pub agent_data: DirPopularReply_AgentData,
@@ -1726,6 +1879,9 @@ pub struct ParcelInfoRequest_Data {
     pub parcel_id: Uuid,
 }
 
+/// ParcelInfoRequest
+/// viewer -> simulator -> dataserver
+/// reliable
 #[derive(Debug)]
 pub struct ParcelInfoRequest {
     pub agent_data: ParcelInfoRequest_AgentData,
@@ -1757,6 +1913,9 @@ pub struct ParcelInfoReply_Data {
     pub auction_id: i32,
 }
 
+/// ParcelInfoReply
+/// dataserver -> simulator -> viewer
+/// reliable
 #[derive(Debug)]
 pub struct ParcelInfoReply {
     pub agent_data: ParcelInfoReply_AgentData,
@@ -1775,6 +1934,9 @@ pub struct ParcelObjectOwnersRequest_ParcelData {
     pub local_id: i32,
 }
 
+/// ParcelObjectOwnersRequest
+/// viewer -> simulator
+/// reliable
 #[derive(Debug)]
 pub struct ParcelObjectOwnersRequest {
     pub agent_data: ParcelObjectOwnersRequest_AgentData,
@@ -1790,6 +1952,9 @@ pub struct ParcelObjectOwnersReply_Data {
     pub online_status: bool,
 }
 
+/// ParcelObjectOwnersReply
+/// simulator -> viewer
+/// reliable
 #[derive(Debug)]
 pub struct ParcelObjectOwnersReply {
     pub data: Vec<ParcelObjectOwnersReply_Data>,
@@ -1807,6 +1972,9 @@ pub struct GroupNoticesListRequest_Data {
     pub group_id: Uuid,
 }
 
+/// GroupNoticeListRequest
+/// viewer -> simulator -> dataserver
+/// reliable
 #[derive(Debug)]
 pub struct GroupNoticesListRequest {
     pub agent_data: GroupNoticesListRequest_AgentData,
@@ -1830,6 +1998,9 @@ pub struct GroupNoticesListReply_Data {
     pub asset_type: u8,
 }
 
+/// GroupNoticesListReply
+/// dataserver -> simulator -> viewer
+/// reliable
 #[derive(Debug)]
 pub struct GroupNoticesListReply {
     pub agent_data: GroupNoticesListReply_AgentData,
@@ -1848,6 +2019,10 @@ pub struct GroupNoticeRequest_Data {
     pub group_notice_id: Uuid,
 }
 
+/// GroupNoticeRequest
+/// viewer -> simulator
+/// simulator -> dataserver
+/// reliable
 #[derive(Debug)]
 pub struct GroupNoticeRequest {
     pub agent_data: GroupNoticeRequest_AgentData,
@@ -1870,6 +2045,10 @@ pub struct GroupNoticeAdd_MessageBlock {
     pub binary_bucket: Vec<u8>,
 }
 
+/// GroupNoticeAdd
+/// Add a group notice.
+/// simulator -> dataserver
+/// reliable
 #[derive(Debug)]
 pub struct GroupNoticeAdd {
     pub agent_data: GroupNoticeAdd_AgentData,
@@ -1890,6 +2069,8 @@ pub struct TeleportRequest_Info {
     pub look_at: Vector3<f32>,
 }
 
+/// TeleportRequest
+/// viewer -> sim specifying exact teleport destination
 #[derive(Debug)]
 pub struct TeleportRequest {
     pub agent_data: TeleportRequest_AgentData,
@@ -1910,6 +2091,8 @@ pub struct TeleportLocationRequest_Info {
     pub look_at: Vector3<f32>,
 }
 
+/// TeleportLocationRequest
+/// viewer -> sim specifying exact teleport destination
 #[derive(Debug)]
 pub struct TeleportLocationRequest {
     pub agent_data: TeleportLocationRequest_AgentData,
@@ -1926,6 +2109,9 @@ pub struct TeleportLocal_Info {
     pub teleport_flags: u32,
 }
 
+/// TeleportLocal
+/// sim -> viewer reply telling the viewer that we've successfully TP'd
+/// to somewhere else within the sim
 #[derive(Debug)]
 pub struct TeleportLocal {
     pub info: TeleportLocal_Info,
@@ -1939,6 +2125,8 @@ pub struct TeleportLandmarkRequest_Info {
     pub landmark_id: Uuid,
 }
 
+/// TeleportLandmarkRequest viewer->sim
+/// teleport to landmark asset ID destination. use LLUUD::null for home.
 #[derive(Debug)]
 pub struct TeleportLandmarkRequest {
     pub info: TeleportLandmarkRequest_Info,
@@ -1956,6 +2144,8 @@ pub struct TeleportProgress_Info {
     pub message: Vec<u8>,
 }
 
+/// TeleportProgress sim->viewer
+/// Tell the agent how the teleport is going.
 #[derive(Debug)]
 pub struct TeleportProgress {
     pub agent_data: TeleportProgress_AgentData,
@@ -1974,6 +2164,8 @@ pub struct DataHomeLocationRequest_AgentInfo {
     pub agent_effective_maturity: u32,
 }
 
+/// DataHomeLocationRequest sim->data
+/// Request
 #[derive(Debug)]
 pub struct DataHomeLocationRequest {
     pub info: DataHomeLocationRequest_Info,
@@ -1989,6 +2181,8 @@ pub struct DataHomeLocationReply_Info {
     pub look_at: Vector3<f32>,
 }
 
+/// DataHomeLocationReply data->sim
+/// response is the location of agent home.
 #[derive(Debug)]
 pub struct DataHomeLocationReply {
     pub info: DataHomeLocationReply_Info,
@@ -2007,6 +2201,9 @@ pub struct TeleportFinish_Info {
     pub teleport_flags: u32,
 }
 
+/// TeleportFinish sim->viewer
+/// called when all of the information has been collected and readied for
+/// the agent.
 #[derive(Debug)]
 pub struct TeleportFinish {
     pub info: TeleportFinish_Info,
@@ -2030,6 +2227,14 @@ pub struct StartLure_TargetData {
     pub target_id: Uuid,
 }
 
+/// StartLure viewer->sim
+/// Sent from viewer to the local simulator to lure target id to near
+/// agent id. This will generate an instant message that will be routed
+/// through the space server and out to the userserver. When that IM
+/// goes through the userserver and the TargetID is online, the
+/// userserver will send an InitializeLure to the spaceserver. When that
+/// packet is acked, the original instant message is finally forwarded to
+/// TargetID.
 #[derive(Debug)]
 pub struct StartLure {
     pub agent_data: StartLure_AgentData,
@@ -2046,6 +2251,9 @@ pub struct TeleportLureRequest_Info {
     pub teleport_flags: u32,
 }
 
+/// TeleportLureRequest viewer->sim
+/// Message from target of lure to begin the teleport process on the
+/// local simulator.
 #[derive(Debug)]
 pub struct TeleportLureRequest {
     pub info: TeleportLureRequest_Info,
@@ -2058,6 +2266,8 @@ pub struct TeleportCancel_Info {
     pub session_id: Uuid,
 }
 
+/// TeleportCancel viewer->sim
+/// reliable
 #[derive(Debug)]
 pub struct TeleportCancel {
     pub info: TeleportCancel_Info,
@@ -2069,6 +2279,8 @@ pub struct TeleportStart_Info {
     pub teleport_flags: u32,
 }
 
+/// TeleportStart sim->viewer
+/// announce a successful teleport request to the viewer.
 #[derive(Debug)]
 pub struct TeleportStart {
     pub info: TeleportStart_Info,
@@ -2087,6 +2299,8 @@ pub struct TeleportFailed_AlertInfo {
     pub extra_params: Vec<u8>,
 }
 
+/// TeleportFailed somewhere->sim->viewer
+/// announce failure of teleport request
 #[derive(Debug)]
 pub struct TeleportFailed {
     pub info: TeleportFailed_Info,
@@ -2106,6 +2320,7 @@ pub struct Undo_ObjectData {
     pub object_id: Uuid,
 }
 
+/// Undo
 #[derive(Debug)]
 pub struct Undo {
     pub agent_data: Undo_AgentData,
@@ -2125,6 +2340,7 @@ pub struct Redo_ObjectData {
     pub object_id: Uuid,
 }
 
+/// Redo
 #[derive(Debug)]
 pub struct Redo {
     pub agent_data: Redo_AgentData,
@@ -2138,6 +2354,7 @@ pub struct UndoLand_AgentData {
     pub session_id: Uuid,
 }
 
+/// UndoLand
 #[derive(Debug)]
 pub struct UndoLand {
     pub agent_data: UndoLand_AgentData,
@@ -2151,6 +2368,7 @@ pub struct AgentPause_AgentData {
     pub serial_num: u32,
 }
 
+/// AgentPause - viewer occasionally will block, inform simulator of this fact
 #[derive(Debug)]
 pub struct AgentPause {
     pub agent_data: AgentPause_AgentData,
@@ -2164,6 +2382,7 @@ pub struct AgentResume_AgentData {
     pub serial_num: u32,
 }
 
+/// AgentResume - unblock the agent
 #[derive(Debug)]
 pub struct AgentResume {
     pub agent_data: AgentResume_AgentData,
@@ -2186,6 +2405,15 @@ pub struct AgentUpdate_AgentData {
     pub flags: u8,
 }
 
+/// AgentUpdate - Camera info sent from viewer to simulator
+/// or, more simply, two axes and compute cross product
+/// State data is temporary, indicates current behavior state:
+/// 	0 = walking
+///  1 = mouselook
+///  2 = typing
+///
+/// Center is region local (JNC 8.16.2001)
+/// Camera center is region local (JNC 8.29.2001)
 #[derive(Debug)]
 pub struct AgentUpdate {
     pub agent_data: AgentUpdate_AgentData,
@@ -2205,6 +2433,10 @@ pub struct ChatFromViewer_ChatData {
     pub channel: i32,
 }
 
+/// ChatFromViewer
+/// Specifies the text to be said and the "type",
+/// normal speech, shout, whisper.
+/// with the specified radius
 #[derive(Debug)]
 pub struct ChatFromViewer {
     pub agent_data: ChatFromViewer_AgentData,
@@ -2225,6 +2457,7 @@ pub struct AgentThrottle_Throttle {
     pub throttles: Vec<u8>,
 }
 
+/// AgentThrottle
 #[derive(Debug)]
 pub struct AgentThrottle {
     pub agent_data: AgentThrottle_AgentData,
@@ -2245,6 +2478,7 @@ pub struct AgentFOV_FOVBlock {
     pub vertical_angle: f32,
 }
 
+/// AgentFOV - Update to agent's field of view, angle is vertical, single F32 float in radians
 #[derive(Debug)]
 pub struct AgentFOV {
     pub agent_data: AgentFOV_AgentData,
@@ -2266,6 +2500,8 @@ pub struct AgentHeightWidth_HeightWidthBlock {
     pub width: u16,
 }
 
+/// AgentHeightWidth - Update to height and aspect, sent as height/width to save space
+/// Usually sent when window resized or created
 #[derive(Debug)]
 pub struct AgentHeightWidth {
     pub agent_data: AgentHeightWidth_AgentData,
@@ -2297,6 +2533,7 @@ pub struct AgentSetAppearance_VisualParam {
     pub param_value: u8,
 }
 
+/// AgentSetAppearance - Update to agent appearance
 #[derive(Debug)]
 pub struct AgentSetAppearance {
     pub agent_data: AgentSetAppearance_AgentData,
@@ -2323,6 +2560,8 @@ pub struct AgentAnimation_PhysicalAvatarEventList {
     pub type_data: Vec<u8>,
 }
 
+/// AgentAnimation - Update animation state
+/// viewer --> simulator
 #[derive(Debug)]
 pub struct AgentAnimation {
     pub agent_data: AgentAnimation_AgentData,
@@ -2343,6 +2582,7 @@ pub struct AgentRequestSit_TargetObject {
     pub offset: Vector3<f32>,
 }
 
+/// AgentRequestSit - Try to sit on an object
 #[derive(Debug)]
 pub struct AgentRequestSit {
     pub agent_data: AgentRequestSit_AgentData,
@@ -2356,6 +2596,7 @@ pub struct AgentSit_AgentData {
     pub session_id: Uuid,
 }
 
+/// AgentSit - Actually sit on object
 #[derive(Debug)]
 pub struct AgentSit {
     pub agent_data: AgentSit_AgentData,
@@ -2373,6 +2614,7 @@ pub struct AgentQuitCopy_FuseBlock {
     pub viewer_circuit_code: u32,
 }
 
+/// quit message sent between simulators
 #[derive(Debug)]
 pub struct AgentQuitCopy {
     pub agent_data: AgentQuitCopy_AgentData,
@@ -2395,6 +2637,7 @@ pub struct RequestImage_RequestImage {
     pub type_: u8,
 }
 
+
 #[derive(Debug)]
 pub struct RequestImage {
     pub agent_data: RequestImage_AgentData,
@@ -2407,6 +2650,8 @@ pub struct ImageNotInDatabase_ImageID {
     pub id: Uuid,
 }
 
+/// ImageNotInDatabase
+/// Simulator informs viewer that a requsted image definitely does not exist in the asset database
 #[derive(Debug)]
 pub struct ImageNotInDatabase {
     pub image_id: ImageNotInDatabase_ImageID,
@@ -2418,6 +2663,8 @@ pub struct RebakeAvatarTextures_TextureData {
     pub texture_id: Uuid,
 }
 
+/// RebakeAvatarTextures
+/// simulator -> viewer request when a temporary baked avatar texture is not found
 #[derive(Debug)]
 pub struct RebakeAvatarTextures {
     pub texture_data: RebakeAvatarTextures_TextureData,
@@ -2431,6 +2678,8 @@ pub struct SetAlwaysRun_AgentData {
     pub always_run: bool,
 }
 
+/// SetAlwaysRun
+/// Lets the viewer choose between running and walking
 #[derive(Debug)]
 pub struct SetAlwaysRun {
     pub agent_data: SetAlwaysRun_AgentData,
@@ -2477,6 +2726,7 @@ pub struct ObjectAdd_ObjectData {
     pub state: u8,
 }
 
+
 #[derive(Debug)]
 pub struct ObjectAdd {
     pub agent_data: ObjectAdd_AgentData,
@@ -2496,6 +2746,8 @@ pub struct ObjectDelete_ObjectData {
     pub object_local_id: u32,
 }
 
+/// ObjectDelete
+/// viewer -> simulator
 #[derive(Debug)]
 pub struct ObjectDelete {
     pub agent_data: ObjectDelete_AgentData,
@@ -2521,6 +2773,9 @@ pub struct ObjectDuplicate_ObjectData {
     pub object_local_id: u32,
 }
 
+/// ObjectDuplicate
+/// viewer -> simulator
+/// Makes a copy of a set of objects, offset by a given amount
 #[derive(Debug)]
 pub struct ObjectDuplicate {
     pub agent_data: ObjectDuplicate_AgentData,
@@ -2549,6 +2804,10 @@ pub struct ObjectDuplicateOnRay_ObjectData {
     pub object_local_id: u32,
 }
 
+/// ObjectDuplicateOnRay
+/// viewer -> simulator
+/// Makes a copy of an object, using the add object raycast
+/// code to abut it to other objects.
 #[derive(Debug)]
 pub struct ObjectDuplicateOnRay {
     pub agent_data: ObjectDuplicateOnRay_AgentData,
@@ -2569,6 +2828,10 @@ pub struct MultipleObjectUpdate_ObjectData {
     pub data: Vec<u8>,
 }
 
+/// MultipleObjectUpdate
+/// viewer -> simulator
+/// updates position, rotation and scale in one message
+/// positions sent as region-local floats
 #[derive(Debug)]
 pub struct MultipleObjectUpdate {
     pub agent_data: MultipleObjectUpdate_AgentData,
@@ -2588,6 +2851,16 @@ pub struct RequestMultipleObjects_ObjectData {
     pub id: u32,
 }
 
+/// RequestMultipleObjects
+/// viewer -> simulator
+/// reliable
+///
+/// When the viewer gets a local_id/crc for an object that
+/// it either doesn't have, or doesn't have the current version
+/// of, it sends this upstream get get an update.
+///
+/// CacheMissType 0 => full object (viewer doesn't have it)
+/// CacheMissType 1 => CRC mismatch only
 #[derive(Debug)]
 pub struct RequestMultipleObjects {
     pub agent_data: RequestMultipleObjects_AgentData,
@@ -2607,6 +2880,17 @@ pub struct ObjectPosition_ObjectData {
     pub position: Vector3<f32>,
 }
 
+/// DEPRECATED: ObjectPosition
+/// == Old Behavior ==
+/// Set the position on objects
+///
+/// == Reason for deprecation ==
+/// Unused code path was removed in the move to Havok4
+/// Object position, scale and rotation messages were already unified
+/// to MultipleObjectUpdate and this message was unused cruft.
+///
+/// == New Location ==
+/// MultipleObjectUpdate can be used instead.
 #[derive(Debug)]
 pub struct ObjectPosition {
     pub agent_data: ObjectPosition_AgentData,
@@ -2626,6 +2910,17 @@ pub struct ObjectScale_ObjectData {
     pub scale: Vector3<f32>,
 }
 
+/// DEPRECATED: ObjectScale
+/// == Old Behavior ==
+/// Set the scale on objects
+///
+/// == Reason for deprecation ==
+/// Unused code path was removed in the move to Havok4
+/// Object position, scale and rotation messages were already unified
+/// to MultipleObjectUpdate and this message was unused cruft.
+///
+/// == New Location ==
+/// MultipleObjectUpdate can be used instead.
 #[derive(Debug)]
 pub struct ObjectScale {
     pub agent_data: ObjectScale_AgentData,
@@ -2645,6 +2940,8 @@ pub struct ObjectRotation_ObjectData {
     pub rotation: Quaternion<f32>,
 }
 
+/// ObjectRotation
+/// viewer -> simulator
 #[derive(Debug)]
 pub struct ObjectRotation {
     pub agent_data: ObjectRotation_AgentData,
@@ -2663,6 +2960,8 @@ pub struct ObjectFlagUpdate_AgentData {
     pub casts_shadows: bool,
 }
 
+/// ObjectFlagUpdate
+/// viewer -> simulator
 #[derive(Debug)]
 pub struct ObjectFlagUpdate {
     pub agent_data: ObjectFlagUpdate_AgentData,
@@ -2681,6 +2980,8 @@ pub struct ObjectClickAction_ObjectData {
     pub click_action: u8,
 }
 
+/// ObjectClickAction
+/// viewer -> simulator
 #[derive(Debug)]
 pub struct ObjectClickAction {
     pub agent_data: ObjectClickAction_AgentData,
@@ -2701,6 +3002,8 @@ pub struct ObjectImage_ObjectData {
     pub texture_entry: Vec<u8>,
 }
 
+/// ObjectImage
+/// viewer -> simulator
 #[derive(Debug)]
 pub struct ObjectImage {
     pub agent_data: ObjectImage_AgentData,
@@ -2719,6 +3022,7 @@ pub struct ObjectMaterial_ObjectData {
     pub object_local_id: u32,
     pub material: u8,
 }
+
 
 #[derive(Debug)]
 pub struct ObjectMaterial {
@@ -2756,6 +3060,7 @@ pub struct ObjectShape_ObjectData {
     pub profile_hollow: u16,
 }
 
+
 #[derive(Debug)]
 pub struct ObjectShape {
     pub agent_data: ObjectShape_AgentData,
@@ -2777,6 +3082,7 @@ pub struct ObjectExtraParams_ObjectData {
     pub param_size: u32,
     pub param_data: Vec<u8>,
 }
+
 
 #[derive(Debug)]
 pub struct ObjectExtraParams {
@@ -2803,6 +3109,10 @@ pub struct ObjectOwner_ObjectData {
     pub object_local_id: u32,
 }
 
+/// ObjectOwner
+/// To make public, set OwnerID to LLUUID::null.
+/// TODO: Eliminate god-bit. Maybe not. God-bit is ok, because it's
+/// known on the server.
 #[derive(Debug)]
 pub struct ObjectOwner {
     pub agent_data: ObjectOwner_AgentData,
@@ -2823,6 +3133,9 @@ pub struct ObjectGroup_ObjectData {
     pub object_local_id: u32,
 }
 
+/// ObjectGroup
+/// To make the object part of no group, set GroupID = LLUUID::null.
+/// This call only works if objectid.ownerid == agentid.
 #[derive(Debug)]
 pub struct ObjectGroup {
     pub agent_data: ObjectGroup_AgentData,
@@ -2845,6 +3158,7 @@ pub struct ObjectBuy_ObjectData {
     pub sale_price: i32,
 }
 
+/// Attempt to buy an object. This will only pack root objects.
 #[derive(Debug)]
 pub struct ObjectBuy {
     pub agent_data: ObjectBuy_AgentData,
@@ -2865,6 +3179,8 @@ pub struct BuyObjectInventory_Data {
     pub folder_id: Uuid,
 }
 
+/// buy object inventory. If the transaction succeeds, it will add
+/// inventory to the agent, and potentially remove the original.
 #[derive(Debug)]
 pub struct BuyObjectInventory {
     pub agent_data: BuyObjectInventory_AgentData,
@@ -2878,6 +3194,8 @@ pub struct DerezContainer_Data {
     pub delete: bool,
 }
 
+/// sim -> viewer
+/// Used to propperly handle buying asset containers
 #[derive(Debug)]
 pub struct DerezContainer {
     pub data: DerezContainer_Data,
@@ -2903,6 +3221,11 @@ pub struct ObjectPermissions_ObjectData {
     pub mask: u32,
 }
 
+/// ObjectPermissions
+/// Field - see llpermissionsflags.h
+/// If Set is true, tries to turn on bits in mask.
+/// If set is false, tries to turn off bits in mask.
+/// BUG: This just forces the permissions field.
 #[derive(Debug)]
 pub struct ObjectPermissions {
     pub agent_data: ObjectPermissions_AgentData,
@@ -2924,6 +3247,7 @@ pub struct ObjectSaleInfo_ObjectData {
     pub sale_price: i32,
 }
 
+/// set object sale information
 #[derive(Debug)]
 pub struct ObjectSaleInfo {
     pub agent_data: ObjectSaleInfo_AgentData,
@@ -2943,6 +3267,7 @@ pub struct ObjectName_ObjectData {
     pub name: Vec<u8>,
 }
 
+/// set object names
 #[derive(Debug)]
 pub struct ObjectName {
     pub agent_data: ObjectName_AgentData,
@@ -2962,6 +3287,7 @@ pub struct ObjectDescription_ObjectData {
     pub description: Vec<u8>,
 }
 
+/// set object descriptions
 #[derive(Debug)]
 pub struct ObjectDescription {
     pub agent_data: ObjectDescription_AgentData,
@@ -2981,6 +3307,7 @@ pub struct ObjectCategory_ObjectData {
     pub category: u32,
 }
 
+/// set object category
 #[derive(Debug)]
 pub struct ObjectCategory {
     pub agent_data: ObjectCategory_AgentData,
@@ -2999,6 +3326,7 @@ pub struct ObjectSelect_ObjectData {
     pub object_local_id: u32,
 }
 
+
 #[derive(Debug)]
 pub struct ObjectSelect {
     pub agent_data: ObjectSelect_AgentData,
@@ -3016,6 +3344,7 @@ pub struct ObjectDeselect_AgentData {
 pub struct ObjectDeselect_ObjectData {
     pub object_local_id: u32,
 }
+
 
 #[derive(Debug)]
 pub struct ObjectDeselect {
@@ -3037,6 +3366,7 @@ pub struct ObjectAttach_ObjectData {
     pub rotation: Quaternion<f32>,
 }
 
+/// ObjectAttach
 #[derive(Debug)]
 pub struct ObjectAttach {
     pub agent_data: ObjectAttach_AgentData,
@@ -3055,6 +3385,7 @@ pub struct ObjectDetach_ObjectData {
     pub object_local_id: u32,
 }
 
+/// ObjectDetach -- derezzes an attachment, marking its item in your inventory as not "(worn)"
 #[derive(Debug)]
 pub struct ObjectDetach {
     pub agent_data: ObjectDetach_AgentData,
@@ -3073,6 +3404,7 @@ pub struct ObjectDrop_ObjectData {
     pub object_local_id: u32,
 }
 
+/// ObjectDrop -- drops an attachment from your avatar onto the ground
 #[derive(Debug)]
 pub struct ObjectDrop {
     pub agent_data: ObjectDrop_AgentData,
@@ -3091,6 +3423,7 @@ pub struct ObjectLink_ObjectData {
     pub object_local_id: u32,
 }
 
+/// ObjectLink
 #[derive(Debug)]
 pub struct ObjectLink {
     pub agent_data: ObjectLink_AgentData,
@@ -3109,6 +3442,7 @@ pub struct ObjectDelink_ObjectData {
     pub object_local_id: u32,
 }
 
+/// ObjectDelink
 #[derive(Debug)]
 pub struct ObjectDelink {
     pub agent_data: ObjectDelink_AgentData,
@@ -3138,6 +3472,7 @@ pub struct ObjectGrab_SurfaceInfo {
     pub binormal: Vector3<f32>,
 }
 
+/// ObjectGrab
 #[derive(Debug)]
 pub struct ObjectGrab {
     pub agent_data: ObjectGrab_AgentData,
@@ -3170,6 +3505,7 @@ pub struct ObjectGrabUpdate_SurfaceInfo {
     pub binormal: Vector3<f32>,
 }
 
+
 #[derive(Debug)]
 pub struct ObjectGrabUpdate {
     pub agent_data: ObjectGrabUpdate_AgentData,
@@ -3199,6 +3535,7 @@ pub struct ObjectDeGrab_SurfaceInfo {
     pub binormal: Vector3<f32>,
 }
 
+/// ObjectDeGrab
 #[derive(Debug)]
 pub struct ObjectDeGrab {
     pub agent_data: ObjectDeGrab_AgentData,
@@ -3218,6 +3555,7 @@ pub struct ObjectSpinStart_ObjectData {
     pub object_id: Uuid,
 }
 
+/// ObjectSpinStart
 #[derive(Debug)]
 pub struct ObjectSpinStart {
     pub agent_data: ObjectSpinStart_AgentData,
@@ -3237,6 +3575,7 @@ pub struct ObjectSpinUpdate_ObjectData {
     pub rotation: Quaternion<f32>,
 }
 
+/// ObjectSpinUpdate
 #[derive(Debug)]
 pub struct ObjectSpinUpdate {
     pub agent_data: ObjectSpinUpdate_AgentData,
@@ -3255,6 +3594,7 @@ pub struct ObjectSpinStop_ObjectData {
     pub object_id: Uuid,
 }
 
+/// ObjectSpinStop
 #[derive(Debug)]
 pub struct ObjectSpinStop {
     pub agent_data: ObjectSpinStop_AgentData,
@@ -3274,6 +3614,8 @@ pub struct ObjectExportSelected_ObjectData {
     pub object_id: Uuid,
 }
 
+/// Export selected objects
+/// viewer->sim
 #[derive(Debug)]
 pub struct ObjectExportSelected {
     pub agent_data: ObjectExportSelected_AgentData,
@@ -3309,6 +3651,8 @@ pub struct ModifyLand_ModifyBlockExtended {
     pub brush_size: f32,
 }
 
+/// ModifyLand - sent to modify a piece of land on a simulator.
+/// viewer -> sim
 #[derive(Debug)]
 pub struct ModifyLand {
     pub agent_data: ModifyLand_AgentData,
@@ -3324,6 +3668,9 @@ pub struct VelocityInterpolateOn_AgentData {
     pub session_id: Uuid,
 }
 
+/// VelocityInterpolateOn
+/// viewer->sim
+/// requires administrative access
 #[derive(Debug)]
 pub struct VelocityInterpolateOn {
     pub agent_data: VelocityInterpolateOn_AgentData,
@@ -3336,6 +3683,9 @@ pub struct VelocityInterpolateOff_AgentData {
     pub session_id: Uuid,
 }
 
+/// VelocityInterpolateOff
+/// viewer->sim
+/// requires administrative access
 #[derive(Debug)]
 pub struct VelocityInterpolateOff {
     pub agent_data: VelocityInterpolateOff_AgentData,
@@ -3353,6 +3703,9 @@ pub struct StateSave_DataBlock {
     pub filename: Vec<u8>,
 }
 
+/// Save State
+/// viewer->sim
+/// requires administrative access
 #[derive(Debug)]
 pub struct StateSave {
     pub agent_data: StateSave_AgentData,
@@ -3366,6 +3719,8 @@ pub struct ReportAutosaveCrash_AutosaveData {
     pub status: i32,
 }
 
+/// ReportAutosaveCrash
+/// sim->launcher
 #[derive(Debug)]
 pub struct ReportAutosaveCrash {
     pub autosave_data: ReportAutosaveCrash_AutosaveData,
@@ -3384,6 +3739,7 @@ pub struct SimWideDeletes_DataBlock {
     pub flags: u32,
 }
 
+/// SimWideDeletes
 #[derive(Debug)]
 pub struct SimWideDeletes {
     pub agent_data: SimWideDeletes_AgentData,
@@ -3403,6 +3759,10 @@ pub struct RequestObjectPropertiesFamily_ObjectData {
     pub object_id: Uuid,
 }
 
+/// RequestObjectPropertiesFamily
+/// Ask for extended information, such as creator, permissions, resources, etc.
+/// Medium frequency because it is driven by mouse hovering over objects, which
+/// occurs at high rates.
 #[derive(Debug)]
 pub struct RequestObjectPropertiesFamily {
     pub agent_data: RequestObjectPropertiesFamily_AgentData,
@@ -3421,6 +3781,9 @@ pub struct TrackAgent_TargetData {
     pub prey_id: Uuid,
 }
 
+/// Track agent - this information is used when sending out the
+/// coarse location update so that we know who you are tracking.
+/// To stop tracking - send a null uuid as the prey.
 #[derive(Debug)]
 pub struct TrackAgent {
     pub agent_data: TrackAgent_AgentData,
@@ -3478,6 +3841,7 @@ pub struct ViewerStats_MiscStats {
     pub value: f64,
 }
 
+
 #[derive(Debug)]
 pub struct ViewerStats {
     pub agent_data: ViewerStats_AgentData,
@@ -3501,6 +3865,8 @@ pub struct ScriptAnswerYes_Data {
     pub questions: i32,
 }
 
+/// ScriptAnswerYes
+/// reliable
 #[derive(Debug)]
 pub struct ScriptAnswerYes {
     pub agent_data: ScriptAnswerYes_AgentData,
@@ -3530,6 +3896,8 @@ pub struct UserReport_ReportData {
     pub version_string: Vec<u8>,
 }
 
+/// complaint/bug-report
+/// reliable
 #[derive(Debug)]
 pub struct UserReport {
     pub agent_data: UserReport_AgentData,
@@ -3548,6 +3916,8 @@ pub struct AlertMessage_AlertInfo {
     pub extra_params: Vec<u8>,
 }
 
+/// AlertMessage
+/// Specifies the text to be posted in an alert dialog
 #[derive(Debug)]
 pub struct AlertMessage {
     pub alert_data: AlertMessage_AlertData,
@@ -3566,6 +3936,8 @@ pub struct AgentAlertMessage_AlertData {
     pub message: Vec<u8>,
 }
 
+/// Send an AlertMessage to the named agent.
+/// usually dataserver->simulator
 #[derive(Debug)]
 pub struct AgentAlertMessage {
     pub agent_data: AgentAlertMessage_AgentData,
@@ -3582,6 +3954,8 @@ pub struct MeanCollisionAlert_MeanCollision {
     pub type_: u8,
 }
 
+/// MeanCollisionAlert
+/// Specifies the text to be posted in an alert dialog
 #[derive(Debug)]
 pub struct MeanCollisionAlert {
     pub mean_collision: Vec<MeanCollisionAlert_MeanCollision>,
@@ -3593,6 +3967,8 @@ pub struct ViewerFrozenMessage_FrozenData {
     pub data: bool,
 }
 
+/// ViewerFrozenMessage
+/// Specifies the text to be posted in an alert dialog
 #[derive(Debug)]
 pub struct ViewerFrozenMessage {
     pub frozen_data: ViewerFrozenMessage_FrozenData,
@@ -3604,6 +3980,8 @@ pub struct HealthMessage_HealthData {
     pub health: f32,
 }
 
+/// Health Message
+/// Tells viewer what agent health is
 #[derive(Debug)]
 pub struct HealthMessage {
     pub health_data: HealthMessage_HealthData,
@@ -3622,6 +4000,11 @@ pub struct ChatFromSimulator_ChatData {
     pub message: Vec<u8>,
 }
 
+/// ChatFromSimulator
+/// Chat text to appear on a user's screen
+/// Position is region local.
+/// Viewer can optionally use position to animate
+/// If audible is CHAT_NOT_AUDIBLE, message will not be valid
 #[derive(Debug)]
 pub struct ChatFromSimulator {
     pub chat_data: ChatFromSimulator_ChatData,
@@ -3647,6 +4030,7 @@ pub struct SimStats_PidStat {
     pub pid: i32,
 }
 
+/// Simulator statistics packet (goes out to viewer and dataserver/spaceserver)
 #[derive(Debug)]
 pub struct SimStats {
     pub region: SimStats_Region,
@@ -3661,6 +4045,8 @@ pub struct RequestRegionInfo_AgentData {
     pub session_id: Uuid,
 }
 
+/// viewer -> sim
+/// reliable
 #[derive(Debug)]
 pub struct RequestRegionInfo {
     pub agent_data: RequestRegionInfo_AgentData,
@@ -3702,6 +4088,11 @@ pub struct RegionInfo_RegionInfo2 {
     pub hard_max_objects: u32,
 }
 
+/// RegionInfo
+/// Used to populate UI for both region/estate floater
+/// and god tools floater
+/// sim -> viewer
+/// reliable
 #[derive(Debug)]
 pub struct RegionInfo {
     pub agent_data: RegionInfo_AgentData,
@@ -3728,6 +4119,11 @@ pub struct GodUpdateRegionInfo_RegionInfo {
     pub redirect_grid_y: i32,
 }
 
+/// GodUpdateRegionInfo
+/// Sent from viewer to sim after a god has changed some
+/// of the parameters in the god tools floater
+/// viewer -> sim
+/// reliable
 #[derive(Debug)]
 pub struct GodUpdateRegionInfo {
     pub agent_data: GodUpdateRegionInfo_AgentData,
@@ -3740,6 +4136,11 @@ pub struct NearestLandingRegionRequest_RequestingRegionData {
     pub region_handle: u64,
 }
 
+/// NearestLandingRegionRequest
+/// sim->dataserver
+/// Sent from the region to the data server
+/// to request the most up to date region for the requesting
+/// region to redirect teleports to
 #[derive(Debug)]
 pub struct NearestLandingRegionRequest {
     pub requesting_region_data: NearestLandingRegionRequest_RequestingRegionData,
@@ -3751,6 +4152,11 @@ pub struct NearestLandingRegionReply_LandingRegionData {
     pub region_handle: u64,
 }
 
+/// NearestLandingPointReply
+/// dataserver->sim
+/// Sent from the data server to a region in reply
+/// to the redirectregion request stating which region
+/// the requesting region should redirect teleports to if necessary
 #[derive(Debug)]
 pub struct NearestLandingRegionReply {
     pub landing_region_data: NearestLandingRegionReply_LandingRegionData,
@@ -3762,6 +4168,11 @@ pub struct NearestLandingRegionUpdated_RegionData {
     pub region_handle: u64,
 }
 
+/// NearestLandingPointUpdated
+/// sim->dataserver
+/// Sent from a region to the data server
+/// to have the dataserver note/clear in the db
+/// that the region has updated it's nearest landing point
 #[derive(Debug)]
 pub struct NearestLandingRegionUpdated {
     pub region_data: NearestLandingRegionUpdated_RegionData,
@@ -3773,6 +4184,10 @@ pub struct TeleportLandingStatusChanged_RegionData {
     pub region_handle: u64,
 }
 
+/// TeleportLandingStatusChanged
+/// sim->dataserver
+/// Sent from the region to the data server
+/// to note that the region's teleportation landing status has changed
 #[derive(Debug)]
 pub struct TeleportLandingStatusChanged {
     pub region_data: TeleportLandingStatusChanged_RegionData,
@@ -3821,6 +4236,11 @@ pub struct RegionHandshake_RegionInfo3 {
     pub product_name: Vec<u8>,
 }
 
+/// RegionHandshake
+/// Sent by region to viewer after it has received UseCircuitCode
+/// from that viewer.
+/// sim -> viewer
+/// reliable
 #[derive(Debug)]
 pub struct RegionHandshake {
     pub region_info: RegionHandshake_RegionInfo,
@@ -3840,6 +4260,14 @@ pub struct RegionHandshakeReply_RegionInfo {
     pub flags: u32,
 }
 
+/// RegionHandshakeReply
+/// viewer -> sim
+/// reliable
+/// Sent after viewer has initialized the (pre-existing)
+/// LLViewerRegion with the name, access level, etc. and
+/// has loaded the cache for the region.
+/// After the simulator receives this, it will start sending
+/// data about objects.
 #[derive(Debug)]
 pub struct RegionHandshakeReply {
     pub agent_data: RegionHandshakeReply_AgentData,
@@ -3865,6 +4293,11 @@ pub struct CoarseLocationUpdate_AgentData {
     pub agent_id: Uuid,
 }
 
+/// The CoarseLocationUpdate message is sent to notify the viewer of
+/// the location of mappable objects in the region. 1 meter resolution is
+/// sufficient for this. The index block is used to show where you are,
+/// and where someone you are tracking is located. They are -1 if not
+/// applicable.
 #[derive(Debug)]
 pub struct CoarseLocationUpdate {
     pub location: Vec<CoarseLocationUpdate_Location>,
@@ -3886,6 +4319,7 @@ pub struct ImageData_ImageData {
     pub data: Vec<u8>,
 }
 
+/// ImageData - sent to viewer to transmit information about an image
 #[derive(Debug)]
 pub struct ImageData {
     pub image_id: ImageData_ImageID,
@@ -3904,6 +4338,7 @@ pub struct ImagePacket_ImageData {
     pub data: Vec<u8>,
 }
 
+/// ImagePacket - follow on image data for images having > 1 packet of data
 #[derive(Debug)]
 pub struct ImagePacket {
     pub image_id: ImagePacket_ImageID,
@@ -3920,6 +4355,7 @@ pub struct LayerData_LayerID {
 pub struct LayerData_LayerData {
     pub data: Vec<u8>,
 }
+
 
 #[derive(Debug)]
 pub struct LayerData {
@@ -3984,6 +4420,7 @@ pub struct ObjectUpdate_ObjectData {
     pub joint_axis_or_anchor: Vector3<f32>,
 }
 
+/// joint info -- is sent in the update of each joint-child-root
 #[derive(Debug)]
 pub struct ObjectUpdate {
     pub region_data: ObjectUpdate_RegionData,
@@ -4003,6 +4440,7 @@ pub struct ObjectUpdateCompressed_ObjectData {
     pub data: Vec<u8>,
 }
 
+/// ObjectUpdateCompressed
 #[derive(Debug)]
 pub struct ObjectUpdateCompressed {
     pub region_data: ObjectUpdateCompressed_RegionData,
@@ -4023,6 +4461,8 @@ pub struct ObjectUpdateCached_ObjectData {
     pub update_flags: u32,
 }
 
+/// ObjectUpdateCached
+/// reliable
 #[derive(Debug)]
 pub struct ObjectUpdateCached {
     pub region_data: ObjectUpdateCached_RegionData,
@@ -4042,6 +4482,7 @@ pub struct ImprovedTerseObjectUpdate_ObjectData {
     pub texture_entry: Vec<u8>,
 }
 
+/// packed terse object update format
 #[derive(Debug)]
 pub struct ImprovedTerseObjectUpdate {
     pub region_data: ImprovedTerseObjectUpdate_RegionData,
@@ -4053,6 +4494,7 @@ pub struct ImprovedTerseObjectUpdate {
 pub struct KillObject_ObjectData {
     pub id: u32,
 }
+
 
 #[derive(Debug)]
 pub struct KillObject {
@@ -4080,6 +4522,8 @@ pub struct CrossedRegion_Info {
     pub look_at: Vector3<f32>,
 }
 
+/// CrossedRegion - new way to tell a viewer it has gone across a region
+/// boundary
 #[derive(Debug)]
 pub struct CrossedRegion {
     pub agent_data: CrossedRegion_AgentData,
@@ -4098,6 +4542,7 @@ pub struct SimulatorViewerTimeMessage_TimeInfo {
     pub sun_ang_velocity: Vector3<f32>,
 }
 
+
 #[derive(Debug)]
 pub struct SimulatorViewerTimeMessage {
     pub time_info: SimulatorViewerTimeMessage_TimeInfo,
@@ -4111,10 +4556,12 @@ pub struct EnableSimulator_SimulatorInfo {
     pub port: IpPort,
 }
 
+
 #[derive(Debug)]
 pub struct EnableSimulator {
     pub simulator_info: EnableSimulator_SimulatorInfo,
 }
+
 
 
 #[derive(Debug)]
@@ -4127,6 +4574,7 @@ pub struct ConfirmEnableSimulator_AgentData {
     pub agent_id: Uuid,
     pub session_id: Uuid,
 }
+
 
 #[derive(Debug)]
 pub struct ConfirmEnableSimulator {
@@ -4143,6 +4591,7 @@ pub struct TransferRequest_TransferInfo {
     pub params: Vec<u8>,
 }
 
+/// Request a new transfer (target->source)
 #[derive(Debug)]
 pub struct TransferRequest {
     pub transfer_info: TransferRequest_TransferInfo,
@@ -4159,6 +4608,8 @@ pub struct TransferInfo_TransferInfo {
     pub params: Vec<u8>,
 }
 
+/// Return info about a transfer/initiate transfer (source->target)
+/// Possibly should have a Params field like above
 #[derive(Debug)]
 pub struct TransferInfo {
     pub transfer_info: TransferInfo_TransferInfo,
@@ -4174,6 +4625,7 @@ pub struct TransferPacket_TransferData {
     pub data: Vec<u8>,
 }
 
+
 #[derive(Debug)]
 pub struct TransferPacket {
     pub transfer_data: TransferPacket_TransferData,
@@ -4186,6 +4638,7 @@ pub struct TransferAbort_TransferInfo {
     pub channel_type: i32,
 }
 
+/// Abort a transfer in progress (either from target->source or source->target)
 #[derive(Debug)]
 pub struct TransferAbort {
     pub transfer_info: TransferAbort_TransferInfo,
@@ -4203,6 +4656,7 @@ pub struct RequestXfer_XferID {
     pub v_file_type: i16,
 }
 
+/// RequestXfer - request an arbitrary xfer
 #[derive(Debug)]
 pub struct RequestXfer {
     pub xfer_id: RequestXfer_XferID,
@@ -4220,6 +4674,7 @@ pub struct SendXferPacket_DataPacket {
     pub data: Vec<u8>,
 }
 
+/// SendXferPacket - send an additional packet of an arbitrary xfer from sim -> viewer
 #[derive(Debug)]
 pub struct SendXferPacket {
     pub xfer_id: SendXferPacket_XferID,
@@ -4233,6 +4688,7 @@ pub struct ConfirmXferPacket_XferID {
     pub packet: u32,
 }
 
+/// ConfirmXferPacket
 #[derive(Debug)]
 pub struct ConfirmXferPacket {
     pub xfer_id: ConfirmXferPacket_XferID,
@@ -4245,6 +4701,7 @@ pub struct AbortXfer_XferID {
     pub result: i32,
 }
 
+/// AbortXfer
 #[derive(Debug)]
 pub struct AbortXfer {
     pub xfer_id: AbortXfer_XferID,
@@ -4272,6 +4729,7 @@ pub struct AvatarAnimation_PhysicalAvatarEventList {
     pub type_data: Vec<u8>,
 }
 
+
 #[derive(Debug)]
 pub struct AvatarAnimation {
     pub sender: AvatarAnimation_Sender,
@@ -4297,6 +4755,7 @@ pub struct AvatarAppearance_VisualParam {
     pub param_value: u8,
 }
 
+/// AvatarAppearance - Update visual params
 #[derive(Debug)]
 pub struct AvatarAppearance {
     pub sender: AvatarAppearance_Sender,
@@ -4320,6 +4779,7 @@ pub struct AvatarSitResponse_SitTransform {
     pub force_mouselook: bool,
 }
 
+/// AvatarSitResponse - response to a request to sit on an object
 #[derive(Debug)]
 pub struct AvatarSitResponse {
     pub sit_object: AvatarSitResponse_SitObject,
@@ -4338,6 +4798,7 @@ pub struct SetFollowCamProperties_CameraProperty {
     pub value: f32,
 }
 
+/// SetFollowCamProperties
 #[derive(Debug)]
 pub struct SetFollowCamProperties {
     pub object_data: SetFollowCamProperties_ObjectData,
@@ -4350,6 +4811,7 @@ pub struct ClearFollowCamProperties_ObjectData {
     pub object_id: Uuid,
 }
 
+/// ClearFollowCamProperties
 #[derive(Debug)]
 pub struct ClearFollowCamProperties {
     pub object_data: ClearFollowCamProperties_ObjectData,
@@ -4361,6 +4823,7 @@ pub struct CameraConstraint_CameraCollidePlane {
     pub plane: Vector4<f32>,
 }
 
+/// CameraConstraint - new camera distance limit (based on collision with objects)
 #[derive(Debug)]
 pub struct CameraConstraint {
     pub camera_collide_plane: CameraConstraint_CameraCollidePlane,
@@ -4398,6 +4861,10 @@ pub struct ObjectProperties_ObjectData {
     pub texture_id: Vec<u8>,
 }
 
+/// ObjectProperties
+/// Extended information such as creator, permissions, etc.
+/// Medium because potentially driven by mouse hover events.
+/// 		{	TaxRate			F32	}	// F32
 #[derive(Debug)]
 pub struct ObjectProperties {
     pub object_data: Vec<ObjectProperties_ObjectData>,
@@ -4424,6 +4891,8 @@ pub struct ObjectPropertiesFamily_ObjectData {
     pub description: Vec<u8>,
 }
 
+/// ObjectPropertiesFamily
+/// Medium because potentially driven by mouse hover events.
 #[derive(Debug)]
 pub struct ObjectPropertiesFamily {
     pub object_data: ObjectPropertiesFamily_ObjectData,
@@ -4435,6 +4904,8 @@ pub struct RequestPayPrice_ObjectData {
     pub object_id: Uuid,
 }
 
+/// RequestPayPrice
+/// viewer -> sim
 #[derive(Debug)]
 pub struct RequestPayPrice {
     pub object_data: RequestPayPrice_ObjectData,
@@ -4451,6 +4922,7 @@ pub struct PayPriceReply_ObjectData {
 pub struct PayPriceReply_ButtonData {
     pub pay_button: i32,
 }
+
 
 #[derive(Debug)]
 pub struct PayPriceReply {
@@ -4472,6 +4944,12 @@ pub struct KickUser_UserInfo {
     pub reason: Vec<u8>,
 }
 
+/// KickUser
+/// *FIXME*
+/// Kick off a logged-in user, such as when two people log in with the
+/// same account name.
+/// ROUTED dataserver -> userserver -> spaceserver -> simulator -> viewer
+/// reliable, but that may not matter if a system component is quitting
 #[derive(Debug)]
 pub struct KickUser {
     pub target_block: KickUser_TargetBlock,
@@ -4485,6 +4963,8 @@ pub struct KickUserAck_UserInfo {
     pub flags: u32,
 }
 
+/// ack sent from the simulator up to the main database so that login
+/// can continue.
 #[derive(Debug)]
 pub struct KickUserAck {
     pub user_info: KickUserAck_UserInfo,
@@ -4500,6 +4980,10 @@ pub struct GodKickUser_UserInfo {
     pub reason: Vec<u8>,
 }
 
+/// GodKickUser
+/// When a god wants someone kicked
+/// viewer -> sim
+/// reliable
 #[derive(Debug)]
 pub struct GodKickUser {
     pub user_info: GodKickUser_UserInfo,
@@ -4511,6 +4995,8 @@ pub struct SystemKickUser_AgentInfo {
     pub agent_id: Uuid,
 }
 
+/// SystemKickUser
+/// user->space, reliable
 #[derive(Debug)]
 pub struct SystemKickUser {
     pub agent_info: Vec<SystemKickUser_AgentInfo>,
@@ -4529,6 +5015,9 @@ pub struct EjectUser_Data {
     pub flags: u32,
 }
 
+/// EjectUser
+/// viewer -> sim
+/// reliable
 #[derive(Debug)]
 pub struct EjectUser {
     pub agent_data: EjectUser_AgentData,
@@ -4548,6 +5037,10 @@ pub struct FreezeUser_Data {
     pub flags: u32,
 }
 
+/// FreezeUser
+/// Freeze someone who is on my land.
+/// viewer -> sim
+/// reliable
 #[derive(Debug)]
 pub struct FreezeUser {
     pub agent_data: FreezeUser_AgentData,
@@ -4562,6 +5055,9 @@ pub struct AvatarPropertiesRequest_AgentData {
     pub avatar_id: Uuid,
 }
 
+/// AvatarPropertiesRequest
+/// viewer -> simulator
+/// reliable
 #[derive(Debug)]
 pub struct AvatarPropertiesRequest {
     pub agent_data: AvatarPropertiesRequest_AgentData,
@@ -4576,6 +5072,9 @@ pub struct AvatarPropertiesRequestBackend_AgentData {
     pub web_profiles_disabled: bool,
 }
 
+/// AvatarPropertiesRequestBackend
+/// simulator -> dataserver
+/// reliable
 #[derive(Debug)]
 pub struct AvatarPropertiesRequestBackend {
     pub agent_data: AvatarPropertiesRequestBackend_AgentData,
@@ -4601,6 +5100,10 @@ pub struct AvatarPropertiesReply_PropertiesData {
     pub flags: u32,
 }
 
+/// AvatarPropertiesReply
+/// dataserver -> simulator
+/// simulator -> viewer
+/// reliable
 #[derive(Debug)]
 pub struct AvatarPropertiesReply {
     pub agent_data: AvatarPropertiesReply_AgentData,
@@ -4622,6 +5125,7 @@ pub struct AvatarInterestsReply_PropertiesData {
     pub skills_text: Vec<u8>,
     pub languages_text: Vec<u8>,
 }
+
 
 #[derive(Debug)]
 pub struct AvatarInterestsReply {
@@ -4651,6 +5155,10 @@ pub struct AvatarGroupsReply_NewGroupData {
     pub list_in_profile: bool,
 }
 
+/// AvatarGroupsReply
+/// dataserver -> simulator
+/// simulator -> viewer
+/// reliable
 #[derive(Debug)]
 pub struct AvatarGroupsReply {
     pub agent_data: AvatarGroupsReply_AgentData,
@@ -4676,6 +5184,9 @@ pub struct AvatarPropertiesUpdate_PropertiesData {
     pub profile_url: Vec<u8>,
 }
 
+/// AvatarPropertiesUpdate
+/// viewer -> simulator
+/// reliable
 #[derive(Debug)]
 pub struct AvatarPropertiesUpdate {
     pub agent_data: AvatarPropertiesUpdate_AgentData,
@@ -4698,6 +5209,9 @@ pub struct AvatarInterestsUpdate_PropertiesData {
     pub languages_text: Vec<u8>,
 }
 
+/// AvatarInterestsUpdate
+/// viewer -> simulator
+/// reliable
 #[derive(Debug)]
 pub struct AvatarInterestsUpdate {
     pub agent_data: AvatarInterestsUpdate_AgentData,
@@ -4716,6 +5230,10 @@ pub struct AvatarNotesReply_Data {
     pub notes: Vec<u8>,
 }
 
+/// AvatarNotesReply
+/// dataserver -> simulator
+/// simulator -> viewer
+/// reliable
 #[derive(Debug)]
 pub struct AvatarNotesReply {
     pub agent_data: AvatarNotesReply_AgentData,
@@ -4735,6 +5253,9 @@ pub struct AvatarNotesUpdate_Data {
     pub notes: Vec<u8>,
 }
 
+/// AvatarNotesUpdate
+/// viewer -> simulator -> dataserver
+/// reliable
 #[derive(Debug)]
 pub struct AvatarNotesUpdate {
     pub agent_data: AvatarNotesUpdate_AgentData,
@@ -4754,6 +5275,11 @@ pub struct AvatarPicksReply_Data {
     pub pick_name: Vec<u8>,
 }
 
+/// AvatarPicksReply
+/// dataserver -> simulator -> viewer
+/// Send the header information for this avatar's picks
+/// This fills in the tabs of the Picks panel.
+/// reliable
 #[derive(Debug)]
 pub struct AvatarPicksReply {
     pub agent_data: AvatarPicksReply_AgentData,
@@ -4772,6 +5298,10 @@ pub struct EventInfoRequest_EventData {
     pub event_id: u32,
 }
 
+/// EventInfoRequest
+/// viewer -> simulator
+/// simulator -> dataserver
+/// reliable
 #[derive(Debug)]
 pub struct EventInfoRequest {
     pub agent_data: EventInfoRequest_AgentData,
@@ -4801,6 +5331,10 @@ pub struct EventInfoReply_EventData {
     pub event_flags: u32,
 }
 
+/// EventInfoReply
+/// dataserver -> simulator
+/// simulator -> viewer
+/// reliable
 #[derive(Debug)]
 pub struct EventInfoReply {
     pub agent_data: EventInfoReply_AgentData,
@@ -4819,6 +5353,10 @@ pub struct EventNotificationAddRequest_EventData {
     pub event_id: u32,
 }
 
+/// EventNotificationAddRequest
+/// viewer -> simulator
+/// simulator -> dataserver
+/// reliable
 #[derive(Debug)]
 pub struct EventNotificationAddRequest {
     pub agent_data: EventNotificationAddRequest_AgentData,
@@ -4837,6 +5375,10 @@ pub struct EventNotificationRemoveRequest_EventData {
     pub event_id: u32,
 }
 
+/// EventNotificationRemoveRequest
+/// viewer -> simulator
+/// simulator -> dataserver
+/// reliable
 #[derive(Debug)]
 pub struct EventNotificationRemoveRequest {
     pub agent_data: EventNotificationRemoveRequest_AgentData,
@@ -4863,6 +5405,11 @@ pub struct EventGodDelete_QueryData {
     pub query_start: i32,
 }
 
+/// EventGodDelete
+/// viewer -> simulator
+/// simulator -> dataserver
+/// QueryData is used to resend a search result after the deletion
+/// reliable
 #[derive(Debug)]
 pub struct EventGodDelete {
     pub agent_data: EventGodDelete_AgentData,
@@ -4893,6 +5440,10 @@ pub struct PickInfoReply_Data {
     pub enabled: bool,
 }
 
+/// PickInfoReply
+/// dataserver -> simulator
+/// simulator -> viewer
+/// reliable
 #[derive(Debug)]
 pub struct PickInfoReply {
     pub agent_data: PickInfoReply_AgentData,
@@ -4920,6 +5471,13 @@ pub struct PickInfoUpdate_Data {
     pub enabled: bool,
 }
 
+/// PickInfoUpdate
+/// Update a pick.  ParcelID is set on the simulator as the message
+/// passes through.
+/// If TopPick is TRUE, the simulator will only pass on the message
+/// if the agent_id is a god.
+/// viewer -> simulator -> dataserver
+/// reliable
 #[derive(Debug)]
 pub struct PickInfoUpdate {
     pub agent_data: PickInfoUpdate_AgentData,
@@ -4938,6 +5496,10 @@ pub struct PickDelete_Data {
     pub pick_id: Uuid,
 }
 
+/// PickDelete
+/// Delete a non-top pick from the database.
+/// viewer -> simulator -> dataserver
+/// reliable
 #[derive(Debug)]
 pub struct PickDelete {
     pub agent_data: PickDelete_AgentData,
@@ -4957,6 +5519,12 @@ pub struct PickGodDelete_Data {
     pub query_id: Uuid,
 }
 
+/// PickGodDelete
+/// Delete a pick from the database.
+/// QueryID is needed so database can send a repeat list of
+/// picks.
+/// viewer -> simulator -> dataserver
+/// reliable
 #[derive(Debug)]
 pub struct PickGodDelete {
     pub agent_data: PickGodDelete_AgentData,
@@ -4973,6 +5541,8 @@ pub struct ScriptQuestion_Data {
     pub questions: i32,
 }
 
+/// ScriptQuestion
+/// reliable
 #[derive(Debug)]
 pub struct ScriptQuestion {
     pub data: ScriptQuestion_Data,
@@ -4986,6 +5556,8 @@ pub struct ScriptControlChange_Data {
     pub pass_to_agent: bool,
 }
 
+/// ScriptControlChange
+/// reliable
 #[derive(Debug)]
 pub struct ScriptControlChange {
     pub data: Vec<ScriptControlChange_Data>,
@@ -5013,6 +5585,9 @@ pub struct ScriptDialog_OwnerData {
     pub owner_id: Uuid,
 }
 
+/// ScriptDialog
+/// sim -> viewer
+/// reliable
 #[derive(Debug)]
 pub struct ScriptDialog {
     pub data: ScriptDialog_Data,
@@ -5035,6 +5610,9 @@ pub struct ScriptDialogReply_Data {
     pub button_label: Vec<u8>,
 }
 
+/// ScriptDialogReply
+/// viewer -> sim
+/// reliable
 #[derive(Debug)]
 pub struct ScriptDialogReply {
     pub agent_data: ScriptDialogReply_AgentData,
@@ -5048,6 +5626,8 @@ pub struct ForceScriptControlRelease_AgentData {
     pub session_id: Uuid,
 }
 
+/// ForceScriptControlRelease
+/// reliable
 #[derive(Debug)]
 pub struct ForceScriptControlRelease {
     pub agent_data: ForceScriptControlRelease_AgentData,
@@ -5066,6 +5646,8 @@ pub struct RevokePermissions_Data {
     pub object_permissions: u32,
 }
 
+/// RevokePermissions
+/// reliable
 #[derive(Debug)]
 pub struct RevokePermissions {
     pub agent_data: RevokePermissions_AgentData,
@@ -5083,6 +5665,10 @@ pub struct LoadURL_Data {
     pub url: Vec<u8>,
 }
 
+/// LoadURL
+/// sim -> viewer
+/// Ask the user if they would like to load a URL
+/// reliable
 #[derive(Debug)]
 pub struct LoadURL {
     pub data: LoadURL_Data,
@@ -5097,6 +5683,8 @@ pub struct ScriptTeleportRequest_Data {
     pub look_at: Vector3<f32>,
 }
 
+/// ScriptTeleportRequest
+/// reliable
 #[derive(Debug)]
 pub struct ScriptTeleportRequest {
     pub data: ScriptTeleportRequest_Data,
@@ -5109,6 +5697,13 @@ pub struct ParcelOverlay_ParcelData {
     pub data: Vec<u8>,
 }
 
+/// ParcelOverlay
+/// We send N packets per region to the viewer.
+/// N = 4, currently.  At 256x256 meter regions, 4x4 meter parcel grid,
+/// there are 4096 parcel units per region.  At N = 4, that's 1024 units
+/// per packet, allowing 8 bit bytes.
+/// sim -> viewer
+/// reliable
 #[derive(Debug)]
 pub struct ParcelOverlay {
     pub parcel_data: ParcelOverlay_ParcelData,
@@ -5131,6 +5726,11 @@ pub struct ParcelPropertiesRequest_ParcelData {
     pub snap_selection: bool,
 }
 
+/// ParcelPropertiesRequest
+/// SequenceID should be -1 or -2, and is echoed back in the
+/// parcel properties message.
+/// viewer -> sim
+/// reliable
 #[derive(Debug)]
 pub struct ParcelPropertiesRequest {
     pub agent_data: ParcelPropertiesRequest_AgentData,
@@ -5150,6 +5750,9 @@ pub struct ParcelPropertiesRequestByID_ParcelData {
     pub local_id: i32,
 }
 
+/// ParcelPropertiesRequestByID
+/// viewer -> sim
+/// reliable
 #[derive(Debug)]
 pub struct ParcelPropertiesRequestByID {
     pub agent_data: ParcelPropertiesRequestByID_AgentData,
@@ -5215,6 +5818,7 @@ pub struct ParcelProperties_AgeVerificationBlock {
     pub region_deny_age_unverified: bool,
 }
 
+
 #[derive(Debug)]
 pub struct ParcelProperties {
     pub parcel_data: ParcelProperties_ParcelData,
@@ -5251,6 +5855,7 @@ pub struct ParcelPropertiesUpdate_ParcelData {
     pub landing_type: u8,
 }
 
+
 #[derive(Debug)]
 pub struct ParcelPropertiesUpdate {
     pub agent_data: ParcelPropertiesUpdate_AgentData,
@@ -5280,6 +5885,9 @@ pub struct ParcelReturnObjects_OwnerIDs {
     pub owner_id: Uuid,
 }
 
+/// ParcelReturnObjects
+/// viewer -> sim
+/// reliable
 #[derive(Debug)]
 pub struct ParcelReturnObjects {
     pub agent_data: ParcelReturnObjects_AgentData,
@@ -5301,6 +5909,9 @@ pub struct ParcelSetOtherCleanTime_ParcelData {
     pub other_clean_time: i32,
 }
 
+/// ParcelSetOtherCleanTime
+/// viewer -> sim
+/// reliable
 #[derive(Debug)]
 pub struct ParcelSetOtherCleanTime {
     pub agent_data: ParcelSetOtherCleanTime_AgentData,
@@ -5330,6 +5941,10 @@ pub struct ParcelDisableObjects_OwnerIDs {
     pub owner_id: Uuid,
 }
 
+/// Disable makes objects nonphysical and turns off their scripts.
+/// ParcelDisableObjects
+/// viewer -> sim
+/// reliable
 #[derive(Debug)]
 pub struct ParcelDisableObjects {
     pub agent_data: ParcelDisableObjects_AgentData,
@@ -5356,6 +5971,9 @@ pub struct ParcelSelectObjects_ReturnIDs {
     pub return_id: Uuid,
 }
 
+/// ParcelSelectObjects
+/// viewer -> sim
+/// reliable
 #[derive(Debug)]
 pub struct ParcelSelectObjects {
     pub agent_data: ParcelSelectObjects_AgentData,
@@ -5370,6 +5988,9 @@ pub struct EstateCovenantRequest_AgentData {
     pub session_id: Uuid,
 }
 
+/// EstateCovenantRequest
+/// viewer -> sim
+/// reliable
 #[derive(Debug)]
 pub struct EstateCovenantRequest {
     pub agent_data: EstateCovenantRequest_AgentData,
@@ -5384,6 +6005,9 @@ pub struct EstateCovenantReply_Data {
     pub estate_owner_id: Uuid,
 }
 
+/// EstateCovenantReply
+/// sim -> viewer
+/// reliable
 #[derive(Debug)]
 pub struct EstateCovenantReply {
     pub data: EstateCovenantReply_Data,
@@ -5400,6 +6024,9 @@ pub struct ForceObjectSelect_Data {
     pub local_id: u32,
 }
 
+/// ForceObjectSelect
+/// sim -> viewer
+/// reliable
 #[derive(Debug)]
 pub struct ForceObjectSelect {
     pub header: ForceObjectSelect_Header,
@@ -5418,6 +6045,9 @@ pub struct ParcelBuyPass_ParcelData {
     pub local_id: i32,
 }
 
+/// ParcelBuyPass - purchase a temporary access pass
+/// viewer -> sim
+/// reliable
 #[derive(Debug)]
 pub struct ParcelBuyPass {
     pub agent_data: ParcelBuyPass_AgentData,
@@ -5437,6 +6067,9 @@ pub struct ParcelDeedToGroup_Data {
     pub local_id: i32,
 }
 
+/// ParcelDeedToGroup - deed a patch of land to a group
+/// viewer -> sim
+/// reliable
 #[derive(Debug)]
 pub struct ParcelDeedToGroup {
     pub agent_data: ParcelDeedToGroup_AgentData,
@@ -5455,6 +6088,7 @@ pub struct ParcelReclaim_Data {
     pub local_id: i32,
 }
 
+/// reserved for when island owners force re-claim parcel
 #[derive(Debug)]
 pub struct ParcelReclaim {
     pub agent_data: ParcelReclaim_AgentData,
@@ -5483,6 +6117,9 @@ pub struct ParcelClaim_ParcelData {
     pub north: f32,
 }
 
+/// ParcelClaim - change the owner of a patch of land
+/// viewer -> sim
+/// reliable
 #[derive(Debug)]
 pub struct ParcelClaim {
     pub agent_data: ParcelClaim_AgentData,
@@ -5505,6 +6142,10 @@ pub struct ParcelJoin_ParcelData {
     pub north: f32,
 }
 
+/// ParcelJoin - Take all parcels which are owned by agent and inside
+/// rectangle, and make them 1 parcel if they all are leased.
+/// viewer -> sim
+/// reliable
 #[derive(Debug)]
 pub struct ParcelJoin {
     pub agent_data: ParcelJoin_AgentData,
@@ -5526,6 +6167,11 @@ pub struct ParcelDivide_ParcelData {
     pub north: f32,
 }
 
+/// ParcelDivide
+/// If the selection is a subsection of exactly one parcel,
+/// chop out that section and make a new parcel of it.
+/// viewer -> sim
+/// reliable
 #[derive(Debug)]
 pub struct ParcelDivide {
     pub agent_data: ParcelDivide_AgentData,
@@ -5544,6 +6190,10 @@ pub struct ParcelRelease_Data {
     pub local_id: i32,
 }
 
+/// ParcelRelease
+/// Release a parcel to public
+/// viewer -> sim
+/// reliable
 #[derive(Debug)]
 pub struct ParcelRelease {
     pub agent_data: ParcelRelease_AgentData,
@@ -5572,6 +6222,9 @@ pub struct ParcelBuy_ParcelData {
     pub area: i32,
 }
 
+/// ParcelBuy - change the owner of a patch of land.
+/// viewer -> sim
+/// reliable
 #[derive(Debug)]
 pub struct ParcelBuy {
     pub agent_data: ParcelBuy_AgentData,
@@ -5592,6 +6245,7 @@ pub struct ParcelGodForceOwner_Data {
     pub local_id: i32,
 }
 
+/// ParcelGodForceOwner Unencoded
 #[derive(Debug)]
 pub struct ParcelGodForceOwner {
     pub agent_data: ParcelGodForceOwner_AgentData,
@@ -5612,6 +6266,8 @@ pub struct ParcelAccessListRequest_Data {
     pub local_id: i32,
 }
 
+/// viewer -> sim
+/// ParcelAccessListRequest
 #[derive(Debug)]
 pub struct ParcelAccessListRequest {
     pub agent_data: ParcelAccessListRequest_AgentData,
@@ -5634,6 +6290,8 @@ pub struct ParcelAccessListReply_List {
     pub flags: u32,
 }
 
+/// sim -> viewer
+/// ParcelAccessListReply
 #[derive(Debug)]
 pub struct ParcelAccessListReply {
     pub data: ParcelAccessListReply_Data,
@@ -5663,6 +6321,8 @@ pub struct ParcelAccessListUpdate_List {
     pub flags: u32,
 }
 
+/// viewer -> sim
+/// ParcelAccessListUpdate
 #[derive(Debug)]
 pub struct ParcelAccessListUpdate {
     pub agent_data: ParcelAccessListUpdate_AgentData,
@@ -5683,6 +6343,8 @@ pub struct ParcelDwellRequest_Data {
     pub parcel_id: Uuid,
 }
 
+/// viewer -> sim -> dataserver
+/// reliable
 #[derive(Debug)]
 pub struct ParcelDwellRequest {
     pub agent_data: ParcelDwellRequest_AgentData,
@@ -5702,6 +6364,8 @@ pub struct ParcelDwellReply_Data {
     pub dwell: f32,
 }
 
+/// dataserver -> sim -> viewer
+/// reliable
 #[derive(Debug)]
 pub struct ParcelDwellReply {
     pub agent_data: ParcelDwellReply_AgentData,
@@ -5731,6 +6395,10 @@ pub struct RequestParcelTransfer_RegionData {
     pub grid_y: u32,
 }
 
+/// sim -> dataserver
+/// This message is used to check if a user can buy a parcel. If
+/// successful, the transaction is approved through a money balance reply
+/// with the same transaction id.
 #[derive(Debug)]
 pub struct RequestParcelTransfer {
     pub data: RequestParcelTransfer_Data,
@@ -5763,6 +6431,11 @@ pub struct UpdateParcel_ParcelData {
     pub mature_publish: bool,
 }
 
+/// sim ->dataserver
+/// This message is used to send up complete parcel properties for
+/// persistance in the database.
+/// If you add something here, you should probably also change the
+/// simulator's database update query on startup.
 #[derive(Debug)]
 pub struct UpdateParcel {
     pub parcel_data: UpdateParcel_ParcelData,
@@ -5774,6 +6447,9 @@ pub struct RemoveParcel_ParcelData {
     pub parcel_id: Uuid,
 }
 
+/// sim -> dataserver or space ->sim
+/// This message is used to tell the dataserver that a parcel has been
+/// removed.
 #[derive(Debug)]
 pub struct RemoveParcel {
     pub parcel_data: Vec<RemoveParcel_ParcelData>,
@@ -5790,6 +6466,8 @@ pub struct MergeParcel_SlaveParcelData {
     pub slave_id: Uuid,
 }
 
+/// sim -> dataserver
+/// Merges some of the database information for parcels (dwell).
 #[derive(Debug)]
 pub struct MergeParcel {
     pub master_parcel_data: MergeParcel_MasterParcelData,
@@ -5817,6 +6495,7 @@ pub struct LogParcelChanges_ParcelData {
     pub transaction_id: Uuid,
 }
 
+/// sim -> dataserver
 #[derive(Debug)]
 pub struct LogParcelChanges {
     pub agent_data: LogParcelChanges_AgentData,
@@ -5830,6 +6509,7 @@ pub struct CheckParcelSales_RegionData {
     pub region_handle: u64,
 }
 
+/// sim -> dataserver
 #[derive(Debug)]
 pub struct CheckParcelSales {
     pub region_data: Vec<CheckParcelSales_RegionData>,
@@ -5842,6 +6522,8 @@ pub struct ParcelSales_ParcelData {
     pub buyer_id: Uuid,
 }
 
+/// dataserver -> simulator
+/// tell a particular simulator to finish parcel sale.
 #[derive(Debug)]
 pub struct ParcelSales {
     pub parcel_data: Vec<ParcelSales_ParcelData>,
@@ -5859,6 +6541,9 @@ pub struct ParcelGodMarkAsContent_ParcelData {
     pub local_id: i32,
 }
 
+/// viewer -> sim
+/// mark parcel and double secret agent content on parcel as owned by
+/// governor/maint and adjusts permissions approriately. Godlike request.
 #[derive(Debug)]
 pub struct ParcelGodMarkAsContent {
     pub agent_data: ParcelGodMarkAsContent_AgentData,
@@ -5878,6 +6563,10 @@ pub struct ViewerStartAuction_ParcelData {
     pub snapshot_id: Uuid,
 }
 
+/// viewer -> sim
+/// start an auction. viewer fills in the appropriate date, simulator
+/// validates and fills in the rest of the information to start an auction
+/// on a parcel. Processing currently requires that AgentID is a god.
 #[derive(Debug)]
 pub struct ViewerStartAuction {
     pub agent_data: ViewerStartAuction_AgentData,
@@ -5897,6 +6586,8 @@ pub struct StartAuction_ParcelData {
     pub name: Vec<u8>,
 }
 
+/// sim -> dataserver
+/// Once all of the data has been gathered,
 #[derive(Debug)]
 pub struct StartAuction {
     pub agent_data: StartAuction_AgentData,
@@ -5910,6 +6601,7 @@ pub struct ConfirmAuctionStart_AuctionData {
     pub auction_id: u32,
 }
 
+/// dataserver -> sim
 #[derive(Debug)]
 pub struct ConfirmAuctionStart {
     pub auction_data: ConfirmAuctionStart_AuctionData,
@@ -5921,6 +6613,8 @@ pub struct CompleteAuction_ParcelData {
     pub parcel_id: Uuid,
 }
 
+/// sim -> dataserver
+/// Tell the dataserver that an auction has completed.
 #[derive(Debug)]
 pub struct CompleteAuction {
     pub parcel_data: Vec<CompleteAuction_ParcelData>,
@@ -5932,6 +6626,7 @@ pub struct CancelAuction_ParcelData {
     pub parcel_id: Uuid,
 }
 
+/// Tell the dataserver that an auction has been canceled.
 #[derive(Debug)]
 pub struct CancelAuction {
     pub parcel_data: Vec<CancelAuction_ParcelData>,
@@ -5943,6 +6638,7 @@ pub struct CheckParcelAuctions_RegionData {
     pub region_handle: u64,
 }
 
+/// sim -> dataserver
 #[derive(Debug)]
 pub struct CheckParcelAuctions {
     pub region_data: Vec<CheckParcelAuctions_RegionData>,
@@ -5955,6 +6651,8 @@ pub struct ParcelAuctions_ParcelData {
     pub winner_id: Uuid,
 }
 
+/// dataserver -> sim
+/// tell a particular simulator to finish parcel sale.
 #[derive(Debug)]
 pub struct ParcelAuctions {
     pub parcel_data: Vec<ParcelAuctions_ParcelData>,
@@ -5966,6 +6664,8 @@ pub struct UUIDNameRequest_UUIDNameBlock {
     pub id: Uuid,
 }
 
+/// UUIDNameRequest
+/// Translate a UUID into first and last names
 #[derive(Debug)]
 pub struct UUIDNameRequest {
     pub uuid_name_block: Vec<UUIDNameRequest_UUIDNameBlock>,
@@ -5979,6 +6679,8 @@ pub struct UUIDNameReply_UUIDNameBlock {
     pub last_name: Vec<u8>,
 }
 
+/// UUIDNameReply
+/// Translate a UUID into first and last names
 #[derive(Debug)]
 pub struct UUIDNameReply {
     pub uuid_name_block: Vec<UUIDNameReply_UUIDNameBlock>,
@@ -5990,6 +6692,8 @@ pub struct UUIDGroupNameRequest_UUIDNameBlock {
     pub id: Uuid,
 }
 
+/// UUIDGroupNameRequest
+/// Translate a UUID into a group name
 #[derive(Debug)]
 pub struct UUIDGroupNameRequest {
     pub uuid_name_block: Vec<UUIDGroupNameRequest_UUIDNameBlock>,
@@ -6002,6 +6706,8 @@ pub struct UUIDGroupNameReply_UUIDNameBlock {
     pub group_name: Vec<u8>,
 }
 
+/// UUIDGroupNameReply
+/// Translate a UUID into a group name
 #[derive(Debug)]
 pub struct UUIDGroupNameReply {
     pub uuid_name_block: Vec<UUIDGroupNameReply_UUIDNameBlock>,
@@ -6022,6 +6728,10 @@ pub struct ChatPass_ChatData {
     pub message: Vec<u8>,
 }
 
+/// ChatPass
+/// Chat message transmission to neighbors
+/// Chat is region local to receiving simulator.
+/// Type is one of CHAT_TYPE_NORMAL, _WHISPER, _SHOUT
 #[derive(Debug)]
 pub struct ChatPass {
     pub chat_data: ChatPass_ChatData,
@@ -6035,6 +6745,7 @@ pub struct EdgeDataPacket_EdgeData {
     pub layer_data: Vec<u8>,
 }
 
+
 #[derive(Debug)]
 pub struct EdgeDataPacket {
     pub edge_data: EdgeDataPacket_EdgeData,
@@ -6047,6 +6758,8 @@ pub struct SimStatus_SimStatus {
     pub can_accept_tasks: bool,
 }
 
+/// Sim status, condition of this sim
+/// sent reliably, when dirty
 #[derive(Debug)]
 pub struct SimStatus {
     pub sim_status: SimStatus_SimStatus,
@@ -6122,6 +6835,7 @@ pub struct ChildAgentUpdate_AgentInfo {
     pub flags: u32,
 }
 
+
 #[derive(Debug)]
 pub struct ChildAgentUpdate {
     pub agent_data: ChildAgentUpdate_AgentData,
@@ -6143,6 +6857,8 @@ pub struct ChildAgentAlive_AgentData {
     pub session_id: Uuid,
 }
 
+/// ChildAgentAlive
+/// sent to child agents just to keep them alive
 #[derive(Debug)]
 pub struct ChildAgentAlive {
     pub agent_data: ChildAgentAlive_AgentData,
@@ -6165,6 +6881,7 @@ pub struct ChildAgentPositionUpdate_AgentData {
     pub changed_grid: bool,
 }
 
+
 #[derive(Debug)]
 pub struct ChildAgentPositionUpdate {
     pub agent_data: ChildAgentPositionUpdate_AgentData,
@@ -6177,6 +6894,8 @@ pub struct ChildAgentDying_AgentData {
     pub session_id: Uuid,
 }
 
+/// Obituary for child agents - make sure the parent know the child is dead
+/// This way, children can be reliably restarted
 #[derive(Debug)]
 pub struct ChildAgentDying {
     pub agent_data: ChildAgentDying_AgentData,
@@ -6189,6 +6908,7 @@ pub struct ChildAgentUnknown_AgentData {
     pub session_id: Uuid,
 }
 
+/// This is sent if a full child agent hasn't been accepted yet
 #[derive(Debug)]
 pub struct ChildAgentUnknown {
     pub agent_data: ChildAgentUnknown_AgentData,
@@ -6201,6 +6921,7 @@ pub struct AtomicPassObject_TaskData {
     pub attachment_needs_save: bool,
 }
 
+/// This message is sent how objects get passed between regions.
 #[derive(Debug)]
 pub struct AtomicPassObject {
     pub task_data: AtomicPassObject_TaskData,
@@ -6212,6 +6933,7 @@ pub struct KillChildAgents_IDBlock {
     pub agent_id: Uuid,
 }
 
+/// KillChildAgents - A new agent has connected to the simulator . . . make sure that any old child cameras are blitzed
 #[derive(Debug)]
 pub struct KillChildAgents {
     pub id_block: KillChildAgents_IDBlock,
@@ -6224,6 +6946,8 @@ pub struct GetScriptRunning_Script {
     pub item_id: Uuid,
 }
 
+/// GetScriptRunning - asks if a script is running or not. the simulator
+/// responds with ScriptRunningReply
 #[derive(Debug)]
 pub struct GetScriptRunning {
     pub script: GetScriptRunning_Script,
@@ -6237,6 +6961,8 @@ pub struct ScriptRunningReply_Script {
     pub running: bool,
 }
 
+/// ScriptRunningReply - response from simulator to message above
+/// 		{	Mono			BOOL	} Added to LLSD message
 #[derive(Debug)]
 pub struct ScriptRunningReply {
     pub script: ScriptRunningReply_Script,
@@ -6256,6 +6982,8 @@ pub struct SetScriptRunning_Script {
     pub running: bool,
 }
 
+/// SetScriptRunning - makes a script active or inactive (Enable may be
+/// true or false)
 #[derive(Debug)]
 pub struct SetScriptRunning {
     pub agent_data: SetScriptRunning_AgentData,
@@ -6275,6 +7003,7 @@ pub struct ScriptReset_Script {
     pub item_id: Uuid,
 }
 
+/// ScriptReset - causes a script to reset
 #[derive(Debug)]
 pub struct ScriptReset {
     pub agent_data: ScriptReset_AgentData,
@@ -6297,6 +7026,7 @@ pub struct ScriptSensorRequest_Requester {
     pub search_regions: u8,
 }
 
+/// ScriptSensorRequest - causes the receiving sim to run a script sensor and return the results
 #[derive(Debug)]
 pub struct ScriptSensorRequest {
     pub requester: ScriptSensorRequest_Requester,
@@ -6321,6 +7051,7 @@ pub struct ScriptSensorReply_SensedData {
     pub range: f32,
 }
 
+/// ScriptSensorReply - returns the request script search information back to the requester
 #[derive(Debug)]
 pub struct ScriptSensorReply {
     pub requester: ScriptSensorReply_Requester,
@@ -6335,6 +7066,9 @@ pub struct CompleteAgentMovement_AgentData {
     pub circuit_code: u32,
 }
 
+/// viewer -> sim
+/// agent is coming into the region. The region should be expecting the
+/// agent.
 #[derive(Debug)]
 pub struct CompleteAgentMovement {
     pub agent_data: CompleteAgentMovement_AgentData,
@@ -6360,6 +7094,7 @@ pub struct AgentMovementComplete_SimData {
     pub channel_version: Vec<u8>,
 }
 
+/// sim -> viewer
 #[derive(Debug)]
 pub struct AgentMovementComplete {
     pub agent_data: AgentMovementComplete_AgentData,
@@ -6376,6 +7111,7 @@ pub struct DataServerLogout_UserData {
     pub session_id: Uuid,
 }
 
+/// userserver -> dataserver
 #[derive(Debug)]
 pub struct DataServerLogout {
     pub user_data: DataServerLogout_UserData,
@@ -6388,6 +7124,9 @@ pub struct LogoutRequest_AgentData {
     pub session_id: Uuid,
 }
 
+/// LogoutRequest
+/// viewer -> sim
+/// reliable
 #[derive(Debug)]
 pub struct LogoutRequest {
     pub agent_data: LogoutRequest_AgentData,
@@ -6405,6 +7144,11 @@ pub struct LogoutReply_InventoryData {
     pub item_id: Uuid,
 }
 
+/// LogoutReply
+/// it's ok for the viewer to quit.
+/// sim -> viewer
+/// reliable
+/// Includes inventory items to update with new asset ids
 #[derive(Debug)]
 pub struct LogoutReply {
     pub agent_data: LogoutReply_AgentData,
@@ -6434,6 +7178,15 @@ pub struct ImprovedInstantMessage_MessageBlock {
     pub binary_bucket: Vec<u8>,
 }
 
+/// ImprovedInstantMessage
+/// This message can potentially route all over the place
+/// ParentEstateID: parent estate id of the source estate
+/// RegionID: region id of the source of the IM.
+/// Position: position of the sender in region local coordinates
+/// Dialog	see llinstantmessage.h for values
+/// ID		May be used by dialog. Interpretation depends on context.
+/// BinaryBucket May be used by some dialog types
+/// reliable
 #[derive(Debug)]
 pub struct ImprovedInstantMessage {
     pub agent_data: ImprovedInstantMessage_AgentData,
@@ -6447,6 +7200,8 @@ pub struct RetrieveInstantMessages_AgentData {
     pub session_id: Uuid,
 }
 
+/// RetrieveInstantMessages - used to get instant messages that
+/// were persisted out to the database while the user was offline
 #[derive(Debug)]
 pub struct RetrieveInstantMessages {
     pub agent_data: RetrieveInstantMessages_AgentData,
@@ -6466,6 +7221,9 @@ pub struct FindAgent_LocationBlock {
     pub global_y: f64,
 }
 
+/// FindAgent - used to find an agent's global position. I used a
+/// variable sized LocationBlock so that the message can be recycled with
+/// minimum new messages and handlers.
 #[derive(Debug)]
 pub struct FindAgent {
     pub agent_block: FindAgent_AgentBlock,
@@ -6485,6 +7243,10 @@ pub struct RequestGodlikePowers_RequestBlock {
     pub token: Uuid,
 }
 
+/// Set godlike to 1 if you want to become godlike.
+/// Set godlike to 0 if you want to relinquish god powers.
+/// viewer -> simulator -> dataserver
+/// reliable
 #[derive(Debug)]
 pub struct RequestGodlikePowers {
     pub agent_data: RequestGodlikePowers_AgentData,
@@ -6504,6 +7266,10 @@ pub struct GrantGodlikePowers_GrantData {
     pub token: Uuid,
 }
 
+/// At the simulator, turn the godlike bit on.
+/// At the viewer, show the god menu.
+/// dataserver -> simulator -> viewer
+/// reliable
 #[derive(Debug)]
 pub struct GrantGodlikePowers {
     pub agent_data: GrantGodlikePowers_AgentData,
@@ -6529,6 +7295,8 @@ pub struct GodlikeMessage_ParamList {
     pub parameter: Vec<u8>,
 }
 
+/// GodlikeMessage - generalized construct for Gods to send messages
+/// around the system. Each Request has it's own internal protocol.
 #[derive(Debug)]
 pub struct GodlikeMessage {
     pub agent_data: GodlikeMessage_AgentData,
@@ -6555,6 +7323,8 @@ pub struct EstateOwnerMessage_ParamList {
     pub parameter: Vec<u8>,
 }
 
+/// EstateOwnerMessage
+/// format must be identical to above
 #[derive(Debug)]
 pub struct EstateOwnerMessage {
     pub agent_data: EstateOwnerMessage_AgentData,
@@ -6581,6 +7351,9 @@ pub struct GenericMessage_ParamList {
     pub parameter: Vec<u8>,
 }
 
+/// GenericMessage
+/// format must be identical to above
+/// As above, but don't have to be god or estate owner to send.
 #[derive(Debug)]
 pub struct GenericMessage {
     pub agent_data: GenericMessage_AgentData,
@@ -6600,6 +7373,7 @@ pub struct MuteListRequest_MuteData {
     pub mute_crc: u32,
 }
 
+/// request for mute list
 #[derive(Debug)]
 pub struct MuteListRequest {
     pub agent_data: MuteListRequest_AgentData,
@@ -6621,6 +7395,7 @@ pub struct UpdateMuteListEntry_MuteData {
     pub mute_flags: u32,
 }
 
+/// update/add someone in the mute list
 #[derive(Debug)]
 pub struct UpdateMuteListEntry {
     pub agent_data: UpdateMuteListEntry_AgentData,
@@ -6640,6 +7415,7 @@ pub struct RemoveMuteListEntry_MuteData {
     pub mute_name: Vec<u8>,
 }
 
+/// Remove a mute list entry.
 #[derive(Debug)]
 pub struct RemoveMuteListEntry {
     pub agent_data: RemoveMuteListEntry_AgentData,
@@ -6664,6 +7440,7 @@ pub struct CopyInventoryFromNotecard_InventoryData {
     pub item_id: Uuid,
     pub folder_id: Uuid,
 }
+
 
 #[derive(Debug)]
 pub struct CopyInventoryFromNotecard {
@@ -6706,6 +7483,7 @@ pub struct UpdateInventoryItem_InventoryData {
     pub crc: u32,
 }
 
+
 #[derive(Debug)]
 pub struct UpdateInventoryItem {
     pub agent_data: UpdateInventoryItem_AgentData,
@@ -6746,6 +7524,7 @@ pub struct UpdateCreateInventoryItem_InventoryData {
     pub crc: u32,
 }
 
+
 #[derive(Debug)]
 pub struct UpdateCreateInventoryItem {
     pub agent_data: UpdateCreateInventoryItem_AgentData,
@@ -6766,6 +7545,7 @@ pub struct MoveInventoryItem_InventoryData {
     pub folder_id: Uuid,
     pub new_name: Vec<u8>,
 }
+
 
 #[derive(Debug)]
 pub struct MoveInventoryItem {
@@ -6789,6 +7569,12 @@ pub struct CopyInventoryItem_InventoryData {
     pub new_name: Vec<u8>,
 }
 
+/// copy inventory item by item id to specified destination folder,
+/// send out bulk inventory update when done.
+///
+/// Inventory items are only unique for {agent, inv_id} pairs;
+/// the OldItemID needs to be paired with the OldAgentID to
+/// produce a unique inventory item.
 #[derive(Debug)]
 pub struct CopyInventoryItem {
     pub agent_data: CopyInventoryItem_AgentData,
@@ -6806,6 +7592,7 @@ pub struct RemoveInventoryItem_AgentData {
 pub struct RemoveInventoryItem_InventoryData {
     pub item_id: Uuid,
 }
+
 
 #[derive(Debug)]
 pub struct RemoveInventoryItem {
@@ -6826,6 +7613,7 @@ pub struct ChangeInventoryItemFlags_InventoryData {
     pub flags: u32,
 }
 
+
 #[derive(Debug)]
 pub struct ChangeInventoryItemFlags {
     pub agent_data: ChangeInventoryItemFlags_AgentData,
@@ -6844,6 +7632,11 @@ pub struct SaveAssetIntoInventory_InventoryData {
     pub new_asset_id: Uuid,
 }
 
+///
+/// Sim outgoing only (to dataserver, to viewer)
+/// NOT viewer to sim, sim should not have handler, ever
+/// This message is currently only uses objects, so the viewer ignores
+/// the asset id.
 #[derive(Debug)]
 pub struct SaveAssetIntoInventory {
     pub agent_data: SaveAssetIntoInventory_AgentData,
@@ -6864,6 +7657,7 @@ pub struct CreateInventoryFolder_FolderData {
     pub type_: i8,
     pub name: Vec<u8>,
 }
+
 
 #[derive(Debug)]
 pub struct CreateInventoryFolder {
@@ -6886,6 +7680,7 @@ pub struct UpdateInventoryFolder_FolderData {
     pub name: Vec<u8>,
 }
 
+
 #[derive(Debug)]
 pub struct UpdateInventoryFolder {
     pub agent_data: UpdateInventoryFolder_AgentData,
@@ -6906,6 +7701,7 @@ pub struct MoveInventoryFolder_InventoryData {
     pub parent_id: Uuid,
 }
 
+
 #[derive(Debug)]
 pub struct MoveInventoryFolder {
     pub agent_data: MoveInventoryFolder_AgentData,
@@ -6923,6 +7719,7 @@ pub struct RemoveInventoryFolder_AgentData {
 pub struct RemoveInventoryFolder_FolderData {
     pub folder_id: Uuid,
 }
+
 
 #[derive(Debug)]
 pub struct RemoveInventoryFolder {
@@ -6946,6 +7743,7 @@ pub struct FetchInventoryDescendents_InventoryData {
     pub fetch_items: bool,
 }
 
+/// Get inventory segment.
 #[derive(Debug)]
 pub struct FetchInventoryDescendents {
     pub agent_data: FetchInventoryDescendents_AgentData,
@@ -6995,6 +7793,10 @@ pub struct InventoryDescendents_ItemData {
     pub crc: u32,
 }
 
+/// return inventory segment.
+/// *NOTE: This could be compressed more since we already know the
+/// parent_id for folders and the folder_id for items, but this is
+/// reasonable until we heve server side inventory.
 #[derive(Debug)]
 pub struct InventoryDescendents {
     pub agent_data: InventoryDescendents_AgentData,
@@ -7015,6 +7817,7 @@ pub struct FetchInventory_InventoryData {
     pub item_id: Uuid,
 }
 
+/// Get inventory item(s) - response comes through FetchInventoryReply
 #[derive(Debug)]
 pub struct FetchInventory {
     pub agent_data: FetchInventory_AgentData,
@@ -7051,6 +7854,7 @@ pub struct FetchInventoryReply_InventoryData {
     pub creation_date: i32,
     pub crc: u32,
 }
+
 
 #[derive(Debug)]
 pub struct FetchInventoryReply {
@@ -7099,6 +7903,9 @@ pub struct BulkUpdateInventory_ItemData {
     pub crc: u32,
 }
 
+/// Can only fit around 7 items per packet - that's the way it goes. At
+/// least many bulk updates can be packed.
+/// Only from dataserver->sim->viewer
 #[derive(Debug)]
 pub struct BulkUpdateInventory {
     pub agent_data: BulkUpdateInventory_AgentData,
@@ -7115,6 +7922,8 @@ pub struct RequestInventoryAsset_QueryData {
     pub item_id: Uuid,
 }
 
+/// request permissions for agent id to get the asset for owner_id's
+/// item_id.
 #[derive(Debug)]
 pub struct RequestInventoryAsset {
     pub query_data: RequestInventoryAsset_QueryData,
@@ -7128,6 +7937,8 @@ pub struct InventoryAssetResponse_QueryData {
     pub is_readable: bool,
 }
 
+/// response to RequestInventoryAsset
+/// lluuid will be null if agentid in the request above cannot read asset
 #[derive(Debug)]
 pub struct InventoryAssetResponse {
     pub query_data: InventoryAssetResponse_QueryData,
@@ -7150,6 +7961,9 @@ pub struct RemoveInventoryObjects_ItemData {
     pub item_id: Uuid,
 }
 
+/// This is the new improved way to remove inventory items.  It is
+/// currently only supported in viewer->userserver->dataserver
+/// messages typically initiated by an empty trash method.
 #[derive(Debug)]
 pub struct RemoveInventoryObjects {
     pub agent_data: RemoveInventoryObjects_AgentData,
@@ -7169,6 +7983,8 @@ pub struct PurgeInventoryDescendents_InventoryData {
     pub folder_id: Uuid,
 }
 
+/// This is how you remove inventory when you're not even sure what it
+/// is - only it's parenting.
 #[derive(Debug)]
 pub struct PurgeInventoryDescendents {
     pub agent_data: PurgeInventoryDescendents_AgentData,
@@ -7213,6 +8029,9 @@ pub struct UpdateTaskInventory_InventoryData {
     pub crc: u32,
 }
 
+/// These messages are viewer->simulator requests to update a task's
+/// inventory.
+/// if Key == 0, itemid is the key. if Key == 1, assetid is the key.
 #[derive(Debug)]
 pub struct UpdateTaskInventory {
     pub agent_data: UpdateTaskInventory_AgentData,
@@ -7232,6 +8051,7 @@ pub struct RemoveTaskInventory_InventoryData {
     pub local_id: u32,
     pub item_id: Uuid,
 }
+
 
 #[derive(Debug)]
 pub struct RemoveTaskInventory {
@@ -7253,6 +8073,7 @@ pub struct MoveTaskInventory_InventoryData {
     pub item_id: Uuid,
 }
 
+
 #[derive(Debug)]
 pub struct MoveTaskInventory {
     pub agent_data: MoveTaskInventory_AgentData,
@@ -7271,6 +8092,7 @@ pub struct RequestTaskInventory_InventoryData {
     pub local_id: u32,
 }
 
+
 #[derive(Debug)]
 pub struct RequestTaskInventory {
     pub agent_data: RequestTaskInventory_AgentData,
@@ -7284,6 +8106,7 @@ pub struct ReplyTaskInventory_InventoryData {
     pub serial: i16,
     pub filename: Vec<u8>,
 }
+
 
 #[derive(Debug)]
 pub struct ReplyTaskInventory {
@@ -7312,6 +8135,19 @@ pub struct DeRezObject_ObjectData {
     pub object_local_id: u32,
 }
 
+/// These messages are viewer->simulator requests regarding objects
+/// which are currently being simulated. The viewer will get an
+/// UpdateInventoryItem response if a DeRez succeeds, and the object
+/// will appear if a RezObject succeeds.
+/// The Destination field tells where the derez should wind up, and the
+/// meaning of DestinationID depends on it. For example, if the
+/// destination is a category, then the destination is the category id. If
+/// the destination is a task inventory, then the destination id is the
+/// task id.
+/// The transaction id is generated by the viewer on derez, and then
+/// the packets are counted and numbered. The rest of the information is
+/// just duplicated (it's not that much, and derezzes that span multiple
+/// packets will be rare.)
 #[derive(Debug)]
 pub struct DeRezObject {
     pub agent_data: DeRezObject_AgentData,
@@ -7326,6 +8162,9 @@ pub struct DeRezAck_TransactionData {
     pub success: bool,
 }
 
+/// This message is sent when a derez succeeds, but there's no way to
+/// know, since no inventory is created on the viewer. For example, when
+/// saving into task inventory.
 #[derive(Debug)]
 pub struct DeRezAck {
     pub transaction_data: DeRezAck_TransactionData,
@@ -7380,6 +8219,8 @@ pub struct RezObject_InventoryData {
     pub crc: u32,
 }
 
+/// This message is sent from viewer -> simulator when the viewer wants
+/// to rez an object out of inventory.
 #[derive(Debug)]
 pub struct RezObject {
     pub agent_data: RezObject_AgentData,
@@ -7422,6 +8263,8 @@ pub struct RezObjectFromNotecard_InventoryData {
     pub item_id: Uuid,
 }
 
+/// This message is sent from viewer -> simulator when the viewer wants
+/// to rez an object from a notecard.
 #[derive(Debug)]
 pub struct RezObjectFromNotecard {
     pub agent_data: RezObjectFromNotecard_AgentData,
@@ -7444,6 +8287,8 @@ pub struct TransferInventory_InventoryBlock {
     pub type_: i8,
 }
 
+/// sim -> dataserver
+/// sent during agent to agent inventory transfers
 #[derive(Debug)]
 pub struct TransferInventory {
     pub info_block: TransferInventory_InfoBlock,
@@ -7457,6 +8302,9 @@ pub struct TransferInventoryAck_InfoBlock {
     pub inventory_id: Uuid,
 }
 
+/// dataserver -> sim
+/// InventoryID is the id of the inventory object that the end user
+/// should discard if they deny the transfer.
 #[derive(Debug)]
 pub struct TransferInventoryAck {
     pub info_block: TransferInventoryAck_InfoBlock,
@@ -7479,6 +8327,7 @@ pub struct AcceptFriendship_FolderData {
     pub folder_id: Uuid,
 }
 
+
 #[derive(Debug)]
 pub struct AcceptFriendship {
     pub agent_data: AcceptFriendship_AgentData,
@@ -7498,6 +8347,7 @@ pub struct DeclineFriendship_TransactionBlock {
     pub transaction_id: Uuid,
 }
 
+
 #[derive(Debug)]
 pub struct DeclineFriendship {
     pub agent_data: DeclineFriendship_AgentData,
@@ -7510,6 +8360,7 @@ pub struct FormFriendship_AgentBlock {
     pub source_id: Uuid,
     pub dest_id: Uuid,
 }
+
 
 #[derive(Debug)]
 pub struct FormFriendship {
@@ -7528,6 +8379,11 @@ pub struct TerminateFriendship_ExBlock {
     pub other_id: Uuid,
 }
 
+/// Cancels user relationship
+/// Updates inventory for both users.
+/// Stops agent tracking in userserver.
+/// viewer -> userserver -> dataserver
+/// reliable
 #[derive(Debug)]
 pub struct TerminateFriendship {
     pub agent_data: TerminateFriendship_AgentData,
@@ -7547,6 +8403,7 @@ pub struct OfferCallingCard_AgentBlock {
     pub transaction_id: Uuid,
 }
 
+/// used to give someone a calling card.
 #[derive(Debug)]
 pub struct OfferCallingCard {
     pub agent_data: OfferCallingCard_AgentData,
@@ -7570,6 +8427,7 @@ pub struct AcceptCallingCard_FolderData {
     pub folder_id: Uuid,
 }
 
+
 #[derive(Debug)]
 pub struct AcceptCallingCard {
     pub agent_data: AcceptCallingCard_AgentData,
@@ -7588,6 +8446,7 @@ pub struct DeclineCallingCard_AgentData {
 pub struct DeclineCallingCard_TransactionBlock {
     pub transaction_id: Uuid,
 }
+
 
 #[derive(Debug)]
 pub struct DeclineCallingCard {
@@ -7634,6 +8493,7 @@ pub struct RezScript_InventoryBlock {
     pub crc: u32,
 }
 
+/// Rez a script onto an object
 #[derive(Debug)]
 pub struct RezScript {
     pub agent_data: RezScript_AgentData,
@@ -7661,6 +8521,7 @@ pub struct CreateInventoryItem_InventoryBlock {
     pub description: Vec<u8>,
 }
 
+/// Create inventory
 #[derive(Debug)]
 pub struct CreateInventoryItem {
     pub agent_data: CreateInventoryItem_AgentData,
@@ -7685,6 +8546,7 @@ pub struct CreateLandmarkForEvent_InventoryBlock {
     pub name: Vec<u8>,
 }
 
+/// give agent a landmark for an event.
 #[derive(Debug)]
 pub struct CreateLandmarkForEvent {
     pub agent_data: CreateLandmarkForEvent_AgentData,
@@ -7702,6 +8564,7 @@ pub struct EventLocationRequest_QueryData {
 pub struct EventLocationRequest_EventData {
     pub event_id: u32,
 }
+
 
 #[derive(Debug)]
 pub struct EventLocationRequest {
@@ -7722,6 +8585,7 @@ pub struct EventLocationReply_EventData {
     pub region_pos: Vector3<f32>,
 }
 
+
 #[derive(Debug)]
 pub struct EventLocationReply {
     pub query_data: EventLocationReply_QueryData,
@@ -7734,6 +8598,8 @@ pub struct RegionHandleRequest_RequestBlock {
     pub region_id: Uuid,
 }
 
+/// get information about landmarks. Used by viewers for determining
+/// the location of a landmark, and by simulators for teleport
 #[derive(Debug)]
 pub struct RegionHandleRequest {
     pub request_block: RegionHandleRequest_RequestBlock,
@@ -7745,6 +8611,7 @@ pub struct RegionIDAndHandleReply_ReplyBlock {
     pub region_id: Uuid,
     pub region_handle: u64,
 }
+
 
 #[derive(Debug)]
 pub struct RegionIDAndHandleReply {
@@ -7770,6 +8637,11 @@ pub struct MoneyTransferRequest_MoneyData {
     pub description: Vec<u8>,
 }
 
+/// Move money from one agent to another. Validation will happen at the
+/// simulator, the dataserver will actually do the work. Dataserver
+/// generates a MoneyBalance message in reply.  The simulator
+/// will generate a MoneyTransferBackend in response to this.
+/// viewer -> simulator -> dataserver
 #[derive(Debug)]
 pub struct MoneyTransferRequest {
     pub agent_data: MoneyTransferRequest_AgentData,
@@ -7794,6 +8666,9 @@ pub struct MoneyTransferBackend_MoneyData {
     pub description: Vec<u8>,
 }
 
+/// And, the money transfer
+/// *NOTE: Unused as of 2010-04-06, because all back-end money transactions
+/// are done with web services via L$ API.  JC
 #[derive(Debug)]
 pub struct MoneyTransferBackend {
     pub money_data: MoneyTransferBackend_MoneyData,
@@ -7811,6 +8686,8 @@ pub struct MoneyBalanceRequest_MoneyData {
     pub transaction_id: Uuid,
 }
 
+/// viewer -> userserver -> dataserver
+/// Reliable
 #[derive(Debug)]
 pub struct MoneyBalanceRequest {
     pub agent_data: MoneyBalanceRequest_AgentData,
@@ -7840,6 +8717,10 @@ pub struct MoneyBalanceReply_TransactionInfo {
     pub item_description: Vec<u8>,
 }
 
+/// dataserver -> simulator -> viewer
+/// For replies that are part of a transaction (buying something) provide
+/// metadata for localization.  If TransactionType is 0, the message is
+/// purely a balance update.  Added for server 1.40 and viewer 2.1.  JC
 #[derive(Debug)]
 pub struct MoneyBalanceReply {
     pub money_data: MoneyBalanceReply_MoneyData,
@@ -7875,6 +8756,13 @@ pub struct RoutedMoneyBalanceReply_TransactionInfo {
     pub item_description: Vec<u8>,
 }
 
+/// RoutedMoneyBalanceReply
+/// This message is used when a dataserver needs to send updated
+/// money balance information to a simulator other than the one it
+/// is connected to.  It uses the standard TransferBlock format.
+/// dataserver -> simulator -> spaceserver -> simulator -> viewer
+/// reliable
+/// See MoneyBalanceReply above.
 #[derive(Debug)]
 pub struct RoutedMoneyBalanceReply {
     pub target_block: RoutedMoneyBalanceReply_TargetBlock,
@@ -7897,6 +8785,8 @@ pub struct ActivateGestures_Data {
     pub gesture_flags: u32,
 }
 
+/// Tell the database that some gestures are now active
+/// viewer -> sim -> data
 #[derive(Debug)]
 pub struct ActivateGestures {
     pub agent_data: ActivateGestures_AgentData,
@@ -7917,6 +8807,8 @@ pub struct DeactivateGestures_Data {
     pub gesture_flags: u32,
 }
 
+/// Tell the database some gestures are no longer active
+/// viewer -> sim -> data
 #[derive(Debug)]
 pub struct DeactivateGestures {
     pub agent_data: DeactivateGestures_AgentData,
@@ -7930,6 +8822,7 @@ pub struct MuteListUpdate_MuteData {
     pub filename: Vec<u8>,
 }
 
+/// dataserver-> userserver -> viewer to move around the mute list
 #[derive(Debug)]
 pub struct MuteListUpdate {
     pub mute_data: MuteListUpdate_MuteData,
@@ -7941,6 +8834,7 @@ pub struct UseCachedMuteList_AgentData {
     pub agent_id: Uuid,
 }
 
+/// tell viewer to use the local mute cache
 #[derive(Debug)]
 pub struct UseCachedMuteList {
     pub agent_data: UseCachedMuteList_AgentData,
@@ -7959,6 +8853,12 @@ pub struct GrantUserRights_Rights {
     pub related_rights: i32,
 }
 
+/// Sent from viewer to simulator to set user rights. This message will be
+/// relayed up to the dataserver through a PUT. If that
+/// succeeds, an UpdateUserRights will be relayed to the originating
+/// viewer, and a presence lookup will be performed to find
+/// agent-related and the same PUT will be issued to the sim host if
+/// they are online.
 #[derive(Debug)]
 pub struct GrantUserRights {
     pub agent_data: GrantUserRights_AgentData,
@@ -7977,6 +8877,11 @@ pub struct ChangeUserRights_Rights {
     pub related_rights: i32,
 }
 
+/// This message is sent from the simulator to the viewer to indicate a
+/// targets granted rights. This is only sent to the originator of the
+/// request and the target agent if it is a modify or map
+/// right. Adding/removing online status rights will show up as an
+/// online/offline notification.
 #[derive(Debug)]
 pub struct ChangeUserRights {
     pub agent_data: ChangeUserRights_AgentData,
@@ -7989,6 +8894,8 @@ pub struct OnlineNotification_AgentBlock {
     pub agent_id: Uuid,
 }
 
+/// notification for login and logout.
+/// source_sim -> dest_viewer
 #[derive(Debug)]
 pub struct OnlineNotification {
     pub agent_block: Vec<OnlineNotification_AgentBlock>,
@@ -7999,6 +8906,7 @@ pub struct OnlineNotification {
 pub struct OfflineNotification_AgentBlock {
     pub agent_id: Uuid,
 }
+
 
 #[derive(Debug)]
 pub struct OfflineNotification {
@@ -8020,6 +8928,10 @@ pub struct SetStartLocationRequest_StartLocationData {
     pub location_look_at: Vector3<f32>,
 }
 
+/// SetStartLocationRequest
+/// viewer -> sim
+/// failure checked at sim and triggers ImprovedInstantMessage
+/// success triggers SetStartLocation
 #[derive(Debug)]
 pub struct SetStartLocationRequest {
     pub agent_data: SetStartLocationRequest_AgentData,
@@ -8037,6 +8949,8 @@ pub struct SetStartLocation_StartLocationData {
     pub location_look_at: Vector3<f32>,
 }
 
+/// SetStartLocation
+/// sim -> dataserver
 #[derive(Debug)]
 pub struct SetStartLocation {
     pub start_location_data: SetStartLocation_StartLocationData,
@@ -8048,6 +8962,8 @@ pub struct NetTest_NetBlock {
     pub port: IpPort,
 }
 
+/// NetTest - This goes back and forth to the space server because of
+/// problems determining the port
 #[derive(Debug)]
 pub struct NetTest {
     pub net_block: NetTest_NetBlock,
@@ -8059,6 +8975,8 @@ pub struct SetCPURatio_Data {
     pub ratio: u8,
 }
 
+/// SetChildCount - Sent to launcher to adjust nominal child count
+/// Simulator sends this increase the sim/cpu ratio on startup
 #[derive(Debug)]
 pub struct SetCPURatio {
     pub data: SetCPURatio_Data,
@@ -8076,6 +8994,8 @@ pub struct SimCrashed_Users {
     pub agent_id: Uuid,
 }
 
+/// SimCrashed - Sent to dataserver when the sim goes down.
+/// Maybe we should notify the spaceserver as well?
 #[derive(Debug)]
 pub struct SimCrashed {
     pub data: SimCrashed_Data,
@@ -8093,6 +9013,7 @@ pub struct NameValuePair_NameValueData {
     pub nv_pair: Vec<u8>,
 }
 
+/// NameValuePair - if the specific task exists on simulator, add or replace this name value pair
 #[derive(Debug)]
 pub struct NameValuePair {
     pub task_data: NameValuePair_TaskData,
@@ -8110,6 +9031,7 @@ pub struct RemoveNameValuePair_NameValueData {
     pub nv_pair: Vec<u8>,
 }
 
+/// NameValuePair - if the specific task exists on simulator or dataserver, remove the name value pair (value is ignored)
 #[derive(Debug)]
 pub struct RemoveNameValuePair {
     pub task_data: RemoveNameValuePair_TaskData,
@@ -8159,6 +9081,7 @@ pub struct UpdateAttachment_InventoryData {
     pub crc: u32,
 }
 
+
 #[derive(Debug)]
 pub struct UpdateAttachment {
     pub agent_data: UpdateAttachment_AgentData,
@@ -8180,6 +9103,7 @@ pub struct RemoveAttachment_AttachmentBlock {
     pub item_id: Uuid,
 }
 
+/// Simulator informs Dataserver that attachment has been taken off
 #[derive(Debug)]
 pub struct RemoveAttachment {
     pub agent_data: RemoveAttachment_AgentData,
@@ -8198,6 +9122,7 @@ pub struct SoundTrigger_SoundData {
     pub gain: f32,
 }
 
+/// SoundTrigger - Sent by simulator to viewer to trigger sound outside current region
 #[derive(Debug)]
 pub struct SoundTrigger {
     pub sound_data: SoundTrigger_SoundData,
@@ -8213,6 +9138,7 @@ pub struct AttachedSound_DataBlock {
     pub flags: u8,
 }
 
+/// AttachedSound - Sent by simulator to viewer to play sound attached with an object
 #[derive(Debug)]
 pub struct AttachedSound {
     pub data_block: AttachedSound_DataBlock,
@@ -8224,6 +9150,7 @@ pub struct AttachedSoundGainChange_DataBlock {
     pub object_id: Uuid,
     pub gain: f32,
 }
+
 
 #[derive(Debug)]
 pub struct AttachedSoundGainChange {
@@ -8237,6 +9164,7 @@ pub struct PreloadSound_DataBlock {
     pub owner_id: Uuid,
     pub sound_id: Uuid,
 }
+
 
 #[derive(Debug)]
 pub struct PreloadSound {
@@ -8253,6 +9181,7 @@ pub struct AssetUploadRequest_AssetBlock {
     pub asset_data: Vec<u8>,
 }
 
+/// current assumes an existing UUID, need to enhance for new assets
 #[derive(Debug)]
 pub struct AssetUploadRequest {
     pub asset_block: AssetUploadRequest_AssetBlock,
@@ -8265,6 +9194,7 @@ pub struct AssetUploadComplete_AssetBlock {
     pub type_: i8,
     pub success: bool,
 }
+
 
 #[derive(Debug)]
 pub struct AssetUploadComplete {
@@ -8279,6 +9209,8 @@ pub struct EmailMessageRequest_DataBlock {
     pub subject: Vec<u8>,
 }
 
+/// Script on simulator asks dataserver if there are any email messages
+/// waiting.
 #[derive(Debug)]
 pub struct EmailMessageRequest {
     pub data_block: EmailMessageRequest_DataBlock,
@@ -8296,6 +9228,8 @@ pub struct EmailMessageReply_DataBlock {
     pub mail_filter: Vec<u8>,
 }
 
+/// Dataserver gives simulator the oldest email message in the queue, along with
+/// how many messages are left in the queue.  And passes back the filter used to request emails.
 #[derive(Debug)]
 pub struct EmailMessageReply {
     pub data_block: EmailMessageReply_DataBlock,
@@ -8310,6 +9244,7 @@ pub struct InternalScriptMail_DataBlock {
     pub body: Vec<u8>,
 }
 
+/// Script on simulator sends mail to another script
 #[derive(Debug)]
 pub struct InternalScriptMail {
     pub data_block: InternalScriptMail_DataBlock,
@@ -8323,6 +9258,7 @@ pub struct ScriptDataRequest_DataBlock {
     pub request: Vec<u8>,
 }
 
+/// Script on simulator asks dataserver for information
 #[derive(Debug)]
 pub struct ScriptDataRequest {
     pub data_block: Vec<ScriptDataRequest_DataBlock>,
@@ -8335,6 +9271,7 @@ pub struct ScriptDataReply_DataBlock {
     pub reply: Vec<u8>,
 }
 
+/// Data server responds with data
 #[derive(Debug)]
 pub struct ScriptDataReply {
     pub data_block: Vec<ScriptDataReply_DataBlock>,
@@ -8359,6 +9296,10 @@ pub struct CreateGroupRequest_GroupData {
     pub mature_publish: bool,
 }
 
+/// CreateGroupRequest
+/// viewer -> simulator
+/// simulator -> dataserver
+/// reliable
 #[derive(Debug)]
 pub struct CreateGroupRequest {
     pub agent_data: CreateGroupRequest_AgentData,
@@ -8378,6 +9319,10 @@ pub struct CreateGroupReply_ReplyData {
     pub message: Vec<u8>,
 }
 
+/// CreateGroupReply
+/// dataserver -> simulator
+/// simulator -> viewer
+/// reliable
 #[derive(Debug)]
 pub struct CreateGroupReply {
     pub agent_data: CreateGroupReply_AgentData,
@@ -8403,6 +9348,10 @@ pub struct UpdateGroupInfo_GroupData {
     pub mature_publish: bool,
 }
 
+/// UpdateGroupInfo
+/// viewer -> simulator
+/// simulator -> dataserver
+/// reliable
 #[derive(Debug)]
 pub struct UpdateGroupInfo {
     pub agent_data: UpdateGroupInfo_AgentData,
@@ -8424,6 +9373,9 @@ pub struct GroupRoleChanges_RoleChange {
     pub change: u32,
 }
 
+/// GroupRoleChanges
+/// viewer -> simulator -> dataserver
+/// reliable
 #[derive(Debug)]
 pub struct GroupRoleChanges {
     pub agent_data: GroupRoleChanges_AgentData,
@@ -8442,6 +9394,9 @@ pub struct JoinGroupRequest_GroupData {
     pub group_id: Uuid,
 }
 
+/// JoinGroupRequest
+/// viewer -> simulator -> dataserver
+/// reliable
 #[derive(Debug)]
 pub struct JoinGroupRequest {
     pub agent_data: JoinGroupRequest_AgentData,
@@ -8460,6 +9415,8 @@ pub struct JoinGroupReply_GroupData {
     pub success: bool,
 }
 
+/// JoinGroupReply
+/// dataserver -> simulator -> viewer
 #[derive(Debug)]
 pub struct JoinGroupReply {
     pub agent_data: JoinGroupReply_AgentData,
@@ -8483,6 +9440,9 @@ pub struct EjectGroupMemberRequest_EjectData {
     pub ejectee_id: Uuid,
 }
 
+/// EjectGroupMemberRequest
+/// viewer -> simulator -> dataserver
+/// reliable
 #[derive(Debug)]
 pub struct EjectGroupMemberRequest {
     pub agent_data: EjectGroupMemberRequest_AgentData,
@@ -8506,6 +9466,9 @@ pub struct EjectGroupMemberReply_EjectData {
     pub success: bool,
 }
 
+/// EjectGroupMemberReply
+/// dataserver -> simulator -> viewer
+/// reliable
 #[derive(Debug)]
 pub struct EjectGroupMemberReply {
     pub agent_data: EjectGroupMemberReply_AgentData,
@@ -8525,6 +9488,9 @@ pub struct LeaveGroupRequest_GroupData {
     pub group_id: Uuid,
 }
 
+/// LeaveGroupRequest
+/// viewer -> simulator -> dataserver
+/// reliable
 #[derive(Debug)]
 pub struct LeaveGroupRequest {
     pub agent_data: LeaveGroupRequest_AgentData,
@@ -8543,6 +9509,8 @@ pub struct LeaveGroupReply_GroupData {
     pub success: bool,
 }
 
+/// LeaveGroupReply
+/// dataserver -> simulator -> viewer
 #[derive(Debug)]
 pub struct LeaveGroupReply {
     pub agent_data: LeaveGroupReply_AgentData,
@@ -8567,6 +9535,9 @@ pub struct InviteGroupRequest_InviteData {
     pub role_id: Uuid,
 }
 
+/// InviteGroupRequest
+/// viewer -> simulator -> dataserver
+/// reliable
 #[derive(Debug)]
 pub struct InviteGroupRequest {
     pub agent_data: InviteGroupRequest_AgentData,
@@ -8584,6 +9555,9 @@ pub struct InviteGroupResponse_InviteData {
     pub membership_fee: i32,
 }
 
+/// InviteGroupResponse
+/// simulator -> dataserver
+/// reliable
 #[derive(Debug)]
 pub struct InviteGroupResponse {
     pub invite_data: InviteGroupResponse_InviteData,
@@ -8601,6 +9575,9 @@ pub struct GroupProfileRequest_GroupData {
     pub group_id: Uuid,
 }
 
+/// GroupProfileRequest
+/// viewer-> simulator -> dataserver
+/// reliable
 #[derive(Debug)]
 pub struct GroupProfileRequest {
     pub agent_data: GroupProfileRequest_AgentData,
@@ -8633,6 +9610,9 @@ pub struct GroupProfileReply_GroupData {
     pub owner_role: Uuid,
 }
 
+/// GroupProfileReply
+/// dataserver -> simulator -> viewer
+/// reliable
 #[derive(Debug)]
 pub struct GroupProfileReply {
     pub agent_data: GroupProfileReply_AgentData,
@@ -8654,6 +9634,10 @@ pub struct GroupAccountSummaryRequest_MoneyData {
     pub current_interval: i32,
 }
 
+/// CurrentInterval = 0  =>  this period (week, day, etc.)
+/// CurrentInterval = 1  =>  last period
+/// viewer -> simulator -> dataserver
+/// reliable
 #[derive(Debug)]
 pub struct GroupAccountSummaryRequest {
     pub agent_data: GroupAccountSummaryRequest_AgentData,
@@ -8691,6 +9675,8 @@ pub struct GroupAccountSummaryReply_MoneyData {
     pub tax_date: Vec<u8>,
 }
 
+/// dataserver -> simulator -> viewer
+/// Reliable
 #[derive(Debug)]
 pub struct GroupAccountSummaryReply {
     pub agent_data: GroupAccountSummaryReply_AgentData,
@@ -8712,6 +9698,7 @@ pub struct GroupAccountDetailsRequest_MoneyData {
     pub current_interval: i32,
 }
 
+/// Reliable
 #[derive(Debug)]
 pub struct GroupAccountDetailsRequest {
     pub agent_data: GroupAccountDetailsRequest_AgentData,
@@ -8739,6 +9726,7 @@ pub struct GroupAccountDetailsReply_HistoryData {
     pub amount: i32,
 }
 
+/// Reliable
 #[derive(Debug)]
 pub struct GroupAccountDetailsReply {
     pub agent_data: GroupAccountDetailsReply_AgentData,
@@ -8761,6 +9749,7 @@ pub struct GroupAccountTransactionsRequest_MoneyData {
     pub current_interval: i32,
 }
 
+/// Reliable
 #[derive(Debug)]
 pub struct GroupAccountTransactionsRequest {
     pub agent_data: GroupAccountTransactionsRequest_AgentData,
@@ -8791,6 +9780,7 @@ pub struct GroupAccountTransactionsReply_HistoryData {
     pub amount: i32,
 }
 
+/// Reliable
 #[derive(Debug)]
 pub struct GroupAccountTransactionsReply {
     pub agent_data: GroupAccountTransactionsReply_AgentData,
@@ -8815,6 +9805,9 @@ pub struct GroupActiveProposalsRequest_TransactionData {
     pub transaction_id: Uuid,
 }
 
+/// GroupActiveProposalsRequest
+/// viewer -> simulator -> dataserver
+/// reliable
 #[derive(Debug)]
 pub struct GroupActiveProposalsRequest {
     pub agent_data: GroupActiveProposalsRequest_AgentData,
@@ -8849,6 +9842,9 @@ pub struct GroupActiveProposalItemReply_ProposalData {
     pub proposal_text: Vec<u8>,
 }
 
+/// GroupActiveProposalItemReply
+/// dataserver -> simulator -> viewer
+/// reliable
 #[derive(Debug)]
 pub struct GroupActiveProposalItemReply {
     pub agent_data: GroupActiveProposalItemReply_AgentData,
@@ -8873,6 +9869,9 @@ pub struct GroupVoteHistoryRequest_TransactionData {
     pub transaction_id: Uuid,
 }
 
+/// GroupVoteHistoryRequest
+/// viewer -> simulator -> dataserver
+/// reliable
 #[derive(Debug)]
 pub struct GroupVoteHistoryRequest {
     pub agent_data: GroupVoteHistoryRequest_AgentData,
@@ -8914,6 +9913,9 @@ pub struct GroupVoteHistoryItemReply_VoteItem {
     pub num_votes: i32,
 }
 
+/// GroupVoteHistoryItemReply
+/// dataserver -> simulator -> viewer
+/// reliable
 #[derive(Debug)]
 pub struct GroupVoteHistoryItemReply {
     pub agent_data: GroupVoteHistoryItemReply_AgentData,
@@ -8938,6 +9940,9 @@ pub struct StartGroupProposal_ProposalData {
     pub proposal_text: Vec<u8>,
 }
 
+/// StartGroupProposal
+/// viewer -> simulator -> dataserver
+/// reliable
 #[derive(Debug)]
 pub struct StartGroupProposal {
     pub agent_data: StartGroupProposal_AgentData,
@@ -8958,6 +9963,9 @@ pub struct GroupProposalBallot_ProposalData {
     pub vote_cast: Vec<u8>,
 }
 
+/// GroupProposalBallot
+/// viewer -> simulator -> dataserver
+/// reliable
 #[derive(Debug)]
 pub struct GroupProposalBallot {
     pub agent_data: GroupProposalBallot_AgentData,
@@ -8965,6 +9973,8 @@ pub struct GroupProposalBallot {
 }
 
 
+/// TallyVotes userserver -> dataserver
+/// reliable
 #[derive(Debug)]
 pub struct TallyVotes {
 }
@@ -8982,6 +9992,10 @@ pub struct GroupMembersRequest_GroupData {
     pub request_id: Uuid,
 }
 
+/// GroupMembersRequest
+/// get the group members
+/// simulator -> dataserver
+/// reliable
 #[derive(Debug)]
 pub struct GroupMembersRequest {
     pub agent_data: GroupMembersRequest_AgentData,
@@ -9011,6 +10025,10 @@ pub struct GroupMembersReply_MemberData {
     pub is_owner: bool,
 }
 
+/// GroupMembersReply
+/// list of uuids for the group members
+/// dataserver -> simulator
+/// reliable
 #[derive(Debug)]
 pub struct GroupMembersReply {
     pub agent_data: GroupMembersReply_AgentData,
@@ -9026,6 +10044,8 @@ pub struct ActivateGroup_AgentData {
     pub group_id: Uuid,
 }
 
+/// used to switch an agent's currently active group.
+/// viewer -> simulator -> dataserver -> AgentDataUpdate...
 #[derive(Debug)]
 pub struct ActivateGroup {
     pub agent_data: ActivateGroup_AgentData,
@@ -9044,6 +10064,7 @@ pub struct SetGroupContribution_Data {
     pub contribution: i32,
 }
 
+/// viewer -> simulator -> dataserver
 #[derive(Debug)]
 pub struct SetGroupContribution {
     pub agent_data: SetGroupContribution_AgentData,
@@ -9068,6 +10089,7 @@ pub struct SetGroupAcceptNotices_NewData {
     pub list_in_profile: bool,
 }
 
+/// viewer -> simulator -> dataserver
 #[derive(Debug)]
 pub struct SetGroupAcceptNotices {
     pub agent_data: SetGroupAcceptNotices_AgentData,
@@ -9088,6 +10110,8 @@ pub struct GroupRoleDataRequest_GroupData {
     pub request_id: Uuid,
 }
 
+/// GroupRoleDataRequest
+/// viewer -> simulator -> dataserver
 #[derive(Debug)]
 pub struct GroupRoleDataRequest {
     pub agent_data: GroupRoleDataRequest_AgentData,
@@ -9117,6 +10141,9 @@ pub struct GroupRoleDataReply_RoleData {
     pub members: u32,
 }
 
+/// GroupRoleDataReply
+/// All role data for this group
+/// dataserver -> simulator -> agent
 #[derive(Debug)]
 pub struct GroupRoleDataReply {
     pub agent_data: GroupRoleDataReply_AgentData,
@@ -9137,6 +10164,8 @@ pub struct GroupRoleMembersRequest_GroupData {
     pub request_id: Uuid,
 }
 
+/// GroupRoleMembersRequest
+/// viewer -> simulator -> dataserver
 #[derive(Debug)]
 pub struct GroupRoleMembersRequest {
     pub agent_data: GroupRoleMembersRequest_AgentData,
@@ -9158,6 +10187,9 @@ pub struct GroupRoleMembersReply_MemberData {
     pub member_id: Uuid,
 }
 
+/// GroupRoleMembersReply
+/// All role::member pairs for this group.
+/// dataserver -> simulator -> agent
 #[derive(Debug)]
 pub struct GroupRoleMembersReply {
     pub agent_data: GroupRoleMembersReply_AgentData,
@@ -9173,6 +10205,8 @@ pub struct GroupTitlesRequest_AgentData {
     pub request_id: Uuid,
 }
 
+/// GroupTitlesRequest
+/// viewer -> simulator -> dataserver
 #[derive(Debug)]
 pub struct GroupTitlesRequest {
     pub agent_data: GroupTitlesRequest_AgentData,
@@ -9193,6 +10227,8 @@ pub struct GroupTitlesReply_GroupData {
     pub selected: bool,
 }
 
+/// GroupTitlesReply
+/// dataserver -> simulator -> viewer
 #[derive(Debug)]
 pub struct GroupTitlesReply {
     pub agent_data: GroupTitlesReply_AgentData,
@@ -9208,6 +10244,8 @@ pub struct GroupTitleUpdate_AgentData {
     pub title_role_id: Uuid,
 }
 
+/// GroupTitleUpdate
+/// viewer -> simulator -> dataserver
 #[derive(Debug)]
 pub struct GroupTitleUpdate {
     pub agent_data: GroupTitleUpdate_AgentData,
@@ -9231,6 +10269,8 @@ pub struct GroupRoleUpdate_RoleData {
     pub update_type: u8,
 }
 
+/// GroupRoleUpdate
+/// viewer -> simulator -> dataserver
 #[derive(Debug)]
 pub struct GroupRoleUpdate {
     pub agent_data: GroupRoleUpdate_AgentData,
@@ -9244,6 +10284,8 @@ pub struct LiveHelpGroupRequest_RequestData {
     pub agent_id: Uuid,
 }
 
+/// Request the members of the live help group needed for requesting agent.
+/// userserver -> dataserver
 #[derive(Debug)]
 pub struct LiveHelpGroupRequest {
     pub request_data: LiveHelpGroupRequest_RequestData,
@@ -9257,6 +10299,8 @@ pub struct LiveHelpGroupReply_ReplyData {
     pub selection: Vec<u8>,
 }
 
+/// Send down the group
+/// dataserver -> userserver
 #[derive(Debug)]
 pub struct LiveHelpGroupReply {
     pub reply_data: LiveHelpGroupReply_ReplyData,
@@ -9269,6 +10313,10 @@ pub struct AgentWearablesRequest_AgentData {
     pub session_id: Uuid,
 }
 
+/// AgentWearablesRequest
+/// (a.k.a. "Tell me what the avatar is wearing.")
+/// viewer -> simulator -> dataserver
+/// reliable
 #[derive(Debug)]
 pub struct AgentWearablesRequest {
     pub agent_data: AgentWearablesRequest_AgentData,
@@ -9289,6 +10337,11 @@ pub struct AgentWearablesUpdate_WearableData {
     pub wearable_type: u8,
 }
 
+/// AgentWearablesUpdate
+/// (a.k.a. "Here's what your avatar should be wearing now.")
+/// dataserver -> userserver -> viewer
+/// reliable
+/// NEVER from viewer to sim
 #[derive(Debug)]
 pub struct AgentWearablesUpdate {
     pub agent_data: AgentWearablesUpdate_AgentData,
@@ -9308,6 +10361,11 @@ pub struct AgentIsNowWearing_WearableData {
     pub wearable_type: u8,
 }
 
+///
+/// AgentIsNowWearing
+/// (a.k.a. "Here's what I'm wearing now.")
+/// viewer->sim->dataserver
+/// reliable
 #[derive(Debug)]
 pub struct AgentIsNowWearing {
     pub agent_data: AgentIsNowWearing_AgentData,
@@ -9328,6 +10386,10 @@ pub struct AgentCachedTexture_WearableData {
     pub texture_index: u8,
 }
 
+/// AgentCachedTexture
+/// viewer queries for cached textures on dataserver (via simulator)
+/// viewer -> simulator -> dataserver
+/// reliable
 #[derive(Debug)]
 pub struct AgentCachedTexture {
     pub agent_data: AgentCachedTexture_AgentData,
@@ -9349,6 +10411,10 @@ pub struct AgentCachedTextureResponse_WearableData {
     pub host_name: Vec<u8>,
 }
 
+/// AgentCachedTextureResponse
+/// response to viewer queries for cached textures on dataserver (via simulator)
+/// dataserver -> simulator -> viewer
+/// reliable
 #[derive(Debug)]
 pub struct AgentCachedTextureResponse {
     pub agent_data: AgentCachedTextureResponse_AgentData,
@@ -9362,6 +10428,7 @@ pub struct AgentDataUpdateRequest_AgentData {
     pub session_id: Uuid,
 }
 
+/// Request an AgentDataUpdate without changing any agent data.
 #[derive(Debug)]
 pub struct AgentDataUpdateRequest {
     pub agent_data: AgentDataUpdateRequest_AgentData,
@@ -9379,6 +10446,11 @@ pub struct AgentDataUpdate_AgentData {
     pub group_name: Vec<u8>,
 }
 
+/// AgentDataUpdate
+/// Updates a viewer or simulator's impression of agent-specific information.
+/// Used, for example, when an agent's group changes.
+/// dataserver -> simulator -> viewer
+/// reliable
 #[derive(Debug)]
 pub struct AgentDataUpdate {
     pub agent_data: AgentDataUpdate_AgentData,
@@ -9393,6 +10465,9 @@ pub struct GroupDataUpdate_AgentGroupData {
     pub group_title: Vec<u8>,
 }
 
+/// GroupDataUpdate
+/// This is a bunch of group data that needs to be appropriatly routed based on presence info.
+/// dataserver -> simulator
 #[derive(Debug)]
 pub struct GroupDataUpdate {
     pub agent_group_data: Vec<GroupDataUpdate_AgentGroupData>,
@@ -9414,6 +10489,10 @@ pub struct AgentGroupDataUpdate_GroupData {
     pub group_name: Vec<u8>,
 }
 
+/// AgentGroupDataUpdate
+/// Updates a viewer or simulator's impression of the groups an agent is in.
+/// dataserver -> simulator -> viewer
+/// reliable
 #[derive(Debug)]
 pub struct AgentGroupDataUpdate {
     pub agent_data: AgentGroupDataUpdate_AgentData,
@@ -9427,6 +10506,11 @@ pub struct AgentDropGroup_AgentData {
     pub group_id: Uuid,
 }
 
+/// AgentDropGroup
+/// Updates the viewer / simulator that an agent is no longer part of a group
+/// dataserver -> simulator -> viewer
+/// dataserver -> userserver
+/// reliable
 #[derive(Debug)]
 pub struct AgentDropGroup {
     pub agent_data: AgentDropGroup_AgentData,
@@ -9443,6 +10527,10 @@ pub struct LogTextMessage_DataBlock {
     pub message: Vec<u8>,
 }
 
+/// LogTextMessage
+/// Asks the dataserver to log the contents of this message in the
+/// chat and IM log table.
+/// Sent from userserver (IM logging) and simulator (chat logging).
 #[derive(Debug)]
 pub struct LogTextMessage {
     pub data_block: Vec<LogTextMessage_DataBlock>,
@@ -9465,6 +10553,11 @@ pub struct ViewerEffect_Effect {
     pub type_data: Vec<u8>,
 }
 
+/// ViewerEffect
+/// Viewer side effect that's sent from one viewer, and broadcast to other agents nearby
+/// viewer-->sim (single effect created by viewer)
+/// sim-->viewer (multiple effects that can be seen by viewer)
+/// the AgentData block used for authentication for viewer-->sim messages
 #[derive(Debug)]
 pub struct ViewerEffect {
     pub agent_data: ViewerEffect_AgentData,
@@ -9478,6 +10571,9 @@ pub struct CreateTrustedCircuit_DataBlock {
     pub digest: [u8; 32],
 }
 
+/// CreateTrustedCircuit
+/// Sent to establish a trust relationship between two components.
+/// Only sent in response to a DenyTrustedCircuit message.
 #[derive(Debug)]
 pub struct CreateTrustedCircuit {
     pub data_block: CreateTrustedCircuit_DataBlock,
@@ -9489,12 +10585,20 @@ pub struct DenyTrustedCircuit_DataBlock {
     pub end_point_id: Uuid,
 }
 
+/// DenyTrustedCircuit
+/// Sent :
+/// - in response to failed CreateTrustedCircuit
+/// - to force the remote end-point to try to establish a trusted circuit
+/// - the reception of a trusted message on a non-trusted circuit
+/// This allows us to re-auth a circuit if it gets closed due to timeouts or network failures.
 #[derive(Debug)]
 pub struct DenyTrustedCircuit {
     pub data_block: DenyTrustedCircuit_DataBlock,
 }
 
 
+/// RequestTrustedCircuit
+/// If the destination does not trust the sender, a Deny is sent back.
 #[derive(Debug)]
 pub struct RequestTrustedCircuit {
 }
@@ -9518,6 +10622,7 @@ pub struct RezSingleAttachmentFromInv_ObjectData {
     pub name: Vec<u8>,
     pub description: Vec<u8>,
 }
+
 
 #[derive(Debug)]
 pub struct RezSingleAttachmentFromInv {
@@ -9552,6 +10657,7 @@ pub struct RezMultipleAttachmentsFromInv_ObjectData {
     pub description: Vec<u8>,
 }
 
+
 #[derive(Debug)]
 pub struct RezMultipleAttachmentsFromInv {
     pub agent_data: RezMultipleAttachmentsFromInv_AgentData,
@@ -9565,6 +10671,7 @@ pub struct DetachAttachmentIntoInv_ObjectData {
     pub agent_id: Uuid,
     pub item_id: Uuid,
 }
+
 
 #[derive(Debug)]
 pub struct DetachAttachmentIntoInv {
@@ -9589,6 +10696,8 @@ pub struct CreateNewOutfitAttachments_ObjectData {
     pub old_folder_id: Uuid,
 }
 
+/// Viewer -> Sim
+/// Used in "Make New Outfit"
 #[derive(Debug)]
 pub struct CreateNewOutfitAttachments {
     pub agent_data: CreateNewOutfitAttachments_AgentData,
@@ -9602,6 +10711,7 @@ pub struct UserInfoRequest_AgentData {
     pub agent_id: Uuid,
     pub session_id: Uuid,
 }
+
 
 #[derive(Debug)]
 pub struct UserInfoRequest {
@@ -9620,6 +10730,7 @@ pub struct UserInfoReply_UserData {
     pub directory_visibility: Vec<u8>,
     pub e_mail: Vec<u8>,
 }
+
 
 #[derive(Debug)]
 pub struct UserInfoReply {
@@ -9640,6 +10751,7 @@ pub struct UpdateUserInfo_UserData {
     pub directory_visibility: Vec<u8>,
 }
 
+
 #[derive(Debug)]
 pub struct UpdateUserInfo {
     pub agent_data: UpdateUserInfo_AgentData,
@@ -9653,6 +10765,8 @@ pub struct ParcelRename_ParcelData {
     pub new_name: Vec<u8>,
 }
 
+/// spaceserver -> sim
+/// tell a particular simulator to rename a parcel
 #[derive(Debug)]
 pub struct ParcelRename {
     pub parcel_data: Vec<ParcelRename_ParcelData>,
@@ -9670,6 +10784,8 @@ pub struct InitiateDownload_FileData {
     pub viewer_filename: Vec<u8>,
 }
 
+/// sim -> viewer
+/// initiate upload. primarily used for uploading raw files.
 #[derive(Debug)]
 pub struct InitiateDownload {
     pub agent_data: InitiateDownload_AgentData,
@@ -9689,6 +10805,8 @@ pub struct SystemMessage_ParamList {
     pub parameter: Vec<u8>,
 }
 
+/// Generalized system message. Each Requst has its own protocol for
+/// the StringData block format and contents.
 #[derive(Debug)]
 pub struct SystemMessage {
     pub method_data: SystemMessage_MethodData,
@@ -9705,6 +10823,11 @@ pub struct MapLayerRequest_AgentData {
     pub godlike: bool,
 }
 
+/// viewer -> sim
+/// reliable
+/// This message is sent up from the viewer to (eventually) get a list
+/// of all map layers and NULL-layer sims.
+/// Returns: MapLayerReply and MapBlockReply
 #[derive(Debug)]
 pub struct MapLayerRequest {
     pub agent_data: MapLayerRequest_AgentData,
@@ -9726,6 +10849,7 @@ pub struct MapLayerReply_LayerData {
     pub image_id: Uuid,
 }
 
+/// sim -> viewer
 #[derive(Debug)]
 pub struct MapLayerReply {
     pub agent_data: MapLayerReply_AgentData,
@@ -9750,6 +10874,10 @@ pub struct MapBlockRequest_PositionData {
     pub max_y: u16,
 }
 
+/// viewer -> sim
+/// This message is sent up from the viewer to get a list
+/// of the sims in a specified region.
+/// Returns: MapBlockReply
 #[derive(Debug)]
 pub struct MapBlockRequest {
     pub agent_data: MapBlockRequest_AgentData,
@@ -9771,6 +10899,10 @@ pub struct MapNameRequest_NameData {
     pub name: Vec<u8>,
 }
 
+/// viewer -> sim
+/// This message is sent up from the viewer to get a list
+/// of the sims with a given name.
+/// Returns: MapBlockReply
 #[derive(Debug)]
 pub struct MapNameRequest {
     pub agent_data: MapNameRequest_AgentData,
@@ -9796,6 +10928,7 @@ pub struct MapBlockReply_Data {
     pub map_image_id: Uuid,
 }
 
+/// sim -> viewer
 #[derive(Debug)]
 pub struct MapBlockReply {
     pub agent_data: MapBlockReply_AgentData,
@@ -9818,6 +10951,11 @@ pub struct MapItemRequest_RequestData {
     pub region_handle: u64,
 }
 
+/// viewer -> sim
+/// This message is sent up from the viewer to get a list
+/// of the items of a particular type on the map.
+/// Used for Telehubs, Agents, Events, Popular Places, etc.
+/// Returns: MapBlockReply
 #[derive(Debug)]
 pub struct MapItemRequest {
     pub agent_data: MapItemRequest_AgentData,
@@ -9846,6 +10984,7 @@ pub struct MapItemReply_Data {
     pub name: Vec<u8>,
 }
 
+/// sim -> viewer
 #[derive(Debug)]
 pub struct MapItemReply {
     pub agent_data: MapItemReply_AgentData,
@@ -9869,6 +11008,10 @@ pub struct SendPostcard_AgentData {
     pub mature_publish: bool,
 }
 
+/// -----------------------------------------------------------------------------
+/// Postcard messages
+/// -----------------------------------------------------------------------------
+/// reliable
 #[derive(Debug)]
 pub struct SendPostcard {
     pub agent_data: SendPostcard_AgentData,
@@ -9883,6 +11026,9 @@ pub struct RpcChannelRequest_DataBlock {
     pub item_id: Uuid,
 }
 
+/// RPC messages
+/// Script on simulator requests rpc channel from rpcserver
+/// simulator -> dataserver -> MySQL
 #[derive(Debug)]
 pub struct RpcChannelRequest {
     pub data_block: RpcChannelRequest_DataBlock,
@@ -9896,6 +11042,9 @@ pub struct RpcChannelReply_DataBlock {
     pub channel_id: Uuid,
 }
 
+/// RpcServer allocated a session for the script
+/// ChannelID will be the NULL UUID if unable to register
+/// dataserver -> simulator
 #[derive(Debug)]
 pub struct RpcChannelReply {
     pub data_block: RpcChannelReply_DataBlock,
@@ -9917,6 +11066,10 @@ pub struct RpcScriptRequestInbound_DataBlock {
     pub string_value: Vec<u8>,
 }
 
+/// Inbound RPC requests follow this path:
+/// RpcScriptRequestInbound: rpcserver -> spaceserver
+/// RpcScriptRequestInboundForward: spaceserver -> simulator
+/// reply: simulator -> rpcserver
 #[derive(Debug)]
 pub struct RpcScriptRequestInbound {
     pub target_block: RpcScriptRequestInbound_TargetBlock,
@@ -9935,6 +11088,7 @@ pub struct RpcScriptRequestInboundForward_DataBlock {
     pub string_value: Vec<u8>,
 }
 
+/// spaceserver -> simulator
 #[derive(Debug)]
 pub struct RpcScriptRequestInboundForward {
     pub data_block: RpcScriptRequestInboundForward_DataBlock,
@@ -9950,6 +11104,8 @@ pub struct RpcScriptReplyInbound_DataBlock {
     pub string_value: Vec<u8>,
 }
 
+/// simulator -> rpcserver
+/// Not trusted because trust establishment doesn't work here.
 #[derive(Debug)]
 pub struct RpcScriptReplyInbound {
     pub data_block: RpcScriptReplyInbound_DataBlock,
@@ -9964,6 +11120,8 @@ pub struct ScriptMailRegistration_DataBlock {
     pub flags: u32,
 }
 
+/// ScriptMailRegistration
+/// Simulator -> dataserver
 #[derive(Debug)]
 pub struct ScriptMailRegistration {
     pub data_block: ScriptMailRegistration_DataBlock,
@@ -9977,6 +11135,8 @@ pub struct ParcelMediaCommandMessage_CommandBlock {
     pub time: f32,
 }
 
+/// ParcelMediaCommandMessage
+/// Sends a parcel media command
 #[derive(Debug)]
 pub struct ParcelMediaCommandMessage {
     pub command_block: ParcelMediaCommandMessage_CommandBlock,
@@ -9999,6 +11159,9 @@ pub struct ParcelMediaUpdate_DataBlockExtended {
     pub media_loop: u8,
 }
 
+/// ParcelMediaUpdate
+/// Sends a parcel media update to a single user
+/// For global updates use the parcel manager.
 #[derive(Debug)]
 pub struct ParcelMediaUpdate {
     pub data_block: ParcelMediaUpdate_DataBlock,
@@ -10020,6 +11183,8 @@ pub struct LandStatRequest_RequestData {
     pub parcel_local_id: i32,
 }
 
+/// LandStatRequest
+/// Sent by the viewer to request collider/script information for a parcel
 #[derive(Debug)]
 pub struct LandStatRequest {
     pub agent_data: LandStatRequest_AgentData,
@@ -10046,6 +11211,8 @@ pub struct LandStatReply_ReportData {
     pub owner_name: Vec<u8>,
 }
 
+/// LandStatReply
+/// Sent by the simulator in response to LandStatRequest
 #[derive(Debug)]
 pub struct LandStatReply {
     pub request_data: LandStatReply_RequestData,
@@ -10068,6 +11235,11 @@ pub struct Error_Data {
     pub data: Vec<u8>,
 }
 
+/// Generic Error -- this is used for sending an error message
+/// to a UDP recipient. The lowest common denominator is to at least
+/// log the message. More sophisticated receivers can do something
+/// smarter, for example, a money transaction failure can put up a
+/// more user visible UI widget.
 #[derive(Debug)]
 pub struct Error {
     pub agent_data: Error_AgentData,
@@ -10087,6 +11259,8 @@ pub struct ObjectIncludeInSearch_ObjectData {
     pub include_in_search: bool,
 }
 
+/// ObjectIncludeInSearch
+/// viewer -> simulator
 #[derive(Debug)]
 pub struct ObjectIncludeInSearch {
     pub agent_data: ObjectIncludeInSearch_AgentData,
@@ -10125,6 +11299,9 @@ pub struct RezRestoreToWorld_InventoryData {
     pub crc: u32,
 }
 
+/// This message is sent from viewer -> simulator when the viewer wants
+/// to rez an object out of inventory back to its position before it
+/// last moved into the inventory
 #[derive(Debug)]
 pub struct RezRestoreToWorld {
     pub agent_data: RezRestoreToWorld_AgentData,
@@ -10149,6 +11326,7 @@ pub struct LinkInventoryItem_InventoryBlock {
     pub name: Vec<u8>,
     pub description: Vec<u8>,
 }
+
 
 #[derive(Debug)]
 pub struct LinkInventoryItem {

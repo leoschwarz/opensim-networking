@@ -15,7 +15,7 @@ end
 
 # Extractor for messages.
 # Gets an array of lines that have to be extracted.
-def extract_message(lines)
+def extract_message(lines, comments)
     # Parse descriptor of message.
     msg_name, msg_freq, msg_id, msg_trust, msg_enc = lines.shift.split(" ")
     message = Message.new({
@@ -24,7 +24,8 @@ def extract_message(lines)
         id: msg_id,
         trust: msg_trust,
         encoding: msg_enc,
-        blocks: []
+        blocks: [],
+        comments: comments
     })
 
     # Remove opening and closing braces of block specifications.
@@ -52,18 +53,16 @@ def extract_message(lines)
 end
 
 def parse_messages(file_path)
-    # Extract lines which are not empty or comments
-    lines = File.read(file_path).lines
-        .map{|l| l.gsub(%r{//(.*)$}, "")}
-        .map(&:strip)
-        .select{|l| not l.empty? and not l[0..1] == "//"}
-    version = lines.shift
+    # Extract lines.
+    lines = File.read(file_path).lines.map(&:strip)
+    version = lines.shift(3).last
     puts "Generating structs for #{version}."
 
     # Handle the messages
     message_raw = nil
     message_indentation = 0
     messages = []
+    comment_buffer = []
     lines.each_with_index do |line, line_index|
         if line == "{" and message_indentation == 0
             message_raw = []
@@ -77,10 +76,16 @@ def parse_messages(file_path)
                 puts "Too many closing braces at line no #{line_index}!"
                 exit
             elsif message_indentation == 0
-                messages << extract_message(message_raw)
+                comments = comment_buffer.join("\n")
+                messages << extract_message(message_raw, comments)
+                comment_buffer.clear
             else
                 message_raw << line
             end
+        elsif line[0..1] == "//"
+            comment_buffer << "/" + line
+        elsif line.empty?
+            comment_buffer.clear
         else
            message_raw << line
         end

@@ -36,6 +36,7 @@ def generate_struct(message)
     end
 
     # Generate message definition.
+    code << "#{message.comments}\n"
     code << "#[derive(Debug)]\n"
     code << "pub struct #{message.name} {\n"
 
