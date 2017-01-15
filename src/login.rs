@@ -4,10 +4,11 @@ use std::collections::BTreeMap;
 use xmlrpc::Value as XmlValue;
 use nalgebra::Vector3;
 use regex::Regex;
-use std::net::Ipv4Addr as IpAddr;
+use Ip4Addr;
 use std::str::FromStr;
 use Uuid;
 
+/// Performing a LoginRequest is the first step at gaining access to a sim.
 #[derive(Debug)]
 pub struct LoginRequest {
     /// User first name
@@ -77,7 +78,9 @@ pub struct LoginResponse {
     pub session_id: Uuid,
     pub agent_id: Uuid,
 
-    pub sim_ip: IpAddr,
+    /// The IP address of the simulator to connect to.
+    pub sim_ip: Ip4Addr,
+    /// The port of the simulator to connect to.
     pub sim_port: u16
 }
 
@@ -114,7 +117,7 @@ impl LoginResponse {
             _ => return Err(LoginError::InvalidResponse)
         };
         let sim_ip = match response.get("sim_ip") {
-            Some(&XmlValue::String(ref ip_raw)) => try!(IpAddr::from_str(ip_raw)),
+            Some(&XmlValue::String(ref ip_raw)) => try!(Ip4Addr::from_str(ip_raw)),
             _ => return Err(LoginError::InvalidResponse)
         };
         let sim_port = match response.get("sim_port") {

@@ -5,7 +5,9 @@ use login::LoginResponse;
 
 use byteorder::{LittleEndian, BigEndian, WriteBytesExt};
 use std::io::Write;
-use std::net::UdpSocket;
+use tokio_core::reactor::Core;
+use tokio_core::net::UdpSocket;
+use std::net::{SocketAddr, SocketAddrV4};
 
 bitflags! {
     pub flags PacketFlags: u16 {
@@ -63,14 +65,14 @@ impl Packet {
         self.message.write_to(buffer);
     }
 
+    /* TODO
     fn read_from<R: Read>(buffer: &mut R) -> Result<Packet, ReadPacketError> {
         // Read packet header.
         let flags = try!(buffer.read_u16::<LittleEndian>());
         let seq_num = try!(buffer.read_u32::<BigEndian>());
         try!(buffer.read_u8());
 
-
-    }
+    }*/
 
     /// TODO: Optimize this in the future.
     ///       This function will potentially get a lot of use.
@@ -96,11 +98,20 @@ impl Packet {
 ///       This was not done yet since we would have to abort the code if we got IPv6 addresses
 ///       anywhere and would make the API less realiable.
 pub struct Circuit {
-    sim_ip: Ip4Addr,
-    sim_port: IpPort,
-    sim_socket: UdpSocket,
-    //local_ip: Ip4Addr,
-    //local_port: IpPort,
+    core: Core,
+
+    /// Local UDP socket used for communication.
+    socket: UdpSocket,
+
+    /// Socket address (contains address + port) of simulator.
+    sim_address: SocketAddr,
+
+    /// A 24 bit number (TODO: change type here???) created at the connection of any circuit.
+    /// This number is stored in the packet header and incremented whenever a packet is sent
+    /// from one end of the circuit to the other.
+    ///
+    /// TODO: Figure out how important this sequence number is. If we end up having two
+    /// packets with the same sequence number, do we need to discard some packages?
     sequence_number: u32,
 }
 
@@ -117,12 +128,24 @@ impl From<::std::io::Error> for CircuitInitiationError {
 
 impl Circuit {
     pub fn initiate(login_res: LoginResponse,
-          /*      local_ip: Ip4Addr,
-                local_port: IpPort*/)
+                    local_socket_addr: SocketAddr)
                 -> Result<Circuit, CircuitInitiationError> {
-        // Open the sockets.
-        //let mut local_socket = try!(UdpSocket::bind((local_ip, local_port)));
-        let remote_socket = try!(UdpSocket::bind((login_res.sim_ip, login_res.sim_port)));
+
+        // Create the eventloop.
+        let mut core = Core::new().unwrap();
+        let handle = core.handle();
+
+        // Create the socket.
+        let socket = try!(UdpSocket::bind(&local_socket_addr, &handle));
+
+        // Create the circuit instance.
+        let circuit = Circuit {
+            core: core,
+            socket: socket,
+            sim_address: SocketAddr::V4(SocketAddr4::new(login_res.sim_ip,
+                                                         login_res.sim_port)),
+            sequence_number: 1
+        };
 
         // Use the circuit code.
         let msg = UseCircuitCode {
@@ -132,21 +155,22 @@ impl Circuit {
                 id: login_res.agent_id.clone(),
             },
         };
-
-        // Send the packet and wait for ack.
         let mut packet = Packet::new(msg, 1);
         packet.enable_flags(PACKET_RELIABLE);
-        packet.send(&remote_socket);
+        circuit.send_packet(remote_socket);
 
-        Ok(Circuit {
-            sim_ip: login_res.sim_ip,
-            sim_port: login_res.sim_port,
-            sim_socket: remote_socket,
-            sequence_number: 1
-        })
+        // TODO: Wait for an ack.
+
+        // Finished.
+        Ok(circuit)
     }
 
-    fn send_message<M: Message>(&self, msg: &M) {
-        // TODO
+    fn send_packet(&self, packet: Packet) {
+
+    }
+
+    fn send_message<M: Into<MessageInstance>>(&self, msg: M) {
+        let packet = Packet::new(msg, self.sequence_number);
+        
     }
 }
