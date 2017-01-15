@@ -60,13 +60,28 @@ def generate_message_types_enum(messages)
     messages.each do |message|
         code << "\t#{message.name}(#{message.name}),\n"
     end
-    code << "}\n"
+    code << "}\n\n"
+    code << "impl MessageInstance {\n"
+    code << "\tpub fn write_to<W: Write>(&self, buffer: &mut W) -> WriteMessageResult {\n"
+    code << "\t\tmatch *self {\n"
+    messages.each do |message|
+        code << "\tMessageInstance::#{message.name}(ref msg) => msg.write_to(buffer),\n"
+    end
+    code << "\t\t}\n"
+    code << "\t}\n"
+    code << "}\n\n"
+
+    messages.each do |message|
+        code << "impl From<#{message.name}> for MessageInstance {\n"
+        code << "\tfn from(msg: #{message.name}) -> Self {\n"
+        code << "\t\tMessageInstance::#{message.name}(msg)\n"
+        code << "\t}\n"
+        code << "}\n\n"
+    end
+
     code
 end
 
-
-# generate parser module.
-# TODO
 
 #####################
 # Generate writers. #
@@ -249,10 +264,8 @@ def generate_message_impl(message)
     end
     out << "\t\t}))\n"
     out << "\t}\n"
-
-    # TODO
-
     out << "}\n\n"
+
     out
 end
 

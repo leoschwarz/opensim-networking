@@ -11813,6 +11813,3339 @@ pub enum MessageInstance {
     LinkInventoryItem(LinkInventoryItem),
 }
 
+impl MessageInstance {
+    pub fn write_to<W: Write>(&self, buffer: &mut W) -> WriteMessageResult {
+        match *self {
+            MessageInstance::TestMessage(ref msg) => msg.write_to(buffer),
+            MessageInstance::PacketAck(ref msg) => msg.write_to(buffer),
+            MessageInstance::OpenCircuit(ref msg) => msg.write_to(buffer),
+            MessageInstance::CloseCircuit(ref msg) => msg.write_to(buffer),
+            MessageInstance::StartPingCheck(ref msg) => msg.write_to(buffer),
+            MessageInstance::CompletePingCheck(ref msg) => msg.write_to(buffer),
+            MessageInstance::AddCircuitCode(ref msg) => msg.write_to(buffer),
+            MessageInstance::UseCircuitCode(ref msg) => msg.write_to(buffer),
+            MessageInstance::NeighborList(ref msg) => msg.write_to(buffer),
+            MessageInstance::AvatarTextureUpdate(ref msg) => msg.write_to(buffer),
+            MessageInstance::SimulatorMapUpdate(ref msg) => msg.write_to(buffer),
+            MessageInstance::SimulatorSetMap(ref msg) => msg.write_to(buffer),
+            MessageInstance::SubscribeLoad(ref msg) => msg.write_to(buffer),
+            MessageInstance::UnsubscribeLoad(ref msg) => msg.write_to(buffer),
+            MessageInstance::SimulatorReady(ref msg) => msg.write_to(buffer),
+            MessageInstance::TelehubInfo(ref msg) => msg.write_to(buffer),
+            MessageInstance::SimulatorPresentAtLocation(ref msg) => msg.write_to(buffer),
+            MessageInstance::SimulatorLoad(ref msg) => msg.write_to(buffer),
+            MessageInstance::SimulatorShutdownRequest(ref msg) => msg.write_to(buffer),
+            MessageInstance::RegionPresenceRequestByRegionID(ref msg) => msg.write_to(buffer),
+            MessageInstance::RegionPresenceRequestByHandle(ref msg) => msg.write_to(buffer),
+            MessageInstance::RegionPresenceResponse(ref msg) => msg.write_to(buffer),
+            MessageInstance::UpdateSimulator(ref msg) => msg.write_to(buffer),
+            MessageInstance::LogDwellTime(ref msg) => msg.write_to(buffer),
+            MessageInstance::FeatureDisabled(ref msg) => msg.write_to(buffer),
+            MessageInstance::LogFailedMoneyTransaction(ref msg) => msg.write_to(buffer),
+            MessageInstance::UserReportInternal(ref msg) => msg.write_to(buffer),
+            MessageInstance::SetSimStatusInDatabase(ref msg) => msg.write_to(buffer),
+            MessageInstance::SetSimPresenceInDatabase(ref msg) => msg.write_to(buffer),
+            MessageInstance::EconomyDataRequest(ref msg) => msg.write_to(buffer),
+            MessageInstance::EconomyData(ref msg) => msg.write_to(buffer),
+            MessageInstance::AvatarPickerRequest(ref msg) => msg.write_to(buffer),
+            MessageInstance::AvatarPickerRequestBackend(ref msg) => msg.write_to(buffer),
+            MessageInstance::AvatarPickerReply(ref msg) => msg.write_to(buffer),
+            MessageInstance::PlacesQuery(ref msg) => msg.write_to(buffer),
+            MessageInstance::PlacesReply(ref msg) => msg.write_to(buffer),
+            MessageInstance::DirFindQuery(ref msg) => msg.write_to(buffer),
+            MessageInstance::DirFindQueryBackend(ref msg) => msg.write_to(buffer),
+            MessageInstance::DirPlacesQuery(ref msg) => msg.write_to(buffer),
+            MessageInstance::DirPlacesQueryBackend(ref msg) => msg.write_to(buffer),
+            MessageInstance::DirPlacesReply(ref msg) => msg.write_to(buffer),
+            MessageInstance::DirPeopleReply(ref msg) => msg.write_to(buffer),
+            MessageInstance::DirEventsReply(ref msg) => msg.write_to(buffer),
+            MessageInstance::DirGroupsReply(ref msg) => msg.write_to(buffer),
+            MessageInstance::DirClassifiedQuery(ref msg) => msg.write_to(buffer),
+            MessageInstance::DirClassifiedQueryBackend(ref msg) => msg.write_to(buffer),
+            MessageInstance::DirClassifiedReply(ref msg) => msg.write_to(buffer),
+            MessageInstance::AvatarClassifiedReply(ref msg) => msg.write_to(buffer),
+            MessageInstance::ClassifiedInfoRequest(ref msg) => msg.write_to(buffer),
+            MessageInstance::ClassifiedInfoReply(ref msg) => msg.write_to(buffer),
+            MessageInstance::ClassifiedInfoUpdate(ref msg) => msg.write_to(buffer),
+            MessageInstance::ClassifiedDelete(ref msg) => msg.write_to(buffer),
+            MessageInstance::ClassifiedGodDelete(ref msg) => msg.write_to(buffer),
+            MessageInstance::DirLandQuery(ref msg) => msg.write_to(buffer),
+            MessageInstance::DirLandQueryBackend(ref msg) => msg.write_to(buffer),
+            MessageInstance::DirLandReply(ref msg) => msg.write_to(buffer),
+            MessageInstance::DirPopularQuery(ref msg) => msg.write_to(buffer),
+            MessageInstance::DirPopularQueryBackend(ref msg) => msg.write_to(buffer),
+            MessageInstance::DirPopularReply(ref msg) => msg.write_to(buffer),
+            MessageInstance::ParcelInfoRequest(ref msg) => msg.write_to(buffer),
+            MessageInstance::ParcelInfoReply(ref msg) => msg.write_to(buffer),
+            MessageInstance::ParcelObjectOwnersRequest(ref msg) => msg.write_to(buffer),
+            MessageInstance::ParcelObjectOwnersReply(ref msg) => msg.write_to(buffer),
+            MessageInstance::GroupNoticesListRequest(ref msg) => msg.write_to(buffer),
+            MessageInstance::GroupNoticesListReply(ref msg) => msg.write_to(buffer),
+            MessageInstance::GroupNoticeRequest(ref msg) => msg.write_to(buffer),
+            MessageInstance::GroupNoticeAdd(ref msg) => msg.write_to(buffer),
+            MessageInstance::TeleportRequest(ref msg) => msg.write_to(buffer),
+            MessageInstance::TeleportLocationRequest(ref msg) => msg.write_to(buffer),
+            MessageInstance::TeleportLocal(ref msg) => msg.write_to(buffer),
+            MessageInstance::TeleportLandmarkRequest(ref msg) => msg.write_to(buffer),
+            MessageInstance::TeleportProgress(ref msg) => msg.write_to(buffer),
+            MessageInstance::DataHomeLocationRequest(ref msg) => msg.write_to(buffer),
+            MessageInstance::DataHomeLocationReply(ref msg) => msg.write_to(buffer),
+            MessageInstance::TeleportFinish(ref msg) => msg.write_to(buffer),
+            MessageInstance::StartLure(ref msg) => msg.write_to(buffer),
+            MessageInstance::TeleportLureRequest(ref msg) => msg.write_to(buffer),
+            MessageInstance::TeleportCancel(ref msg) => msg.write_to(buffer),
+            MessageInstance::TeleportStart(ref msg) => msg.write_to(buffer),
+            MessageInstance::TeleportFailed(ref msg) => msg.write_to(buffer),
+            MessageInstance::Undo(ref msg) => msg.write_to(buffer),
+            MessageInstance::Redo(ref msg) => msg.write_to(buffer),
+            MessageInstance::UndoLand(ref msg) => msg.write_to(buffer),
+            MessageInstance::AgentPause(ref msg) => msg.write_to(buffer),
+            MessageInstance::AgentResume(ref msg) => msg.write_to(buffer),
+            MessageInstance::AgentUpdate(ref msg) => msg.write_to(buffer),
+            MessageInstance::ChatFromViewer(ref msg) => msg.write_to(buffer),
+            MessageInstance::AgentThrottle(ref msg) => msg.write_to(buffer),
+            MessageInstance::AgentFOV(ref msg) => msg.write_to(buffer),
+            MessageInstance::AgentHeightWidth(ref msg) => msg.write_to(buffer),
+            MessageInstance::AgentSetAppearance(ref msg) => msg.write_to(buffer),
+            MessageInstance::AgentAnimation(ref msg) => msg.write_to(buffer),
+            MessageInstance::AgentRequestSit(ref msg) => msg.write_to(buffer),
+            MessageInstance::AgentSit(ref msg) => msg.write_to(buffer),
+            MessageInstance::AgentQuitCopy(ref msg) => msg.write_to(buffer),
+            MessageInstance::RequestImage(ref msg) => msg.write_to(buffer),
+            MessageInstance::ImageNotInDatabase(ref msg) => msg.write_to(buffer),
+            MessageInstance::RebakeAvatarTextures(ref msg) => msg.write_to(buffer),
+            MessageInstance::SetAlwaysRun(ref msg) => msg.write_to(buffer),
+            MessageInstance::ObjectAdd(ref msg) => msg.write_to(buffer),
+            MessageInstance::ObjectDelete(ref msg) => msg.write_to(buffer),
+            MessageInstance::ObjectDuplicate(ref msg) => msg.write_to(buffer),
+            MessageInstance::ObjectDuplicateOnRay(ref msg) => msg.write_to(buffer),
+            MessageInstance::MultipleObjectUpdate(ref msg) => msg.write_to(buffer),
+            MessageInstance::RequestMultipleObjects(ref msg) => msg.write_to(buffer),
+            MessageInstance::ObjectPosition(ref msg) => msg.write_to(buffer),
+            MessageInstance::ObjectScale(ref msg) => msg.write_to(buffer),
+            MessageInstance::ObjectRotation(ref msg) => msg.write_to(buffer),
+            MessageInstance::ObjectFlagUpdate(ref msg) => msg.write_to(buffer),
+            MessageInstance::ObjectClickAction(ref msg) => msg.write_to(buffer),
+            MessageInstance::ObjectImage(ref msg) => msg.write_to(buffer),
+            MessageInstance::ObjectMaterial(ref msg) => msg.write_to(buffer),
+            MessageInstance::ObjectShape(ref msg) => msg.write_to(buffer),
+            MessageInstance::ObjectExtraParams(ref msg) => msg.write_to(buffer),
+            MessageInstance::ObjectOwner(ref msg) => msg.write_to(buffer),
+            MessageInstance::ObjectGroup(ref msg) => msg.write_to(buffer),
+            MessageInstance::ObjectBuy(ref msg) => msg.write_to(buffer),
+            MessageInstance::BuyObjectInventory(ref msg) => msg.write_to(buffer),
+            MessageInstance::DerezContainer(ref msg) => msg.write_to(buffer),
+            MessageInstance::ObjectPermissions(ref msg) => msg.write_to(buffer),
+            MessageInstance::ObjectSaleInfo(ref msg) => msg.write_to(buffer),
+            MessageInstance::ObjectName(ref msg) => msg.write_to(buffer),
+            MessageInstance::ObjectDescription(ref msg) => msg.write_to(buffer),
+            MessageInstance::ObjectCategory(ref msg) => msg.write_to(buffer),
+            MessageInstance::ObjectSelect(ref msg) => msg.write_to(buffer),
+            MessageInstance::ObjectDeselect(ref msg) => msg.write_to(buffer),
+            MessageInstance::ObjectAttach(ref msg) => msg.write_to(buffer),
+            MessageInstance::ObjectDetach(ref msg) => msg.write_to(buffer),
+            MessageInstance::ObjectDrop(ref msg) => msg.write_to(buffer),
+            MessageInstance::ObjectLink(ref msg) => msg.write_to(buffer),
+            MessageInstance::ObjectDelink(ref msg) => msg.write_to(buffer),
+            MessageInstance::ObjectGrab(ref msg) => msg.write_to(buffer),
+            MessageInstance::ObjectGrabUpdate(ref msg) => msg.write_to(buffer),
+            MessageInstance::ObjectDeGrab(ref msg) => msg.write_to(buffer),
+            MessageInstance::ObjectSpinStart(ref msg) => msg.write_to(buffer),
+            MessageInstance::ObjectSpinUpdate(ref msg) => msg.write_to(buffer),
+            MessageInstance::ObjectSpinStop(ref msg) => msg.write_to(buffer),
+            MessageInstance::ObjectExportSelected(ref msg) => msg.write_to(buffer),
+            MessageInstance::ModifyLand(ref msg) => msg.write_to(buffer),
+            MessageInstance::VelocityInterpolateOn(ref msg) => msg.write_to(buffer),
+            MessageInstance::VelocityInterpolateOff(ref msg) => msg.write_to(buffer),
+            MessageInstance::StateSave(ref msg) => msg.write_to(buffer),
+            MessageInstance::ReportAutosaveCrash(ref msg) => msg.write_to(buffer),
+            MessageInstance::SimWideDeletes(ref msg) => msg.write_to(buffer),
+            MessageInstance::RequestObjectPropertiesFamily(ref msg) => msg.write_to(buffer),
+            MessageInstance::TrackAgent(ref msg) => msg.write_to(buffer),
+            MessageInstance::ViewerStats(ref msg) => msg.write_to(buffer),
+            MessageInstance::ScriptAnswerYes(ref msg) => msg.write_to(buffer),
+            MessageInstance::UserReport(ref msg) => msg.write_to(buffer),
+            MessageInstance::AlertMessage(ref msg) => msg.write_to(buffer),
+            MessageInstance::AgentAlertMessage(ref msg) => msg.write_to(buffer),
+            MessageInstance::MeanCollisionAlert(ref msg) => msg.write_to(buffer),
+            MessageInstance::ViewerFrozenMessage(ref msg) => msg.write_to(buffer),
+            MessageInstance::HealthMessage(ref msg) => msg.write_to(buffer),
+            MessageInstance::ChatFromSimulator(ref msg) => msg.write_to(buffer),
+            MessageInstance::SimStats(ref msg) => msg.write_to(buffer),
+            MessageInstance::RequestRegionInfo(ref msg) => msg.write_to(buffer),
+            MessageInstance::RegionInfo(ref msg) => msg.write_to(buffer),
+            MessageInstance::GodUpdateRegionInfo(ref msg) => msg.write_to(buffer),
+            MessageInstance::NearestLandingRegionRequest(ref msg) => msg.write_to(buffer),
+            MessageInstance::NearestLandingRegionReply(ref msg) => msg.write_to(buffer),
+            MessageInstance::NearestLandingRegionUpdated(ref msg) => msg.write_to(buffer),
+            MessageInstance::TeleportLandingStatusChanged(ref msg) => msg.write_to(buffer),
+            MessageInstance::RegionHandshake(ref msg) => msg.write_to(buffer),
+            MessageInstance::RegionHandshakeReply(ref msg) => msg.write_to(buffer),
+            MessageInstance::CoarseLocationUpdate(ref msg) => msg.write_to(buffer),
+            MessageInstance::ImageData(ref msg) => msg.write_to(buffer),
+            MessageInstance::ImagePacket(ref msg) => msg.write_to(buffer),
+            MessageInstance::LayerData(ref msg) => msg.write_to(buffer),
+            MessageInstance::ObjectUpdate(ref msg) => msg.write_to(buffer),
+            MessageInstance::ObjectUpdateCompressed(ref msg) => msg.write_to(buffer),
+            MessageInstance::ObjectUpdateCached(ref msg) => msg.write_to(buffer),
+            MessageInstance::ImprovedTerseObjectUpdate(ref msg) => msg.write_to(buffer),
+            MessageInstance::KillObject(ref msg) => msg.write_to(buffer),
+            MessageInstance::CrossedRegion(ref msg) => msg.write_to(buffer),
+            MessageInstance::SimulatorViewerTimeMessage(ref msg) => msg.write_to(buffer),
+            MessageInstance::EnableSimulator(ref msg) => msg.write_to(buffer),
+            MessageInstance::DisableSimulator(ref msg) => msg.write_to(buffer),
+            MessageInstance::ConfirmEnableSimulator(ref msg) => msg.write_to(buffer),
+            MessageInstance::TransferRequest(ref msg) => msg.write_to(buffer),
+            MessageInstance::TransferInfo(ref msg) => msg.write_to(buffer),
+            MessageInstance::TransferPacket(ref msg) => msg.write_to(buffer),
+            MessageInstance::TransferAbort(ref msg) => msg.write_to(buffer),
+            MessageInstance::RequestXfer(ref msg) => msg.write_to(buffer),
+            MessageInstance::SendXferPacket(ref msg) => msg.write_to(buffer),
+            MessageInstance::ConfirmXferPacket(ref msg) => msg.write_to(buffer),
+            MessageInstance::AbortXfer(ref msg) => msg.write_to(buffer),
+            MessageInstance::AvatarAnimation(ref msg) => msg.write_to(buffer),
+            MessageInstance::AvatarAppearance(ref msg) => msg.write_to(buffer),
+            MessageInstance::AvatarSitResponse(ref msg) => msg.write_to(buffer),
+            MessageInstance::SetFollowCamProperties(ref msg) => msg.write_to(buffer),
+            MessageInstance::ClearFollowCamProperties(ref msg) => msg.write_to(buffer),
+            MessageInstance::CameraConstraint(ref msg) => msg.write_to(buffer),
+            MessageInstance::ObjectProperties(ref msg) => msg.write_to(buffer),
+            MessageInstance::ObjectPropertiesFamily(ref msg) => msg.write_to(buffer),
+            MessageInstance::RequestPayPrice(ref msg) => msg.write_to(buffer),
+            MessageInstance::PayPriceReply(ref msg) => msg.write_to(buffer),
+            MessageInstance::KickUser(ref msg) => msg.write_to(buffer),
+            MessageInstance::KickUserAck(ref msg) => msg.write_to(buffer),
+            MessageInstance::GodKickUser(ref msg) => msg.write_to(buffer),
+            MessageInstance::SystemKickUser(ref msg) => msg.write_to(buffer),
+            MessageInstance::EjectUser(ref msg) => msg.write_to(buffer),
+            MessageInstance::FreezeUser(ref msg) => msg.write_to(buffer),
+            MessageInstance::AvatarPropertiesRequest(ref msg) => msg.write_to(buffer),
+            MessageInstance::AvatarPropertiesRequestBackend(ref msg) => msg.write_to(buffer),
+            MessageInstance::AvatarPropertiesReply(ref msg) => msg.write_to(buffer),
+            MessageInstance::AvatarInterestsReply(ref msg) => msg.write_to(buffer),
+            MessageInstance::AvatarGroupsReply(ref msg) => msg.write_to(buffer),
+            MessageInstance::AvatarPropertiesUpdate(ref msg) => msg.write_to(buffer),
+            MessageInstance::AvatarInterestsUpdate(ref msg) => msg.write_to(buffer),
+            MessageInstance::AvatarNotesReply(ref msg) => msg.write_to(buffer),
+            MessageInstance::AvatarNotesUpdate(ref msg) => msg.write_to(buffer),
+            MessageInstance::AvatarPicksReply(ref msg) => msg.write_to(buffer),
+            MessageInstance::EventInfoRequest(ref msg) => msg.write_to(buffer),
+            MessageInstance::EventInfoReply(ref msg) => msg.write_to(buffer),
+            MessageInstance::EventNotificationAddRequest(ref msg) => msg.write_to(buffer),
+            MessageInstance::EventNotificationRemoveRequest(ref msg) => msg.write_to(buffer),
+            MessageInstance::EventGodDelete(ref msg) => msg.write_to(buffer),
+            MessageInstance::PickInfoReply(ref msg) => msg.write_to(buffer),
+            MessageInstance::PickInfoUpdate(ref msg) => msg.write_to(buffer),
+            MessageInstance::PickDelete(ref msg) => msg.write_to(buffer),
+            MessageInstance::PickGodDelete(ref msg) => msg.write_to(buffer),
+            MessageInstance::ScriptQuestion(ref msg) => msg.write_to(buffer),
+            MessageInstance::ScriptControlChange(ref msg) => msg.write_to(buffer),
+            MessageInstance::ScriptDialog(ref msg) => msg.write_to(buffer),
+            MessageInstance::ScriptDialogReply(ref msg) => msg.write_to(buffer),
+            MessageInstance::ForceScriptControlRelease(ref msg) => msg.write_to(buffer),
+            MessageInstance::RevokePermissions(ref msg) => msg.write_to(buffer),
+            MessageInstance::LoadURL(ref msg) => msg.write_to(buffer),
+            MessageInstance::ScriptTeleportRequest(ref msg) => msg.write_to(buffer),
+            MessageInstance::ParcelOverlay(ref msg) => msg.write_to(buffer),
+            MessageInstance::ParcelPropertiesRequest(ref msg) => msg.write_to(buffer),
+            MessageInstance::ParcelPropertiesRequestByID(ref msg) => msg.write_to(buffer),
+            MessageInstance::ParcelProperties(ref msg) => msg.write_to(buffer),
+            MessageInstance::ParcelPropertiesUpdate(ref msg) => msg.write_to(buffer),
+            MessageInstance::ParcelReturnObjects(ref msg) => msg.write_to(buffer),
+            MessageInstance::ParcelSetOtherCleanTime(ref msg) => msg.write_to(buffer),
+            MessageInstance::ParcelDisableObjects(ref msg) => msg.write_to(buffer),
+            MessageInstance::ParcelSelectObjects(ref msg) => msg.write_to(buffer),
+            MessageInstance::EstateCovenantRequest(ref msg) => msg.write_to(buffer),
+            MessageInstance::EstateCovenantReply(ref msg) => msg.write_to(buffer),
+            MessageInstance::ForceObjectSelect(ref msg) => msg.write_to(buffer),
+            MessageInstance::ParcelBuyPass(ref msg) => msg.write_to(buffer),
+            MessageInstance::ParcelDeedToGroup(ref msg) => msg.write_to(buffer),
+            MessageInstance::ParcelReclaim(ref msg) => msg.write_to(buffer),
+            MessageInstance::ParcelClaim(ref msg) => msg.write_to(buffer),
+            MessageInstance::ParcelJoin(ref msg) => msg.write_to(buffer),
+            MessageInstance::ParcelDivide(ref msg) => msg.write_to(buffer),
+            MessageInstance::ParcelRelease(ref msg) => msg.write_to(buffer),
+            MessageInstance::ParcelBuy(ref msg) => msg.write_to(buffer),
+            MessageInstance::ParcelGodForceOwner(ref msg) => msg.write_to(buffer),
+            MessageInstance::ParcelAccessListRequest(ref msg) => msg.write_to(buffer),
+            MessageInstance::ParcelAccessListReply(ref msg) => msg.write_to(buffer),
+            MessageInstance::ParcelAccessListUpdate(ref msg) => msg.write_to(buffer),
+            MessageInstance::ParcelDwellRequest(ref msg) => msg.write_to(buffer),
+            MessageInstance::ParcelDwellReply(ref msg) => msg.write_to(buffer),
+            MessageInstance::RequestParcelTransfer(ref msg) => msg.write_to(buffer),
+            MessageInstance::UpdateParcel(ref msg) => msg.write_to(buffer),
+            MessageInstance::RemoveParcel(ref msg) => msg.write_to(buffer),
+            MessageInstance::MergeParcel(ref msg) => msg.write_to(buffer),
+            MessageInstance::LogParcelChanges(ref msg) => msg.write_to(buffer),
+            MessageInstance::CheckParcelSales(ref msg) => msg.write_to(buffer),
+            MessageInstance::ParcelSales(ref msg) => msg.write_to(buffer),
+            MessageInstance::ParcelGodMarkAsContent(ref msg) => msg.write_to(buffer),
+            MessageInstance::ViewerStartAuction(ref msg) => msg.write_to(buffer),
+            MessageInstance::StartAuction(ref msg) => msg.write_to(buffer),
+            MessageInstance::ConfirmAuctionStart(ref msg) => msg.write_to(buffer),
+            MessageInstance::CompleteAuction(ref msg) => msg.write_to(buffer),
+            MessageInstance::CancelAuction(ref msg) => msg.write_to(buffer),
+            MessageInstance::CheckParcelAuctions(ref msg) => msg.write_to(buffer),
+            MessageInstance::ParcelAuctions(ref msg) => msg.write_to(buffer),
+            MessageInstance::UUIDNameRequest(ref msg) => msg.write_to(buffer),
+            MessageInstance::UUIDNameReply(ref msg) => msg.write_to(buffer),
+            MessageInstance::UUIDGroupNameRequest(ref msg) => msg.write_to(buffer),
+            MessageInstance::UUIDGroupNameReply(ref msg) => msg.write_to(buffer),
+            MessageInstance::ChatPass(ref msg) => msg.write_to(buffer),
+            MessageInstance::EdgeDataPacket(ref msg) => msg.write_to(buffer),
+            MessageInstance::SimStatus(ref msg) => msg.write_to(buffer),
+            MessageInstance::ChildAgentUpdate(ref msg) => msg.write_to(buffer),
+            MessageInstance::ChildAgentAlive(ref msg) => msg.write_to(buffer),
+            MessageInstance::ChildAgentPositionUpdate(ref msg) => msg.write_to(buffer),
+            MessageInstance::ChildAgentDying(ref msg) => msg.write_to(buffer),
+            MessageInstance::ChildAgentUnknown(ref msg) => msg.write_to(buffer),
+            MessageInstance::AtomicPassObject(ref msg) => msg.write_to(buffer),
+            MessageInstance::KillChildAgents(ref msg) => msg.write_to(buffer),
+            MessageInstance::GetScriptRunning(ref msg) => msg.write_to(buffer),
+            MessageInstance::ScriptRunningReply(ref msg) => msg.write_to(buffer),
+            MessageInstance::SetScriptRunning(ref msg) => msg.write_to(buffer),
+            MessageInstance::ScriptReset(ref msg) => msg.write_to(buffer),
+            MessageInstance::ScriptSensorRequest(ref msg) => msg.write_to(buffer),
+            MessageInstance::ScriptSensorReply(ref msg) => msg.write_to(buffer),
+            MessageInstance::CompleteAgentMovement(ref msg) => msg.write_to(buffer),
+            MessageInstance::AgentMovementComplete(ref msg) => msg.write_to(buffer),
+            MessageInstance::DataServerLogout(ref msg) => msg.write_to(buffer),
+            MessageInstance::LogoutRequest(ref msg) => msg.write_to(buffer),
+            MessageInstance::LogoutReply(ref msg) => msg.write_to(buffer),
+            MessageInstance::ImprovedInstantMessage(ref msg) => msg.write_to(buffer),
+            MessageInstance::RetrieveInstantMessages(ref msg) => msg.write_to(buffer),
+            MessageInstance::FindAgent(ref msg) => msg.write_to(buffer),
+            MessageInstance::RequestGodlikePowers(ref msg) => msg.write_to(buffer),
+            MessageInstance::GrantGodlikePowers(ref msg) => msg.write_to(buffer),
+            MessageInstance::GodlikeMessage(ref msg) => msg.write_to(buffer),
+            MessageInstance::EstateOwnerMessage(ref msg) => msg.write_to(buffer),
+            MessageInstance::GenericMessage(ref msg) => msg.write_to(buffer),
+            MessageInstance::MuteListRequest(ref msg) => msg.write_to(buffer),
+            MessageInstance::UpdateMuteListEntry(ref msg) => msg.write_to(buffer),
+            MessageInstance::RemoveMuteListEntry(ref msg) => msg.write_to(buffer),
+            MessageInstance::CopyInventoryFromNotecard(ref msg) => msg.write_to(buffer),
+            MessageInstance::UpdateInventoryItem(ref msg) => msg.write_to(buffer),
+            MessageInstance::UpdateCreateInventoryItem(ref msg) => msg.write_to(buffer),
+            MessageInstance::MoveInventoryItem(ref msg) => msg.write_to(buffer),
+            MessageInstance::CopyInventoryItem(ref msg) => msg.write_to(buffer),
+            MessageInstance::RemoveInventoryItem(ref msg) => msg.write_to(buffer),
+            MessageInstance::ChangeInventoryItemFlags(ref msg) => msg.write_to(buffer),
+            MessageInstance::SaveAssetIntoInventory(ref msg) => msg.write_to(buffer),
+            MessageInstance::CreateInventoryFolder(ref msg) => msg.write_to(buffer),
+            MessageInstance::UpdateInventoryFolder(ref msg) => msg.write_to(buffer),
+            MessageInstance::MoveInventoryFolder(ref msg) => msg.write_to(buffer),
+            MessageInstance::RemoveInventoryFolder(ref msg) => msg.write_to(buffer),
+            MessageInstance::FetchInventoryDescendents(ref msg) => msg.write_to(buffer),
+            MessageInstance::InventoryDescendents(ref msg) => msg.write_to(buffer),
+            MessageInstance::FetchInventory(ref msg) => msg.write_to(buffer),
+            MessageInstance::FetchInventoryReply(ref msg) => msg.write_to(buffer),
+            MessageInstance::BulkUpdateInventory(ref msg) => msg.write_to(buffer),
+            MessageInstance::RequestInventoryAsset(ref msg) => msg.write_to(buffer),
+            MessageInstance::InventoryAssetResponse(ref msg) => msg.write_to(buffer),
+            MessageInstance::RemoveInventoryObjects(ref msg) => msg.write_to(buffer),
+            MessageInstance::PurgeInventoryDescendents(ref msg) => msg.write_to(buffer),
+            MessageInstance::UpdateTaskInventory(ref msg) => msg.write_to(buffer),
+            MessageInstance::RemoveTaskInventory(ref msg) => msg.write_to(buffer),
+            MessageInstance::MoveTaskInventory(ref msg) => msg.write_to(buffer),
+            MessageInstance::RequestTaskInventory(ref msg) => msg.write_to(buffer),
+            MessageInstance::ReplyTaskInventory(ref msg) => msg.write_to(buffer),
+            MessageInstance::DeRezObject(ref msg) => msg.write_to(buffer),
+            MessageInstance::DeRezAck(ref msg) => msg.write_to(buffer),
+            MessageInstance::RezObject(ref msg) => msg.write_to(buffer),
+            MessageInstance::RezObjectFromNotecard(ref msg) => msg.write_to(buffer),
+            MessageInstance::TransferInventory(ref msg) => msg.write_to(buffer),
+            MessageInstance::TransferInventoryAck(ref msg) => msg.write_to(buffer),
+            MessageInstance::AcceptFriendship(ref msg) => msg.write_to(buffer),
+            MessageInstance::DeclineFriendship(ref msg) => msg.write_to(buffer),
+            MessageInstance::FormFriendship(ref msg) => msg.write_to(buffer),
+            MessageInstance::TerminateFriendship(ref msg) => msg.write_to(buffer),
+            MessageInstance::OfferCallingCard(ref msg) => msg.write_to(buffer),
+            MessageInstance::AcceptCallingCard(ref msg) => msg.write_to(buffer),
+            MessageInstance::DeclineCallingCard(ref msg) => msg.write_to(buffer),
+            MessageInstance::RezScript(ref msg) => msg.write_to(buffer),
+            MessageInstance::CreateInventoryItem(ref msg) => msg.write_to(buffer),
+            MessageInstance::CreateLandmarkForEvent(ref msg) => msg.write_to(buffer),
+            MessageInstance::EventLocationRequest(ref msg) => msg.write_to(buffer),
+            MessageInstance::EventLocationReply(ref msg) => msg.write_to(buffer),
+            MessageInstance::RegionHandleRequest(ref msg) => msg.write_to(buffer),
+            MessageInstance::RegionIDAndHandleReply(ref msg) => msg.write_to(buffer),
+            MessageInstance::MoneyTransferRequest(ref msg) => msg.write_to(buffer),
+            MessageInstance::MoneyTransferBackend(ref msg) => msg.write_to(buffer),
+            MessageInstance::MoneyBalanceRequest(ref msg) => msg.write_to(buffer),
+            MessageInstance::MoneyBalanceReply(ref msg) => msg.write_to(buffer),
+            MessageInstance::RoutedMoneyBalanceReply(ref msg) => msg.write_to(buffer),
+            MessageInstance::ActivateGestures(ref msg) => msg.write_to(buffer),
+            MessageInstance::DeactivateGestures(ref msg) => msg.write_to(buffer),
+            MessageInstance::MuteListUpdate(ref msg) => msg.write_to(buffer),
+            MessageInstance::UseCachedMuteList(ref msg) => msg.write_to(buffer),
+            MessageInstance::GrantUserRights(ref msg) => msg.write_to(buffer),
+            MessageInstance::ChangeUserRights(ref msg) => msg.write_to(buffer),
+            MessageInstance::OnlineNotification(ref msg) => msg.write_to(buffer),
+            MessageInstance::OfflineNotification(ref msg) => msg.write_to(buffer),
+            MessageInstance::SetStartLocationRequest(ref msg) => msg.write_to(buffer),
+            MessageInstance::SetStartLocation(ref msg) => msg.write_to(buffer),
+            MessageInstance::NetTest(ref msg) => msg.write_to(buffer),
+            MessageInstance::SetCPURatio(ref msg) => msg.write_to(buffer),
+            MessageInstance::SimCrashed(ref msg) => msg.write_to(buffer),
+            MessageInstance::NameValuePair(ref msg) => msg.write_to(buffer),
+            MessageInstance::RemoveNameValuePair(ref msg) => msg.write_to(buffer),
+            MessageInstance::UpdateAttachment(ref msg) => msg.write_to(buffer),
+            MessageInstance::RemoveAttachment(ref msg) => msg.write_to(buffer),
+            MessageInstance::SoundTrigger(ref msg) => msg.write_to(buffer),
+            MessageInstance::AttachedSound(ref msg) => msg.write_to(buffer),
+            MessageInstance::AttachedSoundGainChange(ref msg) => msg.write_to(buffer),
+            MessageInstance::PreloadSound(ref msg) => msg.write_to(buffer),
+            MessageInstance::AssetUploadRequest(ref msg) => msg.write_to(buffer),
+            MessageInstance::AssetUploadComplete(ref msg) => msg.write_to(buffer),
+            MessageInstance::EmailMessageRequest(ref msg) => msg.write_to(buffer),
+            MessageInstance::EmailMessageReply(ref msg) => msg.write_to(buffer),
+            MessageInstance::InternalScriptMail(ref msg) => msg.write_to(buffer),
+            MessageInstance::ScriptDataRequest(ref msg) => msg.write_to(buffer),
+            MessageInstance::ScriptDataReply(ref msg) => msg.write_to(buffer),
+            MessageInstance::CreateGroupRequest(ref msg) => msg.write_to(buffer),
+            MessageInstance::CreateGroupReply(ref msg) => msg.write_to(buffer),
+            MessageInstance::UpdateGroupInfo(ref msg) => msg.write_to(buffer),
+            MessageInstance::GroupRoleChanges(ref msg) => msg.write_to(buffer),
+            MessageInstance::JoinGroupRequest(ref msg) => msg.write_to(buffer),
+            MessageInstance::JoinGroupReply(ref msg) => msg.write_to(buffer),
+            MessageInstance::EjectGroupMemberRequest(ref msg) => msg.write_to(buffer),
+            MessageInstance::EjectGroupMemberReply(ref msg) => msg.write_to(buffer),
+            MessageInstance::LeaveGroupRequest(ref msg) => msg.write_to(buffer),
+            MessageInstance::LeaveGroupReply(ref msg) => msg.write_to(buffer),
+            MessageInstance::InviteGroupRequest(ref msg) => msg.write_to(buffer),
+            MessageInstance::InviteGroupResponse(ref msg) => msg.write_to(buffer),
+            MessageInstance::GroupProfileRequest(ref msg) => msg.write_to(buffer),
+            MessageInstance::GroupProfileReply(ref msg) => msg.write_to(buffer),
+            MessageInstance::GroupAccountSummaryRequest(ref msg) => msg.write_to(buffer),
+            MessageInstance::GroupAccountSummaryReply(ref msg) => msg.write_to(buffer),
+            MessageInstance::GroupAccountDetailsRequest(ref msg) => msg.write_to(buffer),
+            MessageInstance::GroupAccountDetailsReply(ref msg) => msg.write_to(buffer),
+            MessageInstance::GroupAccountTransactionsRequest(ref msg) => msg.write_to(buffer),
+            MessageInstance::GroupAccountTransactionsReply(ref msg) => msg.write_to(buffer),
+            MessageInstance::GroupActiveProposalsRequest(ref msg) => msg.write_to(buffer),
+            MessageInstance::GroupActiveProposalItemReply(ref msg) => msg.write_to(buffer),
+            MessageInstance::GroupVoteHistoryRequest(ref msg) => msg.write_to(buffer),
+            MessageInstance::GroupVoteHistoryItemReply(ref msg) => msg.write_to(buffer),
+            MessageInstance::StartGroupProposal(ref msg) => msg.write_to(buffer),
+            MessageInstance::GroupProposalBallot(ref msg) => msg.write_to(buffer),
+            MessageInstance::TallyVotes(ref msg) => msg.write_to(buffer),
+            MessageInstance::GroupMembersRequest(ref msg) => msg.write_to(buffer),
+            MessageInstance::GroupMembersReply(ref msg) => msg.write_to(buffer),
+            MessageInstance::ActivateGroup(ref msg) => msg.write_to(buffer),
+            MessageInstance::SetGroupContribution(ref msg) => msg.write_to(buffer),
+            MessageInstance::SetGroupAcceptNotices(ref msg) => msg.write_to(buffer),
+            MessageInstance::GroupRoleDataRequest(ref msg) => msg.write_to(buffer),
+            MessageInstance::GroupRoleDataReply(ref msg) => msg.write_to(buffer),
+            MessageInstance::GroupRoleMembersRequest(ref msg) => msg.write_to(buffer),
+            MessageInstance::GroupRoleMembersReply(ref msg) => msg.write_to(buffer),
+            MessageInstance::GroupTitlesRequest(ref msg) => msg.write_to(buffer),
+            MessageInstance::GroupTitlesReply(ref msg) => msg.write_to(buffer),
+            MessageInstance::GroupTitleUpdate(ref msg) => msg.write_to(buffer),
+            MessageInstance::GroupRoleUpdate(ref msg) => msg.write_to(buffer),
+            MessageInstance::LiveHelpGroupRequest(ref msg) => msg.write_to(buffer),
+            MessageInstance::LiveHelpGroupReply(ref msg) => msg.write_to(buffer),
+            MessageInstance::AgentWearablesRequest(ref msg) => msg.write_to(buffer),
+            MessageInstance::AgentWearablesUpdate(ref msg) => msg.write_to(buffer),
+            MessageInstance::AgentIsNowWearing(ref msg) => msg.write_to(buffer),
+            MessageInstance::AgentCachedTexture(ref msg) => msg.write_to(buffer),
+            MessageInstance::AgentCachedTextureResponse(ref msg) => msg.write_to(buffer),
+            MessageInstance::AgentDataUpdateRequest(ref msg) => msg.write_to(buffer),
+            MessageInstance::AgentDataUpdate(ref msg) => msg.write_to(buffer),
+            MessageInstance::GroupDataUpdate(ref msg) => msg.write_to(buffer),
+            MessageInstance::AgentGroupDataUpdate(ref msg) => msg.write_to(buffer),
+            MessageInstance::AgentDropGroup(ref msg) => msg.write_to(buffer),
+            MessageInstance::LogTextMessage(ref msg) => msg.write_to(buffer),
+            MessageInstance::ViewerEffect(ref msg) => msg.write_to(buffer),
+            MessageInstance::CreateTrustedCircuit(ref msg) => msg.write_to(buffer),
+            MessageInstance::DenyTrustedCircuit(ref msg) => msg.write_to(buffer),
+            MessageInstance::RequestTrustedCircuit(ref msg) => msg.write_to(buffer),
+            MessageInstance::RezSingleAttachmentFromInv(ref msg) => msg.write_to(buffer),
+            MessageInstance::RezMultipleAttachmentsFromInv(ref msg) => msg.write_to(buffer),
+            MessageInstance::DetachAttachmentIntoInv(ref msg) => msg.write_to(buffer),
+            MessageInstance::CreateNewOutfitAttachments(ref msg) => msg.write_to(buffer),
+            MessageInstance::UserInfoRequest(ref msg) => msg.write_to(buffer),
+            MessageInstance::UserInfoReply(ref msg) => msg.write_to(buffer),
+            MessageInstance::UpdateUserInfo(ref msg) => msg.write_to(buffer),
+            MessageInstance::ParcelRename(ref msg) => msg.write_to(buffer),
+            MessageInstance::InitiateDownload(ref msg) => msg.write_to(buffer),
+            MessageInstance::SystemMessage(ref msg) => msg.write_to(buffer),
+            MessageInstance::MapLayerRequest(ref msg) => msg.write_to(buffer),
+            MessageInstance::MapLayerReply(ref msg) => msg.write_to(buffer),
+            MessageInstance::MapBlockRequest(ref msg) => msg.write_to(buffer),
+            MessageInstance::MapNameRequest(ref msg) => msg.write_to(buffer),
+            MessageInstance::MapBlockReply(ref msg) => msg.write_to(buffer),
+            MessageInstance::MapItemRequest(ref msg) => msg.write_to(buffer),
+            MessageInstance::MapItemReply(ref msg) => msg.write_to(buffer),
+            MessageInstance::SendPostcard(ref msg) => msg.write_to(buffer),
+            MessageInstance::RpcChannelRequest(ref msg) => msg.write_to(buffer),
+            MessageInstance::RpcChannelReply(ref msg) => msg.write_to(buffer),
+            MessageInstance::RpcScriptRequestInbound(ref msg) => msg.write_to(buffer),
+            MessageInstance::RpcScriptRequestInboundForward(ref msg) => msg.write_to(buffer),
+            MessageInstance::RpcScriptReplyInbound(ref msg) => msg.write_to(buffer),
+            MessageInstance::ScriptMailRegistration(ref msg) => msg.write_to(buffer),
+            MessageInstance::ParcelMediaCommandMessage(ref msg) => msg.write_to(buffer),
+            MessageInstance::ParcelMediaUpdate(ref msg) => msg.write_to(buffer),
+            MessageInstance::LandStatRequest(ref msg) => msg.write_to(buffer),
+            MessageInstance::LandStatReply(ref msg) => msg.write_to(buffer),
+            MessageInstance::Error(ref msg) => msg.write_to(buffer),
+            MessageInstance::ObjectIncludeInSearch(ref msg) => msg.write_to(buffer),
+            MessageInstance::RezRestoreToWorld(ref msg) => msg.write_to(buffer),
+            MessageInstance::LinkInventoryItem(ref msg) => msg.write_to(buffer),
+        }
+    }
+}
+
+impl From<TestMessage> for MessageInstance {
+    fn from(msg: TestMessage) -> Self {
+        MessageInstance::TestMessage(msg)
+    }
+}
+
+impl From<PacketAck> for MessageInstance {
+    fn from(msg: PacketAck) -> Self {
+        MessageInstance::PacketAck(msg)
+    }
+}
+
+impl From<OpenCircuit> for MessageInstance {
+    fn from(msg: OpenCircuit) -> Self {
+        MessageInstance::OpenCircuit(msg)
+    }
+}
+
+impl From<CloseCircuit> for MessageInstance {
+    fn from(msg: CloseCircuit) -> Self {
+        MessageInstance::CloseCircuit(msg)
+    }
+}
+
+impl From<StartPingCheck> for MessageInstance {
+    fn from(msg: StartPingCheck) -> Self {
+        MessageInstance::StartPingCheck(msg)
+    }
+}
+
+impl From<CompletePingCheck> for MessageInstance {
+    fn from(msg: CompletePingCheck) -> Self {
+        MessageInstance::CompletePingCheck(msg)
+    }
+}
+
+impl From<AddCircuitCode> for MessageInstance {
+    fn from(msg: AddCircuitCode) -> Self {
+        MessageInstance::AddCircuitCode(msg)
+    }
+}
+
+impl From<UseCircuitCode> for MessageInstance {
+    fn from(msg: UseCircuitCode) -> Self {
+        MessageInstance::UseCircuitCode(msg)
+    }
+}
+
+impl From<NeighborList> for MessageInstance {
+    fn from(msg: NeighborList) -> Self {
+        MessageInstance::NeighborList(msg)
+    }
+}
+
+impl From<AvatarTextureUpdate> for MessageInstance {
+    fn from(msg: AvatarTextureUpdate) -> Self {
+        MessageInstance::AvatarTextureUpdate(msg)
+    }
+}
+
+impl From<SimulatorMapUpdate> for MessageInstance {
+    fn from(msg: SimulatorMapUpdate) -> Self {
+        MessageInstance::SimulatorMapUpdate(msg)
+    }
+}
+
+impl From<SimulatorSetMap> for MessageInstance {
+    fn from(msg: SimulatorSetMap) -> Self {
+        MessageInstance::SimulatorSetMap(msg)
+    }
+}
+
+impl From<SubscribeLoad> for MessageInstance {
+    fn from(msg: SubscribeLoad) -> Self {
+        MessageInstance::SubscribeLoad(msg)
+    }
+}
+
+impl From<UnsubscribeLoad> for MessageInstance {
+    fn from(msg: UnsubscribeLoad) -> Self {
+        MessageInstance::UnsubscribeLoad(msg)
+    }
+}
+
+impl From<SimulatorReady> for MessageInstance {
+    fn from(msg: SimulatorReady) -> Self {
+        MessageInstance::SimulatorReady(msg)
+    }
+}
+
+impl From<TelehubInfo> for MessageInstance {
+    fn from(msg: TelehubInfo) -> Self {
+        MessageInstance::TelehubInfo(msg)
+    }
+}
+
+impl From<SimulatorPresentAtLocation> for MessageInstance {
+    fn from(msg: SimulatorPresentAtLocation) -> Self {
+        MessageInstance::SimulatorPresentAtLocation(msg)
+    }
+}
+
+impl From<SimulatorLoad> for MessageInstance {
+    fn from(msg: SimulatorLoad) -> Self {
+        MessageInstance::SimulatorLoad(msg)
+    }
+}
+
+impl From<SimulatorShutdownRequest> for MessageInstance {
+    fn from(msg: SimulatorShutdownRequest) -> Self {
+        MessageInstance::SimulatorShutdownRequest(msg)
+    }
+}
+
+impl From<RegionPresenceRequestByRegionID> for MessageInstance {
+    fn from(msg: RegionPresenceRequestByRegionID) -> Self {
+        MessageInstance::RegionPresenceRequestByRegionID(msg)
+    }
+}
+
+impl From<RegionPresenceRequestByHandle> for MessageInstance {
+    fn from(msg: RegionPresenceRequestByHandle) -> Self {
+        MessageInstance::RegionPresenceRequestByHandle(msg)
+    }
+}
+
+impl From<RegionPresenceResponse> for MessageInstance {
+    fn from(msg: RegionPresenceResponse) -> Self {
+        MessageInstance::RegionPresenceResponse(msg)
+    }
+}
+
+impl From<UpdateSimulator> for MessageInstance {
+    fn from(msg: UpdateSimulator) -> Self {
+        MessageInstance::UpdateSimulator(msg)
+    }
+}
+
+impl From<LogDwellTime> for MessageInstance {
+    fn from(msg: LogDwellTime) -> Self {
+        MessageInstance::LogDwellTime(msg)
+    }
+}
+
+impl From<FeatureDisabled> for MessageInstance {
+    fn from(msg: FeatureDisabled) -> Self {
+        MessageInstance::FeatureDisabled(msg)
+    }
+}
+
+impl From<LogFailedMoneyTransaction> for MessageInstance {
+    fn from(msg: LogFailedMoneyTransaction) -> Self {
+        MessageInstance::LogFailedMoneyTransaction(msg)
+    }
+}
+
+impl From<UserReportInternal> for MessageInstance {
+    fn from(msg: UserReportInternal) -> Self {
+        MessageInstance::UserReportInternal(msg)
+    }
+}
+
+impl From<SetSimStatusInDatabase> for MessageInstance {
+    fn from(msg: SetSimStatusInDatabase) -> Self {
+        MessageInstance::SetSimStatusInDatabase(msg)
+    }
+}
+
+impl From<SetSimPresenceInDatabase> for MessageInstance {
+    fn from(msg: SetSimPresenceInDatabase) -> Self {
+        MessageInstance::SetSimPresenceInDatabase(msg)
+    }
+}
+
+impl From<EconomyDataRequest> for MessageInstance {
+    fn from(msg: EconomyDataRequest) -> Self {
+        MessageInstance::EconomyDataRequest(msg)
+    }
+}
+
+impl From<EconomyData> for MessageInstance {
+    fn from(msg: EconomyData) -> Self {
+        MessageInstance::EconomyData(msg)
+    }
+}
+
+impl From<AvatarPickerRequest> for MessageInstance {
+    fn from(msg: AvatarPickerRequest) -> Self {
+        MessageInstance::AvatarPickerRequest(msg)
+    }
+}
+
+impl From<AvatarPickerRequestBackend> for MessageInstance {
+    fn from(msg: AvatarPickerRequestBackend) -> Self {
+        MessageInstance::AvatarPickerRequestBackend(msg)
+    }
+}
+
+impl From<AvatarPickerReply> for MessageInstance {
+    fn from(msg: AvatarPickerReply) -> Self {
+        MessageInstance::AvatarPickerReply(msg)
+    }
+}
+
+impl From<PlacesQuery> for MessageInstance {
+    fn from(msg: PlacesQuery) -> Self {
+        MessageInstance::PlacesQuery(msg)
+    }
+}
+
+impl From<PlacesReply> for MessageInstance {
+    fn from(msg: PlacesReply) -> Self {
+        MessageInstance::PlacesReply(msg)
+    }
+}
+
+impl From<DirFindQuery> for MessageInstance {
+    fn from(msg: DirFindQuery) -> Self {
+        MessageInstance::DirFindQuery(msg)
+    }
+}
+
+impl From<DirFindQueryBackend> for MessageInstance {
+    fn from(msg: DirFindQueryBackend) -> Self {
+        MessageInstance::DirFindQueryBackend(msg)
+    }
+}
+
+impl From<DirPlacesQuery> for MessageInstance {
+    fn from(msg: DirPlacesQuery) -> Self {
+        MessageInstance::DirPlacesQuery(msg)
+    }
+}
+
+impl From<DirPlacesQueryBackend> for MessageInstance {
+    fn from(msg: DirPlacesQueryBackend) -> Self {
+        MessageInstance::DirPlacesQueryBackend(msg)
+    }
+}
+
+impl From<DirPlacesReply> for MessageInstance {
+    fn from(msg: DirPlacesReply) -> Self {
+        MessageInstance::DirPlacesReply(msg)
+    }
+}
+
+impl From<DirPeopleReply> for MessageInstance {
+    fn from(msg: DirPeopleReply) -> Self {
+        MessageInstance::DirPeopleReply(msg)
+    }
+}
+
+impl From<DirEventsReply> for MessageInstance {
+    fn from(msg: DirEventsReply) -> Self {
+        MessageInstance::DirEventsReply(msg)
+    }
+}
+
+impl From<DirGroupsReply> for MessageInstance {
+    fn from(msg: DirGroupsReply) -> Self {
+        MessageInstance::DirGroupsReply(msg)
+    }
+}
+
+impl From<DirClassifiedQuery> for MessageInstance {
+    fn from(msg: DirClassifiedQuery) -> Self {
+        MessageInstance::DirClassifiedQuery(msg)
+    }
+}
+
+impl From<DirClassifiedQueryBackend> for MessageInstance {
+    fn from(msg: DirClassifiedQueryBackend) -> Self {
+        MessageInstance::DirClassifiedQueryBackend(msg)
+    }
+}
+
+impl From<DirClassifiedReply> for MessageInstance {
+    fn from(msg: DirClassifiedReply) -> Self {
+        MessageInstance::DirClassifiedReply(msg)
+    }
+}
+
+impl From<AvatarClassifiedReply> for MessageInstance {
+    fn from(msg: AvatarClassifiedReply) -> Self {
+        MessageInstance::AvatarClassifiedReply(msg)
+    }
+}
+
+impl From<ClassifiedInfoRequest> for MessageInstance {
+    fn from(msg: ClassifiedInfoRequest) -> Self {
+        MessageInstance::ClassifiedInfoRequest(msg)
+    }
+}
+
+impl From<ClassifiedInfoReply> for MessageInstance {
+    fn from(msg: ClassifiedInfoReply) -> Self {
+        MessageInstance::ClassifiedInfoReply(msg)
+    }
+}
+
+impl From<ClassifiedInfoUpdate> for MessageInstance {
+    fn from(msg: ClassifiedInfoUpdate) -> Self {
+        MessageInstance::ClassifiedInfoUpdate(msg)
+    }
+}
+
+impl From<ClassifiedDelete> for MessageInstance {
+    fn from(msg: ClassifiedDelete) -> Self {
+        MessageInstance::ClassifiedDelete(msg)
+    }
+}
+
+impl From<ClassifiedGodDelete> for MessageInstance {
+    fn from(msg: ClassifiedGodDelete) -> Self {
+        MessageInstance::ClassifiedGodDelete(msg)
+    }
+}
+
+impl From<DirLandQuery> for MessageInstance {
+    fn from(msg: DirLandQuery) -> Self {
+        MessageInstance::DirLandQuery(msg)
+    }
+}
+
+impl From<DirLandQueryBackend> for MessageInstance {
+    fn from(msg: DirLandQueryBackend) -> Self {
+        MessageInstance::DirLandQueryBackend(msg)
+    }
+}
+
+impl From<DirLandReply> for MessageInstance {
+    fn from(msg: DirLandReply) -> Self {
+        MessageInstance::DirLandReply(msg)
+    }
+}
+
+impl From<DirPopularQuery> for MessageInstance {
+    fn from(msg: DirPopularQuery) -> Self {
+        MessageInstance::DirPopularQuery(msg)
+    }
+}
+
+impl From<DirPopularQueryBackend> for MessageInstance {
+    fn from(msg: DirPopularQueryBackend) -> Self {
+        MessageInstance::DirPopularQueryBackend(msg)
+    }
+}
+
+impl From<DirPopularReply> for MessageInstance {
+    fn from(msg: DirPopularReply) -> Self {
+        MessageInstance::DirPopularReply(msg)
+    }
+}
+
+impl From<ParcelInfoRequest> for MessageInstance {
+    fn from(msg: ParcelInfoRequest) -> Self {
+        MessageInstance::ParcelInfoRequest(msg)
+    }
+}
+
+impl From<ParcelInfoReply> for MessageInstance {
+    fn from(msg: ParcelInfoReply) -> Self {
+        MessageInstance::ParcelInfoReply(msg)
+    }
+}
+
+impl From<ParcelObjectOwnersRequest> for MessageInstance {
+    fn from(msg: ParcelObjectOwnersRequest) -> Self {
+        MessageInstance::ParcelObjectOwnersRequest(msg)
+    }
+}
+
+impl From<ParcelObjectOwnersReply> for MessageInstance {
+    fn from(msg: ParcelObjectOwnersReply) -> Self {
+        MessageInstance::ParcelObjectOwnersReply(msg)
+    }
+}
+
+impl From<GroupNoticesListRequest> for MessageInstance {
+    fn from(msg: GroupNoticesListRequest) -> Self {
+        MessageInstance::GroupNoticesListRequest(msg)
+    }
+}
+
+impl From<GroupNoticesListReply> for MessageInstance {
+    fn from(msg: GroupNoticesListReply) -> Self {
+        MessageInstance::GroupNoticesListReply(msg)
+    }
+}
+
+impl From<GroupNoticeRequest> for MessageInstance {
+    fn from(msg: GroupNoticeRequest) -> Self {
+        MessageInstance::GroupNoticeRequest(msg)
+    }
+}
+
+impl From<GroupNoticeAdd> for MessageInstance {
+    fn from(msg: GroupNoticeAdd) -> Self {
+        MessageInstance::GroupNoticeAdd(msg)
+    }
+}
+
+impl From<TeleportRequest> for MessageInstance {
+    fn from(msg: TeleportRequest) -> Self {
+        MessageInstance::TeleportRequest(msg)
+    }
+}
+
+impl From<TeleportLocationRequest> for MessageInstance {
+    fn from(msg: TeleportLocationRequest) -> Self {
+        MessageInstance::TeleportLocationRequest(msg)
+    }
+}
+
+impl From<TeleportLocal> for MessageInstance {
+    fn from(msg: TeleportLocal) -> Self {
+        MessageInstance::TeleportLocal(msg)
+    }
+}
+
+impl From<TeleportLandmarkRequest> for MessageInstance {
+    fn from(msg: TeleportLandmarkRequest) -> Self {
+        MessageInstance::TeleportLandmarkRequest(msg)
+    }
+}
+
+impl From<TeleportProgress> for MessageInstance {
+    fn from(msg: TeleportProgress) -> Self {
+        MessageInstance::TeleportProgress(msg)
+    }
+}
+
+impl From<DataHomeLocationRequest> for MessageInstance {
+    fn from(msg: DataHomeLocationRequest) -> Self {
+        MessageInstance::DataHomeLocationRequest(msg)
+    }
+}
+
+impl From<DataHomeLocationReply> for MessageInstance {
+    fn from(msg: DataHomeLocationReply) -> Self {
+        MessageInstance::DataHomeLocationReply(msg)
+    }
+}
+
+impl From<TeleportFinish> for MessageInstance {
+    fn from(msg: TeleportFinish) -> Self {
+        MessageInstance::TeleportFinish(msg)
+    }
+}
+
+impl From<StartLure> for MessageInstance {
+    fn from(msg: StartLure) -> Self {
+        MessageInstance::StartLure(msg)
+    }
+}
+
+impl From<TeleportLureRequest> for MessageInstance {
+    fn from(msg: TeleportLureRequest) -> Self {
+        MessageInstance::TeleportLureRequest(msg)
+    }
+}
+
+impl From<TeleportCancel> for MessageInstance {
+    fn from(msg: TeleportCancel) -> Self {
+        MessageInstance::TeleportCancel(msg)
+    }
+}
+
+impl From<TeleportStart> for MessageInstance {
+    fn from(msg: TeleportStart) -> Self {
+        MessageInstance::TeleportStart(msg)
+    }
+}
+
+impl From<TeleportFailed> for MessageInstance {
+    fn from(msg: TeleportFailed) -> Self {
+        MessageInstance::TeleportFailed(msg)
+    }
+}
+
+impl From<Undo> for MessageInstance {
+    fn from(msg: Undo) -> Self {
+        MessageInstance::Undo(msg)
+    }
+}
+
+impl From<Redo> for MessageInstance {
+    fn from(msg: Redo) -> Self {
+        MessageInstance::Redo(msg)
+    }
+}
+
+impl From<UndoLand> for MessageInstance {
+    fn from(msg: UndoLand) -> Self {
+        MessageInstance::UndoLand(msg)
+    }
+}
+
+impl From<AgentPause> for MessageInstance {
+    fn from(msg: AgentPause) -> Self {
+        MessageInstance::AgentPause(msg)
+    }
+}
+
+impl From<AgentResume> for MessageInstance {
+    fn from(msg: AgentResume) -> Self {
+        MessageInstance::AgentResume(msg)
+    }
+}
+
+impl From<AgentUpdate> for MessageInstance {
+    fn from(msg: AgentUpdate) -> Self {
+        MessageInstance::AgentUpdate(msg)
+    }
+}
+
+impl From<ChatFromViewer> for MessageInstance {
+    fn from(msg: ChatFromViewer) -> Self {
+        MessageInstance::ChatFromViewer(msg)
+    }
+}
+
+impl From<AgentThrottle> for MessageInstance {
+    fn from(msg: AgentThrottle) -> Self {
+        MessageInstance::AgentThrottle(msg)
+    }
+}
+
+impl From<AgentFOV> for MessageInstance {
+    fn from(msg: AgentFOV) -> Self {
+        MessageInstance::AgentFOV(msg)
+    }
+}
+
+impl From<AgentHeightWidth> for MessageInstance {
+    fn from(msg: AgentHeightWidth) -> Self {
+        MessageInstance::AgentHeightWidth(msg)
+    }
+}
+
+impl From<AgentSetAppearance> for MessageInstance {
+    fn from(msg: AgentSetAppearance) -> Self {
+        MessageInstance::AgentSetAppearance(msg)
+    }
+}
+
+impl From<AgentAnimation> for MessageInstance {
+    fn from(msg: AgentAnimation) -> Self {
+        MessageInstance::AgentAnimation(msg)
+    }
+}
+
+impl From<AgentRequestSit> for MessageInstance {
+    fn from(msg: AgentRequestSit) -> Self {
+        MessageInstance::AgentRequestSit(msg)
+    }
+}
+
+impl From<AgentSit> for MessageInstance {
+    fn from(msg: AgentSit) -> Self {
+        MessageInstance::AgentSit(msg)
+    }
+}
+
+impl From<AgentQuitCopy> for MessageInstance {
+    fn from(msg: AgentQuitCopy) -> Self {
+        MessageInstance::AgentQuitCopy(msg)
+    }
+}
+
+impl From<RequestImage> for MessageInstance {
+    fn from(msg: RequestImage) -> Self {
+        MessageInstance::RequestImage(msg)
+    }
+}
+
+impl From<ImageNotInDatabase> for MessageInstance {
+    fn from(msg: ImageNotInDatabase) -> Self {
+        MessageInstance::ImageNotInDatabase(msg)
+    }
+}
+
+impl From<RebakeAvatarTextures> for MessageInstance {
+    fn from(msg: RebakeAvatarTextures) -> Self {
+        MessageInstance::RebakeAvatarTextures(msg)
+    }
+}
+
+impl From<SetAlwaysRun> for MessageInstance {
+    fn from(msg: SetAlwaysRun) -> Self {
+        MessageInstance::SetAlwaysRun(msg)
+    }
+}
+
+impl From<ObjectAdd> for MessageInstance {
+    fn from(msg: ObjectAdd) -> Self {
+        MessageInstance::ObjectAdd(msg)
+    }
+}
+
+impl From<ObjectDelete> for MessageInstance {
+    fn from(msg: ObjectDelete) -> Self {
+        MessageInstance::ObjectDelete(msg)
+    }
+}
+
+impl From<ObjectDuplicate> for MessageInstance {
+    fn from(msg: ObjectDuplicate) -> Self {
+        MessageInstance::ObjectDuplicate(msg)
+    }
+}
+
+impl From<ObjectDuplicateOnRay> for MessageInstance {
+    fn from(msg: ObjectDuplicateOnRay) -> Self {
+        MessageInstance::ObjectDuplicateOnRay(msg)
+    }
+}
+
+impl From<MultipleObjectUpdate> for MessageInstance {
+    fn from(msg: MultipleObjectUpdate) -> Self {
+        MessageInstance::MultipleObjectUpdate(msg)
+    }
+}
+
+impl From<RequestMultipleObjects> for MessageInstance {
+    fn from(msg: RequestMultipleObjects) -> Self {
+        MessageInstance::RequestMultipleObjects(msg)
+    }
+}
+
+impl From<ObjectPosition> for MessageInstance {
+    fn from(msg: ObjectPosition) -> Self {
+        MessageInstance::ObjectPosition(msg)
+    }
+}
+
+impl From<ObjectScale> for MessageInstance {
+    fn from(msg: ObjectScale) -> Self {
+        MessageInstance::ObjectScale(msg)
+    }
+}
+
+impl From<ObjectRotation> for MessageInstance {
+    fn from(msg: ObjectRotation) -> Self {
+        MessageInstance::ObjectRotation(msg)
+    }
+}
+
+impl From<ObjectFlagUpdate> for MessageInstance {
+    fn from(msg: ObjectFlagUpdate) -> Self {
+        MessageInstance::ObjectFlagUpdate(msg)
+    }
+}
+
+impl From<ObjectClickAction> for MessageInstance {
+    fn from(msg: ObjectClickAction) -> Self {
+        MessageInstance::ObjectClickAction(msg)
+    }
+}
+
+impl From<ObjectImage> for MessageInstance {
+    fn from(msg: ObjectImage) -> Self {
+        MessageInstance::ObjectImage(msg)
+    }
+}
+
+impl From<ObjectMaterial> for MessageInstance {
+    fn from(msg: ObjectMaterial) -> Self {
+        MessageInstance::ObjectMaterial(msg)
+    }
+}
+
+impl From<ObjectShape> for MessageInstance {
+    fn from(msg: ObjectShape) -> Self {
+        MessageInstance::ObjectShape(msg)
+    }
+}
+
+impl From<ObjectExtraParams> for MessageInstance {
+    fn from(msg: ObjectExtraParams) -> Self {
+        MessageInstance::ObjectExtraParams(msg)
+    }
+}
+
+impl From<ObjectOwner> for MessageInstance {
+    fn from(msg: ObjectOwner) -> Self {
+        MessageInstance::ObjectOwner(msg)
+    }
+}
+
+impl From<ObjectGroup> for MessageInstance {
+    fn from(msg: ObjectGroup) -> Self {
+        MessageInstance::ObjectGroup(msg)
+    }
+}
+
+impl From<ObjectBuy> for MessageInstance {
+    fn from(msg: ObjectBuy) -> Self {
+        MessageInstance::ObjectBuy(msg)
+    }
+}
+
+impl From<BuyObjectInventory> for MessageInstance {
+    fn from(msg: BuyObjectInventory) -> Self {
+        MessageInstance::BuyObjectInventory(msg)
+    }
+}
+
+impl From<DerezContainer> for MessageInstance {
+    fn from(msg: DerezContainer) -> Self {
+        MessageInstance::DerezContainer(msg)
+    }
+}
+
+impl From<ObjectPermissions> for MessageInstance {
+    fn from(msg: ObjectPermissions) -> Self {
+        MessageInstance::ObjectPermissions(msg)
+    }
+}
+
+impl From<ObjectSaleInfo> for MessageInstance {
+    fn from(msg: ObjectSaleInfo) -> Self {
+        MessageInstance::ObjectSaleInfo(msg)
+    }
+}
+
+impl From<ObjectName> for MessageInstance {
+    fn from(msg: ObjectName) -> Self {
+        MessageInstance::ObjectName(msg)
+    }
+}
+
+impl From<ObjectDescription> for MessageInstance {
+    fn from(msg: ObjectDescription) -> Self {
+        MessageInstance::ObjectDescription(msg)
+    }
+}
+
+impl From<ObjectCategory> for MessageInstance {
+    fn from(msg: ObjectCategory) -> Self {
+        MessageInstance::ObjectCategory(msg)
+    }
+}
+
+impl From<ObjectSelect> for MessageInstance {
+    fn from(msg: ObjectSelect) -> Self {
+        MessageInstance::ObjectSelect(msg)
+    }
+}
+
+impl From<ObjectDeselect> for MessageInstance {
+    fn from(msg: ObjectDeselect) -> Self {
+        MessageInstance::ObjectDeselect(msg)
+    }
+}
+
+impl From<ObjectAttach> for MessageInstance {
+    fn from(msg: ObjectAttach) -> Self {
+        MessageInstance::ObjectAttach(msg)
+    }
+}
+
+impl From<ObjectDetach> for MessageInstance {
+    fn from(msg: ObjectDetach) -> Self {
+        MessageInstance::ObjectDetach(msg)
+    }
+}
+
+impl From<ObjectDrop> for MessageInstance {
+    fn from(msg: ObjectDrop) -> Self {
+        MessageInstance::ObjectDrop(msg)
+    }
+}
+
+impl From<ObjectLink> for MessageInstance {
+    fn from(msg: ObjectLink) -> Self {
+        MessageInstance::ObjectLink(msg)
+    }
+}
+
+impl From<ObjectDelink> for MessageInstance {
+    fn from(msg: ObjectDelink) -> Self {
+        MessageInstance::ObjectDelink(msg)
+    }
+}
+
+impl From<ObjectGrab> for MessageInstance {
+    fn from(msg: ObjectGrab) -> Self {
+        MessageInstance::ObjectGrab(msg)
+    }
+}
+
+impl From<ObjectGrabUpdate> for MessageInstance {
+    fn from(msg: ObjectGrabUpdate) -> Self {
+        MessageInstance::ObjectGrabUpdate(msg)
+    }
+}
+
+impl From<ObjectDeGrab> for MessageInstance {
+    fn from(msg: ObjectDeGrab) -> Self {
+        MessageInstance::ObjectDeGrab(msg)
+    }
+}
+
+impl From<ObjectSpinStart> for MessageInstance {
+    fn from(msg: ObjectSpinStart) -> Self {
+        MessageInstance::ObjectSpinStart(msg)
+    }
+}
+
+impl From<ObjectSpinUpdate> for MessageInstance {
+    fn from(msg: ObjectSpinUpdate) -> Self {
+        MessageInstance::ObjectSpinUpdate(msg)
+    }
+}
+
+impl From<ObjectSpinStop> for MessageInstance {
+    fn from(msg: ObjectSpinStop) -> Self {
+        MessageInstance::ObjectSpinStop(msg)
+    }
+}
+
+impl From<ObjectExportSelected> for MessageInstance {
+    fn from(msg: ObjectExportSelected) -> Self {
+        MessageInstance::ObjectExportSelected(msg)
+    }
+}
+
+impl From<ModifyLand> for MessageInstance {
+    fn from(msg: ModifyLand) -> Self {
+        MessageInstance::ModifyLand(msg)
+    }
+}
+
+impl From<VelocityInterpolateOn> for MessageInstance {
+    fn from(msg: VelocityInterpolateOn) -> Self {
+        MessageInstance::VelocityInterpolateOn(msg)
+    }
+}
+
+impl From<VelocityInterpolateOff> for MessageInstance {
+    fn from(msg: VelocityInterpolateOff) -> Self {
+        MessageInstance::VelocityInterpolateOff(msg)
+    }
+}
+
+impl From<StateSave> for MessageInstance {
+    fn from(msg: StateSave) -> Self {
+        MessageInstance::StateSave(msg)
+    }
+}
+
+impl From<ReportAutosaveCrash> for MessageInstance {
+    fn from(msg: ReportAutosaveCrash) -> Self {
+        MessageInstance::ReportAutosaveCrash(msg)
+    }
+}
+
+impl From<SimWideDeletes> for MessageInstance {
+    fn from(msg: SimWideDeletes) -> Self {
+        MessageInstance::SimWideDeletes(msg)
+    }
+}
+
+impl From<RequestObjectPropertiesFamily> for MessageInstance {
+    fn from(msg: RequestObjectPropertiesFamily) -> Self {
+        MessageInstance::RequestObjectPropertiesFamily(msg)
+    }
+}
+
+impl From<TrackAgent> for MessageInstance {
+    fn from(msg: TrackAgent) -> Self {
+        MessageInstance::TrackAgent(msg)
+    }
+}
+
+impl From<ViewerStats> for MessageInstance {
+    fn from(msg: ViewerStats) -> Self {
+        MessageInstance::ViewerStats(msg)
+    }
+}
+
+impl From<ScriptAnswerYes> for MessageInstance {
+    fn from(msg: ScriptAnswerYes) -> Self {
+        MessageInstance::ScriptAnswerYes(msg)
+    }
+}
+
+impl From<UserReport> for MessageInstance {
+    fn from(msg: UserReport) -> Self {
+        MessageInstance::UserReport(msg)
+    }
+}
+
+impl From<AlertMessage> for MessageInstance {
+    fn from(msg: AlertMessage) -> Self {
+        MessageInstance::AlertMessage(msg)
+    }
+}
+
+impl From<AgentAlertMessage> for MessageInstance {
+    fn from(msg: AgentAlertMessage) -> Self {
+        MessageInstance::AgentAlertMessage(msg)
+    }
+}
+
+impl From<MeanCollisionAlert> for MessageInstance {
+    fn from(msg: MeanCollisionAlert) -> Self {
+        MessageInstance::MeanCollisionAlert(msg)
+    }
+}
+
+impl From<ViewerFrozenMessage> for MessageInstance {
+    fn from(msg: ViewerFrozenMessage) -> Self {
+        MessageInstance::ViewerFrozenMessage(msg)
+    }
+}
+
+impl From<HealthMessage> for MessageInstance {
+    fn from(msg: HealthMessage) -> Self {
+        MessageInstance::HealthMessage(msg)
+    }
+}
+
+impl From<ChatFromSimulator> for MessageInstance {
+    fn from(msg: ChatFromSimulator) -> Self {
+        MessageInstance::ChatFromSimulator(msg)
+    }
+}
+
+impl From<SimStats> for MessageInstance {
+    fn from(msg: SimStats) -> Self {
+        MessageInstance::SimStats(msg)
+    }
+}
+
+impl From<RequestRegionInfo> for MessageInstance {
+    fn from(msg: RequestRegionInfo) -> Self {
+        MessageInstance::RequestRegionInfo(msg)
+    }
+}
+
+impl From<RegionInfo> for MessageInstance {
+    fn from(msg: RegionInfo) -> Self {
+        MessageInstance::RegionInfo(msg)
+    }
+}
+
+impl From<GodUpdateRegionInfo> for MessageInstance {
+    fn from(msg: GodUpdateRegionInfo) -> Self {
+        MessageInstance::GodUpdateRegionInfo(msg)
+    }
+}
+
+impl From<NearestLandingRegionRequest> for MessageInstance {
+    fn from(msg: NearestLandingRegionRequest) -> Self {
+        MessageInstance::NearestLandingRegionRequest(msg)
+    }
+}
+
+impl From<NearestLandingRegionReply> for MessageInstance {
+    fn from(msg: NearestLandingRegionReply) -> Self {
+        MessageInstance::NearestLandingRegionReply(msg)
+    }
+}
+
+impl From<NearestLandingRegionUpdated> for MessageInstance {
+    fn from(msg: NearestLandingRegionUpdated) -> Self {
+        MessageInstance::NearestLandingRegionUpdated(msg)
+    }
+}
+
+impl From<TeleportLandingStatusChanged> for MessageInstance {
+    fn from(msg: TeleportLandingStatusChanged) -> Self {
+        MessageInstance::TeleportLandingStatusChanged(msg)
+    }
+}
+
+impl From<RegionHandshake> for MessageInstance {
+    fn from(msg: RegionHandshake) -> Self {
+        MessageInstance::RegionHandshake(msg)
+    }
+}
+
+impl From<RegionHandshakeReply> for MessageInstance {
+    fn from(msg: RegionHandshakeReply) -> Self {
+        MessageInstance::RegionHandshakeReply(msg)
+    }
+}
+
+impl From<CoarseLocationUpdate> for MessageInstance {
+    fn from(msg: CoarseLocationUpdate) -> Self {
+        MessageInstance::CoarseLocationUpdate(msg)
+    }
+}
+
+impl From<ImageData> for MessageInstance {
+    fn from(msg: ImageData) -> Self {
+        MessageInstance::ImageData(msg)
+    }
+}
+
+impl From<ImagePacket> for MessageInstance {
+    fn from(msg: ImagePacket) -> Self {
+        MessageInstance::ImagePacket(msg)
+    }
+}
+
+impl From<LayerData> for MessageInstance {
+    fn from(msg: LayerData) -> Self {
+        MessageInstance::LayerData(msg)
+    }
+}
+
+impl From<ObjectUpdate> for MessageInstance {
+    fn from(msg: ObjectUpdate) -> Self {
+        MessageInstance::ObjectUpdate(msg)
+    }
+}
+
+impl From<ObjectUpdateCompressed> for MessageInstance {
+    fn from(msg: ObjectUpdateCompressed) -> Self {
+        MessageInstance::ObjectUpdateCompressed(msg)
+    }
+}
+
+impl From<ObjectUpdateCached> for MessageInstance {
+    fn from(msg: ObjectUpdateCached) -> Self {
+        MessageInstance::ObjectUpdateCached(msg)
+    }
+}
+
+impl From<ImprovedTerseObjectUpdate> for MessageInstance {
+    fn from(msg: ImprovedTerseObjectUpdate) -> Self {
+        MessageInstance::ImprovedTerseObjectUpdate(msg)
+    }
+}
+
+impl From<KillObject> for MessageInstance {
+    fn from(msg: KillObject) -> Self {
+        MessageInstance::KillObject(msg)
+    }
+}
+
+impl From<CrossedRegion> for MessageInstance {
+    fn from(msg: CrossedRegion) -> Self {
+        MessageInstance::CrossedRegion(msg)
+    }
+}
+
+impl From<SimulatorViewerTimeMessage> for MessageInstance {
+    fn from(msg: SimulatorViewerTimeMessage) -> Self {
+        MessageInstance::SimulatorViewerTimeMessage(msg)
+    }
+}
+
+impl From<EnableSimulator> for MessageInstance {
+    fn from(msg: EnableSimulator) -> Self {
+        MessageInstance::EnableSimulator(msg)
+    }
+}
+
+impl From<DisableSimulator> for MessageInstance {
+    fn from(msg: DisableSimulator) -> Self {
+        MessageInstance::DisableSimulator(msg)
+    }
+}
+
+impl From<ConfirmEnableSimulator> for MessageInstance {
+    fn from(msg: ConfirmEnableSimulator) -> Self {
+        MessageInstance::ConfirmEnableSimulator(msg)
+    }
+}
+
+impl From<TransferRequest> for MessageInstance {
+    fn from(msg: TransferRequest) -> Self {
+        MessageInstance::TransferRequest(msg)
+    }
+}
+
+impl From<TransferInfo> for MessageInstance {
+    fn from(msg: TransferInfo) -> Self {
+        MessageInstance::TransferInfo(msg)
+    }
+}
+
+impl From<TransferPacket> for MessageInstance {
+    fn from(msg: TransferPacket) -> Self {
+        MessageInstance::TransferPacket(msg)
+    }
+}
+
+impl From<TransferAbort> for MessageInstance {
+    fn from(msg: TransferAbort) -> Self {
+        MessageInstance::TransferAbort(msg)
+    }
+}
+
+impl From<RequestXfer> for MessageInstance {
+    fn from(msg: RequestXfer) -> Self {
+        MessageInstance::RequestXfer(msg)
+    }
+}
+
+impl From<SendXferPacket> for MessageInstance {
+    fn from(msg: SendXferPacket) -> Self {
+        MessageInstance::SendXferPacket(msg)
+    }
+}
+
+impl From<ConfirmXferPacket> for MessageInstance {
+    fn from(msg: ConfirmXferPacket) -> Self {
+        MessageInstance::ConfirmXferPacket(msg)
+    }
+}
+
+impl From<AbortXfer> for MessageInstance {
+    fn from(msg: AbortXfer) -> Self {
+        MessageInstance::AbortXfer(msg)
+    }
+}
+
+impl From<AvatarAnimation> for MessageInstance {
+    fn from(msg: AvatarAnimation) -> Self {
+        MessageInstance::AvatarAnimation(msg)
+    }
+}
+
+impl From<AvatarAppearance> for MessageInstance {
+    fn from(msg: AvatarAppearance) -> Self {
+        MessageInstance::AvatarAppearance(msg)
+    }
+}
+
+impl From<AvatarSitResponse> for MessageInstance {
+    fn from(msg: AvatarSitResponse) -> Self {
+        MessageInstance::AvatarSitResponse(msg)
+    }
+}
+
+impl From<SetFollowCamProperties> for MessageInstance {
+    fn from(msg: SetFollowCamProperties) -> Self {
+        MessageInstance::SetFollowCamProperties(msg)
+    }
+}
+
+impl From<ClearFollowCamProperties> for MessageInstance {
+    fn from(msg: ClearFollowCamProperties) -> Self {
+        MessageInstance::ClearFollowCamProperties(msg)
+    }
+}
+
+impl From<CameraConstraint> for MessageInstance {
+    fn from(msg: CameraConstraint) -> Self {
+        MessageInstance::CameraConstraint(msg)
+    }
+}
+
+impl From<ObjectProperties> for MessageInstance {
+    fn from(msg: ObjectProperties) -> Self {
+        MessageInstance::ObjectProperties(msg)
+    }
+}
+
+impl From<ObjectPropertiesFamily> for MessageInstance {
+    fn from(msg: ObjectPropertiesFamily) -> Self {
+        MessageInstance::ObjectPropertiesFamily(msg)
+    }
+}
+
+impl From<RequestPayPrice> for MessageInstance {
+    fn from(msg: RequestPayPrice) -> Self {
+        MessageInstance::RequestPayPrice(msg)
+    }
+}
+
+impl From<PayPriceReply> for MessageInstance {
+    fn from(msg: PayPriceReply) -> Self {
+        MessageInstance::PayPriceReply(msg)
+    }
+}
+
+impl From<KickUser> for MessageInstance {
+    fn from(msg: KickUser) -> Self {
+        MessageInstance::KickUser(msg)
+    }
+}
+
+impl From<KickUserAck> for MessageInstance {
+    fn from(msg: KickUserAck) -> Self {
+        MessageInstance::KickUserAck(msg)
+    }
+}
+
+impl From<GodKickUser> for MessageInstance {
+    fn from(msg: GodKickUser) -> Self {
+        MessageInstance::GodKickUser(msg)
+    }
+}
+
+impl From<SystemKickUser> for MessageInstance {
+    fn from(msg: SystemKickUser) -> Self {
+        MessageInstance::SystemKickUser(msg)
+    }
+}
+
+impl From<EjectUser> for MessageInstance {
+    fn from(msg: EjectUser) -> Self {
+        MessageInstance::EjectUser(msg)
+    }
+}
+
+impl From<FreezeUser> for MessageInstance {
+    fn from(msg: FreezeUser) -> Self {
+        MessageInstance::FreezeUser(msg)
+    }
+}
+
+impl From<AvatarPropertiesRequest> for MessageInstance {
+    fn from(msg: AvatarPropertiesRequest) -> Self {
+        MessageInstance::AvatarPropertiesRequest(msg)
+    }
+}
+
+impl From<AvatarPropertiesRequestBackend> for MessageInstance {
+    fn from(msg: AvatarPropertiesRequestBackend) -> Self {
+        MessageInstance::AvatarPropertiesRequestBackend(msg)
+    }
+}
+
+impl From<AvatarPropertiesReply> for MessageInstance {
+    fn from(msg: AvatarPropertiesReply) -> Self {
+        MessageInstance::AvatarPropertiesReply(msg)
+    }
+}
+
+impl From<AvatarInterestsReply> for MessageInstance {
+    fn from(msg: AvatarInterestsReply) -> Self {
+        MessageInstance::AvatarInterestsReply(msg)
+    }
+}
+
+impl From<AvatarGroupsReply> for MessageInstance {
+    fn from(msg: AvatarGroupsReply) -> Self {
+        MessageInstance::AvatarGroupsReply(msg)
+    }
+}
+
+impl From<AvatarPropertiesUpdate> for MessageInstance {
+    fn from(msg: AvatarPropertiesUpdate) -> Self {
+        MessageInstance::AvatarPropertiesUpdate(msg)
+    }
+}
+
+impl From<AvatarInterestsUpdate> for MessageInstance {
+    fn from(msg: AvatarInterestsUpdate) -> Self {
+        MessageInstance::AvatarInterestsUpdate(msg)
+    }
+}
+
+impl From<AvatarNotesReply> for MessageInstance {
+    fn from(msg: AvatarNotesReply) -> Self {
+        MessageInstance::AvatarNotesReply(msg)
+    }
+}
+
+impl From<AvatarNotesUpdate> for MessageInstance {
+    fn from(msg: AvatarNotesUpdate) -> Self {
+        MessageInstance::AvatarNotesUpdate(msg)
+    }
+}
+
+impl From<AvatarPicksReply> for MessageInstance {
+    fn from(msg: AvatarPicksReply) -> Self {
+        MessageInstance::AvatarPicksReply(msg)
+    }
+}
+
+impl From<EventInfoRequest> for MessageInstance {
+    fn from(msg: EventInfoRequest) -> Self {
+        MessageInstance::EventInfoRequest(msg)
+    }
+}
+
+impl From<EventInfoReply> for MessageInstance {
+    fn from(msg: EventInfoReply) -> Self {
+        MessageInstance::EventInfoReply(msg)
+    }
+}
+
+impl From<EventNotificationAddRequest> for MessageInstance {
+    fn from(msg: EventNotificationAddRequest) -> Self {
+        MessageInstance::EventNotificationAddRequest(msg)
+    }
+}
+
+impl From<EventNotificationRemoveRequest> for MessageInstance {
+    fn from(msg: EventNotificationRemoveRequest) -> Self {
+        MessageInstance::EventNotificationRemoveRequest(msg)
+    }
+}
+
+impl From<EventGodDelete> for MessageInstance {
+    fn from(msg: EventGodDelete) -> Self {
+        MessageInstance::EventGodDelete(msg)
+    }
+}
+
+impl From<PickInfoReply> for MessageInstance {
+    fn from(msg: PickInfoReply) -> Self {
+        MessageInstance::PickInfoReply(msg)
+    }
+}
+
+impl From<PickInfoUpdate> for MessageInstance {
+    fn from(msg: PickInfoUpdate) -> Self {
+        MessageInstance::PickInfoUpdate(msg)
+    }
+}
+
+impl From<PickDelete> for MessageInstance {
+    fn from(msg: PickDelete) -> Self {
+        MessageInstance::PickDelete(msg)
+    }
+}
+
+impl From<PickGodDelete> for MessageInstance {
+    fn from(msg: PickGodDelete) -> Self {
+        MessageInstance::PickGodDelete(msg)
+    }
+}
+
+impl From<ScriptQuestion> for MessageInstance {
+    fn from(msg: ScriptQuestion) -> Self {
+        MessageInstance::ScriptQuestion(msg)
+    }
+}
+
+impl From<ScriptControlChange> for MessageInstance {
+    fn from(msg: ScriptControlChange) -> Self {
+        MessageInstance::ScriptControlChange(msg)
+    }
+}
+
+impl From<ScriptDialog> for MessageInstance {
+    fn from(msg: ScriptDialog) -> Self {
+        MessageInstance::ScriptDialog(msg)
+    }
+}
+
+impl From<ScriptDialogReply> for MessageInstance {
+    fn from(msg: ScriptDialogReply) -> Self {
+        MessageInstance::ScriptDialogReply(msg)
+    }
+}
+
+impl From<ForceScriptControlRelease> for MessageInstance {
+    fn from(msg: ForceScriptControlRelease) -> Self {
+        MessageInstance::ForceScriptControlRelease(msg)
+    }
+}
+
+impl From<RevokePermissions> for MessageInstance {
+    fn from(msg: RevokePermissions) -> Self {
+        MessageInstance::RevokePermissions(msg)
+    }
+}
+
+impl From<LoadURL> for MessageInstance {
+    fn from(msg: LoadURL) -> Self {
+        MessageInstance::LoadURL(msg)
+    }
+}
+
+impl From<ScriptTeleportRequest> for MessageInstance {
+    fn from(msg: ScriptTeleportRequest) -> Self {
+        MessageInstance::ScriptTeleportRequest(msg)
+    }
+}
+
+impl From<ParcelOverlay> for MessageInstance {
+    fn from(msg: ParcelOverlay) -> Self {
+        MessageInstance::ParcelOverlay(msg)
+    }
+}
+
+impl From<ParcelPropertiesRequest> for MessageInstance {
+    fn from(msg: ParcelPropertiesRequest) -> Self {
+        MessageInstance::ParcelPropertiesRequest(msg)
+    }
+}
+
+impl From<ParcelPropertiesRequestByID> for MessageInstance {
+    fn from(msg: ParcelPropertiesRequestByID) -> Self {
+        MessageInstance::ParcelPropertiesRequestByID(msg)
+    }
+}
+
+impl From<ParcelProperties> for MessageInstance {
+    fn from(msg: ParcelProperties) -> Self {
+        MessageInstance::ParcelProperties(msg)
+    }
+}
+
+impl From<ParcelPropertiesUpdate> for MessageInstance {
+    fn from(msg: ParcelPropertiesUpdate) -> Self {
+        MessageInstance::ParcelPropertiesUpdate(msg)
+    }
+}
+
+impl From<ParcelReturnObjects> for MessageInstance {
+    fn from(msg: ParcelReturnObjects) -> Self {
+        MessageInstance::ParcelReturnObjects(msg)
+    }
+}
+
+impl From<ParcelSetOtherCleanTime> for MessageInstance {
+    fn from(msg: ParcelSetOtherCleanTime) -> Self {
+        MessageInstance::ParcelSetOtherCleanTime(msg)
+    }
+}
+
+impl From<ParcelDisableObjects> for MessageInstance {
+    fn from(msg: ParcelDisableObjects) -> Self {
+        MessageInstance::ParcelDisableObjects(msg)
+    }
+}
+
+impl From<ParcelSelectObjects> for MessageInstance {
+    fn from(msg: ParcelSelectObjects) -> Self {
+        MessageInstance::ParcelSelectObjects(msg)
+    }
+}
+
+impl From<EstateCovenantRequest> for MessageInstance {
+    fn from(msg: EstateCovenantRequest) -> Self {
+        MessageInstance::EstateCovenantRequest(msg)
+    }
+}
+
+impl From<EstateCovenantReply> for MessageInstance {
+    fn from(msg: EstateCovenantReply) -> Self {
+        MessageInstance::EstateCovenantReply(msg)
+    }
+}
+
+impl From<ForceObjectSelect> for MessageInstance {
+    fn from(msg: ForceObjectSelect) -> Self {
+        MessageInstance::ForceObjectSelect(msg)
+    }
+}
+
+impl From<ParcelBuyPass> for MessageInstance {
+    fn from(msg: ParcelBuyPass) -> Self {
+        MessageInstance::ParcelBuyPass(msg)
+    }
+}
+
+impl From<ParcelDeedToGroup> for MessageInstance {
+    fn from(msg: ParcelDeedToGroup) -> Self {
+        MessageInstance::ParcelDeedToGroup(msg)
+    }
+}
+
+impl From<ParcelReclaim> for MessageInstance {
+    fn from(msg: ParcelReclaim) -> Self {
+        MessageInstance::ParcelReclaim(msg)
+    }
+}
+
+impl From<ParcelClaim> for MessageInstance {
+    fn from(msg: ParcelClaim) -> Self {
+        MessageInstance::ParcelClaim(msg)
+    }
+}
+
+impl From<ParcelJoin> for MessageInstance {
+    fn from(msg: ParcelJoin) -> Self {
+        MessageInstance::ParcelJoin(msg)
+    }
+}
+
+impl From<ParcelDivide> for MessageInstance {
+    fn from(msg: ParcelDivide) -> Self {
+        MessageInstance::ParcelDivide(msg)
+    }
+}
+
+impl From<ParcelRelease> for MessageInstance {
+    fn from(msg: ParcelRelease) -> Self {
+        MessageInstance::ParcelRelease(msg)
+    }
+}
+
+impl From<ParcelBuy> for MessageInstance {
+    fn from(msg: ParcelBuy) -> Self {
+        MessageInstance::ParcelBuy(msg)
+    }
+}
+
+impl From<ParcelGodForceOwner> for MessageInstance {
+    fn from(msg: ParcelGodForceOwner) -> Self {
+        MessageInstance::ParcelGodForceOwner(msg)
+    }
+}
+
+impl From<ParcelAccessListRequest> for MessageInstance {
+    fn from(msg: ParcelAccessListRequest) -> Self {
+        MessageInstance::ParcelAccessListRequest(msg)
+    }
+}
+
+impl From<ParcelAccessListReply> for MessageInstance {
+    fn from(msg: ParcelAccessListReply) -> Self {
+        MessageInstance::ParcelAccessListReply(msg)
+    }
+}
+
+impl From<ParcelAccessListUpdate> for MessageInstance {
+    fn from(msg: ParcelAccessListUpdate) -> Self {
+        MessageInstance::ParcelAccessListUpdate(msg)
+    }
+}
+
+impl From<ParcelDwellRequest> for MessageInstance {
+    fn from(msg: ParcelDwellRequest) -> Self {
+        MessageInstance::ParcelDwellRequest(msg)
+    }
+}
+
+impl From<ParcelDwellReply> for MessageInstance {
+    fn from(msg: ParcelDwellReply) -> Self {
+        MessageInstance::ParcelDwellReply(msg)
+    }
+}
+
+impl From<RequestParcelTransfer> for MessageInstance {
+    fn from(msg: RequestParcelTransfer) -> Self {
+        MessageInstance::RequestParcelTransfer(msg)
+    }
+}
+
+impl From<UpdateParcel> for MessageInstance {
+    fn from(msg: UpdateParcel) -> Self {
+        MessageInstance::UpdateParcel(msg)
+    }
+}
+
+impl From<RemoveParcel> for MessageInstance {
+    fn from(msg: RemoveParcel) -> Self {
+        MessageInstance::RemoveParcel(msg)
+    }
+}
+
+impl From<MergeParcel> for MessageInstance {
+    fn from(msg: MergeParcel) -> Self {
+        MessageInstance::MergeParcel(msg)
+    }
+}
+
+impl From<LogParcelChanges> for MessageInstance {
+    fn from(msg: LogParcelChanges) -> Self {
+        MessageInstance::LogParcelChanges(msg)
+    }
+}
+
+impl From<CheckParcelSales> for MessageInstance {
+    fn from(msg: CheckParcelSales) -> Self {
+        MessageInstance::CheckParcelSales(msg)
+    }
+}
+
+impl From<ParcelSales> for MessageInstance {
+    fn from(msg: ParcelSales) -> Self {
+        MessageInstance::ParcelSales(msg)
+    }
+}
+
+impl From<ParcelGodMarkAsContent> for MessageInstance {
+    fn from(msg: ParcelGodMarkAsContent) -> Self {
+        MessageInstance::ParcelGodMarkAsContent(msg)
+    }
+}
+
+impl From<ViewerStartAuction> for MessageInstance {
+    fn from(msg: ViewerStartAuction) -> Self {
+        MessageInstance::ViewerStartAuction(msg)
+    }
+}
+
+impl From<StartAuction> for MessageInstance {
+    fn from(msg: StartAuction) -> Self {
+        MessageInstance::StartAuction(msg)
+    }
+}
+
+impl From<ConfirmAuctionStart> for MessageInstance {
+    fn from(msg: ConfirmAuctionStart) -> Self {
+        MessageInstance::ConfirmAuctionStart(msg)
+    }
+}
+
+impl From<CompleteAuction> for MessageInstance {
+    fn from(msg: CompleteAuction) -> Self {
+        MessageInstance::CompleteAuction(msg)
+    }
+}
+
+impl From<CancelAuction> for MessageInstance {
+    fn from(msg: CancelAuction) -> Self {
+        MessageInstance::CancelAuction(msg)
+    }
+}
+
+impl From<CheckParcelAuctions> for MessageInstance {
+    fn from(msg: CheckParcelAuctions) -> Self {
+        MessageInstance::CheckParcelAuctions(msg)
+    }
+}
+
+impl From<ParcelAuctions> for MessageInstance {
+    fn from(msg: ParcelAuctions) -> Self {
+        MessageInstance::ParcelAuctions(msg)
+    }
+}
+
+impl From<UUIDNameRequest> for MessageInstance {
+    fn from(msg: UUIDNameRequest) -> Self {
+        MessageInstance::UUIDNameRequest(msg)
+    }
+}
+
+impl From<UUIDNameReply> for MessageInstance {
+    fn from(msg: UUIDNameReply) -> Self {
+        MessageInstance::UUIDNameReply(msg)
+    }
+}
+
+impl From<UUIDGroupNameRequest> for MessageInstance {
+    fn from(msg: UUIDGroupNameRequest) -> Self {
+        MessageInstance::UUIDGroupNameRequest(msg)
+    }
+}
+
+impl From<UUIDGroupNameReply> for MessageInstance {
+    fn from(msg: UUIDGroupNameReply) -> Self {
+        MessageInstance::UUIDGroupNameReply(msg)
+    }
+}
+
+impl From<ChatPass> for MessageInstance {
+    fn from(msg: ChatPass) -> Self {
+        MessageInstance::ChatPass(msg)
+    }
+}
+
+impl From<EdgeDataPacket> for MessageInstance {
+    fn from(msg: EdgeDataPacket) -> Self {
+        MessageInstance::EdgeDataPacket(msg)
+    }
+}
+
+impl From<SimStatus> for MessageInstance {
+    fn from(msg: SimStatus) -> Self {
+        MessageInstance::SimStatus(msg)
+    }
+}
+
+impl From<ChildAgentUpdate> for MessageInstance {
+    fn from(msg: ChildAgentUpdate) -> Self {
+        MessageInstance::ChildAgentUpdate(msg)
+    }
+}
+
+impl From<ChildAgentAlive> for MessageInstance {
+    fn from(msg: ChildAgentAlive) -> Self {
+        MessageInstance::ChildAgentAlive(msg)
+    }
+}
+
+impl From<ChildAgentPositionUpdate> for MessageInstance {
+    fn from(msg: ChildAgentPositionUpdate) -> Self {
+        MessageInstance::ChildAgentPositionUpdate(msg)
+    }
+}
+
+impl From<ChildAgentDying> for MessageInstance {
+    fn from(msg: ChildAgentDying) -> Self {
+        MessageInstance::ChildAgentDying(msg)
+    }
+}
+
+impl From<ChildAgentUnknown> for MessageInstance {
+    fn from(msg: ChildAgentUnknown) -> Self {
+        MessageInstance::ChildAgentUnknown(msg)
+    }
+}
+
+impl From<AtomicPassObject> for MessageInstance {
+    fn from(msg: AtomicPassObject) -> Self {
+        MessageInstance::AtomicPassObject(msg)
+    }
+}
+
+impl From<KillChildAgents> for MessageInstance {
+    fn from(msg: KillChildAgents) -> Self {
+        MessageInstance::KillChildAgents(msg)
+    }
+}
+
+impl From<GetScriptRunning> for MessageInstance {
+    fn from(msg: GetScriptRunning) -> Self {
+        MessageInstance::GetScriptRunning(msg)
+    }
+}
+
+impl From<ScriptRunningReply> for MessageInstance {
+    fn from(msg: ScriptRunningReply) -> Self {
+        MessageInstance::ScriptRunningReply(msg)
+    }
+}
+
+impl From<SetScriptRunning> for MessageInstance {
+    fn from(msg: SetScriptRunning) -> Self {
+        MessageInstance::SetScriptRunning(msg)
+    }
+}
+
+impl From<ScriptReset> for MessageInstance {
+    fn from(msg: ScriptReset) -> Self {
+        MessageInstance::ScriptReset(msg)
+    }
+}
+
+impl From<ScriptSensorRequest> for MessageInstance {
+    fn from(msg: ScriptSensorRequest) -> Self {
+        MessageInstance::ScriptSensorRequest(msg)
+    }
+}
+
+impl From<ScriptSensorReply> for MessageInstance {
+    fn from(msg: ScriptSensorReply) -> Self {
+        MessageInstance::ScriptSensorReply(msg)
+    }
+}
+
+impl From<CompleteAgentMovement> for MessageInstance {
+    fn from(msg: CompleteAgentMovement) -> Self {
+        MessageInstance::CompleteAgentMovement(msg)
+    }
+}
+
+impl From<AgentMovementComplete> for MessageInstance {
+    fn from(msg: AgentMovementComplete) -> Self {
+        MessageInstance::AgentMovementComplete(msg)
+    }
+}
+
+impl From<DataServerLogout> for MessageInstance {
+    fn from(msg: DataServerLogout) -> Self {
+        MessageInstance::DataServerLogout(msg)
+    }
+}
+
+impl From<LogoutRequest> for MessageInstance {
+    fn from(msg: LogoutRequest) -> Self {
+        MessageInstance::LogoutRequest(msg)
+    }
+}
+
+impl From<LogoutReply> for MessageInstance {
+    fn from(msg: LogoutReply) -> Self {
+        MessageInstance::LogoutReply(msg)
+    }
+}
+
+impl From<ImprovedInstantMessage> for MessageInstance {
+    fn from(msg: ImprovedInstantMessage) -> Self {
+        MessageInstance::ImprovedInstantMessage(msg)
+    }
+}
+
+impl From<RetrieveInstantMessages> for MessageInstance {
+    fn from(msg: RetrieveInstantMessages) -> Self {
+        MessageInstance::RetrieveInstantMessages(msg)
+    }
+}
+
+impl From<FindAgent> for MessageInstance {
+    fn from(msg: FindAgent) -> Self {
+        MessageInstance::FindAgent(msg)
+    }
+}
+
+impl From<RequestGodlikePowers> for MessageInstance {
+    fn from(msg: RequestGodlikePowers) -> Self {
+        MessageInstance::RequestGodlikePowers(msg)
+    }
+}
+
+impl From<GrantGodlikePowers> for MessageInstance {
+    fn from(msg: GrantGodlikePowers) -> Self {
+        MessageInstance::GrantGodlikePowers(msg)
+    }
+}
+
+impl From<GodlikeMessage> for MessageInstance {
+    fn from(msg: GodlikeMessage) -> Self {
+        MessageInstance::GodlikeMessage(msg)
+    }
+}
+
+impl From<EstateOwnerMessage> for MessageInstance {
+    fn from(msg: EstateOwnerMessage) -> Self {
+        MessageInstance::EstateOwnerMessage(msg)
+    }
+}
+
+impl From<GenericMessage> for MessageInstance {
+    fn from(msg: GenericMessage) -> Self {
+        MessageInstance::GenericMessage(msg)
+    }
+}
+
+impl From<MuteListRequest> for MessageInstance {
+    fn from(msg: MuteListRequest) -> Self {
+        MessageInstance::MuteListRequest(msg)
+    }
+}
+
+impl From<UpdateMuteListEntry> for MessageInstance {
+    fn from(msg: UpdateMuteListEntry) -> Self {
+        MessageInstance::UpdateMuteListEntry(msg)
+    }
+}
+
+impl From<RemoveMuteListEntry> for MessageInstance {
+    fn from(msg: RemoveMuteListEntry) -> Self {
+        MessageInstance::RemoveMuteListEntry(msg)
+    }
+}
+
+impl From<CopyInventoryFromNotecard> for MessageInstance {
+    fn from(msg: CopyInventoryFromNotecard) -> Self {
+        MessageInstance::CopyInventoryFromNotecard(msg)
+    }
+}
+
+impl From<UpdateInventoryItem> for MessageInstance {
+    fn from(msg: UpdateInventoryItem) -> Self {
+        MessageInstance::UpdateInventoryItem(msg)
+    }
+}
+
+impl From<UpdateCreateInventoryItem> for MessageInstance {
+    fn from(msg: UpdateCreateInventoryItem) -> Self {
+        MessageInstance::UpdateCreateInventoryItem(msg)
+    }
+}
+
+impl From<MoveInventoryItem> for MessageInstance {
+    fn from(msg: MoveInventoryItem) -> Self {
+        MessageInstance::MoveInventoryItem(msg)
+    }
+}
+
+impl From<CopyInventoryItem> for MessageInstance {
+    fn from(msg: CopyInventoryItem) -> Self {
+        MessageInstance::CopyInventoryItem(msg)
+    }
+}
+
+impl From<RemoveInventoryItem> for MessageInstance {
+    fn from(msg: RemoveInventoryItem) -> Self {
+        MessageInstance::RemoveInventoryItem(msg)
+    }
+}
+
+impl From<ChangeInventoryItemFlags> for MessageInstance {
+    fn from(msg: ChangeInventoryItemFlags) -> Self {
+        MessageInstance::ChangeInventoryItemFlags(msg)
+    }
+}
+
+impl From<SaveAssetIntoInventory> for MessageInstance {
+    fn from(msg: SaveAssetIntoInventory) -> Self {
+        MessageInstance::SaveAssetIntoInventory(msg)
+    }
+}
+
+impl From<CreateInventoryFolder> for MessageInstance {
+    fn from(msg: CreateInventoryFolder) -> Self {
+        MessageInstance::CreateInventoryFolder(msg)
+    }
+}
+
+impl From<UpdateInventoryFolder> for MessageInstance {
+    fn from(msg: UpdateInventoryFolder) -> Self {
+        MessageInstance::UpdateInventoryFolder(msg)
+    }
+}
+
+impl From<MoveInventoryFolder> for MessageInstance {
+    fn from(msg: MoveInventoryFolder) -> Self {
+        MessageInstance::MoveInventoryFolder(msg)
+    }
+}
+
+impl From<RemoveInventoryFolder> for MessageInstance {
+    fn from(msg: RemoveInventoryFolder) -> Self {
+        MessageInstance::RemoveInventoryFolder(msg)
+    }
+}
+
+impl From<FetchInventoryDescendents> for MessageInstance {
+    fn from(msg: FetchInventoryDescendents) -> Self {
+        MessageInstance::FetchInventoryDescendents(msg)
+    }
+}
+
+impl From<InventoryDescendents> for MessageInstance {
+    fn from(msg: InventoryDescendents) -> Self {
+        MessageInstance::InventoryDescendents(msg)
+    }
+}
+
+impl From<FetchInventory> for MessageInstance {
+    fn from(msg: FetchInventory) -> Self {
+        MessageInstance::FetchInventory(msg)
+    }
+}
+
+impl From<FetchInventoryReply> for MessageInstance {
+    fn from(msg: FetchInventoryReply) -> Self {
+        MessageInstance::FetchInventoryReply(msg)
+    }
+}
+
+impl From<BulkUpdateInventory> for MessageInstance {
+    fn from(msg: BulkUpdateInventory) -> Self {
+        MessageInstance::BulkUpdateInventory(msg)
+    }
+}
+
+impl From<RequestInventoryAsset> for MessageInstance {
+    fn from(msg: RequestInventoryAsset) -> Self {
+        MessageInstance::RequestInventoryAsset(msg)
+    }
+}
+
+impl From<InventoryAssetResponse> for MessageInstance {
+    fn from(msg: InventoryAssetResponse) -> Self {
+        MessageInstance::InventoryAssetResponse(msg)
+    }
+}
+
+impl From<RemoveInventoryObjects> for MessageInstance {
+    fn from(msg: RemoveInventoryObjects) -> Self {
+        MessageInstance::RemoveInventoryObjects(msg)
+    }
+}
+
+impl From<PurgeInventoryDescendents> for MessageInstance {
+    fn from(msg: PurgeInventoryDescendents) -> Self {
+        MessageInstance::PurgeInventoryDescendents(msg)
+    }
+}
+
+impl From<UpdateTaskInventory> for MessageInstance {
+    fn from(msg: UpdateTaskInventory) -> Self {
+        MessageInstance::UpdateTaskInventory(msg)
+    }
+}
+
+impl From<RemoveTaskInventory> for MessageInstance {
+    fn from(msg: RemoveTaskInventory) -> Self {
+        MessageInstance::RemoveTaskInventory(msg)
+    }
+}
+
+impl From<MoveTaskInventory> for MessageInstance {
+    fn from(msg: MoveTaskInventory) -> Self {
+        MessageInstance::MoveTaskInventory(msg)
+    }
+}
+
+impl From<RequestTaskInventory> for MessageInstance {
+    fn from(msg: RequestTaskInventory) -> Self {
+        MessageInstance::RequestTaskInventory(msg)
+    }
+}
+
+impl From<ReplyTaskInventory> for MessageInstance {
+    fn from(msg: ReplyTaskInventory) -> Self {
+        MessageInstance::ReplyTaskInventory(msg)
+    }
+}
+
+impl From<DeRezObject> for MessageInstance {
+    fn from(msg: DeRezObject) -> Self {
+        MessageInstance::DeRezObject(msg)
+    }
+}
+
+impl From<DeRezAck> for MessageInstance {
+    fn from(msg: DeRezAck) -> Self {
+        MessageInstance::DeRezAck(msg)
+    }
+}
+
+impl From<RezObject> for MessageInstance {
+    fn from(msg: RezObject) -> Self {
+        MessageInstance::RezObject(msg)
+    }
+}
+
+impl From<RezObjectFromNotecard> for MessageInstance {
+    fn from(msg: RezObjectFromNotecard) -> Self {
+        MessageInstance::RezObjectFromNotecard(msg)
+    }
+}
+
+impl From<TransferInventory> for MessageInstance {
+    fn from(msg: TransferInventory) -> Self {
+        MessageInstance::TransferInventory(msg)
+    }
+}
+
+impl From<TransferInventoryAck> for MessageInstance {
+    fn from(msg: TransferInventoryAck) -> Self {
+        MessageInstance::TransferInventoryAck(msg)
+    }
+}
+
+impl From<AcceptFriendship> for MessageInstance {
+    fn from(msg: AcceptFriendship) -> Self {
+        MessageInstance::AcceptFriendship(msg)
+    }
+}
+
+impl From<DeclineFriendship> for MessageInstance {
+    fn from(msg: DeclineFriendship) -> Self {
+        MessageInstance::DeclineFriendship(msg)
+    }
+}
+
+impl From<FormFriendship> for MessageInstance {
+    fn from(msg: FormFriendship) -> Self {
+        MessageInstance::FormFriendship(msg)
+    }
+}
+
+impl From<TerminateFriendship> for MessageInstance {
+    fn from(msg: TerminateFriendship) -> Self {
+        MessageInstance::TerminateFriendship(msg)
+    }
+}
+
+impl From<OfferCallingCard> for MessageInstance {
+    fn from(msg: OfferCallingCard) -> Self {
+        MessageInstance::OfferCallingCard(msg)
+    }
+}
+
+impl From<AcceptCallingCard> for MessageInstance {
+    fn from(msg: AcceptCallingCard) -> Self {
+        MessageInstance::AcceptCallingCard(msg)
+    }
+}
+
+impl From<DeclineCallingCard> for MessageInstance {
+    fn from(msg: DeclineCallingCard) -> Self {
+        MessageInstance::DeclineCallingCard(msg)
+    }
+}
+
+impl From<RezScript> for MessageInstance {
+    fn from(msg: RezScript) -> Self {
+        MessageInstance::RezScript(msg)
+    }
+}
+
+impl From<CreateInventoryItem> for MessageInstance {
+    fn from(msg: CreateInventoryItem) -> Self {
+        MessageInstance::CreateInventoryItem(msg)
+    }
+}
+
+impl From<CreateLandmarkForEvent> for MessageInstance {
+    fn from(msg: CreateLandmarkForEvent) -> Self {
+        MessageInstance::CreateLandmarkForEvent(msg)
+    }
+}
+
+impl From<EventLocationRequest> for MessageInstance {
+    fn from(msg: EventLocationRequest) -> Self {
+        MessageInstance::EventLocationRequest(msg)
+    }
+}
+
+impl From<EventLocationReply> for MessageInstance {
+    fn from(msg: EventLocationReply) -> Self {
+        MessageInstance::EventLocationReply(msg)
+    }
+}
+
+impl From<RegionHandleRequest> for MessageInstance {
+    fn from(msg: RegionHandleRequest) -> Self {
+        MessageInstance::RegionHandleRequest(msg)
+    }
+}
+
+impl From<RegionIDAndHandleReply> for MessageInstance {
+    fn from(msg: RegionIDAndHandleReply) -> Self {
+        MessageInstance::RegionIDAndHandleReply(msg)
+    }
+}
+
+impl From<MoneyTransferRequest> for MessageInstance {
+    fn from(msg: MoneyTransferRequest) -> Self {
+        MessageInstance::MoneyTransferRequest(msg)
+    }
+}
+
+impl From<MoneyTransferBackend> for MessageInstance {
+    fn from(msg: MoneyTransferBackend) -> Self {
+        MessageInstance::MoneyTransferBackend(msg)
+    }
+}
+
+impl From<MoneyBalanceRequest> for MessageInstance {
+    fn from(msg: MoneyBalanceRequest) -> Self {
+        MessageInstance::MoneyBalanceRequest(msg)
+    }
+}
+
+impl From<MoneyBalanceReply> for MessageInstance {
+    fn from(msg: MoneyBalanceReply) -> Self {
+        MessageInstance::MoneyBalanceReply(msg)
+    }
+}
+
+impl From<RoutedMoneyBalanceReply> for MessageInstance {
+    fn from(msg: RoutedMoneyBalanceReply) -> Self {
+        MessageInstance::RoutedMoneyBalanceReply(msg)
+    }
+}
+
+impl From<ActivateGestures> for MessageInstance {
+    fn from(msg: ActivateGestures) -> Self {
+        MessageInstance::ActivateGestures(msg)
+    }
+}
+
+impl From<DeactivateGestures> for MessageInstance {
+    fn from(msg: DeactivateGestures) -> Self {
+        MessageInstance::DeactivateGestures(msg)
+    }
+}
+
+impl From<MuteListUpdate> for MessageInstance {
+    fn from(msg: MuteListUpdate) -> Self {
+        MessageInstance::MuteListUpdate(msg)
+    }
+}
+
+impl From<UseCachedMuteList> for MessageInstance {
+    fn from(msg: UseCachedMuteList) -> Self {
+        MessageInstance::UseCachedMuteList(msg)
+    }
+}
+
+impl From<GrantUserRights> for MessageInstance {
+    fn from(msg: GrantUserRights) -> Self {
+        MessageInstance::GrantUserRights(msg)
+    }
+}
+
+impl From<ChangeUserRights> for MessageInstance {
+    fn from(msg: ChangeUserRights) -> Self {
+        MessageInstance::ChangeUserRights(msg)
+    }
+}
+
+impl From<OnlineNotification> for MessageInstance {
+    fn from(msg: OnlineNotification) -> Self {
+        MessageInstance::OnlineNotification(msg)
+    }
+}
+
+impl From<OfflineNotification> for MessageInstance {
+    fn from(msg: OfflineNotification) -> Self {
+        MessageInstance::OfflineNotification(msg)
+    }
+}
+
+impl From<SetStartLocationRequest> for MessageInstance {
+    fn from(msg: SetStartLocationRequest) -> Self {
+        MessageInstance::SetStartLocationRequest(msg)
+    }
+}
+
+impl From<SetStartLocation> for MessageInstance {
+    fn from(msg: SetStartLocation) -> Self {
+        MessageInstance::SetStartLocation(msg)
+    }
+}
+
+impl From<NetTest> for MessageInstance {
+    fn from(msg: NetTest) -> Self {
+        MessageInstance::NetTest(msg)
+    }
+}
+
+impl From<SetCPURatio> for MessageInstance {
+    fn from(msg: SetCPURatio) -> Self {
+        MessageInstance::SetCPURatio(msg)
+    }
+}
+
+impl From<SimCrashed> for MessageInstance {
+    fn from(msg: SimCrashed) -> Self {
+        MessageInstance::SimCrashed(msg)
+    }
+}
+
+impl From<NameValuePair> for MessageInstance {
+    fn from(msg: NameValuePair) -> Self {
+        MessageInstance::NameValuePair(msg)
+    }
+}
+
+impl From<RemoveNameValuePair> for MessageInstance {
+    fn from(msg: RemoveNameValuePair) -> Self {
+        MessageInstance::RemoveNameValuePair(msg)
+    }
+}
+
+impl From<UpdateAttachment> for MessageInstance {
+    fn from(msg: UpdateAttachment) -> Self {
+        MessageInstance::UpdateAttachment(msg)
+    }
+}
+
+impl From<RemoveAttachment> for MessageInstance {
+    fn from(msg: RemoveAttachment) -> Self {
+        MessageInstance::RemoveAttachment(msg)
+    }
+}
+
+impl From<SoundTrigger> for MessageInstance {
+    fn from(msg: SoundTrigger) -> Self {
+        MessageInstance::SoundTrigger(msg)
+    }
+}
+
+impl From<AttachedSound> for MessageInstance {
+    fn from(msg: AttachedSound) -> Self {
+        MessageInstance::AttachedSound(msg)
+    }
+}
+
+impl From<AttachedSoundGainChange> for MessageInstance {
+    fn from(msg: AttachedSoundGainChange) -> Self {
+        MessageInstance::AttachedSoundGainChange(msg)
+    }
+}
+
+impl From<PreloadSound> for MessageInstance {
+    fn from(msg: PreloadSound) -> Self {
+        MessageInstance::PreloadSound(msg)
+    }
+}
+
+impl From<AssetUploadRequest> for MessageInstance {
+    fn from(msg: AssetUploadRequest) -> Self {
+        MessageInstance::AssetUploadRequest(msg)
+    }
+}
+
+impl From<AssetUploadComplete> for MessageInstance {
+    fn from(msg: AssetUploadComplete) -> Self {
+        MessageInstance::AssetUploadComplete(msg)
+    }
+}
+
+impl From<EmailMessageRequest> for MessageInstance {
+    fn from(msg: EmailMessageRequest) -> Self {
+        MessageInstance::EmailMessageRequest(msg)
+    }
+}
+
+impl From<EmailMessageReply> for MessageInstance {
+    fn from(msg: EmailMessageReply) -> Self {
+        MessageInstance::EmailMessageReply(msg)
+    }
+}
+
+impl From<InternalScriptMail> for MessageInstance {
+    fn from(msg: InternalScriptMail) -> Self {
+        MessageInstance::InternalScriptMail(msg)
+    }
+}
+
+impl From<ScriptDataRequest> for MessageInstance {
+    fn from(msg: ScriptDataRequest) -> Self {
+        MessageInstance::ScriptDataRequest(msg)
+    }
+}
+
+impl From<ScriptDataReply> for MessageInstance {
+    fn from(msg: ScriptDataReply) -> Self {
+        MessageInstance::ScriptDataReply(msg)
+    }
+}
+
+impl From<CreateGroupRequest> for MessageInstance {
+    fn from(msg: CreateGroupRequest) -> Self {
+        MessageInstance::CreateGroupRequest(msg)
+    }
+}
+
+impl From<CreateGroupReply> for MessageInstance {
+    fn from(msg: CreateGroupReply) -> Self {
+        MessageInstance::CreateGroupReply(msg)
+    }
+}
+
+impl From<UpdateGroupInfo> for MessageInstance {
+    fn from(msg: UpdateGroupInfo) -> Self {
+        MessageInstance::UpdateGroupInfo(msg)
+    }
+}
+
+impl From<GroupRoleChanges> for MessageInstance {
+    fn from(msg: GroupRoleChanges) -> Self {
+        MessageInstance::GroupRoleChanges(msg)
+    }
+}
+
+impl From<JoinGroupRequest> for MessageInstance {
+    fn from(msg: JoinGroupRequest) -> Self {
+        MessageInstance::JoinGroupRequest(msg)
+    }
+}
+
+impl From<JoinGroupReply> for MessageInstance {
+    fn from(msg: JoinGroupReply) -> Self {
+        MessageInstance::JoinGroupReply(msg)
+    }
+}
+
+impl From<EjectGroupMemberRequest> for MessageInstance {
+    fn from(msg: EjectGroupMemberRequest) -> Self {
+        MessageInstance::EjectGroupMemberRequest(msg)
+    }
+}
+
+impl From<EjectGroupMemberReply> for MessageInstance {
+    fn from(msg: EjectGroupMemberReply) -> Self {
+        MessageInstance::EjectGroupMemberReply(msg)
+    }
+}
+
+impl From<LeaveGroupRequest> for MessageInstance {
+    fn from(msg: LeaveGroupRequest) -> Self {
+        MessageInstance::LeaveGroupRequest(msg)
+    }
+}
+
+impl From<LeaveGroupReply> for MessageInstance {
+    fn from(msg: LeaveGroupReply) -> Self {
+        MessageInstance::LeaveGroupReply(msg)
+    }
+}
+
+impl From<InviteGroupRequest> for MessageInstance {
+    fn from(msg: InviteGroupRequest) -> Self {
+        MessageInstance::InviteGroupRequest(msg)
+    }
+}
+
+impl From<InviteGroupResponse> for MessageInstance {
+    fn from(msg: InviteGroupResponse) -> Self {
+        MessageInstance::InviteGroupResponse(msg)
+    }
+}
+
+impl From<GroupProfileRequest> for MessageInstance {
+    fn from(msg: GroupProfileRequest) -> Self {
+        MessageInstance::GroupProfileRequest(msg)
+    }
+}
+
+impl From<GroupProfileReply> for MessageInstance {
+    fn from(msg: GroupProfileReply) -> Self {
+        MessageInstance::GroupProfileReply(msg)
+    }
+}
+
+impl From<GroupAccountSummaryRequest> for MessageInstance {
+    fn from(msg: GroupAccountSummaryRequest) -> Self {
+        MessageInstance::GroupAccountSummaryRequest(msg)
+    }
+}
+
+impl From<GroupAccountSummaryReply> for MessageInstance {
+    fn from(msg: GroupAccountSummaryReply) -> Self {
+        MessageInstance::GroupAccountSummaryReply(msg)
+    }
+}
+
+impl From<GroupAccountDetailsRequest> for MessageInstance {
+    fn from(msg: GroupAccountDetailsRequest) -> Self {
+        MessageInstance::GroupAccountDetailsRequest(msg)
+    }
+}
+
+impl From<GroupAccountDetailsReply> for MessageInstance {
+    fn from(msg: GroupAccountDetailsReply) -> Self {
+        MessageInstance::GroupAccountDetailsReply(msg)
+    }
+}
+
+impl From<GroupAccountTransactionsRequest> for MessageInstance {
+    fn from(msg: GroupAccountTransactionsRequest) -> Self {
+        MessageInstance::GroupAccountTransactionsRequest(msg)
+    }
+}
+
+impl From<GroupAccountTransactionsReply> for MessageInstance {
+    fn from(msg: GroupAccountTransactionsReply) -> Self {
+        MessageInstance::GroupAccountTransactionsReply(msg)
+    }
+}
+
+impl From<GroupActiveProposalsRequest> for MessageInstance {
+    fn from(msg: GroupActiveProposalsRequest) -> Self {
+        MessageInstance::GroupActiveProposalsRequest(msg)
+    }
+}
+
+impl From<GroupActiveProposalItemReply> for MessageInstance {
+    fn from(msg: GroupActiveProposalItemReply) -> Self {
+        MessageInstance::GroupActiveProposalItemReply(msg)
+    }
+}
+
+impl From<GroupVoteHistoryRequest> for MessageInstance {
+    fn from(msg: GroupVoteHistoryRequest) -> Self {
+        MessageInstance::GroupVoteHistoryRequest(msg)
+    }
+}
+
+impl From<GroupVoteHistoryItemReply> for MessageInstance {
+    fn from(msg: GroupVoteHistoryItemReply) -> Self {
+        MessageInstance::GroupVoteHistoryItemReply(msg)
+    }
+}
+
+impl From<StartGroupProposal> for MessageInstance {
+    fn from(msg: StartGroupProposal) -> Self {
+        MessageInstance::StartGroupProposal(msg)
+    }
+}
+
+impl From<GroupProposalBallot> for MessageInstance {
+    fn from(msg: GroupProposalBallot) -> Self {
+        MessageInstance::GroupProposalBallot(msg)
+    }
+}
+
+impl From<TallyVotes> for MessageInstance {
+    fn from(msg: TallyVotes) -> Self {
+        MessageInstance::TallyVotes(msg)
+    }
+}
+
+impl From<GroupMembersRequest> for MessageInstance {
+    fn from(msg: GroupMembersRequest) -> Self {
+        MessageInstance::GroupMembersRequest(msg)
+    }
+}
+
+impl From<GroupMembersReply> for MessageInstance {
+    fn from(msg: GroupMembersReply) -> Self {
+        MessageInstance::GroupMembersReply(msg)
+    }
+}
+
+impl From<ActivateGroup> for MessageInstance {
+    fn from(msg: ActivateGroup) -> Self {
+        MessageInstance::ActivateGroup(msg)
+    }
+}
+
+impl From<SetGroupContribution> for MessageInstance {
+    fn from(msg: SetGroupContribution) -> Self {
+        MessageInstance::SetGroupContribution(msg)
+    }
+}
+
+impl From<SetGroupAcceptNotices> for MessageInstance {
+    fn from(msg: SetGroupAcceptNotices) -> Self {
+        MessageInstance::SetGroupAcceptNotices(msg)
+    }
+}
+
+impl From<GroupRoleDataRequest> for MessageInstance {
+    fn from(msg: GroupRoleDataRequest) -> Self {
+        MessageInstance::GroupRoleDataRequest(msg)
+    }
+}
+
+impl From<GroupRoleDataReply> for MessageInstance {
+    fn from(msg: GroupRoleDataReply) -> Self {
+        MessageInstance::GroupRoleDataReply(msg)
+    }
+}
+
+impl From<GroupRoleMembersRequest> for MessageInstance {
+    fn from(msg: GroupRoleMembersRequest) -> Self {
+        MessageInstance::GroupRoleMembersRequest(msg)
+    }
+}
+
+impl From<GroupRoleMembersReply> for MessageInstance {
+    fn from(msg: GroupRoleMembersReply) -> Self {
+        MessageInstance::GroupRoleMembersReply(msg)
+    }
+}
+
+impl From<GroupTitlesRequest> for MessageInstance {
+    fn from(msg: GroupTitlesRequest) -> Self {
+        MessageInstance::GroupTitlesRequest(msg)
+    }
+}
+
+impl From<GroupTitlesReply> for MessageInstance {
+    fn from(msg: GroupTitlesReply) -> Self {
+        MessageInstance::GroupTitlesReply(msg)
+    }
+}
+
+impl From<GroupTitleUpdate> for MessageInstance {
+    fn from(msg: GroupTitleUpdate) -> Self {
+        MessageInstance::GroupTitleUpdate(msg)
+    }
+}
+
+impl From<GroupRoleUpdate> for MessageInstance {
+    fn from(msg: GroupRoleUpdate) -> Self {
+        MessageInstance::GroupRoleUpdate(msg)
+    }
+}
+
+impl From<LiveHelpGroupRequest> for MessageInstance {
+    fn from(msg: LiveHelpGroupRequest) -> Self {
+        MessageInstance::LiveHelpGroupRequest(msg)
+    }
+}
+
+impl From<LiveHelpGroupReply> for MessageInstance {
+    fn from(msg: LiveHelpGroupReply) -> Self {
+        MessageInstance::LiveHelpGroupReply(msg)
+    }
+}
+
+impl From<AgentWearablesRequest> for MessageInstance {
+    fn from(msg: AgentWearablesRequest) -> Self {
+        MessageInstance::AgentWearablesRequest(msg)
+    }
+}
+
+impl From<AgentWearablesUpdate> for MessageInstance {
+    fn from(msg: AgentWearablesUpdate) -> Self {
+        MessageInstance::AgentWearablesUpdate(msg)
+    }
+}
+
+impl From<AgentIsNowWearing> for MessageInstance {
+    fn from(msg: AgentIsNowWearing) -> Self {
+        MessageInstance::AgentIsNowWearing(msg)
+    }
+}
+
+impl From<AgentCachedTexture> for MessageInstance {
+    fn from(msg: AgentCachedTexture) -> Self {
+        MessageInstance::AgentCachedTexture(msg)
+    }
+}
+
+impl From<AgentCachedTextureResponse> for MessageInstance {
+    fn from(msg: AgentCachedTextureResponse) -> Self {
+        MessageInstance::AgentCachedTextureResponse(msg)
+    }
+}
+
+impl From<AgentDataUpdateRequest> for MessageInstance {
+    fn from(msg: AgentDataUpdateRequest) -> Self {
+        MessageInstance::AgentDataUpdateRequest(msg)
+    }
+}
+
+impl From<AgentDataUpdate> for MessageInstance {
+    fn from(msg: AgentDataUpdate) -> Self {
+        MessageInstance::AgentDataUpdate(msg)
+    }
+}
+
+impl From<GroupDataUpdate> for MessageInstance {
+    fn from(msg: GroupDataUpdate) -> Self {
+        MessageInstance::GroupDataUpdate(msg)
+    }
+}
+
+impl From<AgentGroupDataUpdate> for MessageInstance {
+    fn from(msg: AgentGroupDataUpdate) -> Self {
+        MessageInstance::AgentGroupDataUpdate(msg)
+    }
+}
+
+impl From<AgentDropGroup> for MessageInstance {
+    fn from(msg: AgentDropGroup) -> Self {
+        MessageInstance::AgentDropGroup(msg)
+    }
+}
+
+impl From<LogTextMessage> for MessageInstance {
+    fn from(msg: LogTextMessage) -> Self {
+        MessageInstance::LogTextMessage(msg)
+    }
+}
+
+impl From<ViewerEffect> for MessageInstance {
+    fn from(msg: ViewerEffect) -> Self {
+        MessageInstance::ViewerEffect(msg)
+    }
+}
+
+impl From<CreateTrustedCircuit> for MessageInstance {
+    fn from(msg: CreateTrustedCircuit) -> Self {
+        MessageInstance::CreateTrustedCircuit(msg)
+    }
+}
+
+impl From<DenyTrustedCircuit> for MessageInstance {
+    fn from(msg: DenyTrustedCircuit) -> Self {
+        MessageInstance::DenyTrustedCircuit(msg)
+    }
+}
+
+impl From<RequestTrustedCircuit> for MessageInstance {
+    fn from(msg: RequestTrustedCircuit) -> Self {
+        MessageInstance::RequestTrustedCircuit(msg)
+    }
+}
+
+impl From<RezSingleAttachmentFromInv> for MessageInstance {
+    fn from(msg: RezSingleAttachmentFromInv) -> Self {
+        MessageInstance::RezSingleAttachmentFromInv(msg)
+    }
+}
+
+impl From<RezMultipleAttachmentsFromInv> for MessageInstance {
+    fn from(msg: RezMultipleAttachmentsFromInv) -> Self {
+        MessageInstance::RezMultipleAttachmentsFromInv(msg)
+    }
+}
+
+impl From<DetachAttachmentIntoInv> for MessageInstance {
+    fn from(msg: DetachAttachmentIntoInv) -> Self {
+        MessageInstance::DetachAttachmentIntoInv(msg)
+    }
+}
+
+impl From<CreateNewOutfitAttachments> for MessageInstance {
+    fn from(msg: CreateNewOutfitAttachments) -> Self {
+        MessageInstance::CreateNewOutfitAttachments(msg)
+    }
+}
+
+impl From<UserInfoRequest> for MessageInstance {
+    fn from(msg: UserInfoRequest) -> Self {
+        MessageInstance::UserInfoRequest(msg)
+    }
+}
+
+impl From<UserInfoReply> for MessageInstance {
+    fn from(msg: UserInfoReply) -> Self {
+        MessageInstance::UserInfoReply(msg)
+    }
+}
+
+impl From<UpdateUserInfo> for MessageInstance {
+    fn from(msg: UpdateUserInfo) -> Self {
+        MessageInstance::UpdateUserInfo(msg)
+    }
+}
+
+impl From<ParcelRename> for MessageInstance {
+    fn from(msg: ParcelRename) -> Self {
+        MessageInstance::ParcelRename(msg)
+    }
+}
+
+impl From<InitiateDownload> for MessageInstance {
+    fn from(msg: InitiateDownload) -> Self {
+        MessageInstance::InitiateDownload(msg)
+    }
+}
+
+impl From<SystemMessage> for MessageInstance {
+    fn from(msg: SystemMessage) -> Self {
+        MessageInstance::SystemMessage(msg)
+    }
+}
+
+impl From<MapLayerRequest> for MessageInstance {
+    fn from(msg: MapLayerRequest) -> Self {
+        MessageInstance::MapLayerRequest(msg)
+    }
+}
+
+impl From<MapLayerReply> for MessageInstance {
+    fn from(msg: MapLayerReply) -> Self {
+        MessageInstance::MapLayerReply(msg)
+    }
+}
+
+impl From<MapBlockRequest> for MessageInstance {
+    fn from(msg: MapBlockRequest) -> Self {
+        MessageInstance::MapBlockRequest(msg)
+    }
+}
+
+impl From<MapNameRequest> for MessageInstance {
+    fn from(msg: MapNameRequest) -> Self {
+        MessageInstance::MapNameRequest(msg)
+    }
+}
+
+impl From<MapBlockReply> for MessageInstance {
+    fn from(msg: MapBlockReply) -> Self {
+        MessageInstance::MapBlockReply(msg)
+    }
+}
+
+impl From<MapItemRequest> for MessageInstance {
+    fn from(msg: MapItemRequest) -> Self {
+        MessageInstance::MapItemRequest(msg)
+    }
+}
+
+impl From<MapItemReply> for MessageInstance {
+    fn from(msg: MapItemReply) -> Self {
+        MessageInstance::MapItemReply(msg)
+    }
+}
+
+impl From<SendPostcard> for MessageInstance {
+    fn from(msg: SendPostcard) -> Self {
+        MessageInstance::SendPostcard(msg)
+    }
+}
+
+impl From<RpcChannelRequest> for MessageInstance {
+    fn from(msg: RpcChannelRequest) -> Self {
+        MessageInstance::RpcChannelRequest(msg)
+    }
+}
+
+impl From<RpcChannelReply> for MessageInstance {
+    fn from(msg: RpcChannelReply) -> Self {
+        MessageInstance::RpcChannelReply(msg)
+    }
+}
+
+impl From<RpcScriptRequestInbound> for MessageInstance {
+    fn from(msg: RpcScriptRequestInbound) -> Self {
+        MessageInstance::RpcScriptRequestInbound(msg)
+    }
+}
+
+impl From<RpcScriptRequestInboundForward> for MessageInstance {
+    fn from(msg: RpcScriptRequestInboundForward) -> Self {
+        MessageInstance::RpcScriptRequestInboundForward(msg)
+    }
+}
+
+impl From<RpcScriptReplyInbound> for MessageInstance {
+    fn from(msg: RpcScriptReplyInbound) -> Self {
+        MessageInstance::RpcScriptReplyInbound(msg)
+    }
+}
+
+impl From<ScriptMailRegistration> for MessageInstance {
+    fn from(msg: ScriptMailRegistration) -> Self {
+        MessageInstance::ScriptMailRegistration(msg)
+    }
+}
+
+impl From<ParcelMediaCommandMessage> for MessageInstance {
+    fn from(msg: ParcelMediaCommandMessage) -> Self {
+        MessageInstance::ParcelMediaCommandMessage(msg)
+    }
+}
+
+impl From<ParcelMediaUpdate> for MessageInstance {
+    fn from(msg: ParcelMediaUpdate) -> Self {
+        MessageInstance::ParcelMediaUpdate(msg)
+    }
+}
+
+impl From<LandStatRequest> for MessageInstance {
+    fn from(msg: LandStatRequest) -> Self {
+        MessageInstance::LandStatRequest(msg)
+    }
+}
+
+impl From<LandStatReply> for MessageInstance {
+    fn from(msg: LandStatReply) -> Self {
+        MessageInstance::LandStatReply(msg)
+    }
+}
+
+impl From<Error> for MessageInstance {
+    fn from(msg: Error) -> Self {
+        MessageInstance::Error(msg)
+    }
+}
+
+impl From<ObjectIncludeInSearch> for MessageInstance {
+    fn from(msg: ObjectIncludeInSearch) -> Self {
+        MessageInstance::ObjectIncludeInSearch(msg)
+    }
+}
+
+impl From<RezRestoreToWorld> for MessageInstance {
+    fn from(msg: RezRestoreToWorld) -> Self {
+        MessageInstance::RezRestoreToWorld(msg)
+    }
+}
+
+impl From<LinkInventoryItem> for MessageInstance {
+    fn from(msg: LinkInventoryItem) -> Self {
+        MessageInstance::LinkInventoryItem(msg)
+    }
+}
+
+
 
 // Block IMPLEMENTATIONS
 

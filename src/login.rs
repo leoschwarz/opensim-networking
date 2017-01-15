@@ -8,6 +8,7 @@ use std::net::Ipv4Addr as IpAddr;
 use std::str::FromStr;
 use Uuid;
 
+#[derive(Debug)]
 pub struct LoginRequest {
     /// User first name
     pub first_name: String,
@@ -19,6 +20,7 @@ pub struct LoginRequest {
     pub start: String,
 }
 
+/// Hash a plain text password into the format required for login.
 pub fn hash_password(password_raw: &str) -> String {
     // Hash the password.
     let mut digest = Md5::new();

@@ -11,7 +11,11 @@ mio = "0.6"
 nalgebra = "0.10.1"
 regex = "0.1.80"
 rust-crypto = "0.2.36"
+tokio-core = "0.1"
 url = "1.2.3"
 uuid = "0.3.1"
 xmlrpc = "0.3.1"
+
+[dev-dependencies]
+toml = "0.2"
 

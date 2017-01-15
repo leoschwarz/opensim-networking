@@ -1,6 +1,6 @@
 use {Ip4Addr, IpPort, Uuid};
 
-use messages::{Message, UseCircuitCode, UseCircuitCode_CircuitCode, WriteMessageResult};
+use messages::{Message, MessageInstance, UseCircuitCode, UseCircuitCode_CircuitCode, WriteMessageResult};
 use login::LoginResponse;
 
 use byteorder::{LittleEndian, BigEndian, WriteBytesExt};
@@ -24,16 +24,20 @@ bitflags! {
 }
 
 // TODO: Figure out if packages with multiple messages in the body are also possible.
-pub struct Packet<M: Message> {
-    message: M,
+pub struct Packet {
+    message: MessageInstance,
     flags: PacketFlags,
     sequence_number: u32,
 }
 
-impl<M: Message> Packet<M> {
-    fn new(m: M, seq_number: u32) -> Packet<M> {
+pub enum ReadPacketError {
+
+}
+
+impl Packet {
+    fn new<M: Into<MessageInstance>>(m: M, seq_number: u32) -> Packet {
         Packet {
-            message: m,
+            message: m.into(),
             flags: PacketFlags::empty(),
             sequence_number: seq_number,
         }
@@ -57,6 +61,15 @@ impl<M: Message> Packet<M> {
 
         // Message body
         self.message.write_to(buffer);
+    }
+
+    fn read_from<R: Read>(buffer: &mut R) -> Result<Packet, ReadPacketError> {
+        // Read packet header.
+        let flags = try!(buffer.read_u16::<LittleEndian>());
+        let seq_num = try!(buffer.read_u32::<BigEndian>());
+        try!(buffer.read_u8());
+
+
     }
 
     /// TODO: Optimize this in the future.
@@ -91,6 +104,7 @@ pub struct Circuit {
     sequence_number: u32,
 }
 
+#[derive(Debug)]
 pub enum CircuitInitiationError {
     IO(::std::io::Error),
 }
@@ -102,13 +116,13 @@ impl From<::std::io::Error> for CircuitInitiationError {
 }
 
 impl Circuit {
-    fn initiate(login_res: LoginResponse,
+    pub fn initiate(login_res: LoginResponse,
           /*      local_ip: Ip4Addr,
                 local_port: IpPort*/)
                 -> Result<Circuit, CircuitInitiationError> {
         // Open the sockets.
         //let mut local_socket = try!(UdpSocket::bind((local_ip, local_port)));
-        let mut remote_socket = try!(UdpSocket::bind((login_res.sim_ip, login_res.sim_port)));
+        let remote_socket = try!(UdpSocket::bind((login_res.sim_ip, login_res.sim_port)));
 
         // Use the circuit code.
         let msg = UseCircuitCode {

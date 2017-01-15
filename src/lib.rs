@@ -6,6 +6,7 @@ extern crate hyper;
 extern crate mio;
 extern crate nalgebra;
 extern crate regex;
+extern crate tokio_core;
 extern crate url;
 extern crate uuid;
 extern crate xmlrpc;
@@ -19,7 +20,26 @@ pub type IpPort = u16;
 pub use uuid::Uuid;
 
 pub mod messages;
-//mod parser;
 pub mod login;
-mod circuit;
+pub mod circuit;
 
+
+// TODO move to right place later.
+use tokio_core::net::{UdpSocket, UdpCodec};
+
+pub struct OpensimCodec;
+
+/*
+impl UdpCodec for OpensimCodec {
+    type In = circuit::Packet;
+    type Out = circuit::Packet;
+
+    fn decode(&mut self, src: &SocketAddr, buf: &[u8]) -> Result<Self::In> {
+        // TODO parse the packet using Packet::read_from
+    }
+
+    fn encode(&mut self, msg: Self::Out, buf: &mut Vec<u8>) -> SocketAddr {
+
+    }
+}
+*/
