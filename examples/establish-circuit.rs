@@ -8,7 +8,7 @@ use std::io::prelude::*;
 use std::fs::File;
 
 fn main() {
-    // Read the configuration file.
+/*    // Read the configuration file.
     let mut file = match File::open("establish-circuit.toml") {
         Ok(f) => f,
         Err(_) => {
@@ -48,4 +48,4 @@ fn main() {
         Ok(c) => c
     };
     println!("Established circuit successully.");
-}
+*/}

@@ -21,6 +21,7 @@ pub use uuid::Uuid;
 
 pub mod messages;
 pub mod login;
+pub mod packet;
 pub mod circuit;
 
 
