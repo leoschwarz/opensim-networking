@@ -25,7 +25,7 @@ pub struct Packet {
     message: MessageInstance,
     flags: PacketFlags,
     sequence_number: u32,
-    appended_acks: Option<Vec<u32>>
+    appended_acks: Option<Vec<u32>>,
 }
 
 impl Packet {
@@ -34,7 +34,7 @@ impl Packet {
             message: m.into(),
             flags: PacketFlags::empty(),
             sequence_number: seq_number,
-            appended_acks: None
+            appended_acks: None,
         }
     }
 
@@ -56,7 +56,7 @@ impl Packet {
                 for ack in acks {
                     buffer.write_u32::<BigEndian>(*ack);
                 }
-            },
+            }
             None => {}
         };
     }
@@ -67,15 +67,14 @@ impl Packet {
         let flags = reader.read_u8();
     }
 
-    /*
-    /// TODO: Optimize this in the future.
-    ///       This function will potentially get a lot of use.
-    fn send(&self, socket: &UdpSocket) {
-        let mut buf = Vec::new();
-        self.write_to(&mut buf);
-        socket.send(&buf[..]);
-    }
-    */
+    // TODO: Optimize this in the future.
+    //       This function will potentially get a lot of use.
+    // fn send(&self, socket: &UdpSocket) {
+    // let mut buf = Vec::new();
+    // self.write_to(&mut buf);
+    // socket.send(&buf[..]);
+    // }
+    //
 
     /// Enable the provided flags.
     pub fn enable_flags(&mut self, flags: PacketFlags) {
@@ -99,7 +98,7 @@ struct PacketReader<'a> {
     /// but not all such bytes can be read into the destination buffer.
     /// In that case this variable will be set to the number of zerobytes which are yet pending
     /// to be read on the next invocation of read.
-    pending_zerobytes: u8
+    pending_zerobytes: u8,
 }
 
 impl<'a> PacketReader<'a> {
@@ -108,7 +107,7 @@ impl<'a> PacketReader<'a> {
             buf: buf,
             pointer: 0,
             zerocoding_enabled: false,
-            pending_zerobytes: 0
+            pending_zerobytes: 0,
         }
     }
 
@@ -140,7 +139,10 @@ impl<'a> Read for PacketReader<'a> {
                             self.pending_zerobytes = self.buf[self.pointer + 1];
                             self.pointer += 2;
                         } else {
-                            return Err(::std::io::Error::new(::std::io::ErrorKind::InvalidData, "Zerocoding enabled, but found a zero byte at EOF without repetition quantity."));
+                            return Err(::std::io::Error::new(::std::io::ErrorKind::InvalidData,
+                                                             "Zerocoding enabled, but found a \
+                                                              zero byte at EOF without \
+                                                              repetition quantity."));
                         }
                     } else {
                         buf[read_bytes] = self.buf[self.pointer];
@@ -158,7 +160,7 @@ impl<'a> Read for PacketReader<'a> {
             let bytes = min(requested, available);
 
             // Now read that number of bytes into the buffer.
-            buf[..bytes].copy_from_slice(&self.buf[self.pointer .. self.pointer+bytes]);
+            buf[..bytes].copy_from_slice(&self.buf[self.pointer..self.pointer + bytes]);
             self.pointer += bytes;
 
             // Return success status.
@@ -169,10 +171,10 @@ impl<'a> Read for PacketReader<'a> {
 
 #[test]
 fn read_simple() {
-    let data: [u8;6] = [2, 4, 6, 8, 10, 12];
+    let data: [u8; 6] = [2, 4, 6, 8, 10, 12];
     let mut reader = PacketReader::new(&data);
 
-    let mut buffer: [u8;6] = [0,0,0,0,0,0];
+    let mut buffer: [u8; 6] = [0, 0, 0, 0, 0, 0];
     let bytes = reader.read(&mut buffer).unwrap();
     assert_eq!(bytes, 6);
     assert_eq!(buffer, [2, 4, 6, 8, 10, 12]);
@@ -180,16 +182,16 @@ fn read_simple() {
 
 #[test]
 fn read_in_chunks() {
-    let data: [u8;5] = [2, 4, 6, 8, 10];
+    let data: [u8; 5] = [2, 4, 6, 8, 10];
     let mut reader = PacketReader::new(&data);
 
-    let mut buffer: [u8;2] = [0,0];
+    let mut buffer: [u8; 2] = [0, 0];
     let b1 = reader.read(&mut buffer).unwrap();
     assert_eq!(b1, 2);
-    assert_eq!(buffer, [2,4]);
+    assert_eq!(buffer, [2, 4]);
     let b2 = reader.read(&mut buffer).unwrap();
     assert_eq!(b2, 2);
-    assert_eq!(buffer, [6,8]);
+    assert_eq!(buffer, [6, 8]);
     let b3 = reader.read(&mut buffer).unwrap();
     assert_eq!(b3, 1);
     assert_eq!(buffer, [10, 8]);
@@ -201,10 +203,10 @@ fn read_zerocoded_easy() {
     let mut reader = PacketReader::new(&data);
     reader.zerocoding_enabled = true;
 
-    let mut buffer: [u8; 10] = [1,1,1,1,1,1,1,1,1,1];
+    let mut buffer: [u8; 10] = [1, 1, 1, 1, 1, 1, 1, 1, 1, 1];
     let bytes = reader.read(&mut buffer).unwrap();
     assert_eq!(bytes, 5);
-    assert_eq!(buffer, [0,0,0,0,0,1,1,1,1,1]);
+    assert_eq!(buffer, [0, 0, 0, 0, 0, 1, 1, 1, 1, 1]);
 }
 
 #[test]
@@ -213,14 +215,13 @@ fn read_zerocoded_hard() {
     let mut reader = PacketReader::new(&data);
     reader.zerocoding_enabled = true;
 
-    let mut buffer: [u8; 3] = [1,1,1];
+    let mut buffer: [u8; 3] = [1, 1, 1];
     let b1 = reader.read(&mut buffer).unwrap();
     assert_eq!(b1, 3);
-    assert_eq!(buffer, [0,0,0]);
+    assert_eq!(buffer, [0, 0, 0]);
 
-    buffer = [1,1,1];
+    buffer = [1, 1, 1];
     let b2 = reader.read(&mut buffer).unwrap();
     assert_eq!(b2, 2);
-    assert_eq!(buffer, [0,0,1]);
+    assert_eq!(buffer, [0, 0, 1]);
 }
-
