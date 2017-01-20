@@ -102,6 +102,11 @@ class Message
         @comments = fields[:comments]
     end
 
+    def message_num
+        bs = [id_byte(3), id_byte(2), id_byte(1), id_byte(0)]
+        "0x" + bs.map{|s| s[2..-1]}.join("")
+    end
+
     # Returns a hexadecimal string (with '0x' prefix) of the n-th byte of the id.
     # Bytes are numbered from left to right in the spec, i.e. for High frequency messages
     # there is only byte 0. For Medium byte 0 is "0xff" while there is also byte 1 etc.
@@ -109,15 +114,18 @@ class Message
         @_full_id ||= @id.to_i.to_s(16).rjust(8, "0")
         full = @_full_id
         if @frequency == "High"
-            raise "invalid n: #{n}" if n != 0
-            "0x" + full[6..7]
+            if n == 0
+                "0x" + full[6..7]
+            else
+                "0x00"
+            end
         elsif @frequency == "Medium"
             if n == 0
                 "0xff"
             elsif n == 1
                 "0x"+full[6..7]
             else
-                raise "invalid n: #{n}"
+                "0x00"
             end
         elsif @frequency == "Low"
             if n == 0 or n == 1
@@ -127,13 +135,16 @@ class Message
             elsif n == 3
                 "0x" + full[6..7]
             else
-                raise "invalid n: #{n}"
+                "0x00"
             end
         elsif @frequency == "Fixed"
             full = @id[2..9]
-            if 0 <= n and n <= 2 then return "0xff"
-            elsif n == 3 then return "0x" + full[6..7]
-            else raise "invalid n: #{n}"
+            if 0 <= n and n <= 2
+                "0xff"
+            elsif n == 3
+                "0x" + full[6..7]
+            else
+                "0x00"
             end
         else
             raise "invalid message frequency: #{message.frequency}"

@@ -274,40 +274,16 @@ end
 # Generates the read_message function that handles all possible message types.
 def generate_read_func(messages)
     out = ""
-    out << "fn read_message<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadMessageError> where R: Read {\n"
+    out << "pub fn read_message<R: ?Sized>(buffer: &mut R, message_num: u32) -> Result<MessageInstance, ReadMessageError> where R: Read {\n"
+    out << "\tmatch message_num {\n"
 
-    out << "\t// High frequency messages.\n"
-    out << "\tmatch try!(buffer.read_u8()) {\n"
     messages.each do |message|
-        if message.frequency == "High"
-            out << "\t\t#{message.id_byte 0} => return #{message.name}::read_from(buffer),\n"
-        end
+        out << "\t\t#{message.message_num} => return #{message.name}::read_from(buffer),\n"
     end
-    out << "\t\t0xff => {},\n"
-    out << "\t\t_ => return Err(ReadMessageError::UnknownMessageNumber)\n"
-    out << "\t}\n\n"
 
-    out << "\t// Medium frequency messages.\n"
-    out << "\tmatch try!(buffer.read_u8()) {\n"
-    messages.each do |message|
-        if message.frequency == "Medium"
-            out << "\t\t#{message.id_byte 1} => return #{message.name}::read_from(buffer),\n"
-        end
-    end
-    out << "\t\t0xff => {},\n"
-    out << "\t\t_ => return Err(ReadMessageError::UnknownMessageNumber)\n"
-    out << "\t}\n\n"
+    out << "\t\t_ => return Err(ReadMessageError::UnknownMessageNumber(message_num))\n"
 
-    out << "\t// Low and fixed frequency messages.\n"
-    out << "\tmatch try!(buffer.read_u16::<BigEndian>()) {\n"
-    messages.each do |message|
-        if message.frequency == "Low" or message.frequency == "Fixed"
-            out << "\t\t#{message.id_byte 2}#{message.id_byte(3)[2..3]} => return #{message.name}::read_from(buffer),\n"
-        end
-    end
-    out << "\t\t_ => return Err(ReadMessageError::UnknownMessageNumber)\n"
-    out << "\t}\n\n"
-
+    out << "\t}\n"
     out << "}\n\n"
     out
 end

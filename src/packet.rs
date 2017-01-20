@@ -2,7 +2,7 @@ use byteorder::{LittleEndian, BigEndian, WriteBytesExt, ReadBytesExt};
 use std::io::{Read, Write};
 use tokio_core::net::UdpSocket;
 
-use messages::MessageInstance;
+use messages::{MessageInstance, read_message};
 
 bitflags! {
     pub flags PacketFlags: u8 {
@@ -61,10 +61,34 @@ impl Packet {
         };
     }
 
-    fn read<'a>(buf: &'a [u8]) {
+    fn read<'a>(buf: &'a [u8]) -> Result<Packet, ::std::io::Error> {
         let mut reader = PacketReader::new(buf);
 
-        let flags = reader.read_u8();
+        let flags = PacketFlags::from_bits(reader.read_u8()?).unwrap();
+        let sequence_num = reader.read_u32::<BigEndian>()?;
+
+        // TODO: Skip extra header if there is any.
+        reader.read_u8()?;
+
+        // Read message.
+        let message_num = reader.read_message_number()?;
+        if flags.contains(PACKET_ZEROCODED) {
+            reader.zerocoding_enabled = true;
+        }
+
+        let message = read_message(&mut reader, message_num)?;
+
+        // Read appended ACKs if there are supposed to be any.
+        if flags.contains(PACKET_APPENDED_ACKS) {
+            // TODO
+        }
+
+        Ok(Packet {
+            message: message,
+            flags: flags,
+            sequence_number: sequence_num,
+            appended_acks: None
+        })
     }
 
     // TODO: Optimize this in the future.
@@ -114,6 +138,28 @@ impl<'a> PacketReader<'a> {
     #[inline]
     fn has_index(&self, index: usize) -> bool {
         (self.buf.len() - index) > 0
+    }
+    
+    fn read_message_number(&mut self) -> Result<u32, ::std::io::Error> {
+        let b1 = self.read_u8()?;
+        let bytes = if b1 != 0xff {
+            // High frequency messages.
+            [b1,0,0,0]
+        } else {
+            let b2 = self.read_u8()?;
+            if b2 != 0xff {
+                // Medium frequency messages.
+                [b1, b2,0,0]
+            } else {
+                // Low and fixed frequency messages.
+                let b3 = self.read_u8()?;
+                let b4 = self.read_u8()?;
+                [b1, b2, b3, b4]
+            }
+        };
+
+        // Convert into u32
+        (&mut bytes.as_ref()).read_u32::<BigEndian>()
     }
 }
 
@@ -167,6 +213,7 @@ impl<'a> Read for PacketReader<'a> {
             Ok(bytes)
         }
     }
+
 }
 
 #[test]

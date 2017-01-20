@@ -1,29 +1,31 @@
 use {Vector3, Vector4, Quaternion, UnitQuaternion, Ip4Addr, IpPort, Uuid};
 use std::io::{Read, Write};
+use std::io::Error as IoError;
+use std::io::ErrorKind as IoErrorKind;
 use byteorder::{LittleEndian, BigEndian, ReadBytesExt, WriteBytesExt};
 
 pub enum WriteMessageError {
-    IoError(::std::io::Error)
+    IoError(IoError)
 }
 
 pub enum ReadMessageError {
-    IoError(::std::io::Error),
+    IoError(IoError),
 
     /// There was an issue parsing one of the types.
     ParseError,
 
     /// No message struct for the message to be read was found.
-    UnknownMessageNumber
+    UnknownMessageNumber(u32)
 }
 
-impl From<::std::io::Error> for WriteMessageError {
-    fn from(e: ::std::io::Error) -> WriteMessageError {
+impl From<IoError> for WriteMessageError {
+    fn from(e: IoError) -> WriteMessageError {
         WriteMessageError::IoError(e)
     }
 }
 
-impl From<::std::io::Error> for ReadMessageError {
-    fn from(e: ::std::io::Error) -> ReadMessageError {
+impl From<IoError> for ReadMessageError {
+    fn from(e: IoError) -> ReadMessageError {
         ReadMessageError::IoError(e)
     }
 }
@@ -31,6 +33,13 @@ impl From<::std::io::Error> for ReadMessageError {
 impl From<::uuid::ParseError> for ReadMessageError {
     fn from(e: ::uuid::ParseError) -> ReadMessageError {
         ReadMessageError::ParseError
+    }
+}
+
+impl From<ReadMessageError> for IoError {
+    fn from(e: ReadMessageError) -> Self {
+        // TODO: Better error handling.
+        IoError::new(IoErrorKind::InvalidData, "reading the message failed")
     }
 }
 
