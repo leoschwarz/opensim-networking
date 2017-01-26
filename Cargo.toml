@@ -5,7 +5,7 @@ authors = ["Leo Schwarz <mail@leoschwarz.com>"]
 
 [dependencies]
 bitflags = "0.7.0"
-byteorder = "0.5"
+byteorder = "1.0.0"
 hyper = "0.9.12"
 mio = "0.6"
 nalgebra = "0.10.1"

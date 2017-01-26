@@ -6,7 +6,7 @@ use messages::{MessageInstance, read_message};
 
 bitflags! {
     pub flags PacketFlags: u8 {
-        /// There are acks appended to the packet. TODO: implement
+        /// There are acks appended to the packet.
         const PACKET_APPENDED_ACKS = 0b0001_0000,
         /// Resending a packet that was sent (with PACKET_RELIABLE) but not ackd.
         const PACKET_RESENT        = 0b0010_0000,
@@ -20,12 +20,23 @@ bitflags! {
     }
 }
 
+pub type SequenceNumber = u32;
+
 /// One packet either sent to or received from a sim.
 pub struct Packet {
+    /// The contained message.
     message: MessageInstance,
+
+    /// Flags of the packet.
     flags: PacketFlags,
-    sequence_number: u32,
-    appended_acks: Option<Vec<u32>>,
+
+    /// The sequence number of the packet. This number is unique for each packet in each
+    /// circuit and each direction. It is incremented one after one for each message.
+    sequence_number: SequenceNumber,
+
+    /// Packet acknowledgments appended to this packet. Can contain any number (including zero)
+    /// of elements.
+    appended_acks: Vec<SequenceNumber>,
 }
 
 impl Packet {
@@ -34,7 +45,7 @@ impl Packet {
             message: m.into(),
             flags: PacketFlags::empty(),
             sequence_number: seq_number,
-            appended_acks: None,
+            appended_acks: Vec::new(),
         }
     }
 
@@ -44,21 +55,22 @@ impl Packet {
     /// # Protocol documentation
     /// * http://lib.openmetaverse.co/wiki/Protocol_(network)
     /// * http://wiki.secondlife.com/wiki/Packet_Layout
-    ///
-    /// TODO: Implement zero encoded writing.
     fn write_to<W: Write>(&self, buffer: &mut W) {
+        // Assert: PACKET_APPENDED_ACKS flag set <-> self.appended_acks is empty.
+        debug_assert!(!(self.flags.contains(PACKET_APPENDED_ACKS) ^ self.appended_acks.is_empty()));
+        // TODO: Zero coded writing not implemented yet.
+        assert!(!self.flags.contains(PACKET_ZEROCODED));
+
         buffer.write_u8(self.flags.bits());
         buffer.write_u32::<BigEndian>(self.sequence_number);
         buffer.write(&[0]);
         self.message.write_to(buffer);
-        match self.appended_acks {
-            Some(ref acks) => {
-                for ack in acks {
-                    buffer.write_u32::<BigEndian>(*ack);
-                }
-            }
-            None => {}
+        for ack in &self.appended_acks {
+            buffer.write_u32::<BigEndian>(*ack);
         };
+        if !self.appended_acks.is_empty() {
+            buffer.write_u8(self.appended_acks.len());
+        }
     }
 
     fn read<'a>(buf: &'a [u8]) -> Result<Packet, ::std::io::Error> {
@@ -67,27 +79,34 @@ impl Packet {
         let flags = PacketFlags::from_bits(reader.read_u8()?).unwrap();
         let sequence_num = reader.read_u32::<BigEndian>()?;
 
-        // TODO: Skip extra header if there is any.
-        reader.read_u8()?;
+        // Skip extra header if present, since we don't expect it.
+        let extra_bytes = reader.read_u8()? as usize;
+        if extra_bytes > 0 {
+            reader.skip_bytes(extra_bytes);
+        }
 
         // Read message.
         let message_num = reader.read_message_number()?;
         if flags.contains(PACKET_ZEROCODED) {
             reader.zerocoding_enabled = true;
         }
-
         let message = read_message(&mut reader, message_num)?;
 
         // Read appended ACKs if there are supposed to be any.
+        let mut acks = Vec::new();
         if flags.contains(PACKET_APPENDED_ACKS) {
-            // TODO
+            let n_acks = reader.peek_last_byte() as usize;
+            acks.reserve(n_acks);
+            for _ in 0..n_acks {
+                acks.push(reader.read_u32::<BigEndian>()?);
+            }
         }
 
         Ok(Packet {
             message: message,
             flags: flags,
             sequence_number: sequence_num,
-            appended_acks: None
+            appended_acks: acks,
         })
     }
 
@@ -135,21 +154,39 @@ impl<'a> PacketReader<'a> {
         }
     }
 
+    /// Just return the content of the very last byte of the message,
+    /// without changing the reader's state in any way.
+    fn peek_last_byte(&self) -> u8 {
+        self.buf[self.buf.len() - 1]
+    }
+
     #[inline]
     fn has_index(&self, index: usize) -> bool {
         (self.buf.len() - index) > 0
     }
-    
+
+    /// Skips the provided number of bytes.
+    /// If such a number is not available an error will be returned.
+    fn skip_bytes(&mut self, bytes: usize) -> Result<(), ::std::io::Error> {
+        let new_pointer = self.pointer + bytes;
+        if self.buf.len() >= new_pointer {
+            self.pointer = new_pointer;
+            Ok(())
+        } else {
+            Err(::std::io::Error::new(::std::io::ErrorKind::UnexpectedEof, "Tried skipping behind EOF in PacketReader."))
+        }
+    }
+
     fn read_message_number(&mut self) -> Result<u32, ::std::io::Error> {
         let b1 = self.read_u8()?;
         let bytes = if b1 != 0xff {
             // High frequency messages.
-            [b1,0,0,0]
+            [b1, 0, 0, 0]
         } else {
             let b2 = self.read_u8()?;
             if b2 != 0xff {
                 // Medium frequency messages.
-                [b1, b2,0,0]
+                [b1, b2, 0, 0]
             } else {
                 // Low and fixed frequency messages.
                 let b3 = self.read_u8()?;
@@ -213,7 +250,6 @@ impl<'a> Read for PacketReader<'a> {
             Ok(bytes)
         }
     }
-
 }
 
 #[test]
@@ -271,4 +307,14 @@ fn read_zerocoded_hard() {
     let b2 = reader.read(&mut buffer).unwrap();
     assert_eq!(b2, 2);
     assert_eq!(buffer, [0, 0, 1]);
+}
+
+#[test]
+fn reader_skip() {
+    let data: [u8; 6] = [0, 1, 2, 3, 4, 5];
+    let mut reader = PacketReader::new(&data);
+    assert!(reader.skip_bytes(2).is_ok());
+    assert_eq!(reader.read_u8().unwrap(), 2);
+    assert!(reader.skip_bytes(3).is_ok());
+    assert!(reader.skip_bytes(1).is_err());
 }
