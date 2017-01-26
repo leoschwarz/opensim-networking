@@ -10,12 +10,11 @@ bitflags! {
         const PACKET_APPENDED_ACKS = 0b0001_0000,
         /// Resending a packet that was sent (with PACKET_RELIABLE) but not ackd.
         const PACKET_RESENT        = 0b0010_0000,
-        /// Ack for packet is requested. TODO: implement
+        /// Ack for packet is requested.
         const PACKET_RELIABLE      = 0b0100_0000,
         /// If enabled:
         /// Multiple consecutive zero bytes (but also single zero bytes) are coded into one zero
         /// byte and a following byte specifying the number of zero bytes.
-        /// TODO: implement
         const PACKET_ZEROCODED     = 0b1000_0000,
     }
 }
@@ -55,22 +54,23 @@ impl Packet {
     /// # Protocol documentation
     /// * http://lib.openmetaverse.co/wiki/Protocol_(network)
     /// * http://wiki.secondlife.com/wiki/Packet_Layout
-    fn write_to<W: Write>(&self, buffer: &mut W) {
+    fn write_to<W: Write>(&self, buffer: &mut W) -> Result<(), ::std::io::Error> {
         // Assert: PACKET_APPENDED_ACKS flag set <-> self.appended_acks is empty.
         debug_assert!(!(self.flags.contains(PACKET_APPENDED_ACKS) ^ self.appended_acks.is_empty()));
         // TODO: Zero coded writing not implemented yet.
         assert!(!self.flags.contains(PACKET_ZEROCODED));
 
-        buffer.write_u8(self.flags.bits());
-        buffer.write_u32::<BigEndian>(self.sequence_number);
-        buffer.write(&[0]);
-        self.message.write_to(buffer);
+        buffer.write_u8(self.flags.bits())?;
+        buffer.write_u32::<BigEndian>(self.sequence_number)?;
+        buffer.write(&[0])?;
+        self.message.write_to(buffer)?;
         for ack in &self.appended_acks {
-            buffer.write_u32::<BigEndian>(*ack);
+            buffer.write_u32::<BigEndian>(*ack)?;
         };
         if !self.appended_acks.is_empty() {
-            buffer.write_u8(self.appended_acks.len());
+            buffer.write_u8(self.appended_acks.len() as u8)?;
         }
+        Ok(())
     }
 
     fn read<'a>(buf: &'a [u8]) -> Result<Packet, ::std::io::Error> {
@@ -109,15 +109,6 @@ impl Packet {
             appended_acks: acks,
         })
     }
-
-    // TODO: Optimize this in the future.
-    //       This function will potentially get a lot of use.
-    // fn send(&self, socket: &UdpSocket) {
-    // let mut buf = Vec::new();
-    // self.write_to(&mut buf);
-    // socket.send(&buf[..]);
-    // }
-    //
 
     /// Enable the provided flags.
     pub fn enable_flags(&mut self, flags: PacketFlags) {

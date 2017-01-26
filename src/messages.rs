@@ -10,10 +10,6 @@ use std::io::Error as IoError;
 use std::io::ErrorKind as IoErrorKind;
 use byteorder::{LittleEndian, BigEndian, ReadBytesExt, WriteBytesExt};
 
-pub enum WriteMessageError {
-    IoError(IoError),
-}
-
 pub enum ReadMessageError {
     IoError(IoError),
 
@@ -22,12 +18,6 @@ pub enum ReadMessageError {
 
     /// No message struct for the message to be read was found.
     UnknownMessageNumber(u32),
-}
-
-impl From<IoError> for WriteMessageError {
-    fn from(e: IoError) -> WriteMessageError {
-        WriteMessageError::IoError(e)
-    }
 }
 
 impl From<IoError> for ReadMessageError {
@@ -49,7 +39,7 @@ impl From<ReadMessageError> for IoError {
     }
 }
 
-pub type WriteMessageResult = Result<(), WriteMessageError>;
+pub type WriteMessageResult = ::std::io::Result<()>;
 
 pub trait Message {
     /// Write the message to a buffer for network transmission.
