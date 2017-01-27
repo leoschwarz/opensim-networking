@@ -26,23 +26,3 @@ pub mod login;
 pub mod packet;
 pub mod circuit;
 
-
-// TODO move to right place later.
-use tokio_core::net::{UdpSocket, UdpCodec};
-
-pub struct OpensimCodec;
-
-/*
-impl UdpCodec for OpensimCodec {
-    type In = circuit::Packet;
-    type Out = circuit::Packet;
-
-    fn decode(&mut self, src: &SocketAddr, buf: &[u8]) -> Result<Self::In> {
-        // TODO parse the packet using Packet::read_from
-    }
-
-    fn encode(&mut self, msg: Self::Out, buf: &mut Vec<u8>) -> SocketAddr {
-
-    }
-}
-*/

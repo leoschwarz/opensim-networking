@@ -54,7 +54,7 @@ impl Packet {
     /// # Protocol documentation
     /// * http://lib.openmetaverse.co/wiki/Protocol_(network)
     /// * http://wiki.secondlife.com/wiki/Packet_Layout
-    fn write_to<W: Write>(&self, buffer: &mut W) -> Result<(), ::std::io::Error> {
+    pub fn write_to<W: Write>(&self, buffer: &mut W) -> Result<(), ::std::io::Error> {
         // Assert: PACKET_APPENDED_ACKS flag set <-> self.appended_acks is empty.
         debug_assert!(!(self.flags.contains(PACKET_APPENDED_ACKS) ^ self.appended_acks.is_empty()));
         // TODO: Zero coded writing not implemented yet.
@@ -73,7 +73,7 @@ impl Packet {
         Ok(())
     }
 
-    fn read<'a>(buf: &'a [u8]) -> Result<Packet, ::std::io::Error> {
+    pub fn read<'a>(buf: &'a [u8]) -> Result<Packet, ::std::io::Error> {
         let mut reader = PacketReader::new(buf);
 
         let flags = PacketFlags::from_bits(reader.read_u8()?).unwrap();

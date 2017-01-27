@@ -5,8 +5,10 @@ use login::LoginResponse;
 use packet::{Packet, PacketFlags, PACKET_RELIABLE};
 
 use tokio_core::reactor::Core;
-use tokio_core::net::UdpSocket;
+use tokio_core::net::{UdpCodec, UdpSocket};
 use std::net::{SocketAddr, SocketAddrV4};
+use std::collections::VecDeque;
+use time::Timespec;
 
 /// We only consider viewer <-> simulator circuits.
 /// TODO: Once there is IPv6 support in the opensim server, implement support for both v4 and v6.
@@ -51,7 +53,7 @@ impl Circuit {
         let handle = core.handle();
 
         // Create the socket.
-        let socket = try!(UdpSocket::bind(&local_socket_addr, &handle));
+        let socket = UdpSocket::bind(&local_socket_addr, &handle)?;
 
         // Create the circuit instance.
         let circuit = Circuit {
@@ -81,11 +83,33 @@ impl Circuit {
     }
 
     fn send_packet(&self, packet: Packet) {
-
+        let mut buf = Vec::new();
+        packet.write_to(&mut buf);
+        self.socket.send_to(&buf, &self.sim_address);
     }
 
+    // TODO: Move this method to the right location.
     fn send_message<M: Into<MessageInstance>>(&self, msg: M) {
         let packet = Packet::new(msg, self.sequence_number);
-        
+        self.send_packet(packet);
     }
 }
+
+struct OpensimCodec {
+    circuit: Circuit
+}
+
+impl UdpCodec for OpensimCodec {
+    type In = Packet;
+    type Out = Packet;
+
+    fn decode(&mut self, src: &SocketAddr, buf: &[u8]) -> Result<Self::In, ::std::io::Error> {
+        Packet::read(buf)
+    }
+
+    fn encode(&mut self, packet: Self::Out, buf: &mut Vec<u8>) -> SocketAddr {
+        packet.write_to(buf);
+        self.circuit.sim_address
+    }
+}
+

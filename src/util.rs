@@ -1,4 +1,5 @@
 use std::collections::BinaryHeap;
+use std::cmp::Ordering;
 use time::{Duration, Timespec};
 
 /// A BackoffQueue provides a time-based interface over a priority queue.
@@ -23,39 +24,36 @@ pub enum BackoffQueueState {
 
 impl<T> BackoffQueue<T> {
     pub fn new() -> Self {
-        Self {
+        BackoffQueue {
             queue: BinaryHeap::new()
         }
     }
 
     /// Insert an item into the backoff queue.
     /// `item`: The item to be inserted.
-    /// `wait_s`: The number of seconds to wailt at least before retrieving the item.
-    pub insert(&mut self, item: T, wait_s: f64) {
-        let secs = wait_s.floor() as i64;
-        let nsecs = ((wait_s % 1.) * 1e9) as i32;
-
+    /// `wait`: The duration to wait at least before retrieving the item.
+    pub fn insert(&mut self, item: T, wait: Duration) {
         self.queue.push(BackoffQueueItem{
             value: item,
-            wait_until: time::get_time() + Duration{ sec: secs, nsec: nsecs }
+            wait_until: ::time::get_time() + wait
         });
     }
 
     /// Extract an item if one is available.
-    pub extract(&mut self) -> Option<T> {
+    pub fn extract(&mut self) -> Option<T> {
         match self.state() {
-            BackoffQueueState::ItemReady => self.queue.pop(),
+            BackoffQueueState::ItemReady => Some(self.queue.pop().unwrap().value),
             _ => None
         }
     }
 
     /// Get the current state of the queue.
-    pub state(&self) -> BackoffQueueState {
+    pub fn state(&self) -> BackoffQueueState {
         match self.queue.peek() {
             None => BackoffQueueState::Empty,
             Some(ref item_ref) => {
                 // Check if enough time has passed.
-                let now = time::get_time();
+                let now = ::time::get_time();
                 if now >= item_ref.wait_until {
                     BackoffQueueState::ItemReady
                 } else {
@@ -66,7 +64,7 @@ impl<T> BackoffQueue<T> {
     }
 
     /// Return true if the queue is empty.
-    pub is_empty(&self) -> bool {
+    pub fn is_empty(&self) -> bool {
         self.queue.is_empty()
     }
 }
@@ -78,6 +76,21 @@ struct BackoffQueueItem<T> {
     wait_until: Timespec
 }
 
+impl<T> PartialEq for BackoffQueueItem<T> {
+    fn eq(&self, other: &Self) -> bool {
+        self.wait_until == other.wait_until
+    }
+}
+
+impl<T> Eq for BackoffQueueItem<T> {
+}
+
+impl<T> PartialOrd for BackoffQueueItem<T> {
+    fn partial_cmp(&self, other: &Self) -> Option<Ordering> {
+        Some(self.cmp(other))
+    }
+}
+
 impl<T> Ord for BackoffQueueItem<T> {
     fn cmp(&self, other: &Self) -> Ordering {
         // Note that we have to reverse the ordering since Rust's BinaryHeap
@@ -85,3 +98,4 @@ impl<T> Ord for BackoffQueueItem<T> {
         self.wait_until.cmp(&other.wait_until).reverse()
     }
 }
+
