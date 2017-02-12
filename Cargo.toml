@@ -6,16 +6,18 @@ authors = ["Leo Schwarz <mail@leoschwarz.com>"]
 [dependencies]
 bitflags = "0.7.0"
 byteorder = "1.0.0"
-hyper = "0.9.12"
+futures = "0.1.10"
+hyper = "0.10.4"
 mio = "0.6"
 nalgebra = "0.10.1"
 regex = "0.1.80"
 rust-crypto = "0.2.36"
 time = "0.1.36"
 tokio-core = "0.1"
+tokio-proto = "0.1"
 url = "1.2.3"
 uuid = "0.3.1"
-xmlrpc = "0.3.1"
+xmlrpc = "0.4.0"
 
 [dev-dependencies]
 toml = "0.2"

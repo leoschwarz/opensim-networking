@@ -119,6 +119,15 @@ impl Packet {
     pub fn disable_flags(&mut self, flags: PacketFlags) {
         self.flags.remove(flags);
     }
+
+    /// Set the reliable flack for a packet.
+    pub fn set_reliable(&mut self, value: bool) {
+        if value {
+            self.enable_flags(PACKET_RELIABLE);
+        } else {
+            self.disable_flags(PACKET_RELIABLE);
+        }
+    }
 }
 
 /// Used internally to read the content of packages.

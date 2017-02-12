@@ -2,12 +2,14 @@
 extern crate bitflags;
 extern crate byteorder;
 extern crate crypto;
+extern crate futures;
 extern crate hyper;
 extern crate mio;
 extern crate nalgebra;
 extern crate regex;
 extern crate time;
 extern crate tokio_core;
+extern crate tokio_proto;
 extern crate url;
 extern crate uuid;
 extern crate xmlrpc;
