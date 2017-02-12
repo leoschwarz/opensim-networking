@@ -5,26 +5,26 @@ use messages::{Message, MessageInstance, UseCircuitCode, UseCircuitCode_CircuitC
 use login::LoginResponse;
 use packet::{Packet, PacketFlags, PACKET_RELIABLE};
 
-use tokio_core::reactor::Core;
-use tokio_core::net::{UdpCodec, UdpSocket, UdpFramed};
 use std::net::{SocketAddr, SocketAddrV4};
 use std::collections::VecDeque;
+use std::sync::Arc;
+use std::thread;
+
+use tokio_core::reactor::Core;
+use tokio_core::net::UdpSocket;
+use futures::{Future, Stream, Sink};
+use futures::sync::mpsc;
+
 use time::Timespec;
 
-use futures::stream::Stream;
-use futures::sink::Sink;
-use futures::Future;
 
 /// We only consider viewer <-> simulator circuits.
-/// TODO: Once there is IPv6 support in the opensim server, implement support for both v4 and v6.
-///       This was not done yet since we would have to abort the code if we got IPv6 addresses
-///       anywhere and would make the API less realiable.
+/// NOTE: In the future we'll want to implement Ipv6 support once it lands in opensim.
 pub struct Circuit {
     core: Core,
 
-    /// A `Stream` and `Sink` interface to the encapsulated UdpSocket.
-    /// This will be used to transport data to and from the simulator.
-    transport: UdpFramed<OpensimCodec>,
+    /// The socket used for communication.
+    socket: UdpSocket,
 
     /// Socket address (contains address + port) of simulator.
     sim_address: SocketAddr,
@@ -49,13 +49,6 @@ impl From<::std::io::Error> for CircuitInitiationError {
     }
 }
 
-/// A future returned by Circuit.send_packet indicating the current status of
-/// a packet.
-// TODO: Figure out if needed.
-//pub struct SendPacket {
-//    sequence_number: u32
-//}
-
 pub enum SendPacketError {
     /// The packet was to be sent reliable but not acknowledged in time.
     TimedOut,
@@ -64,24 +57,120 @@ pub enum SendPacketError {
     IoError(error: IoError),
 }
 
+pub enum SendPacketStatus {
+    /// The packet was sent successfully.
+    /// checked is true if and only if the package was sent with the reliable flag
+    /// and acknowledged by the remote.
+    Success(bool),
+
+    /// There was an error sending the packet.
+    Error(SendPacketError),
+
+    /// Still waiting for a result.
+    Pending
+}
+
+/// Return type for sending packets.
+pub struct SendPacket {
+}
+
+impl SendPacket {
+    pub fn status(&self) -> SendPacketStatus {
+        // TODO: Implement.
+        SendPacketStatus::Pending
+    }
+}
+
+struct MessageManager {
+    socket: UdpSocket,
+
+    // TODO: Wrap Packets in a special struct which will keep track of the return status
+    // and update it in an Arc or something like that so the SendPacket future will be able
+    // to yield the correct value.
+    queue_send: Sender<Packet>,
+}
+
+impl MessageManager {
+    fn start(sim_address: SocketAddr) -> MessageManager {
+        // Create a FIFO channel to send packets to the queue.
+        // TODO: Determine a good buffer size or make it configurable.
+        let (queue_send, queue_recv) = mpsc::channel(100);
+
+        // Setup tokio.
+        // 0.0.0.0:0 let's the OS chose an appropriate local UDP socket. TODO check.
+        let mut core = Core::new().unwrap();
+        let addr = SocketAddr::from_str("0.0.0.0:0");
+        let socket = UdpSocket::bind(&addr, &core.handle());
+
+        
+        // TODO: Maybe we will actually have to `UdpFramed` here but I am not sure if
+        // it is going to be an issue that UdpFramed::map will consume the instance.
+        // Like will it be still possible in stream1 to write to the stream?
+
+        
+        // Stream 1:
+        // 1. Read packets from the channel.
+        // 2. Serialize the packets and send them through the socket.
+        // 3. TODO: Register the packet if it is sent with the reliable flag.
+        let stream1 = queue_recv.map(|packet| {
+            let mut buf = Vec::new();
+            packet.write_to(&mut buf);
+            socket.send_dgram(buf, sim_address)
+        }).map(|_| ());
+
+        // Stream 2:
+        // 1. Read datagrams from the socket.
+        // 2. Decode the datagrams to packets.
+        // 3. TODO: Register incoming acks.
+        // 4. TODO: If the incoming packet has the reliable flag set, acknowledge it.
+        // 5. Put the resulting packet into the output stream.
+        let stream2 = socket.
+
+        // Combine stream1 and stream2 using Stream::select.
+        // As this is using a round-robin strategy this will make sure the stream allocation is
+        // fair.
+
+
+
+        // Create the sender thread.
+        thread::spawn(move || {
+            loop {
+
+
+
+                // TODO: Remove unwrap().
+                // Receive a packet to be sent from the queue.
+                // If no packet is available this will block the thread until one becomes
+                // available.
+                let packet = queue_recv.recv().unwrap();
+
+                // Serialize the packet.
+                let mut buf = Vec::new();
+                packet.write_to(&mut buf);
+
+                // Send it through the socket.
+                // TODO: Register reliable packages.
+                // TODO: Handle return values.
+                // TODO: Remove unwrap().
+                socket.send_to(&buf, sim_address).unwrap();
+            }
+        });
+
+        // Return the struct.
+        MessageManager {
+            queue_send: queue_send
+        }
+    }
+}
+
 impl Circuit {
     pub fn initiate(login_res: LoginResponse)
                     -> Result<Circuit, CircuitInitiationError> {
 
-        // Create the eventloop.
-        let mut core = Core::new().unwrap();
-        let handle = core.handle();
-
-        // Create the framed socket.
-        let sim_address = SocketAddr::V4(SocketAddrV4::new(login_res.sim_ip, login_res.sim_port));
-        let socket = UdpSocket::bind(&sim_address, &handle)?;
-        let codec = OpensimCodec::new(sim_address.clone());
-        let udp_framed = socket.framed(codec);
-
         // Create the circuit instance.
         let circuit = Circuit {
             core: core,
-            transport: udp_framed,
+            socket: socket,
             sim_address: sim_address,
             sequence_number: 1,
         };
@@ -105,49 +194,9 @@ impl Circuit {
     }
 
     /// Send a packet to the simulator.
-    ///
-    /// If the packet's PACKET_RELIABLE flag is set it will be sent reliably
-    /// and retried multiple times until acknowledged by the remote simulator.
     fn send_packet(&self, packet: Packet) -> SendPacket {
-        
-    }
-
-    /*
-    fn send_packet(&self, packet: Packet) {
         let mut buf = Vec::new();
         packet.write_to(&mut buf);
-        self.udp.send(packet);
-    }
 
-    // TODO: Move this method to the right location.
-    fn send_message<M: Into<MessageInstance>>(&self, msg: M) {
-        let packet = Packet::new(msg, self.sequence_number);
-        self.udp = self.send_packet(packet);
-    }*/
-}
-
-struct OpensimCodec {
-    sim_address: SocketAddr
-}
-
-impl OpensimCodec {
-    fn new(sim: SocketAddr) -> OpensimCodec {
-        OpensimCodec {
-            sim_address: sim
-        }
-    }
-}
-
-impl UdpCodec for OpensimCodec {
-    type In = Packet;
-    type Out = Packet;
-
-    fn decode(&mut self, src: &SocketAddr, buf: &[u8]) -> Result<Self::In, ::std::io::Error> {
-        Packet::read(buf)
-    }
-
-    fn encode(&mut self, packet: Self::Out, buf: &mut Vec<u8>) -> SocketAddr {
-        packet.write_to(buf);
-        self.sim_address
     }
 }
