@@ -11320,6 +11320,7 @@ pub struct LinkInventoryItem {
 }
 
 
+#[derive(Debug)]
 pub enum MessageInstance {
     TestMessage(TestMessage),
     PacketAck(PacketAck),

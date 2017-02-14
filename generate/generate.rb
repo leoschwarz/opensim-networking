@@ -56,6 +56,7 @@ end
 
 def generate_message_types_enum(messages)
     code = ""
+    code << "#[derive(Debug)]\n"
     code << "pub enum MessageInstance {\n"
     messages.each do |message|
         code << "\t#{message.name}(#{message.name}),\n"

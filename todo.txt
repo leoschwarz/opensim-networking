@@ -1,0 +1,2 @@
+- Better error handling leveraging https://github.com/brson/error-chain.
+

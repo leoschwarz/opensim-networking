@@ -22,6 +22,7 @@ bitflags! {
 pub type SequenceNumber = u32;
 
 /// One packet either sent to or received from a sim.
+#[derive(Debug)]
 pub struct Packet {
     /// The contained message.
     message: MessageInstance,
