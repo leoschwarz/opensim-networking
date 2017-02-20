@@ -1,6 +1,6 @@
-use std::collections::BinaryHeap;
+use std::collections::{BinaryHeap, HashMap};
 use std::cmp::Ordering;
-use time::{Duration, Timespec};
+use time::{Duration, Timespec, get_time};
 
 /// A BackoffQueue provides a time-based interface over a priority queue.
 /// Items can be inserted specifying a minimum amount of time that has to elapse

@@ -25,18 +25,18 @@ pub type SequenceNumber = u32;
 #[derive(Debug)]
 pub struct Packet {
     /// The contained message.
-    message: MessageInstance,
+    pub message: MessageInstance,
 
     /// Flags of the packet.
-    flags: PacketFlags,
+    pub flags: PacketFlags,
 
     /// The sequence number of the packet. This number is unique for each packet in each
     /// circuit and each direction. It is incremented one after one for each message.
-    sequence_number: SequenceNumber,
+    pub sequence_number: SequenceNumber,
 
     /// Packet acknowledgments appended to this packet. Can contain any number (including zero)
     /// of elements.
-    appended_acks: Vec<SequenceNumber>,
+    pub appended_acks: Vec<SequenceNumber>,
 }
 
 impl Packet {
