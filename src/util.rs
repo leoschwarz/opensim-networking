@@ -1,6 +1,24 @@
 use std::collections::{BinaryHeap, HashMap};
 use std::cmp::Ordering;
 use time::{Duration, Timespec, get_time};
+use std::sync::mpsc;
+
+/// Read elements from the reader in a non-blocking (async) fashion.
+/// We try to read up to max_count elements if they are available, but if they
+/// aren't we'll just return as much as possible. (Possibly even empty vector.)
+fn mpsc_read_many<T>(recv: &mpsc::Receiver<T>, max_count: usize) -> Vec<T>
+{
+    let mut res = Vec::new();
+
+    while res.len() < max_count {
+        match recv.try_recv() {
+            Ok(item) => res.push(item),
+            Err(_) => return res
+        }
+    }
+
+    res
+}
 
 /// A BackoffQueue provides a time-based interface over a priority queue.
 /// Items can be inserted specifying a minimum amount of time that has to elapse

@@ -10,6 +10,7 @@ extern crate regex;
 extern crate time;
 extern crate tokio_core;
 extern crate tokio_proto;
+extern crate tokio_timer;
 extern crate ttl_cache;
 extern crate url;
 extern crate uuid;
