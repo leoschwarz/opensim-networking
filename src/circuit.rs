@@ -202,17 +202,13 @@ impl MessageManager {
 
         let config = MessageManagerConfig::default();
 
-        // TODO: Rewrite this function. Consider if would make it less confusing
-        // to store each channel in only a single tuple and directly access the
-        // values from these tuples. (tuple.0 and tuple.1)
+        // Setup communication channels for packets.
+        let packets_outgoing = mspc::channel(buffer_size);
+        let packets_incoming = mpsc::channel(buffer_size);
 
-        // Create channels for outgoing and incoming packets.
-        let (outgoing_send, outgoing_recv) = mpsc::channel(buffer_size);
-        let (mut incoming_send, incoming_recv) = mpsc::channel(buffer_size);
-
-        // Create channels for incoming and outgoing acks.
-        let (acks_out_send, acks_out_recv) = mpsc::channel(buffer_size);
-        let (mut acks_in_send, acks_in_recv) = mpsc::channel(buffer_size);
+        // Setup communication channels for packet acks.
+        let acks_outgoing = mpsc::channel(buffer_size);
+        let acks_incoming = mpsc::channel(buffer_size);
 
         // Create the timer instance.
         // TODO: Check all possible configuration options and optimize.
@@ -232,21 +228,23 @@ impl MessageManager {
             let socket = socket_raw.framed(OpensimCodec::new(sim_address));
             let (mut socket_sink, socket_stream) = socket.split();
 
-            // Setup the ack manager.
-            //let mut ack_manager = AckManager::new();
-
             // Stream 1:
             // 1. Read packets from the outgoing queue.
             // 2. Send the packet through the (framed) socket.
             // 3. TODO: Register the packet if it is sent with the reliable flag.
-            let stream1 = outgoing_recv
+            // TODO: Does this really work as expected?
+            //let stream1 = socket_sink.send_all(packets_outgoing.1)
+            //    .map(|_| ())
+            //.map_err(|_| MessageManagerItemError::FailedSendingPacket).boxed();
+            
+            let stream1 = packets_outgoing.1
                 .map(move |packet| {
                     socket_sink.start_send(packet);
                     socket_sink.poll_complete() // TODO: Maybe we can fold all of the stream into just this poll future?
                 })
                 .map(|_| ())
                 .map_err(|_| MessageManagerItemError::FailedSendingPacket).boxed();
-            //.map_err(|_| IoError::new(IoErrorKind::Other, "Unknown error in stream1.")); // TODO: Don't swallow errors.
+            
 
             // Stream 2:
             // 1. Read packets from the (framed) socket.
