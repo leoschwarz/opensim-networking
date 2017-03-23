@@ -3,10 +3,10 @@ use std::cmp::Ordering;
 use time::{Duration, Timespec, get_time};
 use std::sync::mpsc;
 
-/// Read elements from the reader in a non-blocking (async) fashion.
-/// We try to read up to max_count elements if they are available, but if they
-/// aren't we'll just return as much as possible. (Possibly even empty vector.)
-fn mpsc_read_many<T>(recv: &mpsc::Receiver<T>, max_count: usize) -> Vec<T>
+/// read elements from the reader in a non-blocking (async) fashion.
+/// we try to read up to max_count elements if they are available, but if they
+/// aren't we'll just return as much as possible. (possibly even empty vector.)
+pub fn mpsc_read_many<T>(recv: &mpsc::Receiver<T>, max_count: usize) -> Vec<T>
 {
     let mut res = Vec::new();
 

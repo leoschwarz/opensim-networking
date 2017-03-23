@@ -8,7 +8,7 @@ bitflags! {
     pub flags PacketFlags: u8 {
         /// There are acks appended to the packet.
         const PACKET_APPENDED_ACKS = 0b0001_0000,
-        /// Resending a packet that was sent (with PACKET_RELIABLE) but not ackd.
+        /// Resending a packet that was sent (with PACKET_RELIABLE) but not ack'd.
         const PACKET_RESENT        = 0b0010_0000,
         /// Ack for packet is requested.
         const PACKET_RELIABLE      = 0b0100_0000,
@@ -121,13 +121,18 @@ impl Packet {
         self.flags.remove(flags);
     }
 
-    /// Set the reliable flack for a packet.
+    /// Set the reliable flag for a packet.
     pub fn set_reliable(&mut self, value: bool) {
         if value {
             self.enable_flags(PACKET_RELIABLE);
         } else {
             self.disable_flags(PACKET_RELIABLE);
         }
+    }
+
+    /// Check the reliable flag for a packet.
+    pub fn is_reliable(&self) -> bool {
+        self.flags.contains(PACKET_RELIABLE)
     }
 }
 

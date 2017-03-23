@@ -1,38 +1,20 @@
-use {Ip4Addr, IpPort, Uuid};
-
-use messages::{Message, MessageInstance, UseCircuitCode, UseCircuitCode_CircuitCode,
-               WriteMessageResult};
 use login::LoginResponse;
-use packet::{Packet, PacketFlags, PACKET_RELIABLE, SequenceNumber};
+use messages::MessageInstance;
+use packet::{Packet, SequenceNumber};
 use util::mpsc_read_many;
 
-use std::net::{SocketAddr, SocketAddrV4};
 use std::collections::HashMap;
-use std::sync::{Arc, RwLock};
-use std::thread;
-
 use std::io::Error as IoError;
-use std::io::ErrorKind as IoErrorKind;
-use std::str::FromStr;
-
-use tokio_core::reactor::Core;
-use tokio_core::net::{UdpCodec, UdpSocket};
-use tokio_timer;
-use tokio_timer::Timer;
-use futures::{Future, Poll, Stream, Sink, Async};
-use futures::stream::BoxStream;
-use futures::sync::mpsc;
-
-//use time::{Duration, Timespec};
+use std::net::{SocketAddr, SocketAddrV4, UdpSocket};
+use std::sync::mpsc;
 use std::time::Duration;
-//use ttl_cache::TtlCache;
+use std::thread;
 
 // Things not implemented for now.
 // - Ipv6 support. (Blocked by opensim's support.)
 // - Simulator <-> simulator circuits. (Do we need these?)
 
-/// Encapsulates a so called circuit (networking link) between our viewer
-/// and a simulator.
+/// Encapsulates a so called circuit (networking link) between our viewer and a simulator.
 pub struct Circuit {
     /// This instance actually manages the messages.
     message_manager: MessageManager,
@@ -42,119 +24,16 @@ pub struct Circuit {
 }
 
 impl Circuit {
-    pub fn initiate(login_res: LoginResponse) -> Result<Circuit, CircuitInitiationError> {
-
+    pub fn initiate(login_res: LoginResponse, config: CircuitConfig) -> Result<Circuit, IoError> {
         let sim_address = SocketAddr::V4(SocketAddrV4::new(login_res.sim_ip, login_res.sim_port));
-
-        // Create the message manager instance.
-        let mut message_manager = MessageManager::start(sim_address, 100);
-
-        // Use the circuit code.
-        let msg = UseCircuitCode {
-            circuit_code: UseCircuitCode_CircuitCode {
-                code: login_res.circuit_code,
-                session_id: login_res.session_id.clone(),
-                id: login_res.agent_id.clone(),
-            },
-        };
-        message_manager.send_message(msg, true);
-
-        // TODO: Wait for an ack.
-
-        // Create the circuit instance.
-        let circuit = Circuit {
-            sim_address: sim_address,
-            message_manager: message_manager,
-        };
-
-        // Finished.
-        Ok(circuit)
+        Ok(Circuit {
+               sim_address: sim_address,
+               message_manager: MessageManager::start(sim_address, config)?,
+           })
     }
 }
 
-#[derive(Debug)]
-pub enum CircuitInitiationError {
-    IO(::std::io::Error),
-}
-
-impl From<::std::io::Error> for CircuitInitiationError {
-    fn from(err: ::std::io::Error) -> Self {
-        CircuitInitiationError::IO(err)
-    }
-}
-
-#[derive(Debug)]
-enum SendMessageStatus {
-    /// Has not been sent yet.
-    Pending,
-    /// Still waiting for an ack.
-    WaitingAck,
-    /// Everything was successful.
-    /// If an ack was requested it was also received.
-    Success,
-    /// There was a failure sending the packet.
-    Failure(SendMessageError),
-}
-
-#[derive(Debug)]
-pub enum SendMessageError {
-    /// For some reason the status flag of the `SendMessage` struct could not have been read.
-    CantReadStatus,
-
-    /// Even after the maximum number of attempts the package was not acknowledged.
-    FailedAck,
-
-    /// TODO: Maybe get rid of this. Because it could come from either the socket or be a
-    /// serialization error.
-    IoError(IoError),
-}
-
-/// Future return type for sending packets.
-pub struct SendMessage<'a> {
-    packet: Packet,
-    status: RwLock<SendMessageStatus>,
-    timer: &'a Timer,
-}
-
-impl<'a> SendMessage<'a> {
-    fn new(packet: Packet, timer: &Timer) -> SendMessage {
-        SendMessage {
-            packet: packet,
-            status: RwLock::new(SendMessageStatus::Pending),
-            timer: timer,
-        }
-    }
-}
-
-impl<'a> Future for SendMessage<'a> {
-    type Item = ();
-    type Error = SendMessageError;
-
-    // TODO: Figure out if it's an issue that "work" (here this only means to continue
-    // waiting for an ack).
-    fn poll(&mut self) -> Poll<Self::Item, Self::Error> {
-        match self.status.read() {
-            Ok(status) => {
-                match *status {
-                    SendMessageStatus::WaitingAck => Ok(Async::NotReady),
-                    SendMessageStatus::Pending => Ok(Async::NotReady),
-                    SendMessageStatus::Success => Ok(Async::Ready(())),
-                    SendMessageStatus::Failure(e) => Err(e),
-                }
-            }
-            // This should only be the case if the lock was poisoned.
-            Err(_) => Err(SendMessageError::CantReadStatus),
-        }
-    }
-}
-
-#[derive(Debug)]
-enum MessageManagerItemError {
-    FailedSendingPacket,
-    IncomingFailed,
-}
-
-struct MessageManagerConfig {
+pub struct CircuitConfig {
     /// The number of seconds before an unconfirmed packet becomes invalid.
     /// If multiple attempts are allowed, each single attempt will get at most this time before
     /// timing out.
@@ -164,199 +43,127 @@ struct MessageManagerConfig {
     send_attempts: usize,
 }
 
-impl Default for MessageManagerConfig {
-    fn default() -> Self {
-        MessageManagerConfig {
-            send_timeout: Duration::from_secs(5),
-            send_attempts: 3,
-        }
-    }
+struct MessageManagerItem {
+    message: MessageInstance,
+    reliable: bool,
+    attempts: u8,
 }
 
-/// Provides message management.
-/// This includes correct sending of messages and retrying them if they are sent with the reliable
-/// flag, but not acknowledged in time.
-/// This also includes receiving of messages and acknowledging messages to the simulator.
+/// Handles the sending and receiving of messages internally.
+///
+/// One thread is created to be perform requests concurrently to the rest of the program.
+///
+/// TODO: Figure out a good API to notify on both of these events:
+/// - received a new package from the circuit.
+/// - a package has timed out too many times and cannot be retried anymore.
+///
+/// TODO: If we want to allow for thread safe concurrent access from multiple threads we
+///  will have to create something like a writer struct that can be sent over to other threads.
+///  The problem with API design here is that we will have to export some kind of structs,
+///  e.g. `MessageReader` and `MessageWriter` and pass these through `Circuit`'s API with methods
+///  like `message_reader()` and `message_writer()`.
+///  It's certainly a possibility but there might be a better way.
+///
+/// TODO: How will it affect us if the other side ignores our acks, will we be fine just resending
+///  the ack for a resent package.
 struct MessageManager {
-    /// Outgoing packets to be sent yet.
-    queue_outgoing: mpsc::Sender<Packet>,
-    /// Incoming packets to be read yet.
-    queue_incoming: mpsc::Receiver<Packet>,
-
-    /// TODO: Figure out if this is really a u32 or a u24 like it was stated in some docs.
-    ///
-    /// Sequence numbers keep track of the packets sent and are unique to each packet and each
-    /// direction, they are incremented by one after a package send. This field holds the sequence
-    /// number of the package that was just sent. (0=none was sent before.)
-    sequence_number: SequenceNumber,
-
-    config: MessageManagerConfig,
-
-    /// The timer used to check reliable packets' acks and to resend them if needed.
-    timer: Timer,
+    incoming: mpsc::Receiver<MessageInstance>,
+    outgoing: mpsc::Sender<MessageManagerItem>,
 }
 
 impl MessageManager {
-    fn start(sim_address: SocketAddr, buffer_size: usize) -> MessageManager {
-        use futures::stream::*;
+    fn start(sim_address: SocketAddr, config: CircuitConfig) -> Result<MessageManager, IoError> {
+        // Setup communication channels.
+        // TODO: Consider a better data structure for the incoming acks. (write_many support)
+        let (incoming_tx, incoming_rx) = mpsc::channel::<MessageInstance>();
+        let (outgoing_tx, outgoing_rx) = mpsc::channel::<MessageManagerItem>();
+        let (acks_outgoing_tx, acks_outgoing_rx) = mpsc::channel::<SequenceNumber>();
+        let (acks_incoming_tx, acks_incoming_rx) = mpsc::channel::<SequenceNumber>();
+        let (register_packet_tx, register_packet_rx) = mpsc::channel::<MessageManagerItem>();
 
-        let config = MessageManagerConfig::default();
+        // TODO: As we will be using blocking IO in the reader and writer thread
+        //       figure out a safe way to stop the threads within "constant time".
 
-        // Setup communication channels for packets.
-        let packets_outgoing = mspc::channel(buffer_size);
-        let packets_incoming = mpsc::channel(buffer_size);
+        // Create sockets.
+        let socket_out = UdpSocket::bind("0.0.0.0:0")?;
+        socket_out.set_read_timeout(None);
+        socket_out.set_nonblocking(false);
+        let socket_in = socket_out.try_clone()?;
 
-        // Setup communication channels for packet acks.
-        let acks_outgoing = mpsc::channel(buffer_size);
-        let acks_incoming = mpsc::channel(buffer_size);
-
-        // Create the timer instance.
-        // TODO: Check all possible configuration options and optimize.
-        let timer = tokio_timer::wheel().max_capacity(65536).build();
-
-        // Create the sender thread.
+        // Create sender thread.
         thread::spawn(move || {
-            // Create the event loop core.
-            let mut core = Core::new().unwrap();
+            let mut sequence_number = 0u32;
 
-            // Create the socket.
-            // TODO: Check that 0.0.0.0:0 actually lets the OS chose an appropriate local UDP socket.
-            let addr = SocketAddr::from_str("0.0.0.0:0").unwrap();
-            let socket_raw = UdpSocket::bind(&addr, &core.handle()).unwrap();
+            loop {
+                // Blocking read of the next outgoing item.
+                match outgoing_rx.recv() {
+                    Ok(item) => {
+                        sequence_number += 1;
 
-            // Frame the socket so that we can directly supply and read Packets to and from it.
-            let socket = socket_raw.framed(OpensimCodec::new(sim_address));
-            let (mut socket_sink, socket_stream) = socket.split();
+                        // Create the packet instance.
+                        let mut packet = Packet::new(item.message, sequence_number);
+                        packet.appended_acks = mpsc_read_many(&acks_outgoing_rx, 255);
 
-            // Stream 1:
-            // 1. Read packets from the outgoing queue.
-            // 2. Send the packet through the (framed) socket.
-            // 3. TODO: Register the packet if it is sent with the reliable flag.
-            // TODO: Does this really work as expected?
-            //let stream1 = socket_sink.send_all(packets_outgoing.1)
-            //    .map(|_| ())
-            //.map_err(|_| MessageManagerItemError::FailedSendingPacket).boxed();
-            
-            let stream1 = packets_outgoing.1
-                .map(move |packet| {
-                    socket_sink.start_send(packet);
-                    socket_sink.poll_complete() // TODO: Maybe we can fold all of the stream into just this poll future?
-                })
-                .map(|_| ())
-                .map_err(|_| MessageManagerItemError::FailedSendingPacket).boxed();
-            
+                        // Send through the socket.
+                        let mut buf = Vec::<u8>::new();
+                        packet.write_to(&mut buf);
+                        socket_out.send_to(&buf, sim_address);
 
-            // Stream 2:
-            // 1. Read packets from the (framed) socket.
-            // 3. TODO: Register incoming acks.
-            // 4. TODO: If the incoming packet has the reliable flag set, acknowledge it.
-            // 5. Put the resulting packet into the incoming queue.
-            let stream2 = socket_stream.map(move |packet: Packet| {
-                    // Register incoming acks.
-                    if !packet.appended_acks.is_empty() {
-                        // TODO acks_in_send.
+                        // Register pending ack if packet is to be sent reliably.
+                        if packet.is_reliable() {
+                            // Create new item.
+                            let wait_item = MessageManagerItem {
+                                message: packet.message,
+                                reliable: true,
+                                attempts: item.attempts + 1,
+                            };
+
+                            // Register pending ack.
+                            register_packet_tx.send(wait_item);
+                        }
                     }
-
-                    // Register the incoming packet.
-                    incoming_send.start_send(packet);
-                    incoming_send.poll_complete() // TODO
-                })
-                .map(|_| ())
-                .map_err(|_| MessageManagerItemError::IncomingFailed)
-                .boxed();
-            //.map_err(|_| ()); // TODO: Don't swallow errors.
-
-            // Combine stream1 and stream2 using Stream::select.
-            // As this is using a round-robin strategy scheduling between stream1 and stream2 will be
-            // fair.
-            let combined: BoxStream<(), MessageManagerItemError> = stream1.select(stream2).boxed();
-
-            // Run the main event loop.
-            match core.run(combined.into_future()) {
-                Ok(_) => {}
-                Err(_) => {
-                    panic!("There was an error.");
+                    Err(_) => panic!("channel closed"),
                 }
-            };
+            }
         });
 
-        // Return the struct.
-        MessageManager {
-            queue_outgoing: outgoing_send,
-            queue_incoming: incoming_recv,
-            sequence_number: 0,
-            timer: timer,
-            config: config,
-        }
-    }
+        // Create reader thread.
+        thread::spawn(move || {
+            let mut buf = Vec::<u8>::new();
 
-    fn send_message<M: Into<MessageInstance>>(&mut self,
-                                              message: M,
-                                              reliable: bool)
-                                              -> SendMessage {
-        // Create the packet.
-        let mut packet = Packet::new(message, self.next_sequence_number());
-        packet.set_reliable(reliable);
+            loop {
+                // Read from socket in blocking way.
+                buf.clear();
+                socket_in.recv(&mut buf).unwrap();
 
-        // Create the future.
-        let send = SendMessage::new(packet, &self.timer);
-        send
+                // Parse the packet.
+                let mut packet = Packet::read(&buf).unwrap();
+
+                // Read appended acks and send ack if requested (reliable packet).
+                for ack in &packet.appended_acks {
+                    acks_incoming_tx.send(*ack).unwrap();
+                }
+                if packet.is_reliable() {
+                    acks_outgoing_tx.send(packet.sequence_number).unwrap();
+                }
+
+                // Yield the received message.
+                incoming_tx.send(packet.message).unwrap();
+            }
+        });
+
+        // Create ack book-keeping thread.
+        thread::spawn(move ||
+            loop {
+                let item = register_packet_rx.recv().unwrap();
+
+            }
+        });
 
 
-        // TODO: Attempt multiple times if sending reliably.
-        // Determine if this belongs into the SendMessage::poll() or do I do this here instead?
-
-        // Put it into the send queue.
-        //self.queue_outgoing.start_send(packet);
-        //self.queue_outgoing.poll_complete()
-    }
-
-    /* TODO implement the efficient (call poll_complete() only once for a whole vec of messages)
-     *  version later. Returning a proper future which can also handle acks is more important.
-    fn send_messages(&mut self, messages: Vec<MessageInstance>, reliable: bool)
-        -> Poll<(), mpsc::SendError<Packet>>
-    {
-        for message in messages {
-            // Create the packet.
-            let mut packet = Packet::new(message, self.next_sequence_number());
-            packet.set_reliable(reliable);
-
-            // Put it into the send queue.
-            self.queue_outgoing.start_send(packet);
-        }
-
-        // Make sure that all items are sent to the queue.
-        self.queue_outgoing.poll_complete()
-    }
-    */
-
-    #[inline]
-    fn next_sequence_number(&mut self) -> SequenceNumber {
-        self.sequence_number += 1;
-        self.sequence_number
-    }
-}
-
-struct OpensimCodec {
-    sim_address: SocketAddr,
-}
-
-impl OpensimCodec {
-    fn new(sim: SocketAddr) -> OpensimCodec {
-        OpensimCodec { sim_address: sim }
-    }
-}
-
-impl UdpCodec for OpensimCodec {
-    type In = Packet;
-    type Out = Packet;
-
-    fn decode(&mut self, src: &SocketAddr, buf: &[u8]) -> Result<Self::In, ::std::io::Error> {
-        Packet::read(buf)
-    }
-
-    fn encode(&mut self, packet: Self::Out, buf: &mut Vec<u8>) -> SocketAddr {
-        packet.write_to(buf);
-        self.sim_address
+        Ok(MessageManager {
+               incoming: incoming_rx,
+               outgoing: outgoing_tx,
+           })
     }
 }
