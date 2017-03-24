@@ -1,7 +1,39 @@
 use std::collections::{BinaryHeap, HashMap};
 use std::cmp::Ordering;
-use time::{Duration, Timespec, get_time};
 use std::sync::mpsc;
+use std::sync::atomic::AtomicUsize;
+use time::{Duration, Timespec, get_time};
+
+/// Provides an atomic counter for u32 numbers.
+/// Essentially it provides a method that can be invoked and will return an incremented number
+/// that for sure was not yet returned in any other thread.
+///
+/// TODO: Remove once AtomicU32 is stabilized.
+pub struct AtomicU32Counter {
+    value: AtomicUsize
+}
+
+impl AtomicU32Counter {
+    pub fn new(value: u32) -> AtomicU32Counter {
+        // Check that usize is at least u32.
+        // TODO: Remove once AtomicU32 is stabilized.
+        assert!(::std::mem::size_of::<usize>() >= 4);
+
+        AtomicU32Counter {
+            value: AtomicUsize::new(value as usize)
+        }
+    }
+
+    pub fn next(&self) -> u32 {
+        use std::sync::atomic::Ordering;
+        loop {
+            let current = self.value.load(Ordering::SeqCst);
+            if self.value.compare_and_swap(current, current+1, Ordering::SeqCst) == current {
+                return current as u32;
+            }
+        }
+    }
+}
 
 /// read elements from the reader in a non-blocking (async) fashion.
 /// we try to read up to max_count elements if they are available, but if they

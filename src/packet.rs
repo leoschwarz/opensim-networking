@@ -1,6 +1,5 @@
 use byteorder::{LittleEndian, BigEndian, WriteBytesExt, ReadBytesExt};
 use std::io::{Read, Write};
-use tokio_core::net::UdpSocket;
 
 use messages::{MessageInstance, read_message};
 
