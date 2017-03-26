@@ -1,8 +1,8 @@
-use std::collections::{BinaryHeap, HashMap, VecDeque};
+use std::collections::{BinaryHeap, VecDeque};
 use std::cmp::Ordering;
 use std::sync::mpsc;
 use std::sync::atomic::AtomicUsize;
-use time::{Duration, Timespec, get_time};
+use time::{Duration, Timespec};
 
 /// Provides an atomic counter for u32 numbers.
 /// Essentially it provides a method that can be invoked and will return an incremented number

@@ -2,7 +2,7 @@ use {Vector3, Vector4, Quaternion, UnitQuaternion, Ip4Addr, IpPort, Uuid};
 use std::io::{Read, Write};
 use std::io::Error as IoError;
 use std::io::ErrorKind as IoErrorKind;
-use byteorder::{LittleEndian, BigEndian, ReadBytesExt, WriteBytesExt};
+use byteorder::{LittleEndian, ReadBytesExt, WriteBytesExt};
 
 pub enum ReadMessageError {
     IoError(IoError),
