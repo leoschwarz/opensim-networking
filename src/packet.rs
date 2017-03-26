@@ -66,7 +66,7 @@ impl Packet {
         self.message.write_to(buffer)?;
         for ack in &self.appended_acks {
             buffer.write_u32::<BigEndian>(*ack)?;
-        };
+        }
         if !self.appended_acks.is_empty() {
             buffer.write_u8(self.appended_acks.len() as u8)?;
         }
@@ -103,11 +103,11 @@ impl Packet {
         }
 
         Ok(Packet {
-            message: message,
-            flags: flags,
-            sequence_number: sequence_num,
-            appended_acks: acks,
-        })
+               message: message,
+               flags: flags,
+               sequence_number: sequence_num,
+               appended_acks: acks,
+           })
     }
 
     /// Enable the provided flags.
@@ -183,7 +183,8 @@ impl<'a> PacketReader<'a> {
             self.pointer = new_pointer;
             Ok(())
         } else {
-            Err(::std::io::Error::new(::std::io::ErrorKind::UnexpectedEof, "Tried skipping behind EOF in PacketReader."))
+            Err(::std::io::Error::new(::std::io::ErrorKind::UnexpectedEof,
+                                      "Tried skipping behind EOF in PacketReader."))
         }
     }
 
@@ -212,7 +213,7 @@ impl<'a> PacketReader<'a> {
 
 impl<'a> Read for PacketReader<'a> {
     fn read(&mut self, buf: &mut [u8]) -> Result<usize, ::std::io::Error> {
-        use ::std::cmp::min;
+        use std::cmp::min;
 
         if self.zerocoding_enabled {
             let mut read_bytes: usize = 0;
@@ -262,69 +263,74 @@ impl<'a> Read for PacketReader<'a> {
     }
 }
 
-#[test]
-fn read_simple() {
-    let data: [u8; 6] = [2, 4, 6, 8, 10, 12];
-    let mut reader = PacketReader::new(&data);
+#[cfg(test)]
+mod tests {
+    use super::*;
 
-    let mut buffer: [u8; 6] = [0, 0, 0, 0, 0, 0];
-    let bytes = reader.read(&mut buffer).unwrap();
-    assert_eq!(bytes, 6);
-    assert_eq!(buffer, [2, 4, 6, 8, 10, 12]);
-}
+    #[test]
+    fn read_simple() {
+        let data: [u8; 6] = [2, 4, 6, 8, 10, 12];
+        let mut reader = PacketReader::new(&data);
 
-#[test]
-fn read_in_chunks() {
-    let data: [u8; 5] = [2, 4, 6, 8, 10];
-    let mut reader = PacketReader::new(&data);
+        let mut buffer: [u8; 6] = [0, 0, 0, 0, 0, 0];
+        let bytes = reader.read(&mut buffer).unwrap();
+        assert_eq!(bytes, 6);
+        assert_eq!(buffer, [2, 4, 6, 8, 10, 12]);
+    }
 
-    let mut buffer: [u8; 2] = [0, 0];
-    let b1 = reader.read(&mut buffer).unwrap();
-    assert_eq!(b1, 2);
-    assert_eq!(buffer, [2, 4]);
-    let b2 = reader.read(&mut buffer).unwrap();
-    assert_eq!(b2, 2);
-    assert_eq!(buffer, [6, 8]);
-    let b3 = reader.read(&mut buffer).unwrap();
-    assert_eq!(b3, 1);
-    assert_eq!(buffer, [10, 8]);
-}
+    #[test]
+    fn read_in_chunks() {
+        let data: [u8; 5] = [2, 4, 6, 8, 10];
+        let mut reader = PacketReader::new(&data);
 
-#[test]
-fn read_zerocoded_easy() {
-    let data: [u8; 2] = [0, 5];
-    let mut reader = PacketReader::new(&data);
-    reader.zerocoding_enabled = true;
+        let mut buffer: [u8; 2] = [0, 0];
+        let b1 = reader.read(&mut buffer).unwrap();
+        assert_eq!(b1, 2);
+        assert_eq!(buffer, [2, 4]);
+        let b2 = reader.read(&mut buffer).unwrap();
+        assert_eq!(b2, 2);
+        assert_eq!(buffer, [6, 8]);
+        let b3 = reader.read(&mut buffer).unwrap();
+        assert_eq!(b3, 1);
+        assert_eq!(buffer, [10, 8]);
+    }
 
-    let mut buffer: [u8; 10] = [1, 1, 1, 1, 1, 1, 1, 1, 1, 1];
-    let bytes = reader.read(&mut buffer).unwrap();
-    assert_eq!(bytes, 5);
-    assert_eq!(buffer, [0, 0, 0, 0, 0, 1, 1, 1, 1, 1]);
-}
+    #[test]
+    fn read_zerocoded_easy() {
+        let data: [u8; 2] = [0, 5];
+        let mut reader = PacketReader::new(&data);
+        reader.zerocoding_enabled = true;
 
-#[test]
-fn read_zerocoded_hard() {
-    let data: [u8; 2] = [0, 5];
-    let mut reader = PacketReader::new(&data);
-    reader.zerocoding_enabled = true;
+        let mut buffer: [u8; 10] = [1, 1, 1, 1, 1, 1, 1, 1, 1, 1];
+        let bytes = reader.read(&mut buffer).unwrap();
+        assert_eq!(bytes, 5);
+        assert_eq!(buffer, [0, 0, 0, 0, 0, 1, 1, 1, 1, 1]);
+    }
 
-    let mut buffer: [u8; 3] = [1, 1, 1];
-    let b1 = reader.read(&mut buffer).unwrap();
-    assert_eq!(b1, 3);
-    assert_eq!(buffer, [0, 0, 0]);
+    #[test]
+    fn read_zerocoded_hard() {
+        let data: [u8; 2] = [0, 5];
+        let mut reader = PacketReader::new(&data);
+        reader.zerocoding_enabled = true;
 
-    buffer = [1, 1, 1];
-    let b2 = reader.read(&mut buffer).unwrap();
-    assert_eq!(b2, 2);
-    assert_eq!(buffer, [0, 0, 1]);
-}
+        let mut buffer: [u8; 3] = [1, 1, 1];
+        let b1 = reader.read(&mut buffer).unwrap();
+        assert_eq!(b1, 3);
+        assert_eq!(buffer, [0, 0, 0]);
 
-#[test]
-fn reader_skip() {
-    let data: [u8; 6] = [0, 1, 2, 3, 4, 5];
-    let mut reader = PacketReader::new(&data);
-    assert!(reader.skip_bytes(2).is_ok());
-    assert_eq!(reader.read_u8().unwrap(), 2);
-    assert!(reader.skip_bytes(3).is_ok());
-    assert!(reader.skip_bytes(1).is_err());
+        buffer = [1, 1, 1];
+        let b2 = reader.read(&mut buffer).unwrap();
+        assert_eq!(b2, 2);
+        assert_eq!(buffer, [0, 0, 1]);
+    }
+
+    #[test]
+    fn reader_skip() {
+        let data: [u8; 6] = [0, 1, 2, 3, 4, 5];
+        let mut reader = PacketReader::new(&data);
+        assert!(reader.skip_bytes(2).is_ok());
+        assert_eq!(reader.read_u8().unwrap(), 2);
+        assert!(reader.skip_bytes(3).is_ok());
+        assert!(reader.skip_bytes(1).is_err());
+    }
 }
