@@ -1,7 +1,7 @@
 use login::LoginResponse;
 use messages::MessageInstance;
 use packet::{Packet, SequenceNumber, PACKET_RESENT};
-use util::{AtomicU32Counter, mpsc_read_many};
+use util::{AtomicU32Counter, BackoffQueue, BackoffQueueState, mpsc_read_many};
 
 use futures::{Async, Future, Poll};
 use std::collections::HashMap;
@@ -137,13 +137,54 @@ impl Future for SendMessage {
     }
 }
 
+enum AckManagerOutput {
+    /// The enclosed item was extracted from the manager.
+    Item(MessageManagerItem),
+    /// Wait at least until the specified time.
+    Wait(Duration),
+}
+
+/// Stores MessageManager items until it is checked, whether the items have been ack'ed.
+struct AckManager {
+    queue: BackoffQueue<MessageManagerItem>,
+}
+
+impl AckManager {
+    fn new() -> AckManager {
+        AckManager { queue: BackoffQueue::new() }
+    }
+
+    fn insert(&mut self, item: MessageManagerItem) {
+        match item.status.lock() {
+            Ok(status) => {
+                match *status {
+                    SendMessageStatus::PendingAck { timeout, .. } => {
+                        self.queue.insert(item, timeout);
+                    }
+                    _ => panic!("Contract violation!"),
+                }
+            }
+            Err(_) => panic!("We must never panic if locking the status."),
+        }
+    }
+
+    fn fetch(&mut self) -> AckManagerOutput {
+        match self.queue.state() {
+            BackoffQueueState::ItemReady => {
+                let item = self.queue.extract().unwrap();
+                AckManagerOutput::Item(item)
+            }
+            BackoffQueueState::Wait(duration) => AckManagerOutput::Wait(duration),
+        }
+    }
+}
+
 /// Handles the sending and receiving of messages internally.
 ///
 /// One thread is created to be perform requests concurrently to the rest of the program.
 ///
 /// TODO: Figure out a good API to notify on both of these events:
 /// - received a new package from the circuit.
-/// - a package has timed out too many times and cannot be retried anymore.
 ///
 /// TODO: If we want to allow for thread safe concurrent access from multiple threads we
 ///  will have to create something like a writer struct that can be sent over to other threads.
@@ -163,6 +204,7 @@ struct MessageManager {
     incoming: mpsc::Receiver<MessageInstance>,
     outgoing: mpsc::Sender<MessageManagerItem>,
     sequence_counter: AtomicU32Counter,
+    ack_manager: AckManager,
 }
 
 impl MessageManager {
@@ -194,18 +236,17 @@ impl MessageManager {
 
         // Create sockets.
         let socket_out = UdpSocket::bind("0.0.0.0:0")?;
-        socket_out.set_read_timeout(None);
-        socket_out.set_nonblocking(false);
+        socket_out.set_read_timeout(None)?;
+        socket_out.set_nonblocking(false)?;
         let socket_in = socket_out.try_clone()?;
 
         // Create sender thread.
         thread::spawn(move || {
-
             loop {
                 // Blocking read of the next outgoing item.
                 match outgoing_rx.recv() {
                     Ok(item) => {
-                        let (mut packet, mut status) = (item.packet, item.status);
+                        let (mut packet, status) = (item.packet, item.status);
                         // Append pending acks.
                         if packet.appended_acks.is_empty() {
                             packet.appended_acks = mpsc_read_many(&acks_outgoing_rx, 255);
@@ -229,11 +270,12 @@ impl MessageManager {
                         }
 
                         // Update item's status.
-                        // TODO: This doesn't work yet.
-                        let status_mut = status.get_mut().unwrap();
-                        *status_mut = next_status;
+                        *status.lock().unwrap() = next_status;
 
-                        // TODO: Register the item for timeout checking.
+                        if packet.is_reliable() {
+                            // Register the packet for timeout checking.
+                            register_packet_tx.write()
+                        }
                     }
                     Err(_) => panic!("channel closed"),
                 }
@@ -250,7 +292,7 @@ impl MessageManager {
                 socket_in.recv(&mut buf).unwrap();
 
                 // Parse the packet.
-                let mut packet = Packet::read(&buf).unwrap();
+                let packet = Packet::read(&buf).unwrap();
 
                 // Read appended acks and send ack if requested (reliable packet).
                 for ack in &packet.appended_acks {
@@ -276,6 +318,7 @@ impl MessageManager {
                incoming: incoming_rx,
                outgoing: outgoing_tx,
                sequence_counter: AtomicU32Counter::new(0),
+               ack_manager: AckManager::new(),
            })
     }
 }

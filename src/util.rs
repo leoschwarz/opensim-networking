@@ -81,11 +81,11 @@ impl<T> BackoffQueue<T> {
 
     /// Insert an item into the backoff queue.
     /// `item`: The item to be inserted.
-    /// `wait`: The duration to wait at least before retrieving the item.
-    pub fn insert(&mut self, item: T, wait: Duration) {
+    /// `timeout`: Minimal wait time before retrieving the item.
+    pub fn insert(&mut self, item: T, timeout: Timespec) {
         self.queue.push(BackoffQueueItem{
             value: item,
-            wait_until: ::time::get_time() + wait
+            wait_until: timeout
         });
     }
 
