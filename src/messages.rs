@@ -32644,7 +32644,7 @@ impl Message for CloseCircuit {
         Ok(())
     }
 
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadMessageError>
+    fn read_from<R: ?Sized>(_: &mut R) -> Result<MessageInstance, ReadMessageError>
         where R: Read
     {
         Ok(MessageInstance::CloseCircuit(CloseCircuit {}))
@@ -32867,7 +32867,7 @@ impl Message for SubscribeLoad {
         Ok(())
     }
 
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadMessageError>
+    fn read_from<R: ?Sized>(_: &mut R) -> Result<MessageInstance, ReadMessageError>
         where R: Read
     {
         Ok(MessageInstance::SubscribeLoad(SubscribeLoad {}))
@@ -32883,7 +32883,7 @@ impl Message for UnsubscribeLoad {
         Ok(())
     }
 
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadMessageError>
+    fn read_from<R: ?Sized>(_: &mut R) -> Result<MessageInstance, ReadMessageError>
         where R: Read
     {
         Ok(MessageInstance::UnsubscribeLoad(UnsubscribeLoad {}))
@@ -33079,7 +33079,7 @@ impl Message for SimulatorShutdownRequest {
         Ok(())
     }
 
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadMessageError>
+    fn read_from<R: ?Sized>(_: &mut R) -> Result<MessageInstance, ReadMessageError>
         where R: Read
     {
         Ok(MessageInstance::SimulatorShutdownRequest(SimulatorShutdownRequest {}))
@@ -33384,7 +33384,7 @@ impl Message for EconomyDataRequest {
         Ok(())
     }
 
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadMessageError>
+    fn read_from<R: ?Sized>(_: &mut R) -> Result<MessageInstance, ReadMessageError>
         where R: Read
     {
         Ok(MessageInstance::EconomyDataRequest(EconomyDataRequest {}))
@@ -38539,7 +38539,7 @@ impl Message for DisableSimulator {
         Ok(())
     }
 
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadMessageError>
+    fn read_from<R: ?Sized>(_: &mut R) -> Result<MessageInstance, ReadMessageError>
         where R: Read
     {
         Ok(MessageInstance::DisableSimulator(DisableSimulator {}))
@@ -46346,7 +46346,7 @@ impl Message for TallyVotes {
         Ok(())
     }
 
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadMessageError>
+    fn read_from<R: ?Sized>(_: &mut R) -> Result<MessageInstance, ReadMessageError>
         where R: Read
     {
         Ok(MessageInstance::TallyVotes(TallyVotes {}))
@@ -47252,7 +47252,7 @@ impl Message for RequestTrustedCircuit {
         Ok(())
     }
 
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadMessageError>
+    fn read_from<R: ?Sized>(_: &mut R) -> Result<MessageInstance, ReadMessageError>
         where R: Read
     {
         Ok(MessageInstance::RequestTrustedCircuit(RequestTrustedCircuit {}))

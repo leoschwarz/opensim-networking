@@ -236,7 +236,8 @@ def generate_message_impl(message)
 
     # Reader
     #########
-    out << "\tfn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadMessageError> where R: Read {\n"
+    buffer_var = (message.blocks.map{|block| block.fields.count}.inject(:+).to_i != 0) ? "buffer" : "_"
+    out << "\tfn read_from<R: ?Sized>(#{buffer_var}: &mut R) -> Result<MessageInstance, ReadMessageError> where R: Read {\n"
     message.blocks.each do |block|
         out << "\t\t// Block #{block.ll_name}\n"
         if block.quantity == "Single"
