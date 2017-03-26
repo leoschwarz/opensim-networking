@@ -38,8 +38,21 @@ impl Circuit {
     /// this method you needn't necessarily poll it for progress to be made. It will be handed over
     /// to the sender threads of this Circuit and you will be able to confirm it has finished
     /// successfully or failed by polling the returned future.
-    pub fn send_message<M: Into<MessageInstance>>(&self, msg: M, reliable: bool) -> SendMessage {
+    pub fn send<M: Into<MessageInstance>>(&self, msg: M, reliable: bool) -> SendMessage {
         self.message_manager.send_message(msg.into(), reliable)
+    }
+
+    /// Reads a message and returns it.
+    /// If there is no message available yet it will block the current thread until there is one
+    /// available.
+    pub fn read(&self) -> MessageInstance {
+        self.message_manager.incoming.recv().unwrap()
+    }
+
+    /// Trys to read a message and returns it if one is available right away. Otherwise this won't
+    /// block the current thread and None will be returned.
+    pub fn try_read(&self) -> Option<MessageInstance> {
+        self.message_manager.incoming.try_recv().ok()
     }
 }
 
@@ -197,27 +210,17 @@ impl AckManager {
     }
 }
 
-/// Handles the sending and receiving of messages internally.
+/// Handles message management and sending and receiving of packages through the socket.
 ///
-/// One thread is created to be perform requests concurrently to the rest of the program.
+/// Note that this is a rather expensive struct creating multiple threads and communication
+/// channels.
 ///
-/// TODO: Figure out a good API to notify on both of these events:
-/// - received a new package from the circuit.
-///
-/// TODO: If we want to allow for thread safe concurrent access from multiple threads we
-///  will have to create something like a writer struct that can be sent over to other threads.
-///  The problem with API design here is that we will have to export some kind of structs,
-///  e.g. `MessageReader` and `MessageWriter` and pass these through `Circuit`'s API with methods
-///  like `message_reader()` and `message_writer()`.
-///  It's certainly a possibility but there might be a better way.
-///
-/// TODO: How will it affect us if the other side ignores our acks, will we be fine just resending
-///  the ack for a resent package.
-///
-/// TODO: Add a way to send messages without retrying them.
-///  This could become useful when for example a navigation packet gets lost and a user is already
-///  moving into a different location and would be sent back if this old packet would be resent
-///  now.
+/// TODO:
+/// - Threadsafe API? Reader/Writer objects?
+/// - When we receive resent packets, assure that we didn't already receive the packet somewhere
+///   but didn't send the ack in time. This might be important as otherwise the client code will
+///   have to deal with the possibility of getting the same packet repeatedly...
+/// - Stop/exit functionality.
 struct MessageManager {
     incoming: mpsc::Receiver<MessageInstance>,
     outgoing: mpsc::Sender<MessageManagerItem>,
