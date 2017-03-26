@@ -129,6 +129,11 @@ impl Packet {
         }
     }
 
+    /// Check if the packet has a specific flag.
+    pub fn has_flag(&self, flag: PacketFlags) -> bool {
+        self.flags.contains(flag)
+    }
+
     /// Check the reliable flag for a packet.
     pub fn is_reliable(&self) -> bool {
         self.flags.contains(PACKET_RELIABLE)

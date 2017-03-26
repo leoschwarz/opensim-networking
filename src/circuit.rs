@@ -18,18 +18,12 @@ use time::{Duration, Timespec, get_time};
 pub struct Circuit {
     /// This instance actually manages the messages.
     message_manager: MessageManager,
-
-    /// Socket address (contains address + port) of simulator.
-    sim_address: SocketAddr,
 }
 
 impl Circuit {
     pub fn initiate(login_res: LoginResponse, config: CircuitConfig) -> Result<Circuit, IoError> {
         let sim_address = SocketAddr::V4(SocketAddrV4::new(login_res.sim_ip, login_res.sim_port));
-        Ok(Circuit {
-               sim_address: sim_address,
-               message_manager: MessageManager::start(sim_address, config)?,
-           })
+        Ok(Circuit { message_manager: MessageManager::start(sim_address, config)? })
     }
 
     /// Send a message through the circuit.
@@ -46,13 +40,19 @@ impl Circuit {
     /// If there is no message available yet it will block the current thread until there is one
     /// available.
     pub fn read(&self) -> MessageInstance {
-        self.message_manager.incoming.recv().unwrap()
+        self.message_manager
+            .incoming
+            .recv()
+            .unwrap()
     }
 
     /// Trys to read a message and returns it if one is available right away. Otherwise this won't
     /// block the current thread and None will be returned.
     pub fn try_read(&self) -> Option<MessageInstance> {
-        self.message_manager.incoming.try_recv().ok()
+        self.message_manager
+            .incoming
+            .try_recv()
+            .ok()
     }
 }
 
@@ -217,9 +217,6 @@ impl AckManager {
 ///
 /// TODO:
 /// - Threadsafe API? Reader/Writer objects?
-/// - When we receive resent packets, assure that we didn't already receive the packet somewhere
-///   but didn't send the ack in time. This might be important as otherwise the client code will
-///   have to deal with the possibility of getting the same packet repeatedly...
 /// - Stop/exit functionality.
 struct MessageManager {
     incoming: mpsc::Receiver<MessageInstance>,
@@ -250,9 +247,6 @@ impl MessageManager {
         let (acks_incoming_tx, acks_incoming_rx) = mpsc::channel::<SequenceNumber>();
         let (register_packet_tx, register_packet_rx) = mpsc::channel::<MessageManagerItem>();
         let outgoing_tx2 = outgoing_tx.clone();
-
-        // TODO: As we will be using blocking IO in the reader and writer thread
-        //       figure out a safe way to stop the threads within "constant time".
 
         // Create sockets.
         let socket_out = UdpSocket::bind("0.0.0.0:0")?;
@@ -310,6 +304,7 @@ impl MessageManager {
         // Create reader thread.
         thread::spawn(move || {
             let mut buf = Vec::<u8>::new();
+            let mut packet_log = FifoCache::<SequenceNumber>::new(200_000);
 
             loop {
                 // Read from socket in blocking way.
@@ -325,6 +320,14 @@ impl MessageManager {
                 }
                 if packet.is_reliable() {
                     acks_outgoing_tx.send(packet.sequence_number).unwrap();
+
+                    // Check if we did receive the packet already and the remote just resent it
+                    // again anyway.
+                    let duplicate = packet_log.contains(&packet.sequence_number);
+                    packet_log.insert(packet.sequence_number);
+                    if duplicate {
+                        continue;
+                    }
                 }
 
                 // Yield the received message.
