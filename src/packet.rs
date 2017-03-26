@@ -1,4 +1,4 @@
-use byteorder::{LittleEndian, BigEndian, WriteBytesExt, ReadBytesExt};
+use byteorder::{BigEndian, WriteBytesExt, ReadBytesExt};
 use std::io::{Read, Write};
 
 use messages::{MessageInstance, read_message};
@@ -82,7 +82,7 @@ impl Packet {
         // Skip extra header if present, since we don't expect it.
         let extra_bytes = reader.read_u8()? as usize;
         if extra_bytes > 0 {
-            reader.skip_bytes(extra_bytes);
+            reader.skip_bytes(extra_bytes)?;
         }
 
         // Read message.

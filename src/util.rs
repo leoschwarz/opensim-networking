@@ -1,4 +1,4 @@
-use std::collections::{BinaryHeap, HashMap};
+use std::collections::{BinaryHeap, HashMap, VecDeque};
 use std::cmp::Ordering;
 use std::sync::mpsc;
 use std::sync::atomic::AtomicUsize;
@@ -32,6 +32,33 @@ impl AtomicU32Counter {
                 return current as u32;
             }
         }
+    }
+}
+
+pub struct FifoCache<T> {
+    capacity: usize,
+    data: VecDeque<T>
+}
+
+impl<T: PartialEq> FifoCache<T> {
+    pub fn new(capacity: usize) -> Self {
+        FifoCache {
+            capacity: capacity,
+            data: VecDeque::new()
+        }
+    }
+
+    pub fn insert(&mut self, item: T) {
+        // Remove the oldest element if capacity reached.
+        if self.data.len() >= self.capacity {
+            self.data.pop_front();
+        }
+
+        self.data.push_back(item);
+    }
+
+    pub fn contains(&mut self, item: &T) -> bool {
+        self.data.contains(item)
     }
 }
 
