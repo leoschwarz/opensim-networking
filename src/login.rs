@@ -31,46 +31,37 @@ pub fn hash_password(password_raw: &str) -> String {
     "$1$".to_string() + &digest.result_str()
 }
 
-#[derive(Debug)]
-pub enum LoginError {
-    /// There was a HTTP error.
-    HyperError(::hyper::Error),
-    /// There was an error with parsing the response.
-    ParserError,
-    /// The server returned an explicit failure as response.
-    Fail,
-    /// The server returned an invalid XML-RPC response.
-    InvalidResponse
+#[derive(Debug, ErrorChain)]
+#[error_chain(error = "LoginError")]
+#[error_chain(result = "")]
+pub enum LoginErrorKind {
+    #[error_chain(foreign)]
+    RequestError(::xmlrpc::RequestError),
+
+    #[error_chain(foreign)]
+    ParseFloatError(::std::num::ParseFloatError),
+
+    #[error_chain(foreign)]
+    AddrParseError(::std::net::AddrParseError),
+
+    #[error_chain(foreign)]
+    UuidParseError(::uuid::ParseError),
+
+    /// Login failed.
+    #[error_chain(custom)]
+    #[error_chain(description = r#"|_| "login failed""#)]
+    #[error_chain(display = r#"|fault| write!(f, "login failed: {:?}", fault)"#)]
+    XmlRpcFault(::xmlrpc::Fault),
+
+    #[error_chain(custom)]
+    #[error_chain(description = r#"|_| "extracting response failed""#)]
+    #[error_chain(display = r#"|field| write!(f, "extracting {} from response failed", field)"#)]
+    ExtractResponseError(String),
 }
 
-impl From<::xmlrpc::RequestError> for LoginError {
-    fn from(err: ::xmlrpc::RequestError) -> LoginError {
-        use ::xmlrpc::RequestError::*;
-
-        println!("error: {:?}", err);
-        match err {
-            HyperError(e) => LoginError::HyperError(e),
-            ParseError(_) => LoginError::ParserError,
-            HttpStatus(e) => LoginError::Fail,
-        }
-    }
-}
-
-impl From<::std::num::ParseFloatError> for LoginError {
-    fn from(_: ::std::num::ParseFloatError) -> LoginError {
-        LoginError::InvalidResponse
-    }
-}
-
-impl From<::std::net::AddrParseError> for LoginError {
-    fn from(_: ::std::net::AddrParseError) -> LoginError {
-        LoginError::InvalidResponse
-    }
-}
-
-impl From<::uuid::ParseError> for LoginError {
-    fn from(_: ::uuid::ParseError) -> LoginError {
-        LoginError::InvalidResponse
+impl From<::xmlrpc::Fault> for LoginError {
+    fn from(err: ::xmlrpc::Fault) -> LoginError {
+        LoginErrorKind::XmlRpcFault(err).into()
     }
 }
 
@@ -84,7 +75,7 @@ pub struct LoginResponse {
     /// The IP address of the simulator to connect to.
     pub sim_ip: Ip4Addr,
     /// The port of the simulator to connect to.
-    pub sim_port: u16
+    pub sim_port: u16,
 }
 
 impl LoginResponse {
@@ -95,37 +86,43 @@ impl LoginResponse {
                 let x = try!(caps.get(1).unwrap().as_str().parse::<f32>());
                 let y = try!(caps.get(2).unwrap().as_str().parse::<f32>());
                 let z = try!(caps.get(3).unwrap().as_str().parse::<f32>());
-                Ok(Vector3::new(x,y,z))
-            },
-            _ => Err(LoginError::InvalidResponse)
+                Ok(Vector3::new(x, y, z))
+            }
+            _ => Err(
+                LoginErrorKind::ExtractResponseError(format!("vector3='{}'", raw)).into(),
+            ),
         }
     }
 
     fn extract(response: BTreeMap<String, XmlValue>) -> Result<LoginResponse, LoginError> {
+        fn err(msg: &'static str) -> LoginError {
+            LoginErrorKind::ExtractResponseError(msg.to_string()).into()
+        }
+
         // TODO: Check if additional items should be extracted.
         let look_at = match response.get("look_at") {
             Some(&XmlValue::String(ref raw)) => try!(LoginResponse::extract_vector3(raw)),
-            _ => return Err(LoginError::InvalidResponse)
+            _ => return Err(err("look_at")),
         };
         let circuit_code = match response.get("circuit_code") {
             Some(&XmlValue::Int(code)) => code as u32,
-            _ => return Err(LoginError::InvalidResponse)
+            _ => return Err(err("circuit_code")),
         };
         let session_id = match response.get("session_id") {
             Some(&XmlValue::String(ref id)) => try!(Uuid::parse_str(id)),
-            _ => return Err(LoginError::InvalidResponse)
+            _ => return Err(err("session_id")),
         };
         let agent_id = match response.get("agent_id") {
             Some(&XmlValue::String(ref id)) => try!(Uuid::parse_str(id)),
-            _ => return Err(LoginError::InvalidResponse)
+            _ => return Err(err("agent_id")),
         };
         let sim_ip = match response.get("sim_ip") {
             Some(&XmlValue::String(ref ip_raw)) => try!(Ip4Addr::from_str(ip_raw)),
-            _ => return Err(LoginError::InvalidResponse)
+            _ => return Err(err("sim_ip")),
         };
         let sim_port = match response.get("sim_port") {
             Some(&XmlValue::Int(port)) => port as u16,
-            _ => return Err(LoginError::InvalidResponse)
+            _ => return Err(err("sim_port")),
         };
 
         Ok(LoginResponse {
@@ -134,7 +131,7 @@ impl LoginResponse {
             session_id: session_id,
             agent_id: agent_id,
             sim_ip: sim_ip,
-            sim_port: sim_port
+            sim_port: sim_port,
         })
     }
 }
@@ -157,7 +154,10 @@ impl LoginRequest {
         let mut data: BTreeMap<String, XmlValue> = BTreeMap::new();
         data.insert("first".to_string(), XmlValue::from(&self.first_name[..]));
         data.insert("last".to_string(), XmlValue::from(&self.last_name[..]));
-        data.insert("passwd".to_string(), XmlValue::from(&self.password_hash[..]));
+        data.insert(
+            "passwd".to_string(),
+            XmlValue::from(&self.password_hash[..]),
+        );
         data.insert("start".to_string(), XmlValue::from(&self.start[..]));
         data.insert("version".to_string(), XmlValue::from("0.1.0"));
         data.insert("channel".to_string(), XmlValue::from("tokio-opensim"));
@@ -165,16 +165,15 @@ impl LoginRequest {
 
         let client = ::hyper::Client::new();
 
-        let result = try!(::xmlrpc::Request::new("login_to_simulator")
-            .arg(XmlValue::Struct(data)).call(&client, url));
+        let value = ::xmlrpc::Request::new("login_to_simulator")
+            .arg(XmlValue::Struct(data))
+            .call(&client, url)??;
 
-        match result {
-            Err(_) => Err(LoginError::Fail),
-            Ok(response) => match response {
-                XmlValue::Struct(s) => LoginResponse::extract(s),
-                _ => Err(LoginError::InvalidResponse)
-            }
+        match value {
+            XmlValue::Struct(s) => LoginResponse::extract(s),
+            _ => Err(
+                LoginErrorKind::ExtractResponseError("value is not a struct".into()).into(),
+            ),
         }
     }
 }
-

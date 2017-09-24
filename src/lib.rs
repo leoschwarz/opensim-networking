@@ -2,6 +2,9 @@
 extern crate bitflags;
 extern crate byteorder;
 extern crate crypto;
+#[macro_use]
+extern crate derive_error_chain;
+extern crate error_chain;
 extern crate futures;
 extern crate hyper;
 extern crate mio;
