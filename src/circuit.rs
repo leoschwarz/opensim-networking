@@ -1,6 +1,6 @@
 use login::LoginResponse;
 use messages::MessageInstance;
-use packet::{Packet, SequenceNumber, PACKET_RESENT};
+use packet::{Packet, PacketFlags, SequenceNumber};
 use util::{AtomicU32Counter, BackoffQueue, BackoffQueueState, FifoCache, mpsc_read_many};
 
 use futures::{Async, Future, Poll};
@@ -276,7 +276,7 @@ impl MessageManager {
                         if !next_status.is_failure() {
                             // Mark the packet as resend if it is a resend.
                             if next_status.is_resend() {
-                                packet.enable_flags(PACKET_RESENT);
+                                packet.enable_flags(PacketFlags::RESENT);
                             }
 
                             let mut buf = Vec::<u8>::new();

@@ -34,7 +34,7 @@ pub fn hash_password(password_raw: &str) -> String {
 #[derive(Debug)]
 pub enum LoginError {
     /// There was a HTTP error.
-    HyperError(::hyper::error::Error),
+    HyperError(::hyper::Error),
     /// There was an error with parsing the response.
     ParserError,
     /// The server returned an explicit failure as response.
@@ -45,10 +45,13 @@ pub enum LoginError {
 
 impl From<::xmlrpc::RequestError> for LoginError {
     fn from(err: ::xmlrpc::RequestError) -> LoginError {
+        use ::xmlrpc::RequestError::*;
+
         println!("error: {:?}", err);
         match err {
-            ::xmlrpc::RequestError::HyperError(e) => LoginError::HyperError(e),
-            ::xmlrpc::RequestError::ParseError(_) => LoginError::ParserError,
+            HyperError(e) => LoginError::HyperError(e),
+            ParseError(_) => LoginError::ParserError,
+            HttpStatus(e) => LoginError::Fail,
         }
     }
 }
@@ -89,9 +92,9 @@ impl LoginResponse {
         let re = Regex::new(r"\[r([0-9\.-]+),r([0-9\.-]+),r([0-9\.-]+)\]").unwrap();
         match re.captures(raw) {
             Some(caps) => {
-                let x = try!(caps.at(1).unwrap().parse::<f32>());
-                let y = try!(caps.at(2).unwrap().parse::<f32>());
-                let z = try!(caps.at(3).unwrap().parse::<f32>());
+                let x = try!(caps.get(1).unwrap().as_str().parse::<f32>());
+                let y = try!(caps.get(2).unwrap().as_str().parse::<f32>());
+                let z = try!(caps.get(3).unwrap().as_str().parse::<f32>());
                 Ok(Vector3::new(x,y,z))
             },
             _ => Err(LoginError::InvalidResponse)

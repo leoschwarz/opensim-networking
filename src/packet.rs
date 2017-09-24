@@ -4,17 +4,17 @@ use std::io::{Read, Write};
 use messages::{MessageInstance, read_message};
 
 bitflags! {
-    pub flags PacketFlags: u8 {
+    pub struct PacketFlags: u8 {
         /// There are acks appended to the packet.
-        const PACKET_APPENDED_ACKS = 0b0001_0000,
+        const APPENDED_ACKS = 0b0001_0000;
         /// Resending a packet that was sent (with PACKET_RELIABLE) but not ack'd.
-        const PACKET_RESENT        = 0b0010_0000,
+        const RESENT        = 0b0010_0000;
         /// Ack for packet is requested.
-        const PACKET_RELIABLE      = 0b0100_0000,
+        const RELIABLE      = 0b0100_0000;
         /// If enabled:
         /// Multiple consecutive zero bytes (but also single zero bytes) are coded into one zero
         /// byte and a following byte specifying the number of zero bytes.
-        const PACKET_ZEROCODED     = 0b1000_0000,
+        const ZEROCODED     = 0b1000_0000;
     }
 }
 
@@ -56,9 +56,9 @@ impl Packet {
     /// * http://wiki.secondlife.com/wiki/Packet_Layout
     pub fn write_to<W: Write>(&self, buffer: &mut W) -> Result<(), ::std::io::Error> {
         // Assert: PACKET_APPENDED_ACKS flag set <-> self.appended_acks is empty.
-        debug_assert!(!(self.flags.contains(PACKET_APPENDED_ACKS) ^ self.appended_acks.is_empty()));
+        debug_assert!(!(self.flags.contains(PacketFlags::APPENDED_ACKS) ^ self.appended_acks.is_empty()));
         // TODO: Zero coded writing not implemented yet.
-        assert!(!self.flags.contains(PACKET_ZEROCODED));
+        assert!(!self.flags.contains(PacketFlags::ZEROCODED));
 
         buffer.write_u8(self.flags.bits())?;
         buffer.write_u32::<BigEndian>(self.sequence_number)?;
@@ -87,14 +87,14 @@ impl Packet {
 
         // Read message.
         let message_num = reader.read_message_number()?;
-        if flags.contains(PACKET_ZEROCODED) {
+        if flags.contains(PacketFlags::ZEROCODED) {
             reader.zerocoding_enabled = true;
         }
         let message = read_message(&mut reader, message_num)?;
 
         // Read appended ACKs if there are supposed to be any.
         let mut acks = Vec::new();
-        if flags.contains(PACKET_APPENDED_ACKS) {
+        if flags.contains(PacketFlags::APPENDED_ACKS) {
             let n_acks = reader.peek_last_byte() as usize;
             acks.reserve(n_acks);
             for _ in 0..n_acks {
@@ -123,9 +123,9 @@ impl Packet {
     /// Set the reliable flag for a packet.
     pub fn set_reliable(&mut self, value: bool) {
         if value {
-            self.enable_flags(PACKET_RELIABLE);
+            self.enable_flags(PacketFlags::RELIABLE);
         } else {
-            self.disable_flags(PACKET_RELIABLE);
+            self.disable_flags(PacketFlags::RELIABLE);
         }
     }
 
@@ -136,7 +136,7 @@ impl Packet {
 
     /// Check the reliable flag for a packet.
     pub fn is_reliable(&self) -> bool {
-        self.flags.contains(PACKET_RELIABLE)
+        self.flags.contains(PacketFlags::RELIABLE)
     }
 }
 
