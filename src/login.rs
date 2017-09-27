@@ -39,6 +39,9 @@ pub enum LoginErrorKind {
     RequestError(::xmlrpc::RequestError),
 
     #[error_chain(foreign)]
+    HttpError(::reqwest::Error),
+
+    #[error_chain(foreign)]
     ParseFloatError(::std::num::ParseFloatError),
 
     #[error_chain(foreign)]
@@ -163,7 +166,7 @@ impl LoginRequest {
         data.insert("channel".to_string(), XmlValue::from("tokio-opensim"));
         data.insert("platform".to_string(), XmlValue::from("Linux"));
 
-        let client = ::hyper::Client::new();
+        let client = ::reqwest::Client::new()?;
 
         let value = ::xmlrpc::Request::new("login_to_simulator")
             .arg(XmlValue::Struct(data))
