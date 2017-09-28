@@ -2,10 +2,12 @@
 // local instance about agent state and having this be automatically sent to the sim at a regular
 // interval.
 
+use Vector3;
+
 bitflags! {
     /// Agent Updates contain a set of flags which inform the sim about the current status
     /// of the agent and build the foundation for interactions like agent movement.
-    pub struct AgentUpdateFlag: u32 {
+    pub struct ControlFlags: u32 {
         const MOVE_FWD_POS = 1 << 0;
         const MOVE_FWD_NEG = 1 << 1;
         const MOVE_LEFT_POS = 1 << 2;
@@ -31,4 +33,10 @@ bitflags! {
     }
 }
 
+// TODO: how to represent orientation? with vectors or quaternions.
+pub struct AgentState {
+    /// The region local coordinates.
+    pub position: Vector3,
 
+    
+}
