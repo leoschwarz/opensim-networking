@@ -104,7 +104,7 @@ impl LoginResponse {
 
         // TODO: Check if additional items should be extracted.
         let look_at = match response.get("look_at") {
-            Some(&XmlValue::String(ref raw)) => try!(LoginResponse::extract_vector3(raw)),
+            Some(&XmlValue::String(ref raw)) => LoginResponse::extract_vector3(raw)?,
             _ => return Err(err("look_at")),
         };
         let circuit_code = match response.get("circuit_code") {

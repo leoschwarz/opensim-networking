@@ -61,10 +61,10 @@ pub struct CircuitConfig {
     /// The number of seconds before an unconfirmed packet becomes invalid.
     /// If multiple attempts are allowed, each single attempt will get at most this time before
     /// timing out.
-    send_timeout: Duration,
+    pub send_timeout: Duration,
 
     /// The number of times resending an unacknowledged packet before reporting it as failure.
-    send_attempts: usize,
+    pub send_attempts: usize,
 }
 
 struct MessageManagerItem {

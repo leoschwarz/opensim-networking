@@ -36,7 +36,7 @@ bitflags! {
 // TODO: how to represent orientation? with vectors or quaternions.
 pub struct AgentState {
     /// The region local coordinates.
-    pub position: Vector3,
+    pub position: Vector3<f32>,
 
     
 }
