@@ -3,3 +3,4 @@
 //! corresponding messages manually.
 
 pub mod agent_update;
+pub mod initiation;

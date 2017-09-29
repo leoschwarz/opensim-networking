@@ -2,13 +2,19 @@ extern crate opensim_networking;
 #[macro_use]
 extern crate serde_derive;
 extern crate toml;
+extern crate num_traits;
 
 use opensim_networking::login::{LoginRequest, hash_password};
 use opensim_networking::circuit::{Circuit, CircuitConfig};
-use opensim_networking::Duration;
+use opensim_networking::{Duration, Vector3, Quaternion};
+
+use opensim_networking::systems::agent_update::{AgentState, MoveDirection, Modality};
+use opensim_networking::messages::{AgentUpdate, AgentUpdate_AgentData};
+use num_traits::identities::{One, Zero};
 
 use std::io::prelude::*;
 use std::fs::File;
+use std::thread;
 
 #[derive(Deserialize)]
 struct Config {
@@ -60,9 +66,39 @@ fn main() {
         send_timeout: Duration::milliseconds(2500),
         send_attempts: 5,
     };
+    let agent_id = resp.agent_id.clone();
+    let session_id = resp.session_id.clone();
+    let circuit_code = resp.circuit_code.clone();
     let circuit = match Circuit::initiate(resp, config) {
         Err(e) => panic!("Circuit establishment failed, err: {:?}", e),
         Ok(c) => c,
     };
     println!("Established circuit successully.");
+
+    // Perform the last steps of the circuit initiation.
+    opensim_networking::systems::initiation::initiate(&circuit,
+                                                      circuit_code,
+                                                      agent_id,
+                                                      session_id);
+
+    // Let the avatar walk back and forth.
+    // TODO: extract position
+    let mut state = AgentState {
+        position: Vector3::zero(),
+        move_direction: Some(MoveDirection::Forward),
+        modality: Modality::Walking,
+        body_rotation: Quaternion::one(),
+        head_rotation: Quaternion::one(),
+    };
+
+    loop {
+        for _ in 1..40 {
+            let msg = state.to_update_message(agent_id, session_id);
+            circuit.send(msg, false);
+
+            thread::sleep(std::time::Duration::from_millis(50));
+        }
+        thread::sleep(std::time::Duration::from_millis(200));
+        state.move_direction = Some(state.move_direction.unwrap().inverse());
+    }
 }

@@ -194,6 +194,7 @@ impl AckManager {
             SendMessageStatus::PendingAck { timeout, .. } => {
                 self.queue.insert(item, timeout);
             }
+            // FIXME TODO I actually ended up getting this during testing.
             _ => panic!("Contract violation!"),
         }
     }
