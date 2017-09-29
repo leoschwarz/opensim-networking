@@ -2,6 +2,7 @@
 name = "opensim-networking"
 version = "0.1.0"
 authors = ["Leo Schwarz <mail@leoschwarz.com>"]
+license = "GPL-3.0"
 
 [dependencies]
 bitflags = "1.0"
