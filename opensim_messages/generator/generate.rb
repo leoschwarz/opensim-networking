@@ -8,7 +8,7 @@ require 'active_support/core_ext/string'
 ############################################################################
 
 cur_dir = File.dirname(__FILE__)
-TARGET_FILE = File.expand_path(File.join(cur_dir, "../src/messages.rs"))
+TARGET_FILE = File.expand_path(File.join(cur_dir, "../src/all.rs"))
 MESSAGE_TEMPLATE_FILE = File.expand_path(File.join(cur_dir, "./message_template.msg"))
 PREAMBLE_FILE = File.expand_path(File.join(cur_dir, "./preamble.rs"))
 
@@ -325,7 +325,7 @@ end
 
 if system 'which rustfmt'
     dir = File.absolute_path File.dirname(__FILE__)
-    system "rustfmt --write-mode overwrite --config-path=#{dir} '#{TARGET_FILE}'"
+    system "rustfmt --write-mode overwrite --config-path '#{dir}' '#{TARGET_FILE}'"
 else
     puts "Warning: rustfmt not installed, please install and rerun!"
 end
