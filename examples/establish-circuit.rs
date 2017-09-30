@@ -1,6 +1,10 @@
 extern crate opensim_networking;
 #[macro_use]
 extern crate serde_derive;
+#[macro_use]
+extern crate slog;
+extern crate slog_async;
+extern crate slog_term;
 extern crate toml;
 extern crate num_traits;
 
@@ -15,6 +19,7 @@ use num_traits::identities::{One, Zero};
 use std::io::prelude::*;
 use std::fs::File;
 use std::thread;
+use slog::Drain;
 
 #[derive(Deserialize)]
 struct Config {
@@ -35,6 +40,12 @@ struct ConfigSim {
 }
 
 fn main() {
+    // Setup our logger.
+    let decorator = slog_term::TermDecorator::new().build();
+    let drain = slog_term::FullFormat::new(decorator).build().fuse();
+    let drain = slog_async::Async::new(drain).build().fuse();
+    let log = slog::Logger::root(drain, o!());
+
     // Read the configuration file.
     let mut file = File::open("establish-circuit.toml").expect(
         "Copy establish-circuit.toml.tpl to establisk-circuit.toml and populate it.",
@@ -69,17 +80,20 @@ fn main() {
     let agent_id = resp.agent_id.clone();
     let session_id = resp.session_id.clone();
     let circuit_code = resp.circuit_code.clone();
-    let circuit = match Circuit::initiate(resp, config) {
+    let circuit = match Circuit::initiate(resp, config, log.clone()) {
         Err(e) => panic!("Circuit establishment failed, err: {:?}", e),
         Ok(c) => c,
     };
     println!("Established circuit successully.");
 
     // Perform the last steps of the circuit initiation.
-    opensim_networking::systems::initiation::initiate(&circuit,
-                                                      circuit_code,
-                                                      agent_id,
-                                                      session_id);
+    opensim_networking::systems::initiation::initiate(
+        &circuit,
+        circuit_code,
+        agent_id,
+        session_id,
+        &log,
+    ).expect("circuit init sequence failed.");
 
     // Let the avatar walk back and forth.
     // TODO: extract position

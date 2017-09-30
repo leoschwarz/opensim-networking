@@ -9,6 +9,8 @@ extern crate futures;
 extern crate mio;
 extern crate regex;
 extern crate reqwest;
+#[macro_use]
+extern crate slog;
 extern crate time;
 extern crate ttl_cache;
 extern crate xmlrpc;

@@ -89,6 +89,7 @@ impl Packet {
 
         // Read message.
         let message_num = reader.read_message_number()?;
+        println!("message_num: {:#x}", message_num);
         if flags.contains(PacketFlags::ZEROCODED) {
             reader.zerocoding_enabled = true;
         }
@@ -196,17 +197,17 @@ impl<'a> PacketReader<'a> {
         let b1 = self.read_u8()?;
         let bytes = if b1 != 0xff {
             // High frequency messages.
-            [b1, 0, 0, 0]
+            [0, 0, 0, b1]
         } else {
             let b2 = self.read_u8()?;
             if b2 != 0xff {
                 // Medium frequency messages.
-                [b1, b2, 0, 0]
+                [0, 0, b2, 0xff]
             } else {
                 // Low and fixed frequency messages.
                 let b3 = self.read_u8()?;
                 let b4 = self.read_u8()?;
-                [b1, b2, b3, b4]
+                [b4, b3, 0xff, 0xff]
             }
         };
 

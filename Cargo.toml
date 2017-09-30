@@ -22,12 +22,15 @@ num-traits = "0.1.40"
 regex = "0.2.2"
 reqwest = "0.7.3"
 rust-crypto = "0.2.36"
+slog = "2.0"
 time = "0.1.36"
 ttl_cache = "0.2.1"
 xmlrpc = "0.7.0"
 
 [dev-dependencies]
+env_logger = ""
 toml = "0.4.5"
 serde = "1.0"
 serde_derive = "1.0"
-
+slog-async = "2.1"
+slog-term = "2.2"

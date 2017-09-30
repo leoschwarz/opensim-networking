@@ -1,11 +1,11 @@
 //! Circuit and message management for viewer <-> server communication.
-
 use login::LoginResponse;
 use messages::MessageInstance;
 use packet::{Packet, PacketFlags, SequenceNumber};
 use util::{AtomicU32Counter, BackoffQueue, BackoffQueueState, FifoCache, mpsc_read_many};
 
 use futures::{Async, Future, Poll};
+use slog::Logger;
 use std::io::Error as IoError;
 use std::net::{SocketAddr, SocketAddrV4, UdpSocket};
 use std::sync::{Arc, Mutex, mpsc};
@@ -22,10 +22,14 @@ pub struct Circuit {
 }
 
 impl Circuit {
-    pub fn initiate(login_res: LoginResponse, config: CircuitConfig) -> Result<Circuit, IoError> {
+    pub fn initiate(
+        login_res: LoginResponse,
+        config: CircuitConfig,
+        logger: Logger,
+    ) -> Result<Circuit, IoError> {
         let sim_address = SocketAddr::V4(SocketAddrV4::new(login_res.sim_ip, login_res.sim_port));
         Ok(Circuit {
-            message_manager: MessageManager::start(sim_address, config)?,
+            message_manager: MessageManager::start(sim_address, config, logger)?,
         })
     }
 
@@ -188,8 +192,7 @@ impl AckManager {
             SendMessageStatus::PendingAck { timeout, .. } => {
                 self.queue.insert(item, timeout);
             }
-            // FIXME TODO I actually ended up getting this during testing.
-            _ => panic!("Contract violation!"),
+            _ => panic!("Contract violation! SendMessageStatus was {:?}", status),
         }
     }
 
@@ -234,7 +237,11 @@ impl MessageManager {
         SendMessage { status: status }
     }
 
-    fn start(sim_address: SocketAddr, config: CircuitConfig) -> Result<MessageManager, IoError> {
+    fn start(
+        sim_address: SocketAddr,
+        config: CircuitConfig,
+        logger: Logger,
+    ) -> Result<MessageManager, IoError> {
         // Setup communication channels.
         let (incoming_tx, incoming_rx) = mpsc::channel::<MessageInstance>();
         let (outgoing_tx, outgoing_rx) = mpsc::channel::<MessageManagerItem>();
@@ -245,6 +252,7 @@ impl MessageManager {
 
         // Create sockets.
         let socket_out = UdpSocket::bind("0.0.0.0:0")?;
+        socket_out.connect(sim_address)?;
         socket_out.set_read_timeout(None)?;
         socket_out.set_nonblocking(false)?;
         let socket_in = socket_out.try_clone()?;
@@ -278,20 +286,25 @@ impl MessageManager {
 
                             let mut buf = Vec::<u8>::new();
                             packet.write_to(&mut buf).unwrap();
-                            socket_out.send_to(&buf, sim_address).unwrap();
+                            socket_out.send(&buf).unwrap();
                         }
 
                         // Update item's status.
                         *status.lock().unwrap() = next_status;
 
                         if packet.is_reliable() {
-                            // Register the packet for timeout checking.
-                            register_packet_tx
-                                .send(MessageManagerItem {
-                                    packet: packet,
-                                    status: status,
-                                })
-                                .unwrap();
+                            match next_status {
+                                SendMessageStatus::PendingAck { .. } => {
+                                    // Register the packet for timeout checking.
+                                    register_packet_tx
+                                        .send(MessageManagerItem {
+                                            packet: packet,
+                                            status: status,
+                                        })
+                                        .unwrap();
+                                }
+                                _ => {}
+                            }
                         }
                     }
                     Err(_) => panic!("channel closed"),
@@ -301,16 +314,24 @@ impl MessageManager {
 
         // Create reader thread.
         thread::spawn(move || {
-            let mut buf = Vec::<u8>::new();
-            let mut packet_log = FifoCache::<SequenceNumber>::new(200_000);
+            //let mut buf = Vec::<u8>::new();
+            let mut buf = [0u8; 5000]; // TODO which value to use???
+            let mut packet_log = FifoCache::<SequenceNumber>::new(10000);
 
             loop {
                 // Read from socket in blocking way.
-                buf.clear();
-                socket_in.recv(&mut buf).unwrap();
+                //buf.clear();
+                socket_in.recv_from(&mut buf).unwrap();
 
                 // Parse the packet.
+                /*
+                debug!(logger, "packet recveived len: {}", buf.len());
+                if buf.len() == 0 {
+                    continue;
+                }
+                */
                 let packet = Packet::read(&buf).unwrap();
+                debug!(logger, "packet extracted: {:?}", packet);
 
                 // Read appended acks and send ack if requested (reliable packet).
                 for ack in &packet.appended_acks {
