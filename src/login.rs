@@ -2,11 +2,9 @@ use crypto::md5::Md5;
 use crypto::digest::Digest;
 use std::collections::BTreeMap;
 use xmlrpc::Value as XmlValue;
-use nalgebra::Vector3;
 use regex::Regex;
-use Ip4Addr;
+use {Ip4Addr, Vector3, Uuid};
 use std::str::FromStr;
-use Uuid;
 
 /// Performing a LoginRequest is the first step at gaining access to a sim.
 #[derive(Debug)]
@@ -48,7 +46,7 @@ pub enum LoginErrorKind {
     AddrParseError(::std::net::AddrParseError),
 
     #[error_chain(foreign)]
-    UuidParseError(::uuid::ParseError),
+    UuidParseError(::types::UuidParseError),
 
     /// Login failed.
     #[error_chain(custom)]

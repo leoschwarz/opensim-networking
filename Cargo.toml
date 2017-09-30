@@ -1,10 +1,16 @@
 [package]
-name = "opensim-networking"
+name = "opensim_networking"
 version = "0.1.0"
 authors = ["Leo Schwarz <mail@leoschwarz.com>"]
 license = "GPL-3.0"
 
+[workspace]
+members = ["opensim_messages", "opensim_types"]
+
 [dependencies]
+opensim_messages = { path = "opensim_messages" }
+opensim_types = { path = "opensim_types" }
+
 bitflags = "1.0"
 byteorder = "1.0"
 #crossbeam = "0.3.0"
@@ -12,15 +18,12 @@ derive-error-chain = "0.11.0"
 error-chain = "0.11.0"
 futures = "0.1.10"
 mio = "0.6"
-nalgebra = "0.10.1"
 num-traits = "0.1.40"
 regex = "0.2.2"
 reqwest = "0.7.3"
 rust-crypto = "0.2.36"
 time = "0.1.36"
 ttl_cache = "0.2.1"
-url = "1.2"
-uuid = {version = "0.5.1", features = ["use_std"]}
 xmlrpc = "0.7.0"
 
 [dev-dependencies]

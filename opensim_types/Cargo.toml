@@ -1,0 +1,13 @@
+[package]
+name = "opensim_types"
+version = "0.1.0"
+authors = ["Leo Schwarz <mail@leoschwarz.com>"]
+license = "GPL-3.0"
+
+[dependencies]
+nalgebra = "0.10.1"
+num-traits = "0.1.40"
+time = "0.1.36"
+url = "1.2"
+uuid = {version = "0.5.1", features = ["use_std"]}
+

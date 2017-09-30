@@ -1,0 +1,10 @@
+[package]
+name = "opensim_messages"
+version = "0.1.0"
+authors = ["Leo Schwarz <mail@leoschwarz.com>"]
+license = "GPL-3.0"
+
+[dependencies]
+byteorder = "1.0"
+opensim_types = { path = "../opensim_types" }
+uuid = {version = "0.5.1", features = ["use_std"]}
