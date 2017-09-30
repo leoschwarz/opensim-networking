@@ -110,7 +110,7 @@ impl AgentState {
 
         flags
     }
-    
+
     pub fn to_update_message(&self, agent_id: Uuid, session_id: Uuid) -> AgentUpdate {
         AgentUpdate {
             agent_data: AgentUpdate_AgentData {
@@ -126,7 +126,7 @@ impl AgentState {
                 far: 0.,
                 control_flags: self.to_control_flags().bits(),
                 flags: 0,
-            }
+            },
         }
     }
 }

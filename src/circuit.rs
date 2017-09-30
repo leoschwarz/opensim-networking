@@ -1,3 +1,5 @@
+//! Circuit and message management for viewer <-> server communication.
+
 use login::LoginResponse;
 use messages::MessageInstance;
 use packet::{Packet, PacketFlags, SequenceNumber};
@@ -12,7 +14,6 @@ use time::{Duration, Timespec, get_time};
 
 // Things not implemented for now.
 // - Ipv6 support. (Blocked by opensim's support.)
-// - Simulator <-> simulator circuits. (Do we need these?)
 
 /// Encapsulates a so called circuit (networking link) between our viewer and a simulator.
 pub struct Circuit {
@@ -23,7 +24,9 @@ pub struct Circuit {
 impl Circuit {
     pub fn initiate(login_res: LoginResponse, config: CircuitConfig) -> Result<Circuit, IoError> {
         let sim_address = SocketAddr::V4(SocketAddrV4::new(login_res.sim_ip, login_res.sim_port));
-        Ok(Circuit { message_manager: MessageManager::start(sim_address, config)? })
+        Ok(Circuit {
+            message_manager: MessageManager::start(sim_address, config)?,
+        })
     }
 
     /// Send a message through the circuit.
@@ -40,19 +43,13 @@ impl Circuit {
     /// If there is no message available yet it will block the current thread until there is one
     /// available.
     pub fn read(&self) -> MessageInstance {
-        self.message_manager
-            .incoming
-            .recv()
-            .unwrap()
+        self.message_manager.incoming.recv().unwrap()
     }
 
     /// Trys to read a message and returns it if one is available right away. Otherwise this won't
     /// block the current thread and None will be returned.
     pub fn try_read(&self) -> Option<MessageInstance> {
-        self.message_manager
-            .incoming
-            .try_recv()
-            .ok()
+        self.message_manager.incoming.try_recv().ok()
     }
 }
 
@@ -185,10 +182,7 @@ impl AckManager {
     }
 
     fn insert(&mut self, item: MessageManagerItem) {
-        let status = item.status
-            .lock()
-            .unwrap()
-            .clone();
+        let status = item.status.lock().unwrap().clone();
 
         match status {
             SendMessageStatus::PendingAck { timeout, .. } => {
@@ -269,8 +263,10 @@ impl MessageManager {
                         }
 
                         // Determine the next status.
-                        let next_status =
-                            status.lock().unwrap().next_status(packet.is_reliable(), &config1);
+                        let next_status = status.lock().unwrap().next_status(
+                            packet.is_reliable(),
+                            &config1,
+                        );
 
                         // Send if there isn't a failure (i.e. too many attempts resending the
                         // packet).
@@ -290,10 +286,11 @@ impl MessageManager {
 
                         if packet.is_reliable() {
                             // Register the packet for timeout checking.
-                            register_packet_tx.send(MessageManagerItem {
-                                                        packet: packet,
-                                                        status: status,
-                                                    })
+                            register_packet_tx
+                                .send(MessageManagerItem {
+                                    packet: packet,
+                                    status: status,
+                                })
                                 .unwrap();
                         }
                     }
@@ -339,7 +336,7 @@ impl MessageManager {
         // Create ack book-keeping thread.
         thread::spawn(move || {
             let mut ack_manager = AckManager::new(&config);
-            let mut ack_list = FifoCache::<SequenceNumber>::new(200_000);
+            let mut ack_list = FifoCache::<SequenceNumber>::new(4096);
 
             loop {
                 // Fetch the next item from the AckManager.
@@ -383,9 +380,9 @@ impl MessageManager {
         });
 
         Ok(MessageManager {
-               incoming: incoming_rx,
-               outgoing: outgoing_tx,
-               sequence_counter: AtomicU32Counter::new(0),
-           })
+            incoming: incoming_rx,
+            outgoing: outgoing_tx,
+            sequence_counter: AtomicU32Counter::new(0),
+        })
     }
 }

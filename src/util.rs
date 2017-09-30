@@ -10,7 +10,7 @@ use time::{Duration, Timespec};
 ///
 /// TODO: Remove once AtomicU32 is stabilized.
 pub struct AtomicU32Counter {
-    value: AtomicUsize
+    value: AtomicUsize,
 }
 
 impl AtomicU32Counter {
@@ -19,16 +19,19 @@ impl AtomicU32Counter {
         // TODO: Remove once AtomicU32 is stabilized.
         assert!(::std::mem::size_of::<usize>() >= 4);
 
-        AtomicU32Counter {
-            value: AtomicUsize::new(value as usize)
-        }
+        AtomicU32Counter { value: AtomicUsize::new(value as usize) }
     }
 
     pub fn next(&self) -> u32 {
         use std::sync::atomic::Ordering;
         loop {
             let current = self.value.load(Ordering::SeqCst);
-            if self.value.compare_and_swap(current, current+1, Ordering::SeqCst) == current {
+            if self.value.compare_and_swap(
+                current,
+                current + 1,
+                Ordering::SeqCst,
+            ) == current
+            {
                 return current as u32;
             }
         }
@@ -37,14 +40,14 @@ impl AtomicU32Counter {
 
 pub struct FifoCache<T> {
     capacity: usize,
-    data: VecDeque<T>
+    data: VecDeque<T>,
 }
 
 impl<T: PartialEq> FifoCache<T> {
     pub fn new(capacity: usize) -> Self {
         FifoCache {
             capacity: capacity,
-            data: VecDeque::new()
+            data: VecDeque::new(),
         }
     }
 
@@ -65,14 +68,13 @@ impl<T: PartialEq> FifoCache<T> {
 /// read elements from the reader in a non-blocking (async) fashion.
 /// we try to read up to max_count elements if they are available, but if they
 /// aren't we'll just return as much as possible. (possibly even empty vector.)
-pub fn mpsc_read_many<T>(recv: &mpsc::Receiver<T>, max_count: usize) -> Vec<T>
-{
+pub fn mpsc_read_many<T>(recv: &mpsc::Receiver<T>, max_count: usize) -> Vec<T> {
     let mut res = Vec::new();
 
     while res.len() < max_count {
         match recv.try_recv() {
             Ok(item) => res.push(item),
-            Err(_) => return res
+            Err(_) => return res,
         }
     }
 
@@ -83,7 +85,7 @@ pub fn mpsc_read_many<T>(recv: &mpsc::Receiver<T>, max_count: usize) -> Vec<T>
 /// Items can be inserted specifying a minimum amount of time that has to elapse
 /// before they can be retrieved from the queue.
 pub struct BackoffQueue<T> {
-    queue: BinaryHeap<BackoffQueueItem<T>>
+    queue: BinaryHeap<BackoffQueueItem<T>>,
 }
 
 /// Indicates the current state of a BackoffQueue.
@@ -96,23 +98,21 @@ pub enum BackoffQueueState {
 
     /// An item will be available, only after waiting for the specified
     /// amount of time.
-    Wait(Duration)
+    Wait(Duration),
 }
 
 impl<T> BackoffQueue<T> {
     pub fn new() -> Self {
-        BackoffQueue {
-            queue: BinaryHeap::new()
-        }
+        BackoffQueue { queue: BinaryHeap::new() }
     }
 
     /// Insert an item into the backoff queue.
     /// `item`: The item to be inserted.
     /// `timeout`: Minimal wait time before retrieving the item.
     pub fn insert(&mut self, item: T, timeout: Timespec) {
-        self.queue.push(BackoffQueueItem{
+        self.queue.push(BackoffQueueItem {
             value: item,
-            wait_until: timeout
+            wait_until: timeout,
         });
     }
 
@@ -120,7 +120,7 @@ impl<T> BackoffQueue<T> {
     pub fn extract(&mut self) -> Option<T> {
         match self.state() {
             BackoffQueueState::ItemReady => Some(self.queue.pop().unwrap().value),
-            _ => None
+            _ => None,
         }
     }
 
@@ -150,7 +150,7 @@ struct BackoffQueueItem<T> {
     /// The value stored in this item.
     value: T,
     /// Until which time we have to wait before this could this item be retrieved.
-    wait_until: Timespec
+    wait_until: Timespec,
 }
 
 impl<T> PartialEq for BackoffQueueItem<T> {
@@ -159,8 +159,7 @@ impl<T> PartialEq for BackoffQueueItem<T> {
     }
 }
 
-impl<T> Eq for BackoffQueueItem<T> {
-}
+impl<T> Eq for BackoffQueueItem<T> {}
 
 impl<T> PartialOrd for BackoffQueueItem<T> {
     fn partial_cmp(&self, other: &Self) -> Option<Ordering> {
@@ -175,4 +174,3 @@ impl<T> Ord for BackoffQueueItem<T> {
         self.wait_until.cmp(&other.wait_until).reverse()
     }
 }
-

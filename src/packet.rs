@@ -56,7 +56,9 @@ impl Packet {
     /// * http://wiki.secondlife.com/wiki/Packet_Layout
     pub fn write_to<W: Write>(&self, buffer: &mut W) -> Result<(), ::std::io::Error> {
         // Assert: PACKET_APPENDED_ACKS flag set <-> self.appended_acks is empty.
-        debug_assert!(!(self.flags.contains(PacketFlags::APPENDED_ACKS) && self.appended_acks.is_empty()));
+        debug_assert!(
+            !(self.flags.contains(PacketFlags::APPENDED_ACKS) && self.appended_acks.is_empty())
+        );
         // TODO: Zero coded writing not implemented yet.
         assert!(!self.flags.contains(PacketFlags::ZEROCODED));
 
@@ -103,11 +105,11 @@ impl Packet {
         }
 
         Ok(Packet {
-               message: message,
-               flags: flags,
-               sequence_number: sequence_num,
-               appended_acks: acks,
-           })
+            message: message,
+            flags: flags,
+            sequence_number: sequence_num,
+            appended_acks: acks,
+        })
     }
 
     /// Enable the provided flags.
@@ -183,8 +185,10 @@ impl<'a> PacketReader<'a> {
             self.pointer = new_pointer;
             Ok(())
         } else {
-            Err(::std::io::Error::new(::std::io::ErrorKind::UnexpectedEof,
-                                      "Tried skipping behind EOF in PacketReader."))
+            Err(::std::io::Error::new(
+                ::std::io::ErrorKind::UnexpectedEof,
+                "Tried skipping behind EOF in PacketReader.",
+            ))
         }
     }
 
@@ -233,10 +237,12 @@ impl<'a> Read for PacketReader<'a> {
                             self.pending_zerobytes = self.buf[self.pointer + 1];
                             self.pointer += 2;
                         } else {
-                            return Err(::std::io::Error::new(::std::io::ErrorKind::InvalidData,
-                                                             "Zerocoding enabled, but found a \
+                            return Err(::std::io::Error::new(
+                                ::std::io::ErrorKind::InvalidData,
+                                "Zerocoding enabled, but found a \
                                                               zero byte at EOF without \
-                                                              repetition quantity."));
+                                                              repetition quantity.",
+                            ));
                         }
                     } else {
                         buf[read_bytes] = self.buf[self.pointer];
