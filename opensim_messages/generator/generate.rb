@@ -111,36 +111,36 @@ def generate_field_writer(field, source)
     value = "#{source}.#{field.r_name}"
     r_type = field.r_type
     if %w[u16 u32 u64 i16 i32 i64 f32 f64].include? r_type
-        "try!(buffer.write_#{r_type}::<LittleEndian>(#{value}));\n"
+        "buffer.write_#{r_type}::<LittleEndian>(#{value})?;\n"
     elsif %w[u8 i8].include? r_type
-        "try!(buffer.write_#{r_type}(#{value}));\n"
+        "buffer.write_#{r_type}(#{value})?;\n"
     elsif r_type == "Uuid"
-        "try!(buffer.write(#{value}.as_bytes()));\n"
+        "buffer.write(#{value}.as_bytes())?;\n"
     elsif r_type == "Ip4Addr"
-        "try!(buffer.write(&#{value}.octets()));\n"
+        "buffer.write(&#{value}.octets())?;\n"
     elsif r_type == "IpPort"
-        "try!(buffer.write_u16::<LittleEndian>(#{value}));\n"
+        "buffer.write_u16::<LittleEndian>(#{value})?;\n"
     elsif r_type == "Vector3<f32>" or r_type == "Vector3<f64>"
         f_type = r_type[8..10]
-        "try!(buffer.write_#{f_type}::<LittleEndian>(#{value}.x));\n" +
-        "try!(buffer.write_#{f_type}::<LittleEndian>(#{value}.y));\n" +
-        "try!(buffer.write_#{f_type}::<LittleEndian>(#{value}.z));\n"
+        "buffer.write_#{f_type}::<LittleEndian>(#{value}.x)?;\n" +
+        "buffer.write_#{f_type}::<LittleEndian>(#{value}.y)?;\n" +
+        "buffer.write_#{f_type}::<LittleEndian>(#{value}.z)?;\n"
     elsif r_type == "Vector4<f32>"
-        "try!(buffer.write_f32::<LittleEndian>(#{value}.x));\n" +
-        "try!(buffer.write_f32::<LittleEndian>(#{value}.y));\n" +
-        "try!(buffer.write_f32::<LittleEndian>(#{value}.z));\n" +
-        "try!(buffer.write_f32::<LittleEndian>(#{value}.w));\n"
+        "buffer.write_f32::<LittleEndian>(#{value}.x)?;\n" +
+        "buffer.write_f32::<LittleEndian>(#{value}.y)?;\n" +
+        "buffer.write_f32::<LittleEndian>(#{value}.z)?;\n" +
+        "buffer.write_f32::<LittleEndian>(#{value}.w)?;\n"
     elsif r_type == "Quaternion<f32>"
         "let normed_#{field.r_name} = UnitQuaternion::new(&#{value}).unwrap();\n" +
-        "try!(buffer.write_f32::<LittleEndian>(normed_#{field.r_name}.i));\n" +
-        "try!(buffer.write_f32::<LittleEndian>(normed_#{field.r_name}.j));\n" +
-        "try!(buffer.write_f32::<LittleEndian>(normed_#{field.r_name}.k));\n"
+        "buffer.write_f32::<LittleEndian>(normed_#{field.r_name}.i)?;\n" +
+        "buffer.write_f32::<LittleEndian>(normed_#{field.r_name}.j)?;\n" +
+        "buffer.write_f32::<LittleEndian>(normed_#{field.r_name}.k)?;\n"
     elsif r_type == "bool"
-        "try!(buffer.write_u8(#{value} as u8));\n"
+        "buffer.write_u8(#{value} as u8)?;\n"
     elsif r_type == "Vec<u8>"
-        "try!(buffer.write(&#{value}[..]));\n"
+        "buffer.write(&#{value}[..])?;\n"
     elsif r_type[0...4] == "[u8;"
-        "try!(buffer.write(&#{value}));\n"
+        "buffer.write(&#{value})?;\n"
     else
         raise "No rule for field writer generation of field: #{field}"
     end
@@ -149,37 +149,37 @@ end
 def generate_field_reader(field)
     r_type = field.r_type
     if %w[u16 u32 u64 i16 i32 i64 f32 f64].include? r_type
-        "try!(buffer.read_#{r_type}::<LittleEndian>())"
+        "buffer.read_#{r_type}::<LittleEndian>()?"
     elsif %w[u8 i8].include? r_type
-        "try!(buffer.read_#{r_type}())"
+        "buffer.read_#{r_type}()?"
     elsif r_type == "Uuid"
-        "{ let mut raw = [0; 4]; try!(buffer.read_exact(&mut raw)); try!(Uuid::from_bytes(&raw)) }"
+        "{ let mut raw = [0; 4]; buffer.read_exact(&mut raw)?; Uuid::from_bytes(&raw)? }"
     elsif r_type == "Ip4Addr"
-        "{ let mut raw = [0; 4]; try!(buffer.read_exact(&mut raw)); Ip4Addr::from(raw) }"
+        "{ let mut raw = [0; 4]; buffer.read_exact(&mut raw)?; Ip4Addr::from(raw) }"
     elsif r_type == "IpPort"
-        "try!(buffer.read_u16::<LittleEndian>())"
+        "buffer.read_u16::<LittleEndian>()?"
     elsif r_type == "Vector3<f32>" or r_type == "Vector3<f64>"
         f_type = r_type[8..10]
-        "Vector3::new(try!(buffer.read_#{f_type}::<LittleEndian>()),
-                      try!(buffer.read_#{f_type}::<LittleEndian>()),
-                      try!(buffer.read_#{f_type}::<LittleEndian>()))"
+        "Vector3::new(buffer.read_#{f_type}::<LittleEndian>()?,
+                      buffer.read_#{f_type}::<LittleEndian>()?,
+                      buffer.read_#{f_type}::<LittleEndian>()?)"
     elsif r_type == "Vector4<f32>"
-        "Vector4::new(try!(buffer.read_f32::<LittleEndian>()),
-                      try!(buffer.read_f32::<LittleEndian>()),
-                      try!(buffer.read_f32::<LittleEndian>()),
-                      try!(buffer.read_f32::<LittleEndian>()))"
+        "Vector4::new(buffer.read_f32::<LittleEndian>()?,
+                      buffer.read_f32::<LittleEndian>()?,
+                      buffer.read_f32::<LittleEndian>()?,
+                      buffer.read_f32::<LittleEndian>()?)"
     elsif r_type == "Quaternion<f32>"
         "Quaternion::from_parts(1., Vector3::new(
-            try!(buffer.read_f32::<LittleEndian>()),
-            try!(buffer.read_f32::<LittleEndian>()),
-            try!(buffer.read_f32::<LittleEndian>())
+            buffer.read_f32::<LittleEndian>()?,
+            buffer.read_f32::<LittleEndian>()?,
+            buffer.read_f32::<LittleEndian>()?
         ))"
     elsif r_type == "bool"
-        "try!(buffer.read_u8()) == 1"
+        "buffer.read_u8()? == 1"
     elsif r_type == "Vec<u8>"
-        "{ let n = try!(buffer.read_u8()) as usize; let mut raw = vec![0; n]; try!(buffer.read_exact(&mut raw)); raw }"
+        "{ let n = buffer.read_u8()? as usize; let mut raw = vec![0; n]; buffer.read_exact(&mut raw)?; raw }"
     elsif r_type[0...4] == "[u8;"
-        "{ let mut raw = [0; #{field.count}]; try!(buffer.read_exact(&mut raw)); raw }"
+        "{ let mut raw = [0; #{field.count}]; buffer.read_exact(&mut raw)?; raw }"
     else
         raise "No rule for field reader generation of field: #{field}"
     end
@@ -207,7 +207,7 @@ def generate_message_impl(message)
     #########
     out << "\tfn write_to<W: ?Sized>(&self, buffer: &mut W) -> WriteMessageResult where W: Write {\n"
     out << "\t\t// Write the message number.\n"
-    out << "\t\ttry!(buffer.write(&#{generate_message_id_bytes(message)}));\n"
+    out << "\t\tbuffer.write(&#{generate_message_id_bytes(message)})?;\n"
     message.blocks.each do |block|
         out << "\t\t// Block #{block.ll_name}\n"
         if block.quantity == "Single"
@@ -221,7 +221,7 @@ def generate_message_impl(message)
             end
             out << "\t\t}\n"
         elsif block.quantity == "Variable"
-            out << "\t\ttry!(buffer.write_u8(self.#{block.f_name}.len() as u8));\n"
+            out << "\t\tbuffer.write_u8(self.#{block.f_name}.len() as u8)?;\n"
             out << "\t\tfor item in &self.#{block.f_name} {\n"
             block.fields.each do |field|
                 out << "\t\t\t" + generate_field_writer(field, "item")
@@ -241,19 +241,19 @@ def generate_message_impl(message)
     message.blocks.each do |block|
         out << "\t\t// Block #{block.ll_name}\n"
         if block.quantity == "Single"
-            out << "\t\tlet #{block.f_name} = try!(#{block.r_name}::read_from(buffer));\n"
+            out << "\t\tlet #{block.f_name} = #{block.r_name}::read_from(buffer)?;\n"
         elsif block.quantity == "Multiple"
             out << "\t\tlet #{block.f_name} = [\n"
             block.quantity_count.to_i.times do
-                out << "\t\t\ttry!(#{block.r_name}::read_from(buffer)),\n"
+                out << "\t\t\t#{block.r_name}::read_from(buffer)?,\n"
             end
             out << "\t\t];\n"
         elsif block.quantity == "Variable"
             count_var = "_#{block.f_name}_count"
             out << "\t\tlet mut #{block.f_name} = Vec::new();\n"
-            out << "\t\tlet #{count_var} = try!(buffer.read_u8());\n"
+            out << "\t\tlet #{count_var} = buffer.read_u8()?;\n"
             out << "\t\tfor _ in 0..#{count_var} {\n"
-            out << "\t\t\t#{block.f_name}.push(try!(#{block.r_name}::read_from(buffer)));\n"
+            out << "\t\t\t#{block.f_name}.push(#{block.r_name}::read_from(buffer)?);\n"
             out << "\t\t}\n"
         else
             puts "Read implementation for blocks with quantity '#{block.quantity}' not implemented yet."
