@@ -4,6 +4,8 @@ use std::sync::mpsc;
 use std::sync::atomic::AtomicUsize;
 use time::{Duration, Timespec};
 
+pub mod addressable_queue;
+
 /// Provides an atomic counter for u32 numbers.
 /// Essentially it provides a method that can be invoked and will return an incremented number
 /// that for sure was not yet returned in any other thread.
@@ -79,6 +81,11 @@ pub fn mpsc_read_many<T>(recv: &mpsc::Receiver<T>, max_count: usize) -> Vec<T> {
     }
 
     res
+}
+
+pub fn vecdeque_read_many<T>(vd: &mut VecDeque<T>, max_count: usize) -> Vec<T> {
+    let n = std::cmp::min(vd.len(), max_count);
+    vd.drain(0..n).collect()
 }
 
 /// A BackoffQueue provides a time-based interface over a priority queue.
