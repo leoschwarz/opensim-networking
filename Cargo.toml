@@ -23,7 +23,6 @@ regex = "0.2.2"
 reqwest = "0.7.3"
 rust-crypto = "0.2.36"
 slog = "2.0"
-time = "0.1.36"
 ttl_cache = "0.2.1"
 xmlrpc = "0.7.0"
 

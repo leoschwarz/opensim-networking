@@ -3,7 +3,6 @@
 // interval.
 
 use {Vector3, Quaternion, Uuid};
-use circuit::Circuit;
 use messages::{AgentUpdate, AgentUpdate_AgentData};
 
 bitflags! {
@@ -130,29 +129,3 @@ impl AgentState {
         }
     }
 }
-
-
-/*
-pub struct AgentStateUpdater<'ci> {
-    circuit: &'ci Circuit,
-    state: Arc<AgentState>,
-}
-
-impl<'ci> AgentStateUpdater<'ci> {
-    pub fn start(circuit: &'ci Circuit) -> Self {
-        // TODO: position updating is not working yet and also no initialization of the position
-        // field is performed at all.
-        AgentStateUpdater {
-            circuit: circuit,
-            state: AgentState {
-                position: Vector3::zero(),
-                move_direction: None,
-                modality: Modality::Walking,
-            }
-        }
-    }
-
-    pub fn stop(self) {
-    }
-}
-*/

@@ -1,4 +1,5 @@
 extern crate opensim_networking;
+extern crate futures;
 #[macro_use]
 extern crate serde_derive;
 #[macro_use]
@@ -20,6 +21,7 @@ use std::io::prelude::*;
 use std::fs::File;
 use std::thread;
 use slog::Drain;
+use futures::future::Future;
 
 #[derive(Deserialize)]
 struct Config {
@@ -54,7 +56,7 @@ fn main() {
     file.read_to_string(&mut raw_data).unwrap();
     let config: Config = toml::from_str(raw_data.as_str()).expect("invalid TOML");
 
-    // First we perform a login.
+    // Perform the login.
     let request = LoginRequest {
         first_name: config.user.first_name,
         last_name: config.user.last_name,
@@ -74,7 +76,7 @@ fn main() {
 
     // Now establish the circuit.
     let config = CircuitConfig {
-        send_timeout: Duration::milliseconds(2500),
+        send_timeout: Duration::from_millis(2500),
         send_attempts: 5,
     };
     let agent_id = resp.agent_id.clone();
@@ -84,8 +86,8 @@ fn main() {
         Err(e) => panic!("Circuit establishment failed, err: {:?}", e),
         Ok(c) => c,
     };
-    println!("Established circuit successully.");
 
+    println!("Created circuit instance.");
     // Perform the last steps of the circuit initiation.
     opensim_networking::systems::initiation::initiate(
         &circuit,
@@ -94,6 +96,7 @@ fn main() {
         session_id,
         &log,
     ).expect("circuit init sequence failed.");
+    println!("Finish circuit initialization.");
 
     // Let the avatar walk back and forth.
     // TODO: extract position
@@ -108,7 +111,7 @@ fn main() {
     loop {
         for _ in 1..40 {
             let msg = state.to_update_message(agent_id, session_id);
-            circuit.send(msg, false);
+            circuit.send(msg, false).wait();
 
             thread::sleep(std::time::Duration::from_millis(50));
         }

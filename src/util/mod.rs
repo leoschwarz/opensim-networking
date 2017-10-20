@@ -1,10 +1,14 @@
+#![allow(unused)]
+
 use std::collections::{BinaryHeap, VecDeque};
 use std::cmp::Ordering;
 use std::sync::mpsc;
 use std::sync::atomic::AtomicUsize;
-use time::{Duration, Timespec};
+use std::time::{Instant, Duration};
 
 pub mod addressable_queue;
+#[cfg(test)]
+pub(crate) mod tests;
 
 /// Provides an atomic counter for u32 numbers.
 /// Essentially it provides a method that can be invoked and will return an incremented number
@@ -84,7 +88,7 @@ pub fn mpsc_read_many<T>(recv: &mpsc::Receiver<T>, max_count: usize) -> Vec<T> {
 }
 
 pub fn vecdeque_read_many<T>(vd: &mut VecDeque<T>, max_count: usize) -> Vec<T> {
-    let n = std::cmp::min(vd.len(), max_count);
+    let n = ::std::cmp::min(vd.len(), max_count);
     vd.drain(0..n).collect()
 }
 
@@ -116,7 +120,7 @@ impl<T> BackoffQueue<T> {
     /// Insert an item into the backoff queue.
     /// `item`: The item to be inserted.
     /// `timeout`: Minimal wait time before retrieving the item.
-    pub fn insert(&mut self, item: T, timeout: Timespec) {
+    pub fn insert(&mut self, item: T, timeout: Instant) {
         self.queue.push(BackoffQueueItem {
             value: item,
             wait_until: timeout,
@@ -137,7 +141,7 @@ impl<T> BackoffQueue<T> {
             None => BackoffQueueState::Empty,
             Some(ref item_ref) => {
                 // Check if enough time has passed.
-                let now = ::time::get_time();
+                let now = Instant::now();
                 if now >= item_ref.wait_until {
                     BackoffQueueState::ItemReady
                 } else {
@@ -157,7 +161,7 @@ struct BackoffQueueItem<T> {
     /// The value stored in this item.
     value: T,
     /// Until which time we have to wait before this could this item be retrieved.
-    wait_until: Timespec,
+    wait_until: Instant,
 }
 
 impl<T> PartialEq for BackoffQueueItem<T> {

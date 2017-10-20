@@ -1,7 +1,9 @@
-use byteorder::{BigEndian, WriteBytesExt, ReadBytesExt};
-use std::io::{Read, Write};
-
 use messages::{MessageInstance, read_message};
+use types::SequenceNumber;
+
+use byteorder::{BigEndian, WriteBytesExt, ReadBytesExt};
+use slog::Logger;
+use std::io::{Read, Write};
 
 bitflags! {
     pub struct PacketFlags: u8 {
@@ -17,8 +19,6 @@ bitflags! {
         const ZEROCODED     = 0b1000_0000;
     }
 }
-
-pub type SequenceNumber = u32;
 
 /// One packet either sent to or received from a sim.
 #[derive(Debug)]
@@ -75,7 +75,7 @@ impl Packet {
         Ok(())
     }
 
-    pub fn read<'a>(buf: &'a [u8]) -> Result<Packet, ::std::io::Error> {
+    pub fn read<'a>(buf: &'a [u8], logger: &Logger) -> Result<Packet, ReadPacketError> {
         let mut reader = PacketReader::new(buf);
 
         let flags = PacketFlags::from_bits(reader.read_u8()?).unwrap();
@@ -89,11 +89,13 @@ impl Packet {
 
         // Read message.
         let message_num = reader.read_message_number()?;
-        println!("message_num: {:#x}", message_num);
+        debug!(logger, "message_num: {:8x}", message_num);
         if flags.contains(PacketFlags::ZEROCODED) {
             reader.zerocoding_enabled = true;
         }
+        debug!(logger, "starting to read message");
         let message = read_message(&mut reader, message_num)?;
+        debug!(logger, "reading message finished");
 
         // Read appended ACKs if there are supposed to be any.
         let mut acks = Vec::new();
@@ -141,6 +143,17 @@ impl Packet {
     pub fn is_reliable(&self) -> bool {
         self.flags.contains(PacketFlags::RELIABLE)
     }
+}
+
+#[derive(Debug, ErrorChain)]
+#[error_chain(error = "ReadPacketError")]
+#[error_chain(result = "")]
+pub enum ReadPacketErrorKind {
+    #[error_chain(foreign)]
+    IoError(::std::io::Error),
+
+    #[error_chain(link = "::messages::ReadError")]
+    ReadError(::messages::ReadErrorKind),
 }
 
 /// Used internally to read the content of packages.

@@ -7,11 +7,13 @@
 /// If you want to change the file, edit the generator script `generate/generate.rb`.
 ///
 
-use {Vector3, Vector4, Quaternion, UnitQuaternion, Ip4Addr, IpPort, Uuid, WriteMessageResult, Message};
-use errors::ReadMessageError;
-use std::io::{Read, Write};
+use {Vector3, Vector4, Quaternion, UnitQuaternion, Ip4Addr, IpPort, Uuid, WriteMessageResult, Message,
+     ReadError, ReadErrorKind};
+
+use arrayvec::ArrayVec;
 use byteorder::{LittleEndian, ReadBytesExt, WriteBytesExt};
-pub fn read_message<R: ?Sized>(buffer: &mut R, message_num: u32) -> Result<MessageInstance, ReadMessageError>
+use std::io::{Read, Write};
+pub fn read_message<R: ?Sized>(buffer: &mut R, message_num: u32) -> Result<MessageInstance, ReadError>
 where
     R: Read,
 {
@@ -491,16 +493,19 @@ where
         0xa801ffff => return ObjectIncludeInSearch::read_from(buffer),
         0xa901ffff => return RezRestoreToWorld::read_from(buffer),
         0xaa01ffff => return LinkInventoryItem::read_from(buffer),
-        _ => return Err(ReadMessageError::UnknownMessageNumber(message_num)),
+        0xab01ffff => return RetrieveIMsExtended::read_from(buffer),
+        0xac01ffff => return JoinGroupRequestExtended::read_from(buffer),
+        0xad01ffff => return CreateGroupRequestExtended::read_from(buffer),
+        _ => return Err(ReadErrorKind::UnknownMessageNumber(message_num).into()),
     }
 }
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct TestMessage_TestBlock1 {
     pub test1: u32,
 }
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct TestMessage_NeighborBlock {
     pub test0: u32,
     pub test1: u32,
@@ -508,44 +513,44 @@ pub struct TestMessage_NeighborBlock {
 }
 
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct TestMessage {
     pub test_block1: TestMessage_TestBlock1,
-    pub neighbor_block: [TestMessage_NeighborBlock; 4],
+    pub neighbor_block: ArrayVec<[TestMessage_NeighborBlock; 4]>,
 }
 
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct PacketAck_Packets {
     pub id: u32,
 }
 
 /// Packet Ack - Ack a list of packets sent reliable
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct PacketAck {
     pub packets: Vec<PacketAck_Packets>,
 }
 
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct OpenCircuit_CircuitInfo {
     pub ip: Ip4Addr,
     pub port: IpPort,
 }
 
 /// OpenCircuit - Tells the recipient's messaging system to open the descibed circuit
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct OpenCircuit {
     pub circuit_info: OpenCircuit_CircuitInfo,
 }
 
 
 /// CloseCircuit - Tells the recipient's messaging system to close the descibed circuit
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct CloseCircuit {}
 
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct StartPingCheck_PingID {
     pub ping_id: u8,
     pub oldest_unacked: u32,
@@ -554,25 +559,25 @@ pub struct StartPingCheck_PingID {
 /// StartPingCheck - used to measure circuit ping times
 /// PingID is used to determine how backlogged the ping was that was
 /// returned (or how hosed the other side is)
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct StartPingCheck {
     pub ping_id: StartPingCheck_PingID,
 }
 
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct CompletePingCheck_PingID {
     pub ping_id: u8,
 }
 
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct CompletePingCheck {
     pub ping_id: CompletePingCheck_PingID,
 }
 
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct AddCircuitCode_CircuitCode {
     pub code: u32,
     pub session_id: Uuid,
@@ -583,13 +588,13 @@ pub struct AddCircuitCode_CircuitCode {
 /// sim->sim
 /// AddCircuitCode - Tells the recipient's messaging system that this code
 /// is for a legal circuit
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct AddCircuitCode {
     pub circuit_code: AddCircuitCode_CircuitCode,
 }
 
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct UseCircuitCode_CircuitCode {
     pub code: u32,
     pub session_id: Uuid,
@@ -602,13 +607,13 @@ pub struct UseCircuitCode_CircuitCode {
 /// machines it may be null. The session id will always be the session
 /// id of the process, which every server will generate on startup and
 /// the viewer will be handed after login.
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct UseCircuitCode {
     pub circuit_code: UseCircuitCode_CircuitCode,
 }
 
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct NeighborList_NeighborBlock {
     pub ip: Ip4Addr,
     pub port: IpPort,
@@ -620,26 +625,26 @@ pub struct NeighborList_NeighborBlock {
 }
 
 /// Neighbor List - Passed anytime neighbors change
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct NeighborList {
-    pub neighbor_block: [NeighborList_NeighborBlock; 4],
+    pub neighbor_block: ArrayVec<[NeighborList_NeighborBlock; 4]>,
 }
 
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct AvatarTextureUpdate_AgentData {
     pub agent_id: Uuid,
     pub textures_changed: bool,
 }
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct AvatarTextureUpdate_WearableData {
     pub cache_id: Uuid,
     pub texture_index: u8,
     pub host_name: Vec<u8>,
 }
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct AvatarTextureUpdate_TextureData {
     pub texture_id: Uuid,
 }
@@ -647,7 +652,7 @@ pub struct AvatarTextureUpdate_TextureData {
 /// AvatarTextureUpdate
 /// simulator -> dataserver
 /// reliable
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct AvatarTextureUpdate {
     pub agent_data: AvatarTextureUpdate_AgentData,
     pub wearable_data: Vec<AvatarTextureUpdate_WearableData>,
@@ -655,7 +660,7 @@ pub struct AvatarTextureUpdate {
 }
 
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct SimulatorMapUpdate_MapData {
     pub flags: u32,
 }
@@ -663,13 +668,13 @@ pub struct SimulatorMapUpdate_MapData {
 /// SimulatorMapUpdate
 /// simulator -> dataserver
 /// reliable
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct SimulatorMapUpdate {
     pub map_data: SimulatorMapUpdate_MapData,
 }
 
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct SimulatorSetMap_MapData {
     pub region_handle: u64,
     pub type_: i32,
@@ -680,7 +685,7 @@ pub struct SimulatorSetMap_MapData {
 /// simulator -> dataserver
 /// reliable
 /// Used to upload a map image into the database (currently used only for Land For Sale)
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct SimulatorSetMap {
     pub map_data: SimulatorSetMap_MapData,
 }
@@ -689,18 +694,18 @@ pub struct SimulatorSetMap {
 /// SubscribeLoad
 /// spaceserver -> simulator
 /// reliable
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct SubscribeLoad {}
 
 
 /// UnsubscribeLoad
 /// spaceserver -> simulator
 /// reliable
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct UnsubscribeLoad {}
 
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct SimulatorReady_SimulatorBlock {
     pub sim_name: Vec<u8>,
     pub sim_access: u8,
@@ -710,7 +715,7 @@ pub struct SimulatorReady_SimulatorBlock {
     pub parent_estate_id: u32,
 }
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct SimulatorReady_TelehubBlock {
     pub has_telehub: bool,
     pub telehub_pos: Vector3<f32>,
@@ -718,14 +723,14 @@ pub struct SimulatorReady_TelehubBlock {
 
 /// SimulatorReady - indicates the sim has finished loading its state
 /// and is ready to receive updates from others
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct SimulatorReady {
     pub simulator_block: SimulatorReady_SimulatorBlock,
     pub telehub_block: SimulatorReady_TelehubBlock,
 }
 
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct TelehubInfo_TelehubBlock {
     pub object_id: Uuid,
     pub object_name: Vec<u8>,
@@ -733,7 +738,7 @@ pub struct TelehubInfo_TelehubBlock {
     pub telehub_rot: Quaternion<f32>,
 }
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct TelehubInfo_SpawnPointBlock {
     pub spawn_point_pos: Vector3<f32>,
 }
@@ -741,14 +746,14 @@ pub struct TelehubInfo_SpawnPointBlock {
 /// TelehubInfo - fill in the UI for telehub creation floater.
 /// sim -> viewer
 /// reliable
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct TelehubInfo {
     pub telehub_block: TelehubInfo_TelehubBlock,
     pub spawn_point_block: Vec<TelehubInfo_SpawnPointBlock>,
 }
 
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct SimulatorPresentAtLocation_SimulatorPublicHostBlock {
     pub port: IpPort,
     pub simulator_ip: Ip4Addr,
@@ -756,13 +761,13 @@ pub struct SimulatorPresentAtLocation_SimulatorPublicHostBlock {
     pub grid_y: u32,
 }
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct SimulatorPresentAtLocation_NeighborBlock {
     pub ip: Ip4Addr,
     pub port: IpPort,
 }
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct SimulatorPresentAtLocation_SimulatorBlock {
     pub sim_name: Vec<u8>,
     pub sim_access: u8,
@@ -772,7 +777,7 @@ pub struct SimulatorPresentAtLocation_SimulatorBlock {
     pub parent_estate_id: u32,
 }
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct SimulatorPresentAtLocation_TelehubBlock {
     pub has_telehub: bool,
     pub telehub_pos: Vector3<f32>,
@@ -780,23 +785,23 @@ pub struct SimulatorPresentAtLocation_TelehubBlock {
 
 /// SimulatorPresentAtLocation - indicates that the sim is present at a grid
 /// location and passes what it believes its neighbors are
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct SimulatorPresentAtLocation {
     pub simulator_public_host_block: SimulatorPresentAtLocation_SimulatorPublicHostBlock,
-    pub neighbor_block: [SimulatorPresentAtLocation_NeighborBlock; 4],
+    pub neighbor_block: ArrayVec<[SimulatorPresentAtLocation_NeighborBlock; 4]>,
     pub simulator_block: SimulatorPresentAtLocation_SimulatorBlock,
     pub telehub_block: Vec<SimulatorPresentAtLocation_TelehubBlock>,
 }
 
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct SimulatorLoad_SimulatorLoad {
     pub time_dilation: f32,
     pub agent_count: i32,
     pub can_accept_agents: bool,
 }
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct SimulatorLoad_AgentList {
     pub circuit_code: u32,
     pub x: u8,
@@ -806,7 +811,7 @@ pub struct SimulatorLoad_AgentList {
 /// SimulatorLoad
 /// simulator -> spaceserver
 /// reliable
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct SimulatorLoad {
     pub simulator_load: SimulatorLoad_SimulatorLoad,
     pub agent_list: Vec<SimulatorLoad_AgentList>,
@@ -814,35 +819,35 @@ pub struct SimulatorLoad {
 
 
 /// Simulator Shutdown Request - Tells spaceserver that a simulator is trying to shutdown
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct SimulatorShutdownRequest {}
 
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct RegionPresenceRequestByRegionID_RegionData {
     pub region_id: Uuid,
 }
 
 /// sim -> dataserver
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct RegionPresenceRequestByRegionID {
     pub region_data: Vec<RegionPresenceRequestByRegionID_RegionData>,
 }
 
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct RegionPresenceRequestByHandle_RegionData {
     pub region_handle: u64,
 }
 
 /// sim -> dataserver
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct RegionPresenceRequestByHandle {
     pub region_data: Vec<RegionPresenceRequestByHandle_RegionData>,
 }
 
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct RegionPresenceResponse_RegionData {
     pub region_id: Uuid,
     pub region_handle: u64,
@@ -854,13 +859,13 @@ pub struct RegionPresenceResponse_RegionData {
 }
 
 /// dataserver -> sim
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct RegionPresenceResponse {
     pub region_data: Vec<RegionPresenceResponse_RegionData>,
 }
 
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct UpdateSimulator_SimulatorInfo {
     pub region_id: Uuid,
     pub sim_name: Vec<u8>,
@@ -869,13 +874,13 @@ pub struct UpdateSimulator_SimulatorInfo {
 }
 
 /// Updates SimName, EstateID and SimAccess using RegionID as a key
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct UpdateSimulator {
     pub simulator_info: UpdateSimulator_SimulatorInfo,
 }
 
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct LogDwellTime_DwellInfo {
     pub agent_id: Uuid,
     pub session_id: Uuid,
@@ -888,13 +893,13 @@ pub struct LogDwellTime_DwellInfo {
 }
 
 /// record dwell time.
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct LogDwellTime {
     pub dwell_info: LogDwellTime_DwellInfo,
 }
 
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct FeatureDisabled_FailureInfo {
     pub error_message: Vec<u8>,
     pub agent_id: Uuid,
@@ -902,13 +907,13 @@ pub struct FeatureDisabled_FailureInfo {
 }
 
 /// Disabled feature response message
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct FeatureDisabled {
     pub failure_info: FeatureDisabled_FailureInfo,
 }
 
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct LogFailedMoneyTransaction_TransactionData {
     pub transaction_id: Uuid,
     pub transaction_time: u32,
@@ -926,13 +931,13 @@ pub struct LogFailedMoneyTransaction_TransactionData {
 /// record lost money transactions.  This message could be generated
 /// from either the simulator or the dataserver, depending on how
 /// the transaction failed.
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct LogFailedMoneyTransaction {
     pub transaction_data: LogFailedMoneyTransaction_TransactionData,
 }
 
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct UserReportInternal_ReportData {
     pub report_type: u8,
     pub category: u8,
@@ -955,13 +960,13 @@ pub struct UserReportInternal_ReportData {
 
 /// complaint/bug-report - sim -> dataserver. see UserReport for details.
 /// reliable
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct UserReportInternal {
     pub report_data: UserReportInternal_ReportData,
 }
 
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct SetSimStatusInDatabase_Data {
     pub region_id: Uuid,
     pub host_name: Vec<u8>,
@@ -977,13 +982,13 @@ pub struct SetSimStatusInDatabase_Data {
 /// alters the "simulator" table in the database
 /// sim -> dataserver
 /// reliable
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct SetSimStatusInDatabase {
     pub data: SetSimStatusInDatabase_Data,
 }
 
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct SetSimPresenceInDatabase_SimData {
     pub region_id: Uuid,
     pub host_name: Vec<u8>,
@@ -999,18 +1004,18 @@ pub struct SetSimPresenceInDatabase_SimData {
 /// updates the "presence" table in the database to ensure
 /// that a given simulator is present and valid for a set amount of
 /// time
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct SetSimPresenceInDatabase {
     pub sim_data: SetSimPresenceInDatabase_SimData,
 }
 
 
 /// once we use local stats, this will include a region handle
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct EconomyDataRequest {}
 
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct EconomyData_Info {
     pub object_capacity: i32,
     pub object_count: i32,
@@ -1032,20 +1037,20 @@ pub struct EconomyData_Info {
 }
 
 /// dataserver to sim, response w/ econ data
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct EconomyData {
     pub info: EconomyData_Info,
 }
 
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct AvatarPickerRequest_AgentData {
     pub agent_id: Uuid,
     pub session_id: Uuid,
     pub query_id: Uuid,
 }
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct AvatarPickerRequest_Data {
     pub name: Vec<u8>,
 }
@@ -1054,14 +1059,14 @@ pub struct AvatarPickerRequest_Data {
 /// Get a list of names to select a person
 /// viewer -> sim -> data
 /// reliable
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct AvatarPickerRequest {
     pub agent_data: AvatarPickerRequest_AgentData,
     pub data: AvatarPickerRequest_Data,
 }
 
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct AvatarPickerRequestBackend_AgentData {
     pub agent_id: Uuid,
     pub session_id: Uuid,
@@ -1069,26 +1074,26 @@ pub struct AvatarPickerRequestBackend_AgentData {
     pub god_level: u8,
 }
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct AvatarPickerRequestBackend_Data {
     pub name: Vec<u8>,
 }
 
 /// backend implementation which tracks if the user is a god.
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct AvatarPickerRequestBackend {
     pub agent_data: AvatarPickerRequestBackend_AgentData,
     pub data: AvatarPickerRequestBackend_Data,
 }
 
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct AvatarPickerReply_AgentData {
     pub agent_id: Uuid,
     pub query_id: Uuid,
 }
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct AvatarPickerReply_Data {
     pub avatar_id: Uuid,
     pub first_name: Vec<u8>,
@@ -1098,26 +1103,26 @@ pub struct AvatarPickerReply_Data {
 /// AvatarPickerReply
 /// List of names to select a person
 /// reliable
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct AvatarPickerReply {
     pub agent_data: AvatarPickerReply_AgentData,
     pub data: Vec<AvatarPickerReply_Data>,
 }
 
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct PlacesQuery_AgentData {
     pub agent_id: Uuid,
     pub session_id: Uuid,
     pub query_id: Uuid,
 }
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct PlacesQuery_TransactionData {
     pub transaction_id: Uuid,
 }
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct PlacesQuery_QueryData {
     pub query_text: Vec<u8>,
     pub query_flags: u32,
@@ -1128,7 +1133,7 @@ pub struct PlacesQuery_QueryData {
 /// PlacesQuery
 /// Used for getting a list of places for the group land panel
 /// and the user land holdings panel.  NOT for the directory.
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct PlacesQuery {
     pub agent_data: PlacesQuery_AgentData,
     pub transaction_data: PlacesQuery_TransactionData,
@@ -1136,18 +1141,18 @@ pub struct PlacesQuery {
 }
 
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct PlacesReply_AgentData {
     pub agent_id: Uuid,
     pub query_id: Uuid,
 }
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct PlacesReply_TransactionData {
     pub transaction_id: Uuid,
 }
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct PlacesReply_QueryData {
     pub owner_id: Uuid,
     pub name: Vec<u8>,
@@ -1170,7 +1175,7 @@ pub struct PlacesReply_QueryData {
 /// global x,y,z.  Otherwise, use center of the AABB.
 /// reliable
 ///{	ProductSKU		Variable	1	}
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct PlacesReply {
     pub agent_data: PlacesReply_AgentData,
     pub transaction_data: PlacesReply_TransactionData,
@@ -1178,13 +1183,13 @@ pub struct PlacesReply {
 }
 
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct DirFindQuery_AgentData {
     pub agent_id: Uuid,
     pub session_id: Uuid,
 }
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct DirFindQuery_QueryData {
     pub query_id: Uuid,
     pub query_text: Vec<u8>,
@@ -1194,19 +1199,19 @@ pub struct DirFindQuery_QueryData {
 
 /// DirFindQuery viewer->sim
 /// Message to start asking questions for the directory
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct DirFindQuery {
     pub agent_data: DirFindQuery_AgentData,
     pub query_data: DirFindQuery_QueryData,
 }
 
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct DirFindQueryBackend_AgentData {
     pub agent_id: Uuid,
 }
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct DirFindQueryBackend_QueryData {
     pub query_id: Uuid,
     pub query_text: Vec<u8>,
@@ -1218,20 +1223,20 @@ pub struct DirFindQueryBackend_QueryData {
 
 /// DirFindQueryBackend sim->data
 /// Trusted message generated by receipt of DirFindQuery to sim.
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct DirFindQueryBackend {
     pub agent_data: DirFindQueryBackend_AgentData,
     pub query_data: DirFindQueryBackend_QueryData,
 }
 
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct DirPlacesQuery_AgentData {
     pub agent_id: Uuid,
     pub session_id: Uuid,
 }
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct DirPlacesQuery_QueryData {
     pub query_id: Uuid,
     pub query_text: Vec<u8>,
@@ -1243,19 +1248,19 @@ pub struct DirPlacesQuery_QueryData {
 
 /// DirPlacesQuery viewer->sim
 /// Used for the Find directory of places
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct DirPlacesQuery {
     pub agent_data: DirPlacesQuery_AgentData,
     pub query_data: DirPlacesQuery_QueryData,
 }
 
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct DirPlacesQueryBackend_AgentData {
     pub agent_id: Uuid,
 }
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct DirPlacesQueryBackend_QueryData {
     pub query_id: Uuid,
     pub query_text: Vec<u8>,
@@ -1269,24 +1274,24 @@ pub struct DirPlacesQueryBackend_QueryData {
 
 /// DirPlacesQueryBackend sim->dataserver
 /// Used for the Find directory of places.
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct DirPlacesQueryBackend {
     pub agent_data: DirPlacesQueryBackend_AgentData,
     pub query_data: DirPlacesQueryBackend_QueryData,
 }
 
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct DirPlacesReply_AgentData {
     pub agent_id: Uuid,
 }
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct DirPlacesReply_QueryData {
     pub query_id: Uuid,
 }
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct DirPlacesReply_QueryReplies {
     pub parcel_id: Uuid,
     pub name: Vec<u8>,
@@ -1295,7 +1300,7 @@ pub struct DirPlacesReply_QueryReplies {
     pub dwell: f32,
 }
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct DirPlacesReply_StatusData {
     pub status: u32,
 }
@@ -1304,7 +1309,7 @@ pub struct DirPlacesReply_StatusData {
 /// If the user has specified a location, use that to compute
 /// global x,y,z.  Otherwise, use center of the AABB.
 /// reliable
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct DirPlacesReply {
     pub agent_data: DirPlacesReply_AgentData,
     pub query_data: Vec<DirPlacesReply_QueryData>,
@@ -1313,17 +1318,17 @@ pub struct DirPlacesReply {
 }
 
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct DirPeopleReply_AgentData {
     pub agent_id: Uuid,
 }
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct DirPeopleReply_QueryData {
     pub query_id: Uuid,
 }
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct DirPeopleReply_QueryReplies {
     pub agent_id: Uuid,
     pub first_name: Vec<u8>,
@@ -1334,7 +1339,7 @@ pub struct DirPeopleReply_QueryReplies {
 }
 
 /// DirPeopleReply
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct DirPeopleReply {
     pub agent_data: DirPeopleReply_AgentData,
     pub query_data: DirPeopleReply_QueryData,
@@ -1342,17 +1347,17 @@ pub struct DirPeopleReply {
 }
 
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct DirEventsReply_AgentData {
     pub agent_id: Uuid,
 }
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct DirEventsReply_QueryData {
     pub query_id: Uuid,
 }
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct DirEventsReply_QueryReplies {
     pub owner_id: Uuid,
     pub name: Vec<u8>,
@@ -1362,13 +1367,13 @@ pub struct DirEventsReply_QueryReplies {
     pub event_flags: u32,
 }
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct DirEventsReply_StatusData {
     pub status: u32,
 }
 
 /// DirEventsReply
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct DirEventsReply {
     pub agent_data: DirEventsReply_AgentData,
     pub query_data: DirEventsReply_QueryData,
@@ -1377,17 +1382,17 @@ pub struct DirEventsReply {
 }
 
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct DirGroupsReply_AgentData {
     pub agent_id: Uuid,
 }
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct DirGroupsReply_QueryData {
     pub query_id: Uuid,
 }
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct DirGroupsReply_QueryReplies {
     pub group_id: Uuid,
     pub group_name: Vec<u8>,
@@ -1398,7 +1403,7 @@ pub struct DirGroupsReply_QueryReplies {
 /// DirGroupsReply
 /// dataserver -> userserver -> viewer
 /// reliable
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct DirGroupsReply {
     pub agent_data: DirGroupsReply_AgentData,
     pub query_data: DirGroupsReply_QueryData,
@@ -1406,13 +1411,13 @@ pub struct DirGroupsReply {
 }
 
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct DirClassifiedQuery_AgentData {
     pub agent_id: Uuid,
     pub session_id: Uuid,
 }
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct DirClassifiedQuery_QueryData {
     pub query_id: Uuid,
     pub query_text: Vec<u8>,
@@ -1423,19 +1428,19 @@ pub struct DirClassifiedQuery_QueryData {
 
 /// DirClassifiedQuery viewer->sim
 /// reliable
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct DirClassifiedQuery {
     pub agent_data: DirClassifiedQuery_AgentData,
     pub query_data: DirClassifiedQuery_QueryData,
 }
 
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct DirClassifiedQueryBackend_AgentData {
     pub agent_id: Uuid,
 }
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct DirClassifiedQueryBackend_QueryData {
     pub query_id: Uuid,
     pub query_text: Vec<u8>,
@@ -1448,24 +1453,24 @@ pub struct DirClassifiedQueryBackend_QueryData {
 
 /// DirClassifiedQueryBackend sim->dataserver
 /// reliable
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct DirClassifiedQueryBackend {
     pub agent_data: DirClassifiedQueryBackend_AgentData,
     pub query_data: DirClassifiedQueryBackend_QueryData,
 }
 
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct DirClassifiedReply_AgentData {
     pub agent_id: Uuid,
 }
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct DirClassifiedReply_QueryData {
     pub query_id: Uuid,
 }
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct DirClassifiedReply_QueryReplies {
     pub classified_id: Uuid,
     pub name: Vec<u8>,
@@ -1475,14 +1480,14 @@ pub struct DirClassifiedReply_QueryReplies {
     pub price_for_listing: i32,
 }
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct DirClassifiedReply_StatusData {
     pub status: u32,
 }
 
 /// DirClassifiedReply dataserver->sim->viewer
 /// reliable
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct DirClassifiedReply {
     pub agent_data: DirClassifiedReply_AgentData,
     pub query_data: DirClassifiedReply_QueryData,
@@ -1491,13 +1496,13 @@ pub struct DirClassifiedReply {
 }
 
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct AvatarClassifiedReply_AgentData {
     pub agent_id: Uuid,
     pub target_id: Uuid,
 }
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct AvatarClassifiedReply_Data {
     pub classified_id: Uuid,
     pub name: Vec<u8>,
@@ -1508,20 +1513,20 @@ pub struct AvatarClassifiedReply_Data {
 /// Send the header information for this avatar's classifieds
 /// This fills in the tabs of the Classifieds panel.
 /// reliable
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct AvatarClassifiedReply {
     pub agent_data: AvatarClassifiedReply_AgentData,
     pub data: Vec<AvatarClassifiedReply_Data>,
 }
 
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct ClassifiedInfoRequest_AgentData {
     pub agent_id: Uuid,
     pub session_id: Uuid,
 }
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct ClassifiedInfoRequest_Data {
     pub classified_id: Uuid,
 }
@@ -1530,19 +1535,19 @@ pub struct ClassifiedInfoRequest_Data {
 /// viewer -> simulator
 /// simulator -> dataserver
 /// reliable
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct ClassifiedInfoRequest {
     pub agent_data: ClassifiedInfoRequest_AgentData,
     pub data: ClassifiedInfoRequest_Data,
 }
 
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct ClassifiedInfoReply_AgentData {
     pub agent_id: Uuid,
 }
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct ClassifiedInfoReply_Data {
     pub classified_id: Uuid,
     pub creator_id: Uuid,
@@ -1565,20 +1570,20 @@ pub struct ClassifiedInfoReply_Data {
 /// dataserver -> simulator
 /// simulator -> viewer
 /// reliable
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct ClassifiedInfoReply {
     pub agent_data: ClassifiedInfoReply_AgentData,
     pub data: ClassifiedInfoReply_Data,
 }
 
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct ClassifiedInfoUpdate_AgentData {
     pub agent_id: Uuid,
     pub session_id: Uuid,
 }
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct ClassifiedInfoUpdate_Data {
     pub classified_id: Uuid,
     pub category: u32,
@@ -1597,20 +1602,20 @@ pub struct ClassifiedInfoUpdate_Data {
 /// on the simulator as the message passes through.
 /// viewer -> simulator -> dataserver
 /// reliable
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct ClassifiedInfoUpdate {
     pub agent_data: ClassifiedInfoUpdate_AgentData,
     pub data: ClassifiedInfoUpdate_Data,
 }
 
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct ClassifiedDelete_AgentData {
     pub agent_id: Uuid,
     pub session_id: Uuid,
 }
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct ClassifiedDelete_Data {
     pub classified_id: Uuid,
 }
@@ -1619,20 +1624,20 @@ pub struct ClassifiedDelete_Data {
 /// Delete a classified from the database.
 /// viewer -> simulator -> dataserver
 /// reliable
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct ClassifiedDelete {
     pub agent_data: ClassifiedDelete_AgentData,
     pub data: ClassifiedDelete_Data,
 }
 
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct ClassifiedGodDelete_AgentData {
     pub agent_id: Uuid,
     pub session_id: Uuid,
 }
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct ClassifiedGodDelete_Data {
     pub classified_id: Uuid,
     pub query_id: Uuid,
@@ -1644,20 +1649,20 @@ pub struct ClassifiedGodDelete_Data {
 /// classified.
 /// viewer -> simulator -> dataserver
 /// reliable
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct ClassifiedGodDelete {
     pub agent_data: ClassifiedGodDelete_AgentData,
     pub data: ClassifiedGodDelete_Data,
 }
 
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct DirLandQuery_AgentData {
     pub agent_id: Uuid,
     pub session_id: Uuid,
 }
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct DirLandQuery_QueryData {
     pub query_id: Uuid,
     pub query_flags: u32,
@@ -1670,19 +1675,19 @@ pub struct DirLandQuery_QueryData {
 /// DirLandQuery viewer->sim
 /// Special query for the land for sale/auction panel.
 /// reliable
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct DirLandQuery {
     pub agent_data: DirLandQuery_AgentData,
     pub query_data: DirLandQuery_QueryData,
 }
 
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct DirLandQueryBackend_AgentData {
     pub agent_id: Uuid,
 }
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct DirLandQueryBackend_QueryData {
     pub query_id: Uuid,
     pub query_flags: u32,
@@ -1696,24 +1701,24 @@ pub struct DirLandQueryBackend_QueryData {
 
 /// DirLandQueryBackend sim->dataserver
 /// Special query for the land for sale/auction panel.
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct DirLandQueryBackend {
     pub agent_data: DirLandQueryBackend_AgentData,
     pub query_data: DirLandQueryBackend_QueryData,
 }
 
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct DirLandReply_AgentData {
     pub agent_id: Uuid,
 }
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct DirLandReply_QueryData {
     pub query_id: Uuid,
 }
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct DirLandReply_QueryReplies {
     pub parcel_id: Uuid,
     pub name: Vec<u8>,
@@ -1727,7 +1732,7 @@ pub struct DirLandReply_QueryReplies {
 /// dataserver -> simulator -> viewer
 /// reliable
 ///{	ProductSKU		Variable 1	}
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct DirLandReply {
     pub agent_data: DirLandReply_AgentData,
     pub query_data: DirLandReply_QueryData,
@@ -1735,13 +1740,13 @@ pub struct DirLandReply {
 }
 
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct DirPopularQuery_AgentData {
     pub agent_id: Uuid,
     pub session_id: Uuid,
 }
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct DirPopularQuery_QueryData {
     pub query_id: Uuid,
     pub query_flags: u32,
@@ -1750,19 +1755,19 @@ pub struct DirPopularQuery_QueryData {
 /// DEPRECATED: DirPopularQuery viewer->sim
 /// Special query for the land for sale/auction panel.
 /// reliable
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct DirPopularQuery {
     pub agent_data: DirPopularQuery_AgentData,
     pub query_data: DirPopularQuery_QueryData,
 }
 
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct DirPopularQueryBackend_AgentData {
     pub agent_id: Uuid,
 }
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct DirPopularQueryBackend_QueryData {
     pub query_id: Uuid,
     pub query_flags: u32,
@@ -1773,24 +1778,24 @@ pub struct DirPopularQueryBackend_QueryData {
 /// DEPRECATED: DirPopularQueryBackend sim->dataserver
 /// Special query for the land for sale/auction panel.
 /// reliable
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct DirPopularQueryBackend {
     pub agent_data: DirPopularQueryBackend_AgentData,
     pub query_data: DirPopularQueryBackend_QueryData,
 }
 
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct DirPopularReply_AgentData {
     pub agent_id: Uuid,
 }
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct DirPopularReply_QueryData {
     pub query_id: Uuid,
 }
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct DirPopularReply_QueryReplies {
     pub parcel_id: Uuid,
     pub name: Vec<u8>,
@@ -1800,7 +1805,7 @@ pub struct DirPopularReply_QueryReplies {
 /// DEPRECATED: DirPopularReply
 /// dataserver -> simulator -> viewer
 /// reliable
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct DirPopularReply {
     pub agent_data: DirPopularReply_AgentData,
     pub query_data: DirPopularReply_QueryData,
@@ -1808,13 +1813,13 @@ pub struct DirPopularReply {
 }
 
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct ParcelInfoRequest_AgentData {
     pub agent_id: Uuid,
     pub session_id: Uuid,
 }
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct ParcelInfoRequest_Data {
     pub parcel_id: Uuid,
 }
@@ -1822,19 +1827,19 @@ pub struct ParcelInfoRequest_Data {
 /// ParcelInfoRequest
 /// viewer -> simulator -> dataserver
 /// reliable
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct ParcelInfoRequest {
     pub agent_data: ParcelInfoRequest_AgentData,
     pub data: ParcelInfoRequest_Data,
 }
 
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct ParcelInfoReply_AgentData {
     pub agent_id: Uuid,
 }
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct ParcelInfoReply_Data {
     pub parcel_id: Uuid,
     pub owner_id: Uuid,
@@ -1856,20 +1861,20 @@ pub struct ParcelInfoReply_Data {
 /// ParcelInfoReply
 /// dataserver -> simulator -> viewer
 /// reliable
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct ParcelInfoReply {
     pub agent_data: ParcelInfoReply_AgentData,
     pub data: ParcelInfoReply_Data,
 }
 
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct ParcelObjectOwnersRequest_AgentData {
     pub agent_id: Uuid,
     pub session_id: Uuid,
 }
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct ParcelObjectOwnersRequest_ParcelData {
     pub local_id: i32,
 }
@@ -1877,14 +1882,14 @@ pub struct ParcelObjectOwnersRequest_ParcelData {
 /// ParcelObjectOwnersRequest
 /// viewer -> simulator
 /// reliable
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct ParcelObjectOwnersRequest {
     pub agent_data: ParcelObjectOwnersRequest_AgentData,
     pub parcel_data: ParcelObjectOwnersRequest_ParcelData,
 }
 
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct ParcelObjectOwnersReply_Data {
     pub owner_id: Uuid,
     pub is_group_owned: bool,
@@ -1895,19 +1900,19 @@ pub struct ParcelObjectOwnersReply_Data {
 /// ParcelObjectOwnersReply
 /// simulator -> viewer
 /// reliable
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct ParcelObjectOwnersReply {
     pub data: Vec<ParcelObjectOwnersReply_Data>,
 }
 
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct GroupNoticesListRequest_AgentData {
     pub agent_id: Uuid,
     pub session_id: Uuid,
 }
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct GroupNoticesListRequest_Data {
     pub group_id: Uuid,
 }
@@ -1915,20 +1920,20 @@ pub struct GroupNoticesListRequest_Data {
 /// GroupNoticeListRequest
 /// viewer -> simulator -> dataserver
 /// reliable
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct GroupNoticesListRequest {
     pub agent_data: GroupNoticesListRequest_AgentData,
     pub data: GroupNoticesListRequest_Data,
 }
 
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct GroupNoticesListReply_AgentData {
     pub agent_id: Uuid,
     pub group_id: Uuid,
 }
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct GroupNoticesListReply_Data {
     pub notice_id: Uuid,
     pub timestamp: u32,
@@ -1941,20 +1946,20 @@ pub struct GroupNoticesListReply_Data {
 /// GroupNoticesListReply
 /// dataserver -> simulator -> viewer
 /// reliable
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct GroupNoticesListReply {
     pub agent_data: GroupNoticesListReply_AgentData,
     pub data: Vec<GroupNoticesListReply_Data>,
 }
 
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct GroupNoticeRequest_AgentData {
     pub agent_id: Uuid,
     pub session_id: Uuid,
 }
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct GroupNoticeRequest_Data {
     pub group_notice_id: Uuid,
 }
@@ -1963,19 +1968,19 @@ pub struct GroupNoticeRequest_Data {
 /// viewer -> simulator
 /// simulator -> dataserver
 /// reliable
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct GroupNoticeRequest {
     pub agent_data: GroupNoticeRequest_AgentData,
     pub data: GroupNoticeRequest_Data,
 }
 
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct GroupNoticeAdd_AgentData {
     pub agent_id: Uuid,
 }
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct GroupNoticeAdd_MessageBlock {
     pub to_group_id: Uuid,
     pub id: Uuid,
@@ -1989,20 +1994,20 @@ pub struct GroupNoticeAdd_MessageBlock {
 /// Add a group notice.
 /// simulator -> dataserver
 /// reliable
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct GroupNoticeAdd {
     pub agent_data: GroupNoticeAdd_AgentData,
     pub message_block: GroupNoticeAdd_MessageBlock,
 }
 
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct TeleportRequest_AgentData {
     pub agent_id: Uuid,
     pub session_id: Uuid,
 }
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct TeleportRequest_Info {
     pub region_id: Uuid,
     pub position: Vector3<f32>,
@@ -2011,20 +2016,20 @@ pub struct TeleportRequest_Info {
 
 /// TeleportRequest
 /// viewer -> sim specifying exact teleport destination
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct TeleportRequest {
     pub agent_data: TeleportRequest_AgentData,
     pub info: TeleportRequest_Info,
 }
 
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct TeleportLocationRequest_AgentData {
     pub agent_id: Uuid,
     pub session_id: Uuid,
 }
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct TeleportLocationRequest_Info {
     pub region_handle: u64,
     pub position: Vector3<f32>,
@@ -2033,14 +2038,14 @@ pub struct TeleportLocationRequest_Info {
 
 /// TeleportLocationRequest
 /// viewer -> sim specifying exact teleport destination
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct TeleportLocationRequest {
     pub agent_data: TeleportLocationRequest_AgentData,
     pub info: TeleportLocationRequest_Info,
 }
 
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct TeleportLocal_Info {
     pub agent_id: Uuid,
     pub location_id: u32,
@@ -2052,13 +2057,13 @@ pub struct TeleportLocal_Info {
 /// TeleportLocal
 /// sim -> viewer reply telling the viewer that we've successfully TP'd
 /// to somewhere else within the sim
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct TeleportLocal {
     pub info: TeleportLocal_Info,
 }
 
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct TeleportLandmarkRequest_Info {
     pub agent_id: Uuid,
     pub session_id: Uuid,
@@ -2067,18 +2072,18 @@ pub struct TeleportLandmarkRequest_Info {
 
 /// TeleportLandmarkRequest viewer->sim
 /// teleport to landmark asset ID destination. use LLUUD::null for home.
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct TeleportLandmarkRequest {
     pub info: TeleportLandmarkRequest_Info,
 }
 
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct TeleportProgress_AgentData {
     pub agent_id: Uuid,
 }
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct TeleportProgress_Info {
     pub teleport_flags: u32,
     pub message: Vec<u8>,
@@ -2086,34 +2091,34 @@ pub struct TeleportProgress_Info {
 
 /// TeleportProgress sim->viewer
 /// Tell the agent how the teleport is going.
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct TeleportProgress {
     pub agent_data: TeleportProgress_AgentData,
     pub info: TeleportProgress_Info,
 }
 
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct DataHomeLocationRequest_Info {
     pub agent_id: Uuid,
     pub kicked_from_estate_id: u32,
 }
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct DataHomeLocationRequest_AgentInfo {
     pub agent_effective_maturity: u32,
 }
 
 /// DataHomeLocationRequest sim->data
 /// Request
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct DataHomeLocationRequest {
     pub info: DataHomeLocationRequest_Info,
     pub agent_info: DataHomeLocationRequest_AgentInfo,
 }
 
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct DataHomeLocationReply_Info {
     pub agent_id: Uuid,
     pub region_handle: u64,
@@ -2123,13 +2128,13 @@ pub struct DataHomeLocationReply_Info {
 
 /// DataHomeLocationReply data->sim
 /// response is the location of agent home.
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct DataHomeLocationReply {
     pub info: DataHomeLocationReply_Info,
 }
 
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct TeleportFinish_Info {
     pub agent_id: Uuid,
     pub location_id: u32,
@@ -2144,25 +2149,25 @@ pub struct TeleportFinish_Info {
 /// TeleportFinish sim->viewer
 /// called when all of the information has been collected and readied for
 /// the agent.
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct TeleportFinish {
     pub info: TeleportFinish_Info,
 }
 
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct StartLure_AgentData {
     pub agent_id: Uuid,
     pub session_id: Uuid,
 }
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct StartLure_Info {
     pub lure_type: u8,
     pub message: Vec<u8>,
 }
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct StartLure_TargetData {
     pub target_id: Uuid,
 }
@@ -2175,7 +2180,7 @@ pub struct StartLure_TargetData {
 /// userserver will send an InitializeLure to the spaceserver. When that
 /// packet is acked, the original instant message is finally forwarded to
 /// TargetID.
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct StartLure {
     pub agent_data: StartLure_AgentData,
     pub info: StartLure_Info,
@@ -2183,7 +2188,7 @@ pub struct StartLure {
 }
 
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct TeleportLureRequest_Info {
     pub agent_id: Uuid,
     pub session_id: Uuid,
@@ -2194,13 +2199,13 @@ pub struct TeleportLureRequest_Info {
 /// TeleportLureRequest viewer->sim
 /// Message from target of lure to begin the teleport process on the
 /// local simulator.
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct TeleportLureRequest {
     pub info: TeleportLureRequest_Info,
 }
 
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct TeleportCancel_Info {
     pub agent_id: Uuid,
     pub session_id: Uuid,
@@ -2208,32 +2213,32 @@ pub struct TeleportCancel_Info {
 
 /// TeleportCancel viewer->sim
 /// reliable
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct TeleportCancel {
     pub info: TeleportCancel_Info,
 }
 
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct TeleportStart_Info {
     pub teleport_flags: u32,
 }
 
 /// TeleportStart sim->viewer
 /// announce a successful teleport request to the viewer.
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct TeleportStart {
     pub info: TeleportStart_Info,
 }
 
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct TeleportFailed_Info {
     pub agent_id: Uuid,
     pub reason: Vec<u8>,
 }
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct TeleportFailed_AlertInfo {
     pub message: Vec<u8>,
     pub extra_params: Vec<u8>,
@@ -2241,67 +2246,67 @@ pub struct TeleportFailed_AlertInfo {
 
 /// TeleportFailed somewhere->sim->viewer
 /// announce failure of teleport request
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct TeleportFailed {
     pub info: TeleportFailed_Info,
     pub alert_info: Vec<TeleportFailed_AlertInfo>,
 }
 
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct Undo_AgentData {
     pub agent_id: Uuid,
     pub session_id: Uuid,
     pub group_id: Uuid,
 }
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct Undo_ObjectData {
     pub object_id: Uuid,
 }
 
 /// Undo
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct Undo {
     pub agent_data: Undo_AgentData,
     pub object_data: Vec<Undo_ObjectData>,
 }
 
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct Redo_AgentData {
     pub agent_id: Uuid,
     pub session_id: Uuid,
     pub group_id: Uuid,
 }
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct Redo_ObjectData {
     pub object_id: Uuid,
 }
 
 /// Redo
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct Redo {
     pub agent_data: Redo_AgentData,
     pub object_data: Vec<Redo_ObjectData>,
 }
 
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct UndoLand_AgentData {
     pub agent_id: Uuid,
     pub session_id: Uuid,
 }
 
 /// UndoLand
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct UndoLand {
     pub agent_data: UndoLand_AgentData,
 }
 
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct AgentPause_AgentData {
     pub agent_id: Uuid,
     pub session_id: Uuid,
@@ -2309,13 +2314,13 @@ pub struct AgentPause_AgentData {
 }
 
 /// AgentPause - viewer occasionally will block, inform simulator of this fact
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct AgentPause {
     pub agent_data: AgentPause_AgentData,
 }
 
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct AgentResume_AgentData {
     pub agent_id: Uuid,
     pub session_id: Uuid,
@@ -2323,13 +2328,13 @@ pub struct AgentResume_AgentData {
 }
 
 /// AgentResume - unblock the agent
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct AgentResume {
     pub agent_data: AgentResume_AgentData,
 }
 
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct AgentUpdate_AgentData {
     pub agent_id: Uuid,
     pub session_id: Uuid,
@@ -2354,19 +2359,19 @@ pub struct AgentUpdate_AgentData {
 ///
 /// Center is region local (JNC 8.16.2001)
 /// Camera center is region local (JNC 8.29.2001)
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct AgentUpdate {
     pub agent_data: AgentUpdate_AgentData,
 }
 
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct ChatFromViewer_AgentData {
     pub agent_id: Uuid,
     pub session_id: Uuid,
 }
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct ChatFromViewer_ChatData {
     pub message: Vec<u8>,
     pub type_: u8,
@@ -2377,63 +2382,63 @@ pub struct ChatFromViewer_ChatData {
 /// Specifies the text to be said and the "type",
 /// normal speech, shout, whisper.
 /// with the specified radius
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct ChatFromViewer {
     pub agent_data: ChatFromViewer_AgentData,
     pub chat_data: ChatFromViewer_ChatData,
 }
 
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct AgentThrottle_AgentData {
     pub agent_id: Uuid,
     pub session_id: Uuid,
     pub circuit_code: u32,
 }
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct AgentThrottle_Throttle {
     pub gen_counter: u32,
     pub throttles: Vec<u8>,
 }
 
 /// AgentThrottle
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct AgentThrottle {
     pub agent_data: AgentThrottle_AgentData,
     pub throttle: AgentThrottle_Throttle,
 }
 
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct AgentFOV_AgentData {
     pub agent_id: Uuid,
     pub session_id: Uuid,
     pub circuit_code: u32,
 }
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct AgentFOV_FOVBlock {
     pub gen_counter: u32,
     pub vertical_angle: f32,
 }
 
 /// AgentFOV - Update to agent's field of view, angle is vertical, single F32 float in radians
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct AgentFOV {
     pub agent_data: AgentFOV_AgentData,
     pub fov_block: AgentFOV_FOVBlock,
 }
 
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct AgentHeightWidth_AgentData {
     pub agent_id: Uuid,
     pub session_id: Uuid,
     pub circuit_code: u32,
 }
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct AgentHeightWidth_HeightWidthBlock {
     pub gen_counter: u32,
     pub height: u16,
@@ -2442,14 +2447,14 @@ pub struct AgentHeightWidth_HeightWidthBlock {
 
 /// AgentHeightWidth - Update to height and aspect, sent as height/width to save space
 /// Usually sent when window resized or created
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct AgentHeightWidth {
     pub agent_data: AgentHeightWidth_AgentData,
     pub height_width_block: AgentHeightWidth_HeightWidthBlock,
 }
 
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct AgentSetAppearance_AgentData {
     pub agent_id: Uuid,
     pub session_id: Uuid,
@@ -2457,24 +2462,24 @@ pub struct AgentSetAppearance_AgentData {
     pub size: Vector3<f32>,
 }
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct AgentSetAppearance_WearableData {
     pub cache_id: Uuid,
     pub texture_index: u8,
 }
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct AgentSetAppearance_ObjectData {
     pub texture_entry: Vec<u8>,
 }
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct AgentSetAppearance_VisualParam {
     pub param_value: u8,
 }
 
 /// AgentSetAppearance - Update to agent appearance
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct AgentSetAppearance {
     pub agent_data: AgentSetAppearance_AgentData,
     pub wearable_data: Vec<AgentSetAppearance_WearableData>,
@@ -2483,26 +2488,26 @@ pub struct AgentSetAppearance {
 }
 
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct AgentAnimation_AgentData {
     pub agent_id: Uuid,
     pub session_id: Uuid,
 }
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct AgentAnimation_AnimationList {
     pub anim_id: Uuid,
     pub start_anim: bool,
 }
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct AgentAnimation_PhysicalAvatarEventList {
     pub type_data: Vec<u8>,
 }
 
 /// AgentAnimation - Update animation state
 /// viewer --> simulator
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct AgentAnimation {
     pub agent_data: AgentAnimation_AgentData,
     pub animation_list: Vec<AgentAnimation_AnimationList>,
@@ -2510,65 +2515,65 @@ pub struct AgentAnimation {
 }
 
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct AgentRequestSit_AgentData {
     pub agent_id: Uuid,
     pub session_id: Uuid,
 }
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct AgentRequestSit_TargetObject {
     pub target_id: Uuid,
     pub offset: Vector3<f32>,
 }
 
 /// AgentRequestSit - Try to sit on an object
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct AgentRequestSit {
     pub agent_data: AgentRequestSit_AgentData,
     pub target_object: AgentRequestSit_TargetObject,
 }
 
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct AgentSit_AgentData {
     pub agent_id: Uuid,
     pub session_id: Uuid,
 }
 
 /// AgentSit - Actually sit on object
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct AgentSit {
     pub agent_data: AgentSit_AgentData,
 }
 
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct AgentQuitCopy_AgentData {
     pub agent_id: Uuid,
     pub session_id: Uuid,
 }
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct AgentQuitCopy_FuseBlock {
     pub viewer_circuit_code: u32,
 }
 
 /// quit message sent between simulators
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct AgentQuitCopy {
     pub agent_data: AgentQuitCopy_AgentData,
     pub fuse_block: AgentQuitCopy_FuseBlock,
 }
 
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct RequestImage_AgentData {
     pub agent_id: Uuid,
     pub session_id: Uuid,
 }
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct RequestImage_RequestImage {
     pub image: Uuid,
     pub discard_level: i8,
@@ -2578,40 +2583,40 @@ pub struct RequestImage_RequestImage {
 }
 
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct RequestImage {
     pub agent_data: RequestImage_AgentData,
     pub request_image: Vec<RequestImage_RequestImage>,
 }
 
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct ImageNotInDatabase_ImageID {
     pub id: Uuid,
 }
 
 /// ImageNotInDatabase
 /// Simulator informs viewer that a requsted image definitely does not exist in the asset database
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct ImageNotInDatabase {
     pub image_id: ImageNotInDatabase_ImageID,
 }
 
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct RebakeAvatarTextures_TextureData {
     pub texture_id: Uuid,
 }
 
 /// RebakeAvatarTextures
 /// simulator -> viewer request when a temporary baked avatar texture is not found
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct RebakeAvatarTextures {
     pub texture_data: RebakeAvatarTextures_TextureData,
 }
 
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct SetAlwaysRun_AgentData {
     pub agent_id: Uuid,
     pub session_id: Uuid,
@@ -2620,20 +2625,20 @@ pub struct SetAlwaysRun_AgentData {
 
 /// SetAlwaysRun
 /// Lets the viewer choose between running and walking
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct SetAlwaysRun {
     pub agent_data: SetAlwaysRun_AgentData,
 }
 
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct ObjectAdd_AgentData {
     pub agent_id: Uuid,
     pub session_id: Uuid,
     pub group_id: Uuid,
 }
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct ObjectAdd_ObjectData {
     pub p_code: u8,
     pub material: u8,
@@ -2667,48 +2672,48 @@ pub struct ObjectAdd_ObjectData {
 }
 
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct ObjectAdd {
     pub agent_data: ObjectAdd_AgentData,
     pub object_data: ObjectAdd_ObjectData,
 }
 
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct ObjectDelete_AgentData {
     pub agent_id: Uuid,
     pub session_id: Uuid,
     pub force: bool,
 }
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct ObjectDelete_ObjectData {
     pub object_local_id: u32,
 }
 
 /// ObjectDelete
 /// viewer -> simulator
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct ObjectDelete {
     pub agent_data: ObjectDelete_AgentData,
     pub object_data: Vec<ObjectDelete_ObjectData>,
 }
 
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct ObjectDuplicate_AgentData {
     pub agent_id: Uuid,
     pub session_id: Uuid,
     pub group_id: Uuid,
 }
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct ObjectDuplicate_SharedData {
     pub offset: Vector3<f32>,
     pub duplicate_flags: u32,
 }
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct ObjectDuplicate_ObjectData {
     pub object_local_id: u32,
 }
@@ -2716,7 +2721,7 @@ pub struct ObjectDuplicate_ObjectData {
 /// ObjectDuplicate
 /// viewer -> simulator
 /// Makes a copy of a set of objects, offset by a given amount
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct ObjectDuplicate {
     pub agent_data: ObjectDuplicate_AgentData,
     pub shared_data: ObjectDuplicate_SharedData,
@@ -2724,7 +2729,7 @@ pub struct ObjectDuplicate {
 }
 
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct ObjectDuplicateOnRay_AgentData {
     pub agent_id: Uuid,
     pub session_id: Uuid,
@@ -2739,7 +2744,7 @@ pub struct ObjectDuplicateOnRay_AgentData {
     pub duplicate_flags: u32,
 }
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct ObjectDuplicateOnRay_ObjectData {
     pub object_local_id: u32,
 }
@@ -2748,20 +2753,20 @@ pub struct ObjectDuplicateOnRay_ObjectData {
 /// viewer -> simulator
 /// Makes a copy of an object, using the add object raycast
 /// code to abut it to other objects.
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct ObjectDuplicateOnRay {
     pub agent_data: ObjectDuplicateOnRay_AgentData,
     pub object_data: Vec<ObjectDuplicateOnRay_ObjectData>,
 }
 
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct MultipleObjectUpdate_AgentData {
     pub agent_id: Uuid,
     pub session_id: Uuid,
 }
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct MultipleObjectUpdate_ObjectData {
     pub object_local_id: u32,
     pub type_: u8,
@@ -2772,20 +2777,20 @@ pub struct MultipleObjectUpdate_ObjectData {
 /// viewer -> simulator
 /// updates position, rotation and scale in one message
 /// positions sent as region-local floats
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct MultipleObjectUpdate {
     pub agent_data: MultipleObjectUpdate_AgentData,
     pub object_data: Vec<MultipleObjectUpdate_ObjectData>,
 }
 
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct RequestMultipleObjects_AgentData {
     pub agent_id: Uuid,
     pub session_id: Uuid,
 }
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct RequestMultipleObjects_ObjectData {
     pub cache_miss_type: u8,
     pub id: u32,
@@ -2801,20 +2806,20 @@ pub struct RequestMultipleObjects_ObjectData {
 ///
 /// CacheMissType 0 => full object (viewer doesn't have it)
 /// CacheMissType 1 => CRC mismatch only
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct RequestMultipleObjects {
     pub agent_data: RequestMultipleObjects_AgentData,
     pub object_data: Vec<RequestMultipleObjects_ObjectData>,
 }
 
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct ObjectPosition_AgentData {
     pub agent_id: Uuid,
     pub session_id: Uuid,
 }
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct ObjectPosition_ObjectData {
     pub object_local_id: u32,
     pub position: Vector3<f32>,
@@ -2831,20 +2836,20 @@ pub struct ObjectPosition_ObjectData {
 ///
 /// == New Location ==
 /// MultipleObjectUpdate can be used instead.
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct ObjectPosition {
     pub agent_data: ObjectPosition_AgentData,
     pub object_data: Vec<ObjectPosition_ObjectData>,
 }
 
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct ObjectScale_AgentData {
     pub agent_id: Uuid,
     pub session_id: Uuid,
 }
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct ObjectScale_ObjectData {
     pub object_local_id: u32,
     pub scale: Vector3<f32>,
@@ -2861,20 +2866,20 @@ pub struct ObjectScale_ObjectData {
 ///
 /// == New Location ==
 /// MultipleObjectUpdate can be used instead.
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct ObjectScale {
     pub agent_data: ObjectScale_AgentData,
     pub object_data: Vec<ObjectScale_ObjectData>,
 }
 
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct ObjectRotation_AgentData {
     pub agent_id: Uuid,
     pub session_id: Uuid,
 }
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct ObjectRotation_ObjectData {
     pub object_local_id: u32,
     pub rotation: Quaternion<f32>,
@@ -2882,14 +2887,14 @@ pub struct ObjectRotation_ObjectData {
 
 /// ObjectRotation
 /// viewer -> simulator
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct ObjectRotation {
     pub agent_data: ObjectRotation_AgentData,
     pub object_data: Vec<ObjectRotation_ObjectData>,
 }
 
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct ObjectFlagUpdate_AgentData {
     pub agent_id: Uuid,
     pub session_id: Uuid,
@@ -2900,21 +2905,31 @@ pub struct ObjectFlagUpdate_AgentData {
     pub casts_shadows: bool,
 }
 
+#[derive(Clone, Debug)]
+pub struct ObjectFlagUpdate_ExtraPhysics {
+    pub physics_shape_type: u8,
+    pub density: f32,
+    pub friction: f32,
+    pub restitution: f32,
+    pub gravity_multiplier: f32,
+}
+
 /// ObjectFlagUpdate
 /// viewer -> simulator
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct ObjectFlagUpdate {
     pub agent_data: ObjectFlagUpdate_AgentData,
+    pub extra_physics: Vec<ObjectFlagUpdate_ExtraPhysics>,
 }
 
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct ObjectClickAction_AgentData {
     pub agent_id: Uuid,
     pub session_id: Uuid,
 }
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct ObjectClickAction_ObjectData {
     pub object_local_id: u32,
     pub click_action: u8,
@@ -2922,20 +2937,20 @@ pub struct ObjectClickAction_ObjectData {
 
 /// ObjectClickAction
 /// viewer -> simulator
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct ObjectClickAction {
     pub agent_data: ObjectClickAction_AgentData,
     pub object_data: Vec<ObjectClickAction_ObjectData>,
 }
 
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct ObjectImage_AgentData {
     pub agent_id: Uuid,
     pub session_id: Uuid,
 }
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct ObjectImage_ObjectData {
     pub object_local_id: u32,
     pub media_url: Vec<u8>,
@@ -2944,40 +2959,40 @@ pub struct ObjectImage_ObjectData {
 
 /// ObjectImage
 /// viewer -> simulator
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct ObjectImage {
     pub agent_data: ObjectImage_AgentData,
     pub object_data: Vec<ObjectImage_ObjectData>,
 }
 
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct ObjectMaterial_AgentData {
     pub agent_id: Uuid,
     pub session_id: Uuid,
 }
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct ObjectMaterial_ObjectData {
     pub object_local_id: u32,
     pub material: u8,
 }
 
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct ObjectMaterial {
     pub agent_data: ObjectMaterial_AgentData,
     pub object_data: Vec<ObjectMaterial_ObjectData>,
 }
 
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct ObjectShape_AgentData {
     pub agent_id: Uuid,
     pub session_id: Uuid,
 }
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct ObjectShape_ObjectData {
     pub object_local_id: u32,
     pub path_curve: u8,
@@ -3001,20 +3016,20 @@ pub struct ObjectShape_ObjectData {
 }
 
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct ObjectShape {
     pub agent_data: ObjectShape_AgentData,
     pub object_data: Vec<ObjectShape_ObjectData>,
 }
 
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct ObjectExtraParams_AgentData {
     pub agent_id: Uuid,
     pub session_id: Uuid,
 }
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct ObjectExtraParams_ObjectData {
     pub object_local_id: u32,
     pub param_type: u16,
@@ -3024,27 +3039,27 @@ pub struct ObjectExtraParams_ObjectData {
 }
 
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct ObjectExtraParams {
     pub agent_data: ObjectExtraParams_AgentData,
     pub object_data: Vec<ObjectExtraParams_ObjectData>,
 }
 
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct ObjectOwner_AgentData {
     pub agent_id: Uuid,
     pub session_id: Uuid,
 }
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct ObjectOwner_HeaderData {
     pub override_: bool,
     pub owner_id: Uuid,
     pub group_id: Uuid,
 }
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct ObjectOwner_ObjectData {
     pub object_local_id: u32,
 }
@@ -3053,7 +3068,7 @@ pub struct ObjectOwner_ObjectData {
 /// To make public, set OwnerID to LLUUID::null.
 /// TODO: Eliminate god-bit. Maybe not. God-bit is ok, because it's
 /// known on the server.
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct ObjectOwner {
     pub agent_data: ObjectOwner_AgentData,
     pub header_data: ObjectOwner_HeaderData,
@@ -3061,14 +3076,14 @@ pub struct ObjectOwner {
 }
 
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct ObjectGroup_AgentData {
     pub agent_id: Uuid,
     pub session_id: Uuid,
     pub group_id: Uuid,
 }
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct ObjectGroup_ObjectData {
     pub object_local_id: u32,
 }
@@ -3076,14 +3091,14 @@ pub struct ObjectGroup_ObjectData {
 /// ObjectGroup
 /// To make the object part of no group, set GroupID = LLUUID::null.
 /// This call only works if objectid.ownerid == agentid.
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct ObjectGroup {
     pub agent_data: ObjectGroup_AgentData,
     pub object_data: Vec<ObjectGroup_ObjectData>,
 }
 
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct ObjectBuy_AgentData {
     pub agent_id: Uuid,
     pub session_id: Uuid,
@@ -3091,7 +3106,7 @@ pub struct ObjectBuy_AgentData {
     pub category_id: Uuid,
 }
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct ObjectBuy_ObjectData {
     pub object_local_id: u32,
     pub sale_type: u8,
@@ -3099,20 +3114,20 @@ pub struct ObjectBuy_ObjectData {
 }
 
 /// Attempt to buy an object. This will only pack root objects.
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct ObjectBuy {
     pub agent_data: ObjectBuy_AgentData,
     pub object_data: Vec<ObjectBuy_ObjectData>,
 }
 
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct BuyObjectInventory_AgentData {
     pub agent_id: Uuid,
     pub session_id: Uuid,
 }
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct BuyObjectInventory_Data {
     pub object_id: Uuid,
     pub item_id: Uuid,
@@ -3121,14 +3136,14 @@ pub struct BuyObjectInventory_Data {
 
 /// buy object inventory. If the transaction succeeds, it will add
 /// inventory to the agent, and potentially remove the original.
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct BuyObjectInventory {
     pub agent_data: BuyObjectInventory_AgentData,
     pub data: BuyObjectInventory_Data,
 }
 
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct DerezContainer_Data {
     pub object_id: Uuid,
     pub delete: bool,
@@ -3136,24 +3151,24 @@ pub struct DerezContainer_Data {
 
 /// sim -> viewer
 /// Used to propperly handle buying asset containers
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct DerezContainer {
     pub data: DerezContainer_Data,
 }
 
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct ObjectPermissions_AgentData {
     pub agent_id: Uuid,
     pub session_id: Uuid,
 }
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct ObjectPermissions_HeaderData {
     pub override_: bool,
 }
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct ObjectPermissions_ObjectData {
     pub object_local_id: u32,
     pub field: u8,
@@ -3166,7 +3181,7 @@ pub struct ObjectPermissions_ObjectData {
 /// If Set is true, tries to turn on bits in mask.
 /// If set is false, tries to turn off bits in mask.
 /// BUG: This just forces the permissions field.
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct ObjectPermissions {
     pub agent_data: ObjectPermissions_AgentData,
     pub header_data: ObjectPermissions_HeaderData,
@@ -3174,13 +3189,13 @@ pub struct ObjectPermissions {
 }
 
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct ObjectSaleInfo_AgentData {
     pub agent_id: Uuid,
     pub session_id: Uuid,
 }
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct ObjectSaleInfo_ObjectData {
     pub local_id: u32,
     pub sale_type: u8,
@@ -3188,221 +3203,221 @@ pub struct ObjectSaleInfo_ObjectData {
 }
 
 /// set object sale information
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct ObjectSaleInfo {
     pub agent_data: ObjectSaleInfo_AgentData,
     pub object_data: Vec<ObjectSaleInfo_ObjectData>,
 }
 
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct ObjectName_AgentData {
     pub agent_id: Uuid,
     pub session_id: Uuid,
 }
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct ObjectName_ObjectData {
     pub local_id: u32,
     pub name: Vec<u8>,
 }
 
 /// set object names
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct ObjectName {
     pub agent_data: ObjectName_AgentData,
     pub object_data: Vec<ObjectName_ObjectData>,
 }
 
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct ObjectDescription_AgentData {
     pub agent_id: Uuid,
     pub session_id: Uuid,
 }
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct ObjectDescription_ObjectData {
     pub local_id: u32,
     pub description: Vec<u8>,
 }
 
 /// set object descriptions
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct ObjectDescription {
     pub agent_data: ObjectDescription_AgentData,
     pub object_data: Vec<ObjectDescription_ObjectData>,
 }
 
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct ObjectCategory_AgentData {
     pub agent_id: Uuid,
     pub session_id: Uuid,
 }
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct ObjectCategory_ObjectData {
     pub local_id: u32,
     pub category: u32,
 }
 
 /// set object category
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct ObjectCategory {
     pub agent_data: ObjectCategory_AgentData,
     pub object_data: Vec<ObjectCategory_ObjectData>,
 }
 
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct ObjectSelect_AgentData {
     pub agent_id: Uuid,
     pub session_id: Uuid,
 }
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct ObjectSelect_ObjectData {
     pub object_local_id: u32,
 }
 
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct ObjectSelect {
     pub agent_data: ObjectSelect_AgentData,
     pub object_data: Vec<ObjectSelect_ObjectData>,
 }
 
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct ObjectDeselect_AgentData {
     pub agent_id: Uuid,
     pub session_id: Uuid,
 }
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct ObjectDeselect_ObjectData {
     pub object_local_id: u32,
 }
 
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct ObjectDeselect {
     pub agent_data: ObjectDeselect_AgentData,
     pub object_data: Vec<ObjectDeselect_ObjectData>,
 }
 
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct ObjectAttach_AgentData {
     pub agent_id: Uuid,
     pub session_id: Uuid,
     pub attachment_point: u8,
 }
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct ObjectAttach_ObjectData {
     pub object_local_id: u32,
     pub rotation: Quaternion<f32>,
 }
 
 /// ObjectAttach
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct ObjectAttach {
     pub agent_data: ObjectAttach_AgentData,
     pub object_data: Vec<ObjectAttach_ObjectData>,
 }
 
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct ObjectDetach_AgentData {
     pub agent_id: Uuid,
     pub session_id: Uuid,
 }
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct ObjectDetach_ObjectData {
     pub object_local_id: u32,
 }
 
 /// ObjectDetach -- derezzes an attachment, marking its item in your inventory as not "(worn)"
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct ObjectDetach {
     pub agent_data: ObjectDetach_AgentData,
     pub object_data: Vec<ObjectDetach_ObjectData>,
 }
 
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct ObjectDrop_AgentData {
     pub agent_id: Uuid,
     pub session_id: Uuid,
 }
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct ObjectDrop_ObjectData {
     pub object_local_id: u32,
 }
 
 /// ObjectDrop -- drops an attachment from your avatar onto the ground
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct ObjectDrop {
     pub agent_data: ObjectDrop_AgentData,
     pub object_data: Vec<ObjectDrop_ObjectData>,
 }
 
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct ObjectLink_AgentData {
     pub agent_id: Uuid,
     pub session_id: Uuid,
 }
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct ObjectLink_ObjectData {
     pub object_local_id: u32,
 }
 
 /// ObjectLink
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct ObjectLink {
     pub agent_data: ObjectLink_AgentData,
     pub object_data: Vec<ObjectLink_ObjectData>,
 }
 
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct ObjectDelink_AgentData {
     pub agent_id: Uuid,
     pub session_id: Uuid,
 }
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct ObjectDelink_ObjectData {
     pub object_local_id: u32,
 }
 
 /// ObjectDelink
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct ObjectDelink {
     pub agent_data: ObjectDelink_AgentData,
     pub object_data: Vec<ObjectDelink_ObjectData>,
 }
 
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct ObjectGrab_AgentData {
     pub agent_id: Uuid,
     pub session_id: Uuid,
 }
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct ObjectGrab_ObjectData {
     pub local_id: u32,
     pub grab_offset: Vector3<f32>,
 }
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct ObjectGrab_SurfaceInfo {
     pub uv_coord: Vector3<f32>,
     pub st_coord: Vector3<f32>,
@@ -3413,7 +3428,7 @@ pub struct ObjectGrab_SurfaceInfo {
 }
 
 /// ObjectGrab
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct ObjectGrab {
     pub agent_data: ObjectGrab_AgentData,
     pub object_data: ObjectGrab_ObjectData,
@@ -3421,13 +3436,13 @@ pub struct ObjectGrab {
 }
 
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct ObjectGrabUpdate_AgentData {
     pub agent_id: Uuid,
     pub session_id: Uuid,
 }
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct ObjectGrabUpdate_ObjectData {
     pub object_id: Uuid,
     pub grab_offset_initial: Vector3<f32>,
@@ -3435,7 +3450,7 @@ pub struct ObjectGrabUpdate_ObjectData {
     pub time_since_last: u32,
 }
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct ObjectGrabUpdate_SurfaceInfo {
     pub uv_coord: Vector3<f32>,
     pub st_coord: Vector3<f32>,
@@ -3446,7 +3461,7 @@ pub struct ObjectGrabUpdate_SurfaceInfo {
 }
 
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct ObjectGrabUpdate {
     pub agent_data: ObjectGrabUpdate_AgentData,
     pub object_data: ObjectGrabUpdate_ObjectData,
@@ -3454,18 +3469,18 @@ pub struct ObjectGrabUpdate {
 }
 
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct ObjectDeGrab_AgentData {
     pub agent_id: Uuid,
     pub session_id: Uuid,
 }
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct ObjectDeGrab_ObjectData {
     pub local_id: u32,
 }
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct ObjectDeGrab_SurfaceInfo {
     pub uv_coord: Vector3<f32>,
     pub st_coord: Vector3<f32>,
@@ -3476,7 +3491,7 @@ pub struct ObjectDeGrab_SurfaceInfo {
 }
 
 /// ObjectDeGrab
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct ObjectDeGrab {
     pub agent_data: ObjectDeGrab_AgentData,
     pub object_data: ObjectDeGrab_ObjectData,
@@ -3484,92 +3499,92 @@ pub struct ObjectDeGrab {
 }
 
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct ObjectSpinStart_AgentData {
     pub agent_id: Uuid,
     pub session_id: Uuid,
 }
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct ObjectSpinStart_ObjectData {
     pub object_id: Uuid,
 }
 
 /// ObjectSpinStart
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct ObjectSpinStart {
     pub agent_data: ObjectSpinStart_AgentData,
     pub object_data: ObjectSpinStart_ObjectData,
 }
 
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct ObjectSpinUpdate_AgentData {
     pub agent_id: Uuid,
     pub session_id: Uuid,
 }
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct ObjectSpinUpdate_ObjectData {
     pub object_id: Uuid,
     pub rotation: Quaternion<f32>,
 }
 
 /// ObjectSpinUpdate
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct ObjectSpinUpdate {
     pub agent_data: ObjectSpinUpdate_AgentData,
     pub object_data: ObjectSpinUpdate_ObjectData,
 }
 
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct ObjectSpinStop_AgentData {
     pub agent_id: Uuid,
     pub session_id: Uuid,
 }
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct ObjectSpinStop_ObjectData {
     pub object_id: Uuid,
 }
 
 /// ObjectSpinStop
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct ObjectSpinStop {
     pub agent_data: ObjectSpinStop_AgentData,
     pub object_data: ObjectSpinStop_ObjectData,
 }
 
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct ObjectExportSelected_AgentData {
     pub agent_id: Uuid,
     pub request_id: Uuid,
     pub volume_detail: i16,
 }
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct ObjectExportSelected_ObjectData {
     pub object_id: Uuid,
 }
 
 /// Export selected objects
 /// viewer->sim
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct ObjectExportSelected {
     pub agent_data: ObjectExportSelected_AgentData,
     pub object_data: Vec<ObjectExportSelected_ObjectData>,
 }
 
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct ModifyLand_AgentData {
     pub agent_id: Uuid,
     pub session_id: Uuid,
 }
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct ModifyLand_ModifyBlock {
     pub action: u8,
     pub brush_size: u8,
@@ -3577,7 +3592,7 @@ pub struct ModifyLand_ModifyBlock {
     pub height: f32,
 }
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct ModifyLand_ParcelData {
     pub local_id: i32,
     pub west: f32,
@@ -3586,14 +3601,14 @@ pub struct ModifyLand_ParcelData {
     pub north: f32,
 }
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct ModifyLand_ModifyBlockExtended {
     pub brush_size: f32,
 }
 
 /// ModifyLand - sent to modify a piece of land on a simulator.
 /// viewer -> sim
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct ModifyLand {
     pub agent_data: ModifyLand_AgentData,
     pub modify_block: ModifyLand_ModifyBlock,
@@ -3602,7 +3617,7 @@ pub struct ModifyLand {
 }
 
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct VelocityInterpolateOn_AgentData {
     pub agent_id: Uuid,
     pub session_id: Uuid,
@@ -3611,13 +3626,13 @@ pub struct VelocityInterpolateOn_AgentData {
 /// VelocityInterpolateOn
 /// viewer->sim
 /// requires administrative access
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct VelocityInterpolateOn {
     pub agent_data: VelocityInterpolateOn_AgentData,
 }
 
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct VelocityInterpolateOff_AgentData {
     pub agent_id: Uuid,
     pub session_id: Uuid,
@@ -3626,19 +3641,19 @@ pub struct VelocityInterpolateOff_AgentData {
 /// VelocityInterpolateOff
 /// viewer->sim
 /// requires administrative access
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct VelocityInterpolateOff {
     pub agent_data: VelocityInterpolateOff_AgentData,
 }
 
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct StateSave_AgentData {
     pub agent_id: Uuid,
     pub session_id: Uuid,
 }
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct StateSave_DataBlock {
     pub filename: Vec<u8>,
 }
@@ -3646,14 +3661,14 @@ pub struct StateSave_DataBlock {
 /// Save State
 /// viewer->sim
 /// requires administrative access
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct StateSave {
     pub agent_data: StateSave_AgentData,
     pub data_block: StateSave_DataBlock,
 }
 
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct ReportAutosaveCrash_AutosaveData {
     pub pid: i32,
     pub status: i32,
@@ -3661,39 +3676,39 @@ pub struct ReportAutosaveCrash_AutosaveData {
 
 /// ReportAutosaveCrash
 /// sim->launcher
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct ReportAutosaveCrash {
     pub autosave_data: ReportAutosaveCrash_AutosaveData,
 }
 
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct SimWideDeletes_AgentData {
     pub agent_id: Uuid,
     pub session_id: Uuid,
 }
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct SimWideDeletes_DataBlock {
     pub target_id: Uuid,
     pub flags: u32,
 }
 
 /// SimWideDeletes
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct SimWideDeletes {
     pub agent_data: SimWideDeletes_AgentData,
     pub data_block: SimWideDeletes_DataBlock,
 }
 
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct RequestObjectPropertiesFamily_AgentData {
     pub agent_id: Uuid,
     pub session_id: Uuid,
 }
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct RequestObjectPropertiesFamily_ObjectData {
     pub request_flags: u32,
     pub object_id: Uuid,
@@ -3703,20 +3718,20 @@ pub struct RequestObjectPropertiesFamily_ObjectData {
 /// Ask for extended information, such as creator, permissions, resources, etc.
 /// Medium frequency because it is driven by mouse hovering over objects, which
 /// occurs at high rates.
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct RequestObjectPropertiesFamily {
     pub agent_data: RequestObjectPropertiesFamily_AgentData,
     pub object_data: RequestObjectPropertiesFamily_ObjectData,
 }
 
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct TrackAgent_AgentData {
     pub agent_id: Uuid,
     pub session_id: Uuid,
 }
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct TrackAgent_TargetData {
     pub prey_id: Uuid,
 }
@@ -3724,14 +3739,14 @@ pub struct TrackAgent_TargetData {
 /// Track agent - this information is used when sending out the
 /// coarse location update so that we know who you are tracking.
 /// To stop tracking - send a null uuid as the prey.
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct TrackAgent {
     pub agent_data: TrackAgent_AgentData,
     pub target_data: TrackAgent_TargetData,
 }
 
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct ViewerStats_AgentData {
     pub agent_id: Uuid,
     pub session_id: Uuid,
@@ -3750,14 +3765,14 @@ pub struct ViewerStats_AgentData {
     pub sys_gpu: Vec<u8>,
 }
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct ViewerStats_DownloadTotals {
     pub world: u32,
     pub objects: u32,
     pub textures: u32,
 }
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct ViewerStats_NetStats {
     pub bytes: u32,
     pub packets: u32,
@@ -3765,7 +3780,7 @@ pub struct ViewerStats_NetStats {
     pub savings: u32,
 }
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct ViewerStats_FailStats {
     pub send_packet: u32,
     pub dropped: u32,
@@ -3775,30 +3790,30 @@ pub struct ViewerStats_FailStats {
     pub invalid: u32,
 }
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct ViewerStats_MiscStats {
     pub type_: u32,
     pub value: f64,
 }
 
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct ViewerStats {
     pub agent_data: ViewerStats_AgentData,
     pub download_totals: ViewerStats_DownloadTotals,
-    pub net_stats: [ViewerStats_NetStats; 2],
+    pub net_stats: ArrayVec<[ViewerStats_NetStats; 2]>,
     pub fail_stats: ViewerStats_FailStats,
     pub misc_stats: Vec<ViewerStats_MiscStats>,
 }
 
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct ScriptAnswerYes_AgentData {
     pub agent_id: Uuid,
     pub session_id: Uuid,
 }
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct ScriptAnswerYes_Data {
     pub task_id: Uuid,
     pub item_id: Uuid,
@@ -3807,20 +3822,20 @@ pub struct ScriptAnswerYes_Data {
 
 /// ScriptAnswerYes
 /// reliable
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct ScriptAnswerYes {
     pub agent_data: ScriptAnswerYes_AgentData,
     pub data: ScriptAnswerYes_Data,
 }
 
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct UserReport_AgentData {
     pub agent_id: Uuid,
     pub session_id: Uuid,
 }
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct UserReport_ReportData {
     pub report_type: u8,
     pub category: u8,
@@ -3838,39 +3853,45 @@ pub struct UserReport_ReportData {
 
 /// complaint/bug-report
 /// reliable
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct UserReport {
     pub agent_data: UserReport_AgentData,
     pub report_data: UserReport_ReportData,
 }
 
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct AlertMessage_AlertData {
     pub message: Vec<u8>,
 }
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct AlertMessage_AlertInfo {
     pub message: Vec<u8>,
     pub extra_params: Vec<u8>,
 }
 
+#[derive(Clone, Debug)]
+pub struct AlertMessage_AgentInfo {
+    pub agent_id: Uuid,
+}
+
 /// AlertMessage
 /// Specifies the text to be posted in an alert dialog
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct AlertMessage {
     pub alert_data: AlertMessage_AlertData,
     pub alert_info: Vec<AlertMessage_AlertInfo>,
+    pub agent_info: Vec<AlertMessage_AgentInfo>,
 }
 
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct AgentAlertMessage_AgentData {
     pub agent_id: Uuid,
 }
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct AgentAlertMessage_AlertData {
     pub modal: bool,
     pub message: Vec<u8>,
@@ -3878,14 +3899,14 @@ pub struct AgentAlertMessage_AlertData {
 
 /// Send an AlertMessage to the named agent.
 /// usually dataserver->simulator
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct AgentAlertMessage {
     pub agent_data: AgentAlertMessage_AgentData,
     pub alert_data: AgentAlertMessage_AlertData,
 }
 
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct MeanCollisionAlert_MeanCollision {
     pub victim: Uuid,
     pub perp: Uuid,
@@ -3896,39 +3917,39 @@ pub struct MeanCollisionAlert_MeanCollision {
 
 /// MeanCollisionAlert
 /// Specifies the text to be posted in an alert dialog
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct MeanCollisionAlert {
     pub mean_collision: Vec<MeanCollisionAlert_MeanCollision>,
 }
 
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct ViewerFrozenMessage_FrozenData {
     pub data: bool,
 }
 
 /// ViewerFrozenMessage
 /// Specifies the text to be posted in an alert dialog
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct ViewerFrozenMessage {
     pub frozen_data: ViewerFrozenMessage_FrozenData,
 }
 
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct HealthMessage_HealthData {
     pub health: f32,
 }
 
 /// Health Message
 /// Tells viewer what agent health is
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct HealthMessage {
     pub health_data: HealthMessage_HealthData,
 }
 
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct ChatFromSimulator_ChatData {
     pub from_name: Vec<u8>,
     pub source_id: Uuid,
@@ -3945,13 +3966,13 @@ pub struct ChatFromSimulator_ChatData {
 /// Position is region local.
 /// Viewer can optionally use position to animate
 /// If audible is CHAT_NOT_AUDIBLE, message will not be valid
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct ChatFromSimulator {
     pub chat_data: ChatFromSimulator_ChatData,
 }
 
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct SimStats_Region {
     pub region_x: u32,
     pub region_y: u32,
@@ -3959,27 +3980,33 @@ pub struct SimStats_Region {
     pub object_capacity: u32,
 }
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct SimStats_Stat {
     pub stat_id: u32,
     pub stat_value: f32,
 }
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct SimStats_PidStat {
     pub pid: i32,
 }
 
+#[derive(Clone, Debug)]
+pub struct SimStats_RegionInfo {
+    pub region_flags_extended: u64,
+}
+
 /// Simulator statistics packet (goes out to viewer and dataserver/spaceserver)
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct SimStats {
     pub region: SimStats_Region,
     pub stat: Vec<SimStats_Stat>,
     pub pid_stat: SimStats_PidStat,
+    pub region_info: Vec<SimStats_RegionInfo>,
 }
 
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct RequestRegionInfo_AgentData {
     pub agent_id: Uuid,
     pub session_id: Uuid,
@@ -3987,19 +4014,19 @@ pub struct RequestRegionInfo_AgentData {
 
 /// viewer -> sim
 /// reliable
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct RequestRegionInfo {
     pub agent_data: RequestRegionInfo_AgentData,
 }
 
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct RegionInfo_AgentData {
     pub agent_id: Uuid,
     pub session_id: Uuid,
 }
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct RegionInfo_RegionInfo {
     pub sim_name: Vec<u8>,
     pub estate_id: u32,
@@ -4019,7 +4046,7 @@ pub struct RegionInfo_RegionInfo {
     pub sun_hour: f32,
 }
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct RegionInfo_RegionInfo2 {
     pub product_sku: Vec<u8>,
     pub product_name: Vec<u8>,
@@ -4028,26 +4055,32 @@ pub struct RegionInfo_RegionInfo2 {
     pub hard_max_objects: u32,
 }
 
+#[derive(Clone, Debug)]
+pub struct RegionInfo_RegionInfo3 {
+    pub region_flags_extended: u64,
+}
+
 /// RegionInfo
 /// Used to populate UI for both region/estate floater
 /// and god tools floater
 /// sim -> viewer
 /// reliable
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct RegionInfo {
     pub agent_data: RegionInfo_AgentData,
     pub region_info: RegionInfo_RegionInfo,
     pub region_info2: RegionInfo_RegionInfo2,
+    pub region_info3: Vec<RegionInfo_RegionInfo3>,
 }
 
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct GodUpdateRegionInfo_AgentData {
     pub agent_id: Uuid,
     pub session_id: Uuid,
 }
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct GodUpdateRegionInfo_RegionInfo {
     pub sim_name: Vec<u8>,
     pub estate_id: u32,
@@ -4059,19 +4092,25 @@ pub struct GodUpdateRegionInfo_RegionInfo {
     pub redirect_grid_y: i32,
 }
 
+#[derive(Clone, Debug)]
+pub struct GodUpdateRegionInfo_RegionInfo2 {
+    pub region_flags_extended: u64,
+}
+
 /// GodUpdateRegionInfo
 /// Sent from viewer to sim after a god has changed some
 /// of the parameters in the god tools floater
 /// viewer -> sim
 /// reliable
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct GodUpdateRegionInfo {
     pub agent_data: GodUpdateRegionInfo_AgentData,
     pub region_info: GodUpdateRegionInfo_RegionInfo,
+    pub region_info2: Vec<GodUpdateRegionInfo_RegionInfo2>,
 }
 
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct NearestLandingRegionRequest_RequestingRegionData {
     pub region_handle: u64,
 }
@@ -4081,13 +4120,13 @@ pub struct NearestLandingRegionRequest_RequestingRegionData {
 ///Sent from the region to the data server
 ///to request the most up to date region for the requesting
 ///region to redirect teleports to
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct NearestLandingRegionRequest {
     pub requesting_region_data: NearestLandingRegionRequest_RequestingRegionData,
 }
 
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct NearestLandingRegionReply_LandingRegionData {
     pub region_handle: u64,
 }
@@ -4097,13 +4136,13 @@ pub struct NearestLandingRegionReply_LandingRegionData {
 ///Sent from the data server to a region in reply
 ///to the redirectregion request stating which region
 ///the requesting region should redirect teleports to if necessary
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct NearestLandingRegionReply {
     pub landing_region_data: NearestLandingRegionReply_LandingRegionData,
 }
 
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct NearestLandingRegionUpdated_RegionData {
     pub region_handle: u64,
 }
@@ -4113,13 +4152,13 @@ pub struct NearestLandingRegionUpdated_RegionData {
 ///Sent from a region to the data server
 ///to have the dataserver note/clear in the db
 ///that the region has updated it's nearest landing point
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct NearestLandingRegionUpdated {
     pub region_data: NearestLandingRegionUpdated_RegionData,
 }
 
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct TeleportLandingStatusChanged_RegionData {
     pub region_handle: u64,
 }
@@ -4128,13 +4167,13 @@ pub struct TeleportLandingStatusChanged_RegionData {
 ///sim->dataserver
 ///Sent from the region to the data server
 ///to note that the region's teleportation landing status has changed
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct TeleportLandingStatusChanged {
     pub region_data: TeleportLandingStatusChanged_RegionData,
 }
 
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct RegionHandshake_RegionInfo {
     pub region_flags: u32,
     pub sim_access: u8,
@@ -4162,12 +4201,12 @@ pub struct RegionHandshake_RegionInfo {
     pub terrain_height_range11: f32,
 }
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct RegionHandshake_RegionInfo2 {
     pub region_id: Uuid,
 }
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct RegionHandshake_RegionInfo3 {
     pub cpu_class_id: i32,
     pub cpu_ratio: i32,
@@ -4176,26 +4215,33 @@ pub struct RegionHandshake_RegionInfo3 {
     pub product_name: Vec<u8>,
 }
 
+#[derive(Clone, Debug)]
+pub struct RegionHandshake_RegionInfo4 {
+    pub region_flags_extended: u64,
+    pub region_protocols: u64,
+}
+
 /// RegionHandshake
 /// Sent by region to viewer after it has received UseCircuitCode
 /// from that viewer.
 /// sim -> viewer
 /// reliable
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct RegionHandshake {
     pub region_info: RegionHandshake_RegionInfo,
     pub region_info2: RegionHandshake_RegionInfo2,
     pub region_info3: RegionHandshake_RegionInfo3,
+    pub region_info4: Vec<RegionHandshake_RegionInfo4>,
 }
 
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct RegionHandshakeReply_AgentData {
     pub agent_id: Uuid,
     pub session_id: Uuid,
 }
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct RegionHandshakeReply_RegionInfo {
     pub flags: u32,
 }
@@ -4208,27 +4254,27 @@ pub struct RegionHandshakeReply_RegionInfo {
 /// has loaded the cache for the region.
 /// After the simulator receives this, it will start sending
 /// data about objects.
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct RegionHandshakeReply {
     pub agent_data: RegionHandshakeReply_AgentData,
     pub region_info: RegionHandshakeReply_RegionInfo,
 }
 
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct CoarseLocationUpdate_Location {
     pub x: u8,
     pub y: u8,
     pub z: u8,
 }
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct CoarseLocationUpdate_Index {
     pub you: i16,
     pub prey: i16,
 }
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct CoarseLocationUpdate_AgentData {
     pub agent_id: Uuid,
 }
@@ -4238,7 +4284,7 @@ pub struct CoarseLocationUpdate_AgentData {
 /// sufficient for this. The index block is used to show where you are,
 /// and where someone you are tracking is located. They are -1 if not
 /// applicable.
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct CoarseLocationUpdate {
     pub location: Vec<CoarseLocationUpdate_Location>,
     pub index: CoarseLocationUpdate_Index,
@@ -4246,7 +4292,7 @@ pub struct CoarseLocationUpdate {
 }
 
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct ImageData_ImageID {
     pub id: Uuid,
     pub codec: u8,
@@ -4254,63 +4300,63 @@ pub struct ImageData_ImageID {
     pub packets: u16,
 }
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct ImageData_ImageData {
     pub data: Vec<u8>,
 }
 
 /// ImageData - sent to viewer to transmit information about an image
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct ImageData {
     pub image_id: ImageData_ImageID,
     pub image_data: ImageData_ImageData,
 }
 
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct ImagePacket_ImageID {
     pub id: Uuid,
     pub packet: u16,
 }
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct ImagePacket_ImageData {
     pub data: Vec<u8>,
 }
 
 /// ImagePacket - follow on image data for images having > 1 packet of data
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct ImagePacket {
     pub image_id: ImagePacket_ImageID,
     pub image_data: ImagePacket_ImageData,
 }
 
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct LayerData_LayerID {
     pub type_: u8,
 }
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct LayerData_LayerData {
     pub data: Vec<u8>,
 }
 
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct LayerData {
     pub layer_id: LayerData_LayerID,
     pub layer_data: LayerData_LayerData,
 }
 
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct ObjectUpdate_RegionData {
     pub region_handle: u64,
     pub time_dilation: u16,
 }
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct ObjectUpdate_ObjectData {
     pub id: u32,
     pub state: u8,
@@ -4361,40 +4407,40 @@ pub struct ObjectUpdate_ObjectData {
 }
 
 /// joint info -- is sent in the update of each joint-child-root
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct ObjectUpdate {
     pub region_data: ObjectUpdate_RegionData,
     pub object_data: Vec<ObjectUpdate_ObjectData>,
 }
 
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct ObjectUpdateCompressed_RegionData {
     pub region_handle: u64,
     pub time_dilation: u16,
 }
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct ObjectUpdateCompressed_ObjectData {
     pub update_flags: u32,
     pub data: Vec<u8>,
 }
 
 /// ObjectUpdateCompressed
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct ObjectUpdateCompressed {
     pub region_data: ObjectUpdateCompressed_RegionData,
     pub object_data: Vec<ObjectUpdateCompressed_ObjectData>,
 }
 
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct ObjectUpdateCached_RegionData {
     pub region_handle: u64,
     pub time_dilation: u16,
 }
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct ObjectUpdateCached_ObjectData {
     pub id: u32,
     pub crc: u32,
@@ -4403,52 +4449,52 @@ pub struct ObjectUpdateCached_ObjectData {
 
 /// ObjectUpdateCached
 /// reliable
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct ObjectUpdateCached {
     pub region_data: ObjectUpdateCached_RegionData,
     pub object_data: Vec<ObjectUpdateCached_ObjectData>,
 }
 
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct ImprovedTerseObjectUpdate_RegionData {
     pub region_handle: u64,
     pub time_dilation: u16,
 }
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct ImprovedTerseObjectUpdate_ObjectData {
     pub data: Vec<u8>,
     pub texture_entry: Vec<u8>,
 }
 
 /// packed terse object update format
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct ImprovedTerseObjectUpdate {
     pub region_data: ImprovedTerseObjectUpdate_RegionData,
     pub object_data: Vec<ImprovedTerseObjectUpdate_ObjectData>,
 }
 
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct KillObject_ObjectData {
     pub id: u32,
 }
 
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct KillObject {
     pub object_data: Vec<KillObject_ObjectData>,
 }
 
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct CrossedRegion_AgentData {
     pub agent_id: Uuid,
     pub session_id: Uuid,
 }
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct CrossedRegion_RegionData {
     pub sim_ip: Ip4Addr,
     pub sim_port: IpPort,
@@ -4456,7 +4502,7 @@ pub struct CrossedRegion_RegionData {
     pub seed_capability: Vec<u8>,
 }
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct CrossedRegion_Info {
     pub position: Vector3<f32>,
     pub look_at: Vector3<f32>,
@@ -4464,7 +4510,7 @@ pub struct CrossedRegion_Info {
 
 /// CrossedRegion - new way to tell a viewer it has gone across a region
 /// boundary
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct CrossedRegion {
     pub agent_data: CrossedRegion_AgentData,
     pub region_data: CrossedRegion_RegionData,
@@ -4472,7 +4518,7 @@ pub struct CrossedRegion {
 }
 
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct SimulatorViewerTimeMessage_TimeInfo {
     pub usec_since_start: u64,
     pub sec_per_day: u32,
@@ -4483,13 +4529,13 @@ pub struct SimulatorViewerTimeMessage_TimeInfo {
 }
 
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct SimulatorViewerTimeMessage {
     pub time_info: SimulatorViewerTimeMessage_TimeInfo,
 }
 
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct EnableSimulator_SimulatorInfo {
     pub handle: u64,
     pub ip: Ip4Addr,
@@ -4497,31 +4543,31 @@ pub struct EnableSimulator_SimulatorInfo {
 }
 
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct EnableSimulator {
     pub simulator_info: EnableSimulator_SimulatorInfo,
 }
 
 
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct DisableSimulator {}
 
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct ConfirmEnableSimulator_AgentData {
     pub agent_id: Uuid,
     pub session_id: Uuid,
 }
 
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct ConfirmEnableSimulator {
     pub agent_data: ConfirmEnableSimulator_AgentData,
 }
 
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct TransferRequest_TransferInfo {
     pub transfer_id: Uuid,
     pub channel_type: i32,
@@ -4531,13 +4577,13 @@ pub struct TransferRequest_TransferInfo {
 }
 
 /// Request a new transfer (target->source)
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct TransferRequest {
     pub transfer_info: TransferRequest_TransferInfo,
 }
 
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct TransferInfo_TransferInfo {
     pub transfer_id: Uuid,
     pub channel_type: i32,
@@ -4549,13 +4595,13 @@ pub struct TransferInfo_TransferInfo {
 
 /// Return info about a transfer/initiate transfer (source->target)
 /// Possibly should have a Params field like above
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct TransferInfo {
     pub transfer_info: TransferInfo_TransferInfo,
 }
 
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct TransferPacket_TransferData {
     pub transfer_id: Uuid,
     pub channel_type: i32,
@@ -4565,26 +4611,26 @@ pub struct TransferPacket_TransferData {
 }
 
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct TransferPacket {
     pub transfer_data: TransferPacket_TransferData,
 }
 
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct TransferAbort_TransferInfo {
     pub transfer_id: Uuid,
     pub channel_type: i32,
 }
 
 /// Abort a transfer in progress (either from target->source or source->target)
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct TransferAbort {
     pub transfer_info: TransferAbort_TransferInfo,
 }
 
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct RequestXfer_XferID {
     pub id: u64,
     pub filename: Vec<u8>,
@@ -4596,80 +4642,80 @@ pub struct RequestXfer_XferID {
 }
 
 /// RequestXfer - request an arbitrary xfer
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct RequestXfer {
     pub xfer_id: RequestXfer_XferID,
 }
 
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct SendXferPacket_XferID {
     pub id: u64,
     pub packet: u32,
 }
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct SendXferPacket_DataPacket {
     pub data: Vec<u8>,
 }
 
 /// SendXferPacket - send an additional packet of an arbitrary xfer from sim -> viewer
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct SendXferPacket {
     pub xfer_id: SendXferPacket_XferID,
     pub data_packet: SendXferPacket_DataPacket,
 }
 
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct ConfirmXferPacket_XferID {
     pub id: u64,
     pub packet: u32,
 }
 
 /// ConfirmXferPacket
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct ConfirmXferPacket {
     pub xfer_id: ConfirmXferPacket_XferID,
 }
 
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct AbortXfer_XferID {
     pub id: u64,
     pub result: i32,
 }
 
 /// AbortXfer
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct AbortXfer {
     pub xfer_id: AbortXfer_XferID,
 }
 
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct AvatarAnimation_Sender {
     pub id: Uuid,
 }
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct AvatarAnimation_AnimationList {
     pub anim_id: Uuid,
     pub anim_sequence_id: i32,
 }
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct AvatarAnimation_AnimationSourceList {
     pub object_id: Uuid,
 }
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct AvatarAnimation_PhysicalAvatarEventList {
     pub type_data: Vec<u8>,
 }
 
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct AvatarAnimation {
     pub sender: AvatarAnimation_Sender,
     pub animation_list: Vec<AvatarAnimation_AnimationList>,
@@ -4678,37 +4724,51 @@ pub struct AvatarAnimation {
 }
 
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct AvatarAppearance_Sender {
     pub id: Uuid,
     pub is_trial: bool,
 }
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct AvatarAppearance_ObjectData {
     pub texture_entry: Vec<u8>,
 }
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct AvatarAppearance_VisualParam {
     pub param_value: u8,
 }
 
+#[derive(Clone, Debug)]
+pub struct AvatarAppearance_AppearanceData {
+    pub appearance_version: u8,
+    pub cof_version: i32,
+    pub flags: u32,
+}
+
+#[derive(Clone, Debug)]
+pub struct AvatarAppearance_AppearanceHover {
+    pub hover_height: Vector3<f32>,
+}
+
 /// AvatarAppearance - Update visual params
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct AvatarAppearance {
     pub sender: AvatarAppearance_Sender,
     pub object_data: AvatarAppearance_ObjectData,
     pub visual_param: Vec<AvatarAppearance_VisualParam>,
+    pub appearance_data: Vec<AvatarAppearance_AppearanceData>,
+    pub appearance_hover: Vec<AvatarAppearance_AppearanceHover>,
 }
 
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct AvatarSitResponse_SitObject {
     pub id: Uuid,
 }
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct AvatarSitResponse_SitTransform {
     pub auto_pilot: bool,
     pub sit_position: Vector3<f32>,
@@ -4719,57 +4779,57 @@ pub struct AvatarSitResponse_SitTransform {
 }
 
 /// AvatarSitResponse - response to a request to sit on an object
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct AvatarSitResponse {
     pub sit_object: AvatarSitResponse_SitObject,
     pub sit_transform: AvatarSitResponse_SitTransform,
 }
 
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct SetFollowCamProperties_ObjectData {
     pub object_id: Uuid,
 }
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct SetFollowCamProperties_CameraProperty {
     pub type_: i32,
     pub value: f32,
 }
 
 /// SetFollowCamProperties
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct SetFollowCamProperties {
     pub object_data: SetFollowCamProperties_ObjectData,
     pub camera_property: Vec<SetFollowCamProperties_CameraProperty>,
 }
 
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct ClearFollowCamProperties_ObjectData {
     pub object_id: Uuid,
 }
 
 /// ClearFollowCamProperties
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct ClearFollowCamProperties {
     pub object_data: ClearFollowCamProperties_ObjectData,
 }
 
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct CameraConstraint_CameraCollidePlane {
     pub plane: Vector4<f32>,
 }
 
 /// CameraConstraint - new camera distance limit (based on collision with objects)
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct CameraConstraint {
     pub camera_collide_plane: CameraConstraint_CameraCollidePlane,
 }
 
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct ObjectProperties_ObjectData {
     pub object_id: Uuid,
     pub creator_id: Uuid,
@@ -4804,13 +4864,13 @@ pub struct ObjectProperties_ObjectData {
 /// Extended information such as creator, permissions, etc.
 /// Medium because potentially driven by mouse hover events.
 ///		{	TaxRate			F32	}	// F32
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct ObjectProperties {
     pub object_data: Vec<ObjectProperties_ObjectData>,
 }
 
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct ObjectPropertiesFamily_ObjectData {
     pub request_flags: u32,
     pub object_id: Uuid,
@@ -4832,51 +4892,51 @@ pub struct ObjectPropertiesFamily_ObjectData {
 
 /// ObjectPropertiesFamily
 /// Medium because potentially driven by mouse hover events.
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct ObjectPropertiesFamily {
     pub object_data: ObjectPropertiesFamily_ObjectData,
 }
 
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct RequestPayPrice_ObjectData {
     pub object_id: Uuid,
 }
 
 /// RequestPayPrice
 /// viewer -> sim
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct RequestPayPrice {
     pub object_data: RequestPayPrice_ObjectData,
 }
 
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct PayPriceReply_ObjectData {
     pub object_id: Uuid,
     pub default_pay_price: i32,
 }
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct PayPriceReply_ButtonData {
     pub pay_button: i32,
 }
 
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct PayPriceReply {
     pub object_data: PayPriceReply_ObjectData,
     pub button_data: Vec<PayPriceReply_ButtonData>,
 }
 
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct KickUser_TargetBlock {
     pub target_ip: Ip4Addr,
     pub target_port: IpPort,
 }
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct KickUser_UserInfo {
     pub agent_id: Uuid,
     pub session_id: Uuid,
@@ -4889,14 +4949,14 @@ pub struct KickUser_UserInfo {
 /// same account name.
 /// ROUTED dataserver -> userserver -> spaceserver -> simulator -> viewer
 /// reliable, but that may not matter if a system component is quitting
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct KickUser {
     pub target_block: KickUser_TargetBlock,
     pub user_info: KickUser_UserInfo,
 }
 
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct KickUserAck_UserInfo {
     pub session_id: Uuid,
     pub flags: u32,
@@ -4904,13 +4964,13 @@ pub struct KickUserAck_UserInfo {
 
 /// ack sent from the simulator up to the main database so that login
 /// can continue.
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct KickUserAck {
     pub user_info: KickUserAck_UserInfo,
 }
 
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct GodKickUser_UserInfo {
     pub god_id: Uuid,
     pub god_session_id: Uuid,
@@ -4923,32 +4983,32 @@ pub struct GodKickUser_UserInfo {
 /// When a god wants someone kicked
 /// viewer -> sim
 /// reliable
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct GodKickUser {
     pub user_info: GodKickUser_UserInfo,
 }
 
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct SystemKickUser_AgentInfo {
     pub agent_id: Uuid,
 }
 
 /// SystemKickUser
 /// user->space, reliable
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct SystemKickUser {
     pub agent_info: Vec<SystemKickUser_AgentInfo>,
 }
 
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct EjectUser_AgentData {
     pub agent_id: Uuid,
     pub session_id: Uuid,
 }
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct EjectUser_Data {
     pub target_id: Uuid,
     pub flags: u32,
@@ -4957,20 +5017,20 @@ pub struct EjectUser_Data {
 /// EjectUser
 /// viewer -> sim
 /// reliable
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct EjectUser {
     pub agent_data: EjectUser_AgentData,
     pub data: EjectUser_Data,
 }
 
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct FreezeUser_AgentData {
     pub agent_id: Uuid,
     pub session_id: Uuid,
 }
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct FreezeUser_Data {
     pub target_id: Uuid,
     pub flags: u32,
@@ -4980,14 +5040,14 @@ pub struct FreezeUser_Data {
 /// Freeze someone who is on my land.
 /// viewer -> sim
 /// reliable
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct FreezeUser {
     pub agent_data: FreezeUser_AgentData,
     pub data: FreezeUser_Data,
 }
 
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct AvatarPropertiesRequest_AgentData {
     pub agent_id: Uuid,
     pub session_id: Uuid,
@@ -4997,13 +5057,13 @@ pub struct AvatarPropertiesRequest_AgentData {
 /// AvatarPropertiesRequest
 /// viewer -> simulator
 /// reliable
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct AvatarPropertiesRequest {
     pub agent_data: AvatarPropertiesRequest_AgentData,
 }
 
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct AvatarPropertiesRequestBackend_AgentData {
     pub agent_id: Uuid,
     pub avatar_id: Uuid,
@@ -5014,19 +5074,19 @@ pub struct AvatarPropertiesRequestBackend_AgentData {
 /// AvatarPropertiesRequestBackend
 /// simulator -> dataserver
 /// reliable
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct AvatarPropertiesRequestBackend {
     pub agent_data: AvatarPropertiesRequestBackend_AgentData,
 }
 
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct AvatarPropertiesReply_AgentData {
     pub agent_id: Uuid,
     pub avatar_id: Uuid,
 }
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct AvatarPropertiesReply_PropertiesData {
     pub image_id: Uuid,
     pub fl_image_id: Uuid,
@@ -5043,20 +5103,20 @@ pub struct AvatarPropertiesReply_PropertiesData {
 /// dataserver -> simulator
 /// simulator -> viewer
 /// reliable
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct AvatarPropertiesReply {
     pub agent_data: AvatarPropertiesReply_AgentData,
     pub properties_data: AvatarPropertiesReply_PropertiesData,
 }
 
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct AvatarInterestsReply_AgentData {
     pub agent_id: Uuid,
     pub avatar_id: Uuid,
 }
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct AvatarInterestsReply_PropertiesData {
     pub want_to_mask: u32,
     pub want_to_text: Vec<u8>,
@@ -5066,20 +5126,20 @@ pub struct AvatarInterestsReply_PropertiesData {
 }
 
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct AvatarInterestsReply {
     pub agent_data: AvatarInterestsReply_AgentData,
     pub properties_data: AvatarInterestsReply_PropertiesData,
 }
 
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct AvatarGroupsReply_AgentData {
     pub agent_id: Uuid,
     pub avatar_id: Uuid,
 }
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct AvatarGroupsReply_GroupData {
     pub group_powers: u64,
     pub accept_notices: bool,
@@ -5089,7 +5149,7 @@ pub struct AvatarGroupsReply_GroupData {
     pub group_insignia_id: Uuid,
 }
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct AvatarGroupsReply_NewGroupData {
     pub list_in_profile: bool,
 }
@@ -5098,7 +5158,7 @@ pub struct AvatarGroupsReply_NewGroupData {
 /// dataserver -> simulator
 /// simulator -> viewer
 /// reliable
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct AvatarGroupsReply {
     pub agent_data: AvatarGroupsReply_AgentData,
     pub group_data: Vec<AvatarGroupsReply_GroupData>,
@@ -5106,13 +5166,13 @@ pub struct AvatarGroupsReply {
 }
 
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct AvatarPropertiesUpdate_AgentData {
     pub agent_id: Uuid,
     pub session_id: Uuid,
 }
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct AvatarPropertiesUpdate_PropertiesData {
     pub image_id: Uuid,
     pub fl_image_id: Uuid,
@@ -5126,20 +5186,20 @@ pub struct AvatarPropertiesUpdate_PropertiesData {
 /// AvatarPropertiesUpdate
 /// viewer -> simulator
 /// reliable
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct AvatarPropertiesUpdate {
     pub agent_data: AvatarPropertiesUpdate_AgentData,
     pub properties_data: AvatarPropertiesUpdate_PropertiesData,
 }
 
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct AvatarInterestsUpdate_AgentData {
     pub agent_id: Uuid,
     pub session_id: Uuid,
 }
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct AvatarInterestsUpdate_PropertiesData {
     pub want_to_mask: u32,
     pub want_to_text: Vec<u8>,
@@ -5151,19 +5211,19 @@ pub struct AvatarInterestsUpdate_PropertiesData {
 /// AvatarInterestsUpdate
 /// viewer -> simulator
 /// reliable
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct AvatarInterestsUpdate {
     pub agent_data: AvatarInterestsUpdate_AgentData,
     pub properties_data: AvatarInterestsUpdate_PropertiesData,
 }
 
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct AvatarNotesReply_AgentData {
     pub agent_id: Uuid,
 }
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct AvatarNotesReply_Data {
     pub target_id: Uuid,
     pub notes: Vec<u8>,
@@ -5173,20 +5233,20 @@ pub struct AvatarNotesReply_Data {
 /// dataserver -> simulator
 /// simulator -> viewer
 /// reliable
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct AvatarNotesReply {
     pub agent_data: AvatarNotesReply_AgentData,
     pub data: AvatarNotesReply_Data,
 }
 
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct AvatarNotesUpdate_AgentData {
     pub agent_id: Uuid,
     pub session_id: Uuid,
 }
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct AvatarNotesUpdate_Data {
     pub target_id: Uuid,
     pub notes: Vec<u8>,
@@ -5195,20 +5255,20 @@ pub struct AvatarNotesUpdate_Data {
 /// AvatarNotesUpdate
 /// viewer -> simulator -> dataserver
 /// reliable
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct AvatarNotesUpdate {
     pub agent_data: AvatarNotesUpdate_AgentData,
     pub data: AvatarNotesUpdate_Data,
 }
 
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct AvatarPicksReply_AgentData {
     pub agent_id: Uuid,
     pub target_id: Uuid,
 }
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct AvatarPicksReply_Data {
     pub pick_id: Uuid,
     pub pick_name: Vec<u8>,
@@ -5219,20 +5279,20 @@ pub struct AvatarPicksReply_Data {
 /// Send the header information for this avatar's picks
 /// This fills in the tabs of the Picks panel.
 /// reliable
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct AvatarPicksReply {
     pub agent_data: AvatarPicksReply_AgentData,
     pub data: Vec<AvatarPicksReply_Data>,
 }
 
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct EventInfoRequest_AgentData {
     pub agent_id: Uuid,
     pub session_id: Uuid,
 }
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct EventInfoRequest_EventData {
     pub event_id: u32,
 }
@@ -5241,19 +5301,19 @@ pub struct EventInfoRequest_EventData {
 /// viewer -> simulator
 /// simulator -> dataserver
 /// reliable
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct EventInfoRequest {
     pub agent_data: EventInfoRequest_AgentData,
     pub event_data: EventInfoRequest_EventData,
 }
 
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct EventInfoReply_AgentData {
     pub agent_id: Uuid,
 }
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct EventInfoReply_EventData {
     pub event_id: u32,
     pub creator: Vec<u8>,
@@ -5274,20 +5334,20 @@ pub struct EventInfoReply_EventData {
 /// dataserver -> simulator
 /// simulator -> viewer
 /// reliable
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct EventInfoReply {
     pub agent_data: EventInfoReply_AgentData,
     pub event_data: EventInfoReply_EventData,
 }
 
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct EventNotificationAddRequest_AgentData {
     pub agent_id: Uuid,
     pub session_id: Uuid,
 }
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct EventNotificationAddRequest_EventData {
     pub event_id: u32,
 }
@@ -5296,20 +5356,20 @@ pub struct EventNotificationAddRequest_EventData {
 /// viewer -> simulator
 /// simulator -> dataserver
 /// reliable
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct EventNotificationAddRequest {
     pub agent_data: EventNotificationAddRequest_AgentData,
     pub event_data: EventNotificationAddRequest_EventData,
 }
 
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct EventNotificationRemoveRequest_AgentData {
     pub agent_id: Uuid,
     pub session_id: Uuid,
 }
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct EventNotificationRemoveRequest_EventData {
     pub event_id: u32,
 }
@@ -5318,25 +5378,25 @@ pub struct EventNotificationRemoveRequest_EventData {
 /// viewer -> simulator
 /// simulator -> dataserver
 /// reliable
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct EventNotificationRemoveRequest {
     pub agent_data: EventNotificationRemoveRequest_AgentData,
     pub event_data: EventNotificationRemoveRequest_EventData,
 }
 
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct EventGodDelete_AgentData {
     pub agent_id: Uuid,
     pub session_id: Uuid,
 }
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct EventGodDelete_EventData {
     pub event_id: u32,
 }
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct EventGodDelete_QueryData {
     pub query_id: Uuid,
     pub query_text: Vec<u8>,
@@ -5349,7 +5409,7 @@ pub struct EventGodDelete_QueryData {
 /// simulator -> dataserver
 /// QueryData is used to resend a search result after the deletion
 /// reliable
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct EventGodDelete {
     pub agent_data: EventGodDelete_AgentData,
     pub event_data: EventGodDelete_EventData,
@@ -5357,12 +5417,12 @@ pub struct EventGodDelete {
 }
 
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct PickInfoReply_AgentData {
     pub agent_id: Uuid,
 }
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct PickInfoReply_Data {
     pub pick_id: Uuid,
     pub creator_id: Uuid,
@@ -5383,20 +5443,20 @@ pub struct PickInfoReply_Data {
 /// dataserver -> simulator
 /// simulator -> viewer
 /// reliable
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct PickInfoReply {
     pub agent_data: PickInfoReply_AgentData,
     pub data: PickInfoReply_Data,
 }
 
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct PickInfoUpdate_AgentData {
     pub agent_id: Uuid,
     pub session_id: Uuid,
 }
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct PickInfoUpdate_Data {
     pub pick_id: Uuid,
     pub creator_id: Uuid,
@@ -5417,20 +5477,20 @@ pub struct PickInfoUpdate_Data {
 /// if the agent_id is a god.
 /// viewer -> simulator -> dataserver
 /// reliable
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct PickInfoUpdate {
     pub agent_data: PickInfoUpdate_AgentData,
     pub data: PickInfoUpdate_Data,
 }
 
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct PickDelete_AgentData {
     pub agent_id: Uuid,
     pub session_id: Uuid,
 }
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct PickDelete_Data {
     pub pick_id: Uuid,
 }
@@ -5439,20 +5499,20 @@ pub struct PickDelete_Data {
 /// Delete a non-top pick from the database.
 /// viewer -> simulator -> dataserver
 /// reliable
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct PickDelete {
     pub agent_data: PickDelete_AgentData,
     pub data: PickDelete_Data,
 }
 
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct PickGodDelete_AgentData {
     pub agent_id: Uuid,
     pub session_id: Uuid,
 }
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct PickGodDelete_Data {
     pub pick_id: Uuid,
     pub query_id: Uuid,
@@ -5464,14 +5524,14 @@ pub struct PickGodDelete_Data {
 /// picks.
 /// viewer -> simulator -> dataserver
 /// reliable
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct PickGodDelete {
     pub agent_data: PickGodDelete_AgentData,
     pub data: PickGodDelete_Data,
 }
 
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct ScriptQuestion_Data {
     pub task_id: Uuid,
     pub item_id: Uuid,
@@ -5480,15 +5540,21 @@ pub struct ScriptQuestion_Data {
     pub questions: i32,
 }
 
+#[derive(Clone, Debug)]
+pub struct ScriptQuestion_Experience {
+    pub experience_id: Uuid,
+}
+
 /// ScriptQuestion
 /// reliable
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct ScriptQuestion {
     pub data: ScriptQuestion_Data,
+    pub experience: ScriptQuestion_Experience,
 }
 
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct ScriptControlChange_Data {
     pub take_controls: bool,
     pub controls: u32,
@@ -5497,13 +5563,13 @@ pub struct ScriptControlChange_Data {
 
 /// ScriptControlChange
 /// reliable
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct ScriptControlChange {
     pub data: Vec<ScriptControlChange_Data>,
 }
 
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct ScriptDialog_Data {
     pub object_id: Uuid,
     pub first_name: Vec<u8>,
@@ -5514,12 +5580,12 @@ pub struct ScriptDialog_Data {
     pub image_id: Uuid,
 }
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct ScriptDialog_Buttons {
     pub button_label: Vec<u8>,
 }
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct ScriptDialog_OwnerData {
     pub owner_id: Uuid,
 }
@@ -5527,7 +5593,7 @@ pub struct ScriptDialog_OwnerData {
 /// ScriptDialog
 /// sim -> viewer
 /// reliable
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct ScriptDialog {
     pub data: ScriptDialog_Data,
     pub buttons: Vec<ScriptDialog_Buttons>,
@@ -5535,13 +5601,13 @@ pub struct ScriptDialog {
 }
 
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct ScriptDialogReply_AgentData {
     pub agent_id: Uuid,
     pub session_id: Uuid,
 }
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct ScriptDialogReply_Data {
     pub object_id: Uuid,
     pub chat_channel: i32,
@@ -5552,14 +5618,14 @@ pub struct ScriptDialogReply_Data {
 /// ScriptDialogReply
 /// viewer -> sim
 /// reliable
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct ScriptDialogReply {
     pub agent_data: ScriptDialogReply_AgentData,
     pub data: ScriptDialogReply_Data,
 }
 
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct ForceScriptControlRelease_AgentData {
     pub agent_id: Uuid,
     pub session_id: Uuid,
@@ -5567,19 +5633,19 @@ pub struct ForceScriptControlRelease_AgentData {
 
 /// ForceScriptControlRelease
 /// reliable
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct ForceScriptControlRelease {
     pub agent_data: ForceScriptControlRelease_AgentData,
 }
 
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct RevokePermissions_AgentData {
     pub agent_id: Uuid,
     pub session_id: Uuid,
 }
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct RevokePermissions_Data {
     pub object_id: Uuid,
     pub object_permissions: u32,
@@ -5587,14 +5653,14 @@ pub struct RevokePermissions_Data {
 
 /// RevokePermissions
 /// reliable
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct RevokePermissions {
     pub agent_data: RevokePermissions_AgentData,
     pub data: RevokePermissions_Data,
 }
 
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct LoadURL_Data {
     pub object_name: Vec<u8>,
     pub object_id: Uuid,
@@ -5608,13 +5674,13 @@ pub struct LoadURL_Data {
 /// sim -> viewer
 /// Ask the user if they would like to load a URL
 /// reliable
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct LoadURL {
     pub data: LoadURL_Data,
 }
 
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct ScriptTeleportRequest_Data {
     pub object_name: Vec<u8>,
     pub sim_name: Vec<u8>,
@@ -5624,13 +5690,13 @@ pub struct ScriptTeleportRequest_Data {
 
 /// ScriptTeleportRequest
 /// reliable
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct ScriptTeleportRequest {
     pub data: ScriptTeleportRequest_Data,
 }
 
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct ParcelOverlay_ParcelData {
     pub sequence_id: i32,
     pub data: Vec<u8>,
@@ -5643,19 +5709,19 @@ pub struct ParcelOverlay_ParcelData {
 /// per packet, allowing 8 bit bytes.
 /// sim -> viewer
 /// reliable
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct ParcelOverlay {
     pub parcel_data: ParcelOverlay_ParcelData,
 }
 
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct ParcelPropertiesRequest_AgentData {
     pub agent_id: Uuid,
     pub session_id: Uuid,
 }
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct ParcelPropertiesRequest_ParcelData {
     pub sequence_id: i32,
     pub west: f32,
@@ -5670,20 +5736,20 @@ pub struct ParcelPropertiesRequest_ParcelData {
 /// parcel properties message.
 /// viewer -> sim
 /// reliable
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct ParcelPropertiesRequest {
     pub agent_data: ParcelPropertiesRequest_AgentData,
     pub parcel_data: ParcelPropertiesRequest_ParcelData,
 }
 
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct ParcelPropertiesRequestByID_AgentData {
     pub agent_id: Uuid,
     pub session_id: Uuid,
 }
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct ParcelPropertiesRequestByID_ParcelData {
     pub sequence_id: i32,
     pub local_id: i32,
@@ -5692,14 +5758,14 @@ pub struct ParcelPropertiesRequestByID_ParcelData {
 /// ParcelPropertiesRequestByID
 /// viewer -> sim
 /// reliable
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct ParcelPropertiesRequestByID {
     pub agent_data: ParcelPropertiesRequestByID_AgentData,
     pub parcel_data: ParcelPropertiesRequestByID_ParcelData,
 }
 
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct ParcelProperties_ParcelData {
     pub request_result: i32,
     pub sequence_id: i32,
@@ -5752,26 +5818,32 @@ pub struct ParcelProperties_ParcelData {
     pub region_deny_transacted: bool,
 }
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct ParcelProperties_AgeVerificationBlock {
     pub region_deny_age_unverified: bool,
 }
 
+#[derive(Clone, Debug)]
+pub struct ParcelProperties_RegionAllowAccessBlock {
+    pub region_allow_access_override: bool,
+}
 
-#[derive(Debug)]
+/// in llsd message, SeeAVs, GroupAVSounds and AnyAVSounds BOOLs are also sent
+#[derive(Clone, Debug)]
 pub struct ParcelProperties {
     pub parcel_data: ParcelProperties_ParcelData,
     pub age_verification_block: ParcelProperties_AgeVerificationBlock,
+    pub region_allow_access_block: ParcelProperties_RegionAllowAccessBlock,
 }
 
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct ParcelPropertiesUpdate_AgentData {
     pub agent_id: Uuid,
     pub session_id: Uuid,
 }
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct ParcelPropertiesUpdate_ParcelData {
     pub local_id: i32,
     pub flags: u32,
@@ -5795,31 +5867,31 @@ pub struct ParcelPropertiesUpdate_ParcelData {
 }
 
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct ParcelPropertiesUpdate {
     pub agent_data: ParcelPropertiesUpdate_AgentData,
     pub parcel_data: ParcelPropertiesUpdate_ParcelData,
 }
 
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct ParcelReturnObjects_AgentData {
     pub agent_id: Uuid,
     pub session_id: Uuid,
 }
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct ParcelReturnObjects_ParcelData {
     pub local_id: i32,
     pub return_type: u32,
 }
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct ParcelReturnObjects_TaskIDs {
     pub task_id: Uuid,
 }
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct ParcelReturnObjects_OwnerIDs {
     pub owner_id: Uuid,
 }
@@ -5827,7 +5899,7 @@ pub struct ParcelReturnObjects_OwnerIDs {
 /// ParcelReturnObjects
 /// viewer -> sim
 /// reliable
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct ParcelReturnObjects {
     pub agent_data: ParcelReturnObjects_AgentData,
     pub parcel_data: ParcelReturnObjects_ParcelData,
@@ -5836,13 +5908,13 @@ pub struct ParcelReturnObjects {
 }
 
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct ParcelSetOtherCleanTime_AgentData {
     pub agent_id: Uuid,
     pub session_id: Uuid,
 }
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct ParcelSetOtherCleanTime_ParcelData {
     pub local_id: i32,
     pub other_clean_time: i32,
@@ -5851,31 +5923,31 @@ pub struct ParcelSetOtherCleanTime_ParcelData {
 /// ParcelSetOtherCleanTime
 /// viewer -> sim
 /// reliable
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct ParcelSetOtherCleanTime {
     pub agent_data: ParcelSetOtherCleanTime_AgentData,
     pub parcel_data: ParcelSetOtherCleanTime_ParcelData,
 }
 
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct ParcelDisableObjects_AgentData {
     pub agent_id: Uuid,
     pub session_id: Uuid,
 }
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct ParcelDisableObjects_ParcelData {
     pub local_id: i32,
     pub return_type: u32,
 }
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct ParcelDisableObjects_TaskIDs {
     pub task_id: Uuid,
 }
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct ParcelDisableObjects_OwnerIDs {
     pub owner_id: Uuid,
 }
@@ -5884,7 +5956,7 @@ pub struct ParcelDisableObjects_OwnerIDs {
 /// ParcelDisableObjects
 /// viewer -> sim
 /// reliable
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct ParcelDisableObjects {
     pub agent_data: ParcelDisableObjects_AgentData,
     pub parcel_data: ParcelDisableObjects_ParcelData,
@@ -5893,19 +5965,19 @@ pub struct ParcelDisableObjects {
 }
 
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct ParcelSelectObjects_AgentData {
     pub agent_id: Uuid,
     pub session_id: Uuid,
 }
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct ParcelSelectObjects_ParcelData {
     pub local_id: i32,
     pub return_type: u32,
 }
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct ParcelSelectObjects_ReturnIDs {
     pub return_id: Uuid,
 }
@@ -5913,7 +5985,7 @@ pub struct ParcelSelectObjects_ReturnIDs {
 /// ParcelSelectObjects
 /// viewer -> sim
 /// reliable
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct ParcelSelectObjects {
     pub agent_data: ParcelSelectObjects_AgentData,
     pub parcel_data: ParcelSelectObjects_ParcelData,
@@ -5921,7 +5993,7 @@ pub struct ParcelSelectObjects {
 }
 
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct EstateCovenantRequest_AgentData {
     pub agent_id: Uuid,
     pub session_id: Uuid,
@@ -5930,13 +6002,13 @@ pub struct EstateCovenantRequest_AgentData {
 /// EstateCovenantRequest
 /// viewer -> sim
 /// reliable
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct EstateCovenantRequest {
     pub agent_data: EstateCovenantRequest_AgentData,
 }
 
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct EstateCovenantReply_Data {
     pub covenant_id: Uuid,
     pub covenant_timestamp: u32,
@@ -5947,18 +6019,18 @@ pub struct EstateCovenantReply_Data {
 /// EstateCovenantReply
 /// sim -> viewer
 /// reliable
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct EstateCovenantReply {
     pub data: EstateCovenantReply_Data,
 }
 
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct ForceObjectSelect_Header {
     pub reset_list: bool,
 }
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct ForceObjectSelect_Data {
     pub local_id: u32,
 }
@@ -5966,20 +6038,20 @@ pub struct ForceObjectSelect_Data {
 /// ForceObjectSelect
 /// sim -> viewer
 /// reliable
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct ForceObjectSelect {
     pub header: ForceObjectSelect_Header,
     pub data: Vec<ForceObjectSelect_Data>,
 }
 
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct ParcelBuyPass_AgentData {
     pub agent_id: Uuid,
     pub session_id: Uuid,
 }
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct ParcelBuyPass_ParcelData {
     pub local_id: i32,
 }
@@ -5987,20 +6059,20 @@ pub struct ParcelBuyPass_ParcelData {
 /// ParcelBuyPass - purchase a temporary access pass
 /// viewer -> sim
 /// reliable
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct ParcelBuyPass {
     pub agent_data: ParcelBuyPass_AgentData,
     pub parcel_data: ParcelBuyPass_ParcelData,
 }
 
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct ParcelDeedToGroup_AgentData {
     pub agent_id: Uuid,
     pub session_id: Uuid,
 }
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct ParcelDeedToGroup_Data {
     pub group_id: Uuid,
     pub local_id: i32,
@@ -6009,46 +6081,46 @@ pub struct ParcelDeedToGroup_Data {
 /// ParcelDeedToGroup - deed a patch of land to a group
 /// viewer -> sim
 /// reliable
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct ParcelDeedToGroup {
     pub agent_data: ParcelDeedToGroup_AgentData,
     pub data: ParcelDeedToGroup_Data,
 }
 
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct ParcelReclaim_AgentData {
     pub agent_id: Uuid,
     pub session_id: Uuid,
 }
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct ParcelReclaim_Data {
     pub local_id: i32,
 }
 
 /// reserved for when island owners force re-claim parcel
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct ParcelReclaim {
     pub agent_data: ParcelReclaim_AgentData,
     pub data: ParcelReclaim_Data,
 }
 
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct ParcelClaim_AgentData {
     pub agent_id: Uuid,
     pub session_id: Uuid,
 }
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct ParcelClaim_Data {
     pub group_id: Uuid,
     pub is_group_owned: bool,
     pub final_: bool,
 }
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct ParcelClaim_ParcelData {
     pub west: f32,
     pub south: f32,
@@ -6059,7 +6131,7 @@ pub struct ParcelClaim_ParcelData {
 /// ParcelClaim - change the owner of a patch of land
 /// viewer -> sim
 /// reliable
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct ParcelClaim {
     pub agent_data: ParcelClaim_AgentData,
     pub data: ParcelClaim_Data,
@@ -6067,13 +6139,13 @@ pub struct ParcelClaim {
 }
 
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct ParcelJoin_AgentData {
     pub agent_id: Uuid,
     pub session_id: Uuid,
 }
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct ParcelJoin_ParcelData {
     pub west: f32,
     pub south: f32,
@@ -6085,20 +6157,20 @@ pub struct ParcelJoin_ParcelData {
 /// rectangle, and make them 1 parcel if they all are leased.
 /// viewer -> sim
 /// reliable
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct ParcelJoin {
     pub agent_data: ParcelJoin_AgentData,
     pub parcel_data: ParcelJoin_ParcelData,
 }
 
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct ParcelDivide_AgentData {
     pub agent_id: Uuid,
     pub session_id: Uuid,
 }
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct ParcelDivide_ParcelData {
     pub west: f32,
     pub south: f32,
@@ -6111,20 +6183,20 @@ pub struct ParcelDivide_ParcelData {
 /// chop out that section and make a new parcel of it.
 /// viewer -> sim
 /// reliable
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct ParcelDivide {
     pub agent_data: ParcelDivide_AgentData,
     pub parcel_data: ParcelDivide_ParcelData,
 }
 
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct ParcelRelease_AgentData {
     pub agent_id: Uuid,
     pub session_id: Uuid,
 }
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct ParcelRelease_Data {
     pub local_id: i32,
 }
@@ -6133,20 +6205,20 @@ pub struct ParcelRelease_Data {
 /// Release a parcel to public
 /// viewer -> sim
 /// reliable
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct ParcelRelease {
     pub agent_data: ParcelRelease_AgentData,
     pub data: ParcelRelease_Data,
 }
 
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct ParcelBuy_AgentData {
     pub agent_id: Uuid,
     pub session_id: Uuid,
 }
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct ParcelBuy_Data {
     pub group_id: Uuid,
     pub is_group_owned: bool,
@@ -6155,7 +6227,7 @@ pub struct ParcelBuy_Data {
     pub final_: bool,
 }
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct ParcelBuy_ParcelData {
     pub price: i32,
     pub area: i32,
@@ -6164,7 +6236,7 @@ pub struct ParcelBuy_ParcelData {
 /// ParcelBuy - change the owner of a patch of land.
 /// viewer -> sim
 /// reliable
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct ParcelBuy {
     pub agent_data: ParcelBuy_AgentData,
     pub data: ParcelBuy_Data,
@@ -6172,33 +6244,33 @@ pub struct ParcelBuy {
 }
 
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct ParcelGodForceOwner_AgentData {
     pub agent_id: Uuid,
     pub session_id: Uuid,
 }
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct ParcelGodForceOwner_Data {
     pub owner_id: Uuid,
     pub local_id: i32,
 }
 
 /// ParcelGodForceOwner Unencoded
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct ParcelGodForceOwner {
     pub agent_data: ParcelGodForceOwner_AgentData,
     pub data: ParcelGodForceOwner_Data,
 }
 
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct ParcelAccessListRequest_AgentData {
     pub agent_id: Uuid,
     pub session_id: Uuid,
 }
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct ParcelAccessListRequest_Data {
     pub sequence_id: i32,
     pub flags: u32,
@@ -6207,14 +6279,14 @@ pub struct ParcelAccessListRequest_Data {
 
 /// viewer -> sim
 /// ParcelAccessListRequest
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct ParcelAccessListRequest {
     pub agent_data: ParcelAccessListRequest_AgentData,
     pub data: ParcelAccessListRequest_Data,
 }
 
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct ParcelAccessListReply_Data {
     pub agent_id: Uuid,
     pub sequence_id: i32,
@@ -6222,7 +6294,7 @@ pub struct ParcelAccessListReply_Data {
     pub local_id: i32,
 }
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct ParcelAccessListReply_List {
     pub id: Uuid,
     pub time: i32,
@@ -6231,20 +6303,20 @@ pub struct ParcelAccessListReply_List {
 
 /// sim -> viewer
 /// ParcelAccessListReply
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct ParcelAccessListReply {
     pub data: ParcelAccessListReply_Data,
     pub list: Vec<ParcelAccessListReply_List>,
 }
 
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct ParcelAccessListUpdate_AgentData {
     pub agent_id: Uuid,
     pub session_id: Uuid,
 }
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct ParcelAccessListUpdate_Data {
     pub flags: u32,
     pub local_id: i32,
@@ -6253,7 +6325,7 @@ pub struct ParcelAccessListUpdate_Data {
     pub sections: i32,
 }
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct ParcelAccessListUpdate_List {
     pub id: Uuid,
     pub time: i32,
@@ -6262,7 +6334,7 @@ pub struct ParcelAccessListUpdate_List {
 
 /// viewer -> sim
 /// ParcelAccessListUpdate
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct ParcelAccessListUpdate {
     pub agent_data: ParcelAccessListUpdate_AgentData,
     pub data: ParcelAccessListUpdate_Data,
@@ -6270,13 +6342,13 @@ pub struct ParcelAccessListUpdate {
 }
 
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct ParcelDwellRequest_AgentData {
     pub agent_id: Uuid,
     pub session_id: Uuid,
 }
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct ParcelDwellRequest_Data {
     pub local_id: i32,
     pub parcel_id: Uuid,
@@ -6284,19 +6356,19 @@ pub struct ParcelDwellRequest_Data {
 
 /// viewer -> sim -> dataserver
 /// reliable
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct ParcelDwellRequest {
     pub agent_data: ParcelDwellRequest_AgentData,
     pub data: ParcelDwellRequest_Data,
 }
 
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct ParcelDwellReply_AgentData {
     pub agent_id: Uuid,
 }
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct ParcelDwellReply_Data {
     pub local_id: i32,
     pub parcel_id: Uuid,
@@ -6305,14 +6377,14 @@ pub struct ParcelDwellReply_Data {
 
 /// dataserver -> sim -> viewer
 /// reliable
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct ParcelDwellReply {
     pub agent_data: ParcelDwellReply_AgentData,
     pub data: ParcelDwellReply_Data,
 }
 
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct RequestParcelTransfer_Data {
     pub transaction_id: Uuid,
     pub transaction_time: u32,
@@ -6327,7 +6399,7 @@ pub struct RequestParcelTransfer_Data {
     pub final_: bool,
 }
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct RequestParcelTransfer_RegionData {
     pub region_id: Uuid,
     pub grid_x: u32,
@@ -6338,14 +6410,14 @@ pub struct RequestParcelTransfer_RegionData {
 /// This message is used to check if a user can buy a parcel. If
 /// successful, the transaction is approved through a money balance reply
 /// with the same transaction id.
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct RequestParcelTransfer {
     pub data: RequestParcelTransfer_Data,
     pub region_data: RequestParcelTransfer_RegionData,
 }
 
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct UpdateParcel_ParcelData {
     pub parcel_id: Uuid,
     pub region_handle: u64,
@@ -6375,13 +6447,13 @@ pub struct UpdateParcel_ParcelData {
 /// persistance in the database.
 /// If you add something here, you should probably also change the
 /// simulator's database update query on startup.
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct UpdateParcel {
     pub parcel_data: UpdateParcel_ParcelData,
 }
 
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct RemoveParcel_ParcelData {
     pub parcel_id: Uuid,
 }
@@ -6389,42 +6461,42 @@ pub struct RemoveParcel_ParcelData {
 /// sim -> dataserver or space ->sim
 /// This message is used to tell the dataserver that a parcel has been
 /// removed.
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct RemoveParcel {
     pub parcel_data: Vec<RemoveParcel_ParcelData>,
 }
 
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct MergeParcel_MasterParcelData {
     pub master_id: Uuid,
 }
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct MergeParcel_SlaveParcelData {
     pub slave_id: Uuid,
 }
 
 /// sim -> dataserver
 /// Merges some of the database information for parcels (dwell).
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct MergeParcel {
     pub master_parcel_data: MergeParcel_MasterParcelData,
     pub slave_parcel_data: Vec<MergeParcel_SlaveParcelData>,
 }
 
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct LogParcelChanges_AgentData {
     pub agent_id: Uuid,
 }
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct LogParcelChanges_RegionData {
     pub region_handle: u64,
 }
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct LogParcelChanges_ParcelData {
     pub parcel_id: Uuid,
     pub owner_id: Uuid,
@@ -6435,7 +6507,7 @@ pub struct LogParcelChanges_ParcelData {
 }
 
 /// sim -> dataserver
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct LogParcelChanges {
     pub agent_data: LogParcelChanges_AgentData,
     pub region_data: LogParcelChanges_RegionData,
@@ -6443,19 +6515,19 @@ pub struct LogParcelChanges {
 }
 
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct CheckParcelSales_RegionData {
     pub region_handle: u64,
 }
 
 /// sim -> dataserver
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct CheckParcelSales {
     pub region_data: Vec<CheckParcelSales_RegionData>,
 }
 
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct ParcelSales_ParcelData {
     pub parcel_id: Uuid,
     pub buyer_id: Uuid,
@@ -6463,19 +6535,19 @@ pub struct ParcelSales_ParcelData {
 
 /// dataserver -> simulator
 /// tell a particular simulator to finish parcel sale.
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct ParcelSales {
     pub parcel_data: Vec<ParcelSales_ParcelData>,
 }
 
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct ParcelGodMarkAsContent_AgentData {
     pub agent_id: Uuid,
     pub session_id: Uuid,
 }
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct ParcelGodMarkAsContent_ParcelData {
     pub local_id: i32,
 }
@@ -6483,20 +6555,20 @@ pub struct ParcelGodMarkAsContent_ParcelData {
 /// viewer -> sim
 /// mark parcel and double secret agent content on parcel as owned by
 /// governor/maint and adjusts permissions approriately. Godlike request.
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct ParcelGodMarkAsContent {
     pub agent_data: ParcelGodMarkAsContent_AgentData,
     pub parcel_data: ParcelGodMarkAsContent_ParcelData,
 }
 
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct ViewerStartAuction_AgentData {
     pub agent_id: Uuid,
     pub session_id: Uuid,
 }
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct ViewerStartAuction_ParcelData {
     pub local_id: i32,
     pub snapshot_id: Uuid,
@@ -6506,19 +6578,19 @@ pub struct ViewerStartAuction_ParcelData {
 /// start an auction. viewer fills in the appropriate date, simulator
 /// validates and fills in the rest of the information to start an auction
 /// on a parcel. Processing currently requires that AgentID is a god.
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct ViewerStartAuction {
     pub agent_data: ViewerStartAuction_AgentData,
     pub parcel_data: ViewerStartAuction_ParcelData,
 }
 
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct StartAuction_AgentData {
     pub agent_id: Uuid,
 }
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct StartAuction_ParcelData {
     pub parcel_id: Uuid,
     pub snapshot_id: Uuid,
@@ -6527,64 +6599,64 @@ pub struct StartAuction_ParcelData {
 
 /// sim -> dataserver
 /// Once all of the data has been gathered,
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct StartAuction {
     pub agent_data: StartAuction_AgentData,
     pub parcel_data: StartAuction_ParcelData,
 }
 
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct ConfirmAuctionStart_AuctionData {
     pub parcel_id: Uuid,
     pub auction_id: u32,
 }
 
 /// dataserver -> sim
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct ConfirmAuctionStart {
     pub auction_data: ConfirmAuctionStart_AuctionData,
 }
 
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct CompleteAuction_ParcelData {
     pub parcel_id: Uuid,
 }
 
 /// sim -> dataserver
 /// Tell the dataserver that an auction has completed.
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct CompleteAuction {
     pub parcel_data: Vec<CompleteAuction_ParcelData>,
 }
 
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct CancelAuction_ParcelData {
     pub parcel_id: Uuid,
 }
 
 /// Tell the dataserver that an auction has been canceled.
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct CancelAuction {
     pub parcel_data: Vec<CancelAuction_ParcelData>,
 }
 
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct CheckParcelAuctions_RegionData {
     pub region_handle: u64,
 }
 
 /// sim -> dataserver
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct CheckParcelAuctions {
     pub region_data: Vec<CheckParcelAuctions_RegionData>,
 }
 
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct ParcelAuctions_ParcelData {
     pub parcel_id: Uuid,
     pub winner_id: Uuid,
@@ -6592,26 +6664,26 @@ pub struct ParcelAuctions_ParcelData {
 
 /// dataserver -> sim
 /// tell a particular simulator to finish parcel sale.
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct ParcelAuctions {
     pub parcel_data: Vec<ParcelAuctions_ParcelData>,
 }
 
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct UUIDNameRequest_UUIDNameBlock {
     pub id: Uuid,
 }
 
 /// UUIDNameRequest
 /// Translate a UUID into first and last names
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct UUIDNameRequest {
     pub uuid_name_block: Vec<UUIDNameRequest_UUIDNameBlock>,
 }
 
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct UUIDNameReply_UUIDNameBlock {
     pub id: Uuid,
     pub first_name: Vec<u8>,
@@ -6620,26 +6692,26 @@ pub struct UUIDNameReply_UUIDNameBlock {
 
 /// UUIDNameReply
 /// Translate a UUID into first and last names
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct UUIDNameReply {
     pub uuid_name_block: Vec<UUIDNameReply_UUIDNameBlock>,
 }
 
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct UUIDGroupNameRequest_UUIDNameBlock {
     pub id: Uuid,
 }
 
 /// UUIDGroupNameRequest
 /// Translate a UUID into a group name
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct UUIDGroupNameRequest {
     pub uuid_name_block: Vec<UUIDGroupNameRequest_UUIDNameBlock>,
 }
 
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct UUIDGroupNameReply_UUIDNameBlock {
     pub id: Uuid,
     pub group_name: Vec<u8>,
@@ -6647,13 +6719,13 @@ pub struct UUIDGroupNameReply_UUIDNameBlock {
 
 /// UUIDGroupNameReply
 /// Translate a UUID into a group name
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct UUIDGroupNameReply {
     pub uuid_name_block: Vec<UUIDGroupNameReply_UUIDNameBlock>,
 }
 
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct ChatPass_ChatData {
     pub channel: i32,
     pub position: Vector3<f32>,
@@ -6671,13 +6743,13 @@ pub struct ChatPass_ChatData {
 /// Chat message transmission to neighbors
 /// Chat is region local to receiving simulator.
 /// Type is one of CHAT_TYPE_NORMAL, _WHISPER, _SHOUT
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct ChatPass {
     pub chat_data: ChatPass_ChatData,
 }
 
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct EdgeDataPacket_EdgeData {
     pub layer_type: u8,
     pub direction: u8,
@@ -6685,27 +6757,33 @@ pub struct EdgeDataPacket_EdgeData {
 }
 
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct EdgeDataPacket {
     pub edge_data: EdgeDataPacket_EdgeData,
 }
 
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct SimStatus_SimStatus {
     pub can_accept_agents: bool,
     pub can_accept_tasks: bool,
 }
 
+#[derive(Clone, Debug)]
+pub struct SimStatus_SimFlags {
+    pub flags: u64,
+}
+
 /// Sim status, condition of this sim
 /// sent reliably, when dirty
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct SimStatus {
     pub sim_status: SimStatus_SimStatus,
+    pub sim_flags: SimStatus_SimFlags,
 }
 
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct ChildAgentUpdate_AgentData {
     pub region_handle: u64,
     pub viewer_circuit_code: u32,
@@ -6735,47 +6813,52 @@ pub struct ChildAgentUpdate_AgentData {
     pub active_group_id: Uuid,
 }
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct ChildAgentUpdate_GroupData {
     pub group_id: Uuid,
     pub group_powers: u64,
     pub accept_notices: bool,
 }
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct ChildAgentUpdate_AnimationData {
     pub animation: Uuid,
     pub object_id: Uuid,
 }
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct ChildAgentUpdate_GranterBlock {
     pub granter_id: Uuid,
 }
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct ChildAgentUpdate_NVPairData {
     pub nv_pairs: Vec<u8>,
 }
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct ChildAgentUpdate_VisualParam {
     pub param_value: u8,
 }
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct ChildAgentUpdate_AgentAccess {
     pub agent_legacy_access: u8,
     pub agent_max_access: u8,
 }
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct ChildAgentUpdate_AgentInfo {
     pub flags: u32,
 }
 
+#[derive(Clone, Debug)]
+pub struct ChildAgentUpdate_AgentInventoryHost {
+    pub inventory_host: Vec<u8>,
+}
 
-#[derive(Debug)]
+
+#[derive(Clone, Debug)]
 pub struct ChildAgentUpdate {
     pub agent_data: ChildAgentUpdate_AgentData,
     pub group_data: Vec<ChildAgentUpdate_GroupData>,
@@ -6785,10 +6868,11 @@ pub struct ChildAgentUpdate {
     pub visual_param: Vec<ChildAgentUpdate_VisualParam>,
     pub agent_access: Vec<ChildAgentUpdate_AgentAccess>,
     pub agent_info: Vec<ChildAgentUpdate_AgentInfo>,
+    pub agent_inventory_host: Vec<ChildAgentUpdate_AgentInventoryHost>,
 }
 
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct ChildAgentAlive_AgentData {
     pub region_handle: u64,
     pub viewer_circuit_code: u32,
@@ -6798,13 +6882,13 @@ pub struct ChildAgentAlive_AgentData {
 
 /// ChildAgentAlive
 /// sent to child agents just to keep them alive
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct ChildAgentAlive {
     pub agent_data: ChildAgentAlive_AgentData,
 }
 
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct ChildAgentPositionUpdate_AgentData {
     pub region_handle: u64,
     pub viewer_circuit_code: u32,
@@ -6821,13 +6905,13 @@ pub struct ChildAgentPositionUpdate_AgentData {
 }
 
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct ChildAgentPositionUpdate {
     pub agent_data: ChildAgentPositionUpdate_AgentData,
 }
 
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct ChildAgentDying_AgentData {
     pub agent_id: Uuid,
     pub session_id: Uuid,
@@ -6835,51 +6919,51 @@ pub struct ChildAgentDying_AgentData {
 
 /// Obituary for child agents - make sure the parent know the child is dead
 /// This way, children can be reliably restarted
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct ChildAgentDying {
     pub agent_data: ChildAgentDying_AgentData,
 }
 
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct ChildAgentUnknown_AgentData {
     pub agent_id: Uuid,
     pub session_id: Uuid,
 }
 
 /// This is sent if a full child agent hasn't been accepted yet
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct ChildAgentUnknown {
     pub agent_data: ChildAgentUnknown_AgentData,
 }
 
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct AtomicPassObject_TaskData {
     pub task_id: Uuid,
     pub attachment_needs_save: bool,
 }
 
 /// This message is sent how objects get passed between regions.
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct AtomicPassObject {
     pub task_data: AtomicPassObject_TaskData,
 }
 
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct KillChildAgents_IDBlock {
     pub agent_id: Uuid,
 }
 
 /// KillChildAgents - A new agent has connected to the simulator . . . make sure that any old child cameras are blitzed
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct KillChildAgents {
     pub id_block: KillChildAgents_IDBlock,
 }
 
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct GetScriptRunning_Script {
     pub object_id: Uuid,
     pub item_id: Uuid,
@@ -6887,13 +6971,13 @@ pub struct GetScriptRunning_Script {
 
 /// GetScriptRunning - asks if a script is running or not. the simulator
 /// responds with ScriptRunningReply
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct GetScriptRunning {
     pub script: GetScriptRunning_Script,
 }
 
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct ScriptRunningReply_Script {
     pub object_id: Uuid,
     pub item_id: Uuid,
@@ -6902,19 +6986,19 @@ pub struct ScriptRunningReply_Script {
 
 /// ScriptRunningReply - response from simulator to message above
 ///		{	Mono			BOOL	} Added to LLSD message
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct ScriptRunningReply {
     pub script: ScriptRunningReply_Script,
 }
 
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct SetScriptRunning_AgentData {
     pub agent_id: Uuid,
     pub session_id: Uuid,
 }
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct SetScriptRunning_Script {
     pub object_id: Uuid,
     pub item_id: Uuid,
@@ -6923,34 +7007,34 @@ pub struct SetScriptRunning_Script {
 
 /// SetScriptRunning - makes a script active or inactive (Enable may be
 /// true or false)
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct SetScriptRunning {
     pub agent_data: SetScriptRunning_AgentData,
     pub script: SetScriptRunning_Script,
 }
 
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct ScriptReset_AgentData {
     pub agent_id: Uuid,
     pub session_id: Uuid,
 }
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct ScriptReset_Script {
     pub object_id: Uuid,
     pub item_id: Uuid,
 }
 
 /// ScriptReset - causes a script to reset
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct ScriptReset {
     pub agent_data: ScriptReset_AgentData,
     pub script: ScriptReset_Script,
 }
 
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct ScriptSensorRequest_Requester {
     pub source_id: Uuid,
     pub request_id: Uuid,
@@ -6966,18 +7050,18 @@ pub struct ScriptSensorRequest_Requester {
 }
 
 /// ScriptSensorRequest - causes the receiving sim to run a script sensor and return the results
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct ScriptSensorRequest {
     pub requester: ScriptSensorRequest_Requester,
 }
 
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct ScriptSensorReply_Requester {
     pub source_id: Uuid,
 }
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct ScriptSensorReply_SensedData {
     pub object_id: Uuid,
     pub owner_id: Uuid,
@@ -6991,14 +7075,14 @@ pub struct ScriptSensorReply_SensedData {
 }
 
 /// ScriptSensorReply - returns the request script search information back to the requester
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct ScriptSensorReply {
     pub requester: ScriptSensorReply_Requester,
     pub sensed_data: Vec<ScriptSensorReply_SensedData>,
 }
 
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct CompleteAgentMovement_AgentData {
     pub agent_id: Uuid,
     pub session_id: Uuid,
@@ -7008,19 +7092,19 @@ pub struct CompleteAgentMovement_AgentData {
 /// viewer -> sim
 /// agent is coming into the region. The region should be expecting the
 /// agent.
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct CompleteAgentMovement {
     pub agent_data: CompleteAgentMovement_AgentData,
 }
 
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct AgentMovementComplete_AgentData {
     pub agent_id: Uuid,
     pub session_id: Uuid,
 }
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct AgentMovementComplete_Data {
     pub position: Vector3<f32>,
     pub look_at: Vector3<f32>,
@@ -7028,13 +7112,13 @@ pub struct AgentMovementComplete_Data {
     pub timestamp: u32,
 }
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct AgentMovementComplete_SimData {
     pub channel_version: Vec<u8>,
 }
 
 /// sim -> viewer
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct AgentMovementComplete {
     pub agent_data: AgentMovementComplete_AgentData,
     pub data: AgentMovementComplete_Data,
@@ -7042,7 +7126,7 @@ pub struct AgentMovementComplete {
 }
 
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct DataServerLogout_UserData {
     pub agent_id: Uuid,
     pub viewer_ip: Ip4Addr,
@@ -7051,13 +7135,13 @@ pub struct DataServerLogout_UserData {
 }
 
 /// userserver -> dataserver
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct DataServerLogout {
     pub user_data: DataServerLogout_UserData,
 }
 
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct LogoutRequest_AgentData {
     pub agent_id: Uuid,
     pub session_id: Uuid,
@@ -7066,19 +7150,19 @@ pub struct LogoutRequest_AgentData {
 /// LogoutRequest
 /// viewer -> sim
 /// reliable
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct LogoutRequest {
     pub agent_data: LogoutRequest_AgentData,
 }
 
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct LogoutReply_AgentData {
     pub agent_id: Uuid,
     pub session_id: Uuid,
 }
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct LogoutReply_InventoryData {
     pub item_id: Uuid,
 }
@@ -7088,20 +7172,20 @@ pub struct LogoutReply_InventoryData {
 /// sim -> viewer
 /// reliable
 /// Includes inventory items to update with new asset ids
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct LogoutReply {
     pub agent_data: LogoutReply_AgentData,
     pub inventory_data: Vec<LogoutReply_InventoryData>,
 }
 
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct ImprovedInstantMessage_AgentData {
     pub agent_id: Uuid,
     pub session_id: Uuid,
 }
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct ImprovedInstantMessage_MessageBlock {
     pub from_group: bool,
     pub to_agent_id: Uuid,
@@ -7117,6 +7201,11 @@ pub struct ImprovedInstantMessage_MessageBlock {
     pub binary_bucket: Vec<u8>,
 }
 
+#[derive(Clone, Debug)]
+pub struct ImprovedInstantMessage_EstateBlock {
+    pub estate_id: u32,
+}
+
 /// ImprovedInstantMessage
 /// This message can potentially route all over the place
 /// ParentEstateID: parent estate id of the source estate
@@ -7126,14 +7215,15 @@ pub struct ImprovedInstantMessage_MessageBlock {
 /// ID		May be used by dialog. Interpretation depends on context.
 /// BinaryBucket May be used by some dialog types
 /// reliable
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct ImprovedInstantMessage {
     pub agent_data: ImprovedInstantMessage_AgentData,
     pub message_block: ImprovedInstantMessage_MessageBlock,
+    pub estate_block: ImprovedInstantMessage_EstateBlock,
 }
 
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct RetrieveInstantMessages_AgentData {
     pub agent_id: Uuid,
     pub session_id: Uuid,
@@ -7141,20 +7231,21 @@ pub struct RetrieveInstantMessages_AgentData {
 
 /// RetrieveInstantMessages - used to get instant messages that
 /// were persisted out to the database while the user was offline
-#[derive(Debug)]
+/// Sent from viewer->simulator.   Also see RetrieveIMsExtended (back-end only)
+#[derive(Clone, Debug)]
 pub struct RetrieveInstantMessages {
     pub agent_data: RetrieveInstantMessages_AgentData,
 }
 
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct FindAgent_AgentBlock {
     pub hunter: Uuid,
     pub prey: Uuid,
     pub space_ip: Ip4Addr,
 }
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct FindAgent_LocationBlock {
     pub global_x: f64,
     pub global_y: f64,
@@ -7163,20 +7254,20 @@ pub struct FindAgent_LocationBlock {
 /// FindAgent - used to find an agent's global position. I used a
 /// variable sized LocationBlock so that the message can be recycled with
 /// minimum new messages and handlers.
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct FindAgent {
     pub agent_block: FindAgent_AgentBlock,
     pub location_block: Vec<FindAgent_LocationBlock>,
 }
 
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct RequestGodlikePowers_AgentData {
     pub agent_id: Uuid,
     pub session_id: Uuid,
 }
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct RequestGodlikePowers_RequestBlock {
     pub godlike: bool,
     pub token: Uuid,
@@ -7186,20 +7277,20 @@ pub struct RequestGodlikePowers_RequestBlock {
 /// Set godlike to 0 if you want to relinquish god powers.
 /// viewer -> simulator -> dataserver
 /// reliable
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct RequestGodlikePowers {
     pub agent_data: RequestGodlikePowers_AgentData,
     pub request_block: RequestGodlikePowers_RequestBlock,
 }
 
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct GrantGodlikePowers_AgentData {
     pub agent_id: Uuid,
     pub session_id: Uuid,
 }
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct GrantGodlikePowers_GrantData {
     pub god_level: u8,
     pub token: Uuid,
@@ -7209,34 +7300,34 @@ pub struct GrantGodlikePowers_GrantData {
 /// At the viewer, show the god menu.
 /// dataserver -> simulator -> viewer
 /// reliable
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct GrantGodlikePowers {
     pub agent_data: GrantGodlikePowers_AgentData,
     pub grant_data: GrantGodlikePowers_GrantData,
 }
 
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct GodlikeMessage_AgentData {
     pub agent_id: Uuid,
     pub session_id: Uuid,
     pub transaction_id: Uuid,
 }
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct GodlikeMessage_MethodData {
     pub method: Vec<u8>,
     pub invoice: Uuid,
 }
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct GodlikeMessage_ParamList {
     pub parameter: Vec<u8>,
 }
 
 /// GodlikeMessage - generalized construct for Gods to send messages
 /// around the system. Each Request has it's own internal protocol.
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct GodlikeMessage {
     pub agent_data: GodlikeMessage_AgentData,
     pub method_data: GodlikeMessage_MethodData,
@@ -7244,27 +7335,27 @@ pub struct GodlikeMessage {
 }
 
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct EstateOwnerMessage_AgentData {
     pub agent_id: Uuid,
     pub session_id: Uuid,
     pub transaction_id: Uuid,
 }
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct EstateOwnerMessage_MethodData {
     pub method: Vec<u8>,
     pub invoice: Uuid,
 }
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct EstateOwnerMessage_ParamList {
     pub parameter: Vec<u8>,
 }
 
 /// EstateOwnerMessage
 /// format must be identical to above
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct EstateOwnerMessage {
     pub agent_data: EstateOwnerMessage_AgentData,
     pub method_data: EstateOwnerMessage_MethodData,
@@ -7272,20 +7363,20 @@ pub struct EstateOwnerMessage {
 }
 
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct GenericMessage_AgentData {
     pub agent_id: Uuid,
     pub session_id: Uuid,
     pub transaction_id: Uuid,
 }
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct GenericMessage_MethodData {
     pub method: Vec<u8>,
     pub invoice: Uuid,
 }
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct GenericMessage_ParamList {
     pub parameter: Vec<u8>,
 }
@@ -7293,7 +7384,7 @@ pub struct GenericMessage_ParamList {
 /// GenericMessage
 /// format must be identical to above
 /// As above, but don't have to be god or estate owner to send.
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct GenericMessage {
     pub agent_data: GenericMessage_AgentData,
     pub method_data: GenericMessage_MethodData,
@@ -7301,32 +7392,32 @@ pub struct GenericMessage {
 }
 
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct MuteListRequest_AgentData {
     pub agent_id: Uuid,
     pub session_id: Uuid,
 }
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct MuteListRequest_MuteData {
     pub mute_crc: u32,
 }
 
 /// request for mute list
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct MuteListRequest {
     pub agent_data: MuteListRequest_AgentData,
     pub mute_data: MuteListRequest_MuteData,
 }
 
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct UpdateMuteListEntry_AgentData {
     pub agent_id: Uuid,
     pub session_id: Uuid,
 }
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct UpdateMuteListEntry_MuteData {
     pub mute_id: Uuid,
     pub mute_name: Vec<u8>,
@@ -7335,53 +7426,53 @@ pub struct UpdateMuteListEntry_MuteData {
 }
 
 /// update/add someone in the mute list
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct UpdateMuteListEntry {
     pub agent_data: UpdateMuteListEntry_AgentData,
     pub mute_data: UpdateMuteListEntry_MuteData,
 }
 
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct RemoveMuteListEntry_AgentData {
     pub agent_id: Uuid,
     pub session_id: Uuid,
 }
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct RemoveMuteListEntry_MuteData {
     pub mute_id: Uuid,
     pub mute_name: Vec<u8>,
 }
 
 /// Remove a mute list entry.
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct RemoveMuteListEntry {
     pub agent_data: RemoveMuteListEntry_AgentData,
     pub mute_data: RemoveMuteListEntry_MuteData,
 }
 
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct CopyInventoryFromNotecard_AgentData {
     pub agent_id: Uuid,
     pub session_id: Uuid,
 }
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct CopyInventoryFromNotecard_NotecardData {
     pub notecard_item_id: Uuid,
     pub object_id: Uuid,
 }
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct CopyInventoryFromNotecard_InventoryData {
     pub item_id: Uuid,
     pub folder_id: Uuid,
 }
 
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct CopyInventoryFromNotecard {
     pub agent_data: CopyInventoryFromNotecard_AgentData,
     pub notecard_data: CopyInventoryFromNotecard_NotecardData,
@@ -7389,14 +7480,14 @@ pub struct CopyInventoryFromNotecard {
 }
 
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct UpdateInventoryItem_AgentData {
     pub agent_id: Uuid,
     pub session_id: Uuid,
     pub transaction_id: Uuid,
 }
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct UpdateInventoryItem_InventoryData {
     pub item_id: Uuid,
     pub folder_id: Uuid,
@@ -7423,21 +7514,21 @@ pub struct UpdateInventoryItem_InventoryData {
 }
 
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct UpdateInventoryItem {
     pub agent_data: UpdateInventoryItem_AgentData,
     pub inventory_data: Vec<UpdateInventoryItem_InventoryData>,
 }
 
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct UpdateCreateInventoryItem_AgentData {
     pub agent_id: Uuid,
     pub sim_approved: bool,
     pub transaction_id: Uuid,
 }
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct UpdateCreateInventoryItem_InventoryData {
     pub item_id: Uuid,
     pub folder_id: Uuid,
@@ -7464,21 +7555,21 @@ pub struct UpdateCreateInventoryItem_InventoryData {
 }
 
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct UpdateCreateInventoryItem {
     pub agent_data: UpdateCreateInventoryItem_AgentData,
     pub inventory_data: Vec<UpdateCreateInventoryItem_InventoryData>,
 }
 
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct MoveInventoryItem_AgentData {
     pub agent_id: Uuid,
     pub session_id: Uuid,
     pub stamp: bool,
 }
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct MoveInventoryItem_InventoryData {
     pub item_id: Uuid,
     pub folder_id: Uuid,
@@ -7486,20 +7577,20 @@ pub struct MoveInventoryItem_InventoryData {
 }
 
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct MoveInventoryItem {
     pub agent_data: MoveInventoryItem_AgentData,
     pub inventory_data: Vec<MoveInventoryItem_InventoryData>,
 }
 
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct CopyInventoryItem_AgentData {
     pub agent_id: Uuid,
     pub session_id: Uuid,
 }
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct CopyInventoryItem_InventoryData {
     pub callback_id: u32,
     pub old_agent_id: Uuid,
@@ -7514,58 +7605,58 @@ pub struct CopyInventoryItem_InventoryData {
 /// Inventory items are only unique for {agent, inv_id} pairs;
 /// the OldItemID needs to be paired with the OldAgentID to
 /// produce a unique inventory item.
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct CopyInventoryItem {
     pub agent_data: CopyInventoryItem_AgentData,
     pub inventory_data: Vec<CopyInventoryItem_InventoryData>,
 }
 
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct RemoveInventoryItem_AgentData {
     pub agent_id: Uuid,
     pub session_id: Uuid,
 }
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct RemoveInventoryItem_InventoryData {
     pub item_id: Uuid,
 }
 
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct RemoveInventoryItem {
     pub agent_data: RemoveInventoryItem_AgentData,
     pub inventory_data: Vec<RemoveInventoryItem_InventoryData>,
 }
 
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct ChangeInventoryItemFlags_AgentData {
     pub agent_id: Uuid,
     pub session_id: Uuid,
 }
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct ChangeInventoryItemFlags_InventoryData {
     pub item_id: Uuid,
     pub flags: u32,
 }
 
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct ChangeInventoryItemFlags {
     pub agent_data: ChangeInventoryItemFlags_AgentData,
     pub inventory_data: Vec<ChangeInventoryItemFlags_InventoryData>,
 }
 
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct SaveAssetIntoInventory_AgentData {
     pub agent_id: Uuid,
 }
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct SaveAssetIntoInventory_InventoryData {
     pub item_id: Uuid,
     pub new_asset_id: Uuid,
@@ -7576,20 +7667,20 @@ pub struct SaveAssetIntoInventory_InventoryData {
 /// NOT viewer to sim, sim should not have handler, ever
 /// This message is currently only uses objects, so the viewer ignores
 /// the asset id.
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct SaveAssetIntoInventory {
     pub agent_data: SaveAssetIntoInventory_AgentData,
     pub inventory_data: SaveAssetIntoInventory_InventoryData,
 }
 
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct CreateInventoryFolder_AgentData {
     pub agent_id: Uuid,
     pub session_id: Uuid,
 }
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct CreateInventoryFolder_FolderData {
     pub folder_id: Uuid,
     pub parent_id: Uuid,
@@ -7598,20 +7689,20 @@ pub struct CreateInventoryFolder_FolderData {
 }
 
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct CreateInventoryFolder {
     pub agent_data: CreateInventoryFolder_AgentData,
     pub folder_data: CreateInventoryFolder_FolderData,
 }
 
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct UpdateInventoryFolder_AgentData {
     pub agent_id: Uuid,
     pub session_id: Uuid,
 }
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct UpdateInventoryFolder_FolderData {
     pub folder_id: Uuid,
     pub parent_id: Uuid,
@@ -7620,60 +7711,60 @@ pub struct UpdateInventoryFolder_FolderData {
 }
 
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct UpdateInventoryFolder {
     pub agent_data: UpdateInventoryFolder_AgentData,
     pub folder_data: Vec<UpdateInventoryFolder_FolderData>,
 }
 
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct MoveInventoryFolder_AgentData {
     pub agent_id: Uuid,
     pub session_id: Uuid,
     pub stamp: bool,
 }
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct MoveInventoryFolder_InventoryData {
     pub folder_id: Uuid,
     pub parent_id: Uuid,
 }
 
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct MoveInventoryFolder {
     pub agent_data: MoveInventoryFolder_AgentData,
     pub inventory_data: Vec<MoveInventoryFolder_InventoryData>,
 }
 
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct RemoveInventoryFolder_AgentData {
     pub agent_id: Uuid,
     pub session_id: Uuid,
 }
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct RemoveInventoryFolder_FolderData {
     pub folder_id: Uuid,
 }
 
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct RemoveInventoryFolder {
     pub agent_data: RemoveInventoryFolder_AgentData,
     pub folder_data: Vec<RemoveInventoryFolder_FolderData>,
 }
 
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct FetchInventoryDescendents_AgentData {
     pub agent_id: Uuid,
     pub session_id: Uuid,
 }
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct FetchInventoryDescendents_InventoryData {
     pub folder_id: Uuid,
     pub owner_id: Uuid,
@@ -7683,14 +7774,14 @@ pub struct FetchInventoryDescendents_InventoryData {
 }
 
 /// Get inventory segment.
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct FetchInventoryDescendents {
     pub agent_data: FetchInventoryDescendents_AgentData,
     pub inventory_data: FetchInventoryDescendents_InventoryData,
 }
 
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct InventoryDescendents_AgentData {
     pub agent_id: Uuid,
     pub folder_id: Uuid,
@@ -7699,7 +7790,7 @@ pub struct InventoryDescendents_AgentData {
     pub descendents: i32,
 }
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct InventoryDescendents_FolderData {
     pub folder_id: Uuid,
     pub parent_id: Uuid,
@@ -7707,7 +7798,7 @@ pub struct InventoryDescendents_FolderData {
     pub name: Vec<u8>,
 }
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct InventoryDescendents_ItemData {
     pub item_id: Uuid,
     pub folder_id: Uuid,
@@ -7736,7 +7827,7 @@ pub struct InventoryDescendents_ItemData {
 /// *NOTE: This could be compressed more since we already know the
 /// parent_id for folders and the folder_id for items, but this is
 /// reasonable until we heve server side inventory.
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct InventoryDescendents {
     pub agent_data: InventoryDescendents_AgentData,
     pub folder_data: Vec<InventoryDescendents_FolderData>,
@@ -7744,32 +7835,32 @@ pub struct InventoryDescendents {
 }
 
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct FetchInventory_AgentData {
     pub agent_id: Uuid,
     pub session_id: Uuid,
 }
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct FetchInventory_InventoryData {
     pub owner_id: Uuid,
     pub item_id: Uuid,
 }
 
 /// Get inventory item(s) - response comes through FetchInventoryReply
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct FetchInventory {
     pub agent_data: FetchInventory_AgentData,
     pub inventory_data: Vec<FetchInventory_InventoryData>,
 }
 
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct FetchInventoryReply_AgentData {
     pub agent_id: Uuid,
 }
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct FetchInventoryReply_InventoryData {
     pub item_id: Uuid,
     pub folder_id: Uuid,
@@ -7795,20 +7886,20 @@ pub struct FetchInventoryReply_InventoryData {
 }
 
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct FetchInventoryReply {
     pub agent_data: FetchInventoryReply_AgentData,
     pub inventory_data: Vec<FetchInventoryReply_InventoryData>,
 }
 
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct BulkUpdateInventory_AgentData {
     pub agent_id: Uuid,
     pub transaction_id: Uuid,
 }
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct BulkUpdateInventory_FolderData {
     pub folder_id: Uuid,
     pub parent_id: Uuid,
@@ -7816,7 +7907,7 @@ pub struct BulkUpdateInventory_FolderData {
     pub name: Vec<u8>,
 }
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct BulkUpdateInventory_ItemData {
     pub item_id: Uuid,
     pub callback_id: u32,
@@ -7845,7 +7936,7 @@ pub struct BulkUpdateInventory_ItemData {
 /// Can only fit around 7 items per packet - that's the way it goes. At
 /// least many bulk updates can be packed.
 /// Only from dataserver->sim->viewer
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct BulkUpdateInventory {
     pub agent_data: BulkUpdateInventory_AgentData,
     pub folder_data: Vec<BulkUpdateInventory_FolderData>,
@@ -7853,7 +7944,7 @@ pub struct BulkUpdateInventory {
 }
 
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct RequestInventoryAsset_QueryData {
     pub query_id: Uuid,
     pub agent_id: Uuid,
@@ -7863,13 +7954,13 @@ pub struct RequestInventoryAsset_QueryData {
 
 /// request permissions for agent id to get the asset for owner_id's
 /// item_id.
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct RequestInventoryAsset {
     pub query_data: RequestInventoryAsset_QueryData,
 }
 
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct InventoryAssetResponse_QueryData {
     pub query_id: Uuid,
     pub asset_id: Uuid,
@@ -7878,24 +7969,24 @@ pub struct InventoryAssetResponse_QueryData {
 
 /// response to RequestInventoryAsset
 /// lluuid will be null if agentid in the request above cannot read asset
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct InventoryAssetResponse {
     pub query_data: InventoryAssetResponse_QueryData,
 }
 
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct RemoveInventoryObjects_AgentData {
     pub agent_id: Uuid,
     pub session_id: Uuid,
 }
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct RemoveInventoryObjects_FolderData {
     pub folder_id: Uuid,
 }
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct RemoveInventoryObjects_ItemData {
     pub item_id: Uuid,
 }
@@ -7903,7 +7994,7 @@ pub struct RemoveInventoryObjects_ItemData {
 /// This is the new improved way to remove inventory items.  It is
 /// currently only supported in viewer->userserver->dataserver
 /// messages typically initiated by an empty trash method.
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct RemoveInventoryObjects {
     pub agent_data: RemoveInventoryObjects_AgentData,
     pub folder_data: Vec<RemoveInventoryObjects_FolderData>,
@@ -7911,39 +8002,39 @@ pub struct RemoveInventoryObjects {
 }
 
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct PurgeInventoryDescendents_AgentData {
     pub agent_id: Uuid,
     pub session_id: Uuid,
 }
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct PurgeInventoryDescendents_InventoryData {
     pub folder_id: Uuid,
 }
 
 /// This is how you remove inventory when you're not even sure what it
 /// is - only it's parenting.
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct PurgeInventoryDescendents {
     pub agent_data: PurgeInventoryDescendents_AgentData,
     pub inventory_data: PurgeInventoryDescendents_InventoryData,
 }
 
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct UpdateTaskInventory_AgentData {
     pub agent_id: Uuid,
     pub session_id: Uuid,
 }
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct UpdateTaskInventory_UpdateData {
     pub local_id: u32,
     pub key: u8,
 }
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct UpdateTaskInventory_InventoryData {
     pub item_id: Uuid,
     pub folder_id: Uuid,
@@ -7971,7 +8062,7 @@ pub struct UpdateTaskInventory_InventoryData {
 /// These messages are viewer->simulator requests to update a task's
 /// inventory.
 /// if Key == 0, itemid is the key. if Key == 1, assetid is the key.
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct UpdateTaskInventory {
     pub agent_data: UpdateTaskInventory_AgentData,
     pub update_data: UpdateTaskInventory_UpdateData,
@@ -7979,67 +8070,67 @@ pub struct UpdateTaskInventory {
 }
 
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct RemoveTaskInventory_AgentData {
     pub agent_id: Uuid,
     pub session_id: Uuid,
 }
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct RemoveTaskInventory_InventoryData {
     pub local_id: u32,
     pub item_id: Uuid,
 }
 
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct RemoveTaskInventory {
     pub agent_data: RemoveTaskInventory_AgentData,
     pub inventory_data: RemoveTaskInventory_InventoryData,
 }
 
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct MoveTaskInventory_AgentData {
     pub agent_id: Uuid,
     pub session_id: Uuid,
     pub folder_id: Uuid,
 }
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct MoveTaskInventory_InventoryData {
     pub local_id: u32,
     pub item_id: Uuid,
 }
 
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct MoveTaskInventory {
     pub agent_data: MoveTaskInventory_AgentData,
     pub inventory_data: MoveTaskInventory_InventoryData,
 }
 
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct RequestTaskInventory_AgentData {
     pub agent_id: Uuid,
     pub session_id: Uuid,
 }
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct RequestTaskInventory_InventoryData {
     pub local_id: u32,
 }
 
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct RequestTaskInventory {
     pub agent_data: RequestTaskInventory_AgentData,
     pub inventory_data: RequestTaskInventory_InventoryData,
 }
 
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct ReplyTaskInventory_InventoryData {
     pub task_id: Uuid,
     pub serial: i16,
@@ -8047,19 +8138,19 @@ pub struct ReplyTaskInventory_InventoryData {
 }
 
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct ReplyTaskInventory {
     pub inventory_data: ReplyTaskInventory_InventoryData,
 }
 
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct DeRezObject_AgentData {
     pub agent_id: Uuid,
     pub session_id: Uuid,
 }
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct DeRezObject_AgentBlock {
     pub group_id: Uuid,
     pub destination: u8,
@@ -8069,7 +8160,7 @@ pub struct DeRezObject_AgentBlock {
     pub packet_number: u8,
 }
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct DeRezObject_ObjectData {
     pub object_local_id: u32,
 }
@@ -8087,7 +8178,7 @@ pub struct DeRezObject_ObjectData {
 /// the packets are counted and numbered. The rest of the information is
 /// just duplicated (it's not that much, and derezzes that span multiple
 /// packets will be rare.)
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct DeRezObject {
     pub agent_data: DeRezObject_AgentData,
     pub agent_block: DeRezObject_AgentBlock,
@@ -8095,7 +8186,7 @@ pub struct DeRezObject {
 }
 
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct DeRezAck_TransactionData {
     pub transaction_id: Uuid,
     pub success: bool,
@@ -8104,20 +8195,20 @@ pub struct DeRezAck_TransactionData {
 /// This message is sent when a derez succeeds, but there's no way to
 /// know, since no inventory is created on the viewer. For example, when
 /// saving into task inventory.
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct DeRezAck {
     pub transaction_data: DeRezAck_TransactionData,
 }
 
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct RezObject_AgentData {
     pub agent_id: Uuid,
     pub session_id: Uuid,
     pub group_id: Uuid,
 }
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct RezObject_RezData {
     pub from_task_id: Uuid,
     pub bypass_raycast: u8,
@@ -8133,7 +8224,7 @@ pub struct RezObject_RezData {
     pub next_owner_mask: u32,
 }
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct RezObject_InventoryData {
     pub item_id: Uuid,
     pub folder_id: Uuid,
@@ -8160,7 +8251,7 @@ pub struct RezObject_InventoryData {
 
 /// This message is sent from viewer -> simulator when the viewer wants
 /// to rez an object out of inventory.
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct RezObject {
     pub agent_data: RezObject_AgentData,
     pub rez_data: RezObject_RezData,
@@ -8168,14 +8259,14 @@ pub struct RezObject {
 }
 
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct RezObjectFromNotecard_AgentData {
     pub agent_id: Uuid,
     pub session_id: Uuid,
     pub group_id: Uuid,
 }
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct RezObjectFromNotecard_RezData {
     pub from_task_id: Uuid,
     pub bypass_raycast: u8,
@@ -8191,20 +8282,20 @@ pub struct RezObjectFromNotecard_RezData {
     pub next_owner_mask: u32,
 }
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct RezObjectFromNotecard_NotecardData {
     pub notecard_item_id: Uuid,
     pub object_id: Uuid,
 }
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct RezObjectFromNotecard_InventoryData {
     pub item_id: Uuid,
 }
 
 /// This message is sent from viewer -> simulator when the viewer wants
 /// to rez an object from a notecard.
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct RezObjectFromNotecard {
     pub agent_data: RezObjectFromNotecard_AgentData,
     pub rez_data: RezObjectFromNotecard_RezData,
@@ -8213,29 +8304,36 @@ pub struct RezObjectFromNotecard {
 }
 
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct TransferInventory_InfoBlock {
     pub source_id: Uuid,
     pub dest_id: Uuid,
     pub transaction_id: Uuid,
 }
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct TransferInventory_InventoryBlock {
     pub inventory_id: Uuid,
     pub type_: i8,
 }
 
+#[derive(Clone, Debug)]
+pub struct TransferInventory_ValidationBlock {
+    pub needs_validation: bool,
+    pub estate_id: u32,
+}
+
 /// sim -> dataserver
 /// sent during agent to agent inventory transfers
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct TransferInventory {
     pub info_block: TransferInventory_InfoBlock,
     pub inventory_block: Vec<TransferInventory_InventoryBlock>,
+    pub validation_block: TransferInventory_ValidationBlock,
 }
 
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct TransferInventoryAck_InfoBlock {
     pub transaction_id: Uuid,
     pub inventory_id: Uuid,
@@ -8244,30 +8342,30 @@ pub struct TransferInventoryAck_InfoBlock {
 /// dataserver -> sim
 /// InventoryID is the id of the inventory object that the end user
 /// should discard if they deny the transfer.
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct TransferInventoryAck {
     pub info_block: TransferInventoryAck_InfoBlock,
 }
 
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct AcceptFriendship_AgentData {
     pub agent_id: Uuid,
     pub session_id: Uuid,
 }
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct AcceptFriendship_TransactionBlock {
     pub transaction_id: Uuid,
 }
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct AcceptFriendship_FolderData {
     pub folder_id: Uuid,
 }
 
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct AcceptFriendship {
     pub agent_data: AcceptFriendship_AgentData,
     pub transaction_block: AcceptFriendship_TransactionBlock,
@@ -8275,45 +8373,45 @@ pub struct AcceptFriendship {
 }
 
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct DeclineFriendship_AgentData {
     pub agent_id: Uuid,
     pub session_id: Uuid,
 }
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct DeclineFriendship_TransactionBlock {
     pub transaction_id: Uuid,
 }
 
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct DeclineFriendship {
     pub agent_data: DeclineFriendship_AgentData,
     pub transaction_block: DeclineFriendship_TransactionBlock,
 }
 
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct FormFriendship_AgentBlock {
     pub source_id: Uuid,
     pub dest_id: Uuid,
 }
 
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct FormFriendship {
     pub agent_block: FormFriendship_AgentBlock,
 }
 
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct TerminateFriendship_AgentData {
     pub agent_id: Uuid,
     pub session_id: Uuid,
 }
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct TerminateFriendship_ExBlock {
     pub other_id: Uuid,
 }
@@ -8323,51 +8421,51 @@ pub struct TerminateFriendship_ExBlock {
 /// Stops agent tracking in userserver.
 /// viewer -> userserver -> dataserver
 /// reliable
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct TerminateFriendship {
     pub agent_data: TerminateFriendship_AgentData,
     pub ex_block: TerminateFriendship_ExBlock,
 }
 
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct OfferCallingCard_AgentData {
     pub agent_id: Uuid,
     pub session_id: Uuid,
 }
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct OfferCallingCard_AgentBlock {
     pub dest_id: Uuid,
     pub transaction_id: Uuid,
 }
 
 /// used to give someone a calling card.
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct OfferCallingCard {
     pub agent_data: OfferCallingCard_AgentData,
     pub agent_block: OfferCallingCard_AgentBlock,
 }
 
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct AcceptCallingCard_AgentData {
     pub agent_id: Uuid,
     pub session_id: Uuid,
 }
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct AcceptCallingCard_TransactionBlock {
     pub transaction_id: Uuid,
 }
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct AcceptCallingCard_FolderData {
     pub folder_id: Uuid,
 }
 
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct AcceptCallingCard {
     pub agent_data: AcceptCallingCard_AgentData,
     pub transaction_block: AcceptCallingCard_TransactionBlock,
@@ -8375,39 +8473,39 @@ pub struct AcceptCallingCard {
 }
 
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct DeclineCallingCard_AgentData {
     pub agent_id: Uuid,
     pub session_id: Uuid,
 }
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct DeclineCallingCard_TransactionBlock {
     pub transaction_id: Uuid,
 }
 
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct DeclineCallingCard {
     pub agent_data: DeclineCallingCard_AgentData,
     pub transaction_block: DeclineCallingCard_TransactionBlock,
 }
 
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct RezScript_AgentData {
     pub agent_id: Uuid,
     pub session_id: Uuid,
     pub group_id: Uuid,
 }
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct RezScript_UpdateBlock {
     pub object_local_id: u32,
     pub enabled: bool,
 }
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct RezScript_InventoryBlock {
     pub item_id: Uuid,
     pub folder_id: Uuid,
@@ -8433,7 +8531,7 @@ pub struct RezScript_InventoryBlock {
 }
 
 /// Rez a script onto an object
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct RezScript {
     pub agent_data: RezScript_AgentData,
     pub update_block: RezScript_UpdateBlock,
@@ -8441,13 +8539,13 @@ pub struct RezScript {
 }
 
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct CreateInventoryItem_AgentData {
     pub agent_id: Uuid,
     pub session_id: Uuid,
 }
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct CreateInventoryItem_InventoryBlock {
     pub callback_id: u32,
     pub folder_id: Uuid,
@@ -8461,32 +8559,32 @@ pub struct CreateInventoryItem_InventoryBlock {
 }
 
 /// Create inventory
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct CreateInventoryItem {
     pub agent_data: CreateInventoryItem_AgentData,
     pub inventory_block: CreateInventoryItem_InventoryBlock,
 }
 
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct CreateLandmarkForEvent_AgentData {
     pub agent_id: Uuid,
     pub session_id: Uuid,
 }
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct CreateLandmarkForEvent_EventData {
     pub event_id: u32,
 }
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct CreateLandmarkForEvent_InventoryBlock {
     pub folder_id: Uuid,
     pub name: Vec<u8>,
 }
 
 /// give agent a landmark for an event.
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct CreateLandmarkForEvent {
     pub agent_data: CreateLandmarkForEvent_AgentData,
     pub event_data: CreateLandmarkForEvent_EventData,
@@ -8494,30 +8592,30 @@ pub struct CreateLandmarkForEvent {
 }
 
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct EventLocationRequest_QueryData {
     pub query_id: Uuid,
 }
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct EventLocationRequest_EventData {
     pub event_id: u32,
 }
 
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct EventLocationRequest {
     pub query_data: EventLocationRequest_QueryData,
     pub event_data: EventLocationRequest_EventData,
 }
 
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct EventLocationReply_QueryData {
     pub query_id: Uuid,
 }
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct EventLocationReply_EventData {
     pub success: bool,
     pub region_id: Uuid,
@@ -8525,46 +8623,46 @@ pub struct EventLocationReply_EventData {
 }
 
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct EventLocationReply {
     pub query_data: EventLocationReply_QueryData,
     pub event_data: EventLocationReply_EventData,
 }
 
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct RegionHandleRequest_RequestBlock {
     pub region_id: Uuid,
 }
 
 /// get information about landmarks. Used by viewers for determining
 /// the location of a landmark, and by simulators for teleport
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct RegionHandleRequest {
     pub request_block: RegionHandleRequest_RequestBlock,
 }
 
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct RegionIDAndHandleReply_ReplyBlock {
     pub region_id: Uuid,
     pub region_handle: u64,
 }
 
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct RegionIDAndHandleReply {
     pub reply_block: RegionIDAndHandleReply_ReplyBlock,
 }
 
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct MoneyTransferRequest_AgentData {
     pub agent_id: Uuid,
     pub session_id: Uuid,
 }
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct MoneyTransferRequest_MoneyData {
     pub source_id: Uuid,
     pub dest_id: Uuid,
@@ -8581,14 +8679,14 @@ pub struct MoneyTransferRequest_MoneyData {
 /// generates a MoneyBalance message in reply.  The simulator
 /// will generate a MoneyTransferBackend in response to this.
 /// viewer -> simulator -> dataserver
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct MoneyTransferRequest {
     pub agent_data: MoneyTransferRequest_AgentData,
     pub money_data: MoneyTransferRequest_MoneyData,
 }
 
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct MoneyTransferBackend_MoneyData {
     pub transaction_id: Uuid,
     pub transaction_time: u32,
@@ -8608,33 +8706,33 @@ pub struct MoneyTransferBackend_MoneyData {
 /// And, the money transfer
 /// *NOTE: Unused as of 2010-04-06, because all back-end money transactions
 /// are done with web services via L$ API.  JC
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct MoneyTransferBackend {
     pub money_data: MoneyTransferBackend_MoneyData,
 }
 
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct MoneyBalanceRequest_AgentData {
     pub agent_id: Uuid,
     pub session_id: Uuid,
 }
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct MoneyBalanceRequest_MoneyData {
     pub transaction_id: Uuid,
 }
 
 /// viewer -> userserver -> dataserver
 /// Reliable
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct MoneyBalanceRequest {
     pub agent_data: MoneyBalanceRequest_AgentData,
     pub money_data: MoneyBalanceRequest_MoneyData,
 }
 
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct MoneyBalanceReply_MoneyData {
     pub agent_id: Uuid,
     pub transaction_id: Uuid,
@@ -8645,7 +8743,7 @@ pub struct MoneyBalanceReply_MoneyData {
     pub description: Vec<u8>,
 }
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct MoneyBalanceReply_TransactionInfo {
     pub transaction_type: i32,
     pub source_id: Uuid,
@@ -8660,20 +8758,20 @@ pub struct MoneyBalanceReply_TransactionInfo {
 /// For replies that are part of a transaction (buying something) provide
 /// metadata for localization.  If TransactionType is 0, the message is
 /// purely a balance update.  Added for server 1.40 and viewer 2.1.  JC
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct MoneyBalanceReply {
     pub money_data: MoneyBalanceReply_MoneyData,
     pub transaction_info: MoneyBalanceReply_TransactionInfo,
 }
 
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct RoutedMoneyBalanceReply_TargetBlock {
     pub target_ip: Ip4Addr,
     pub target_port: IpPort,
 }
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct RoutedMoneyBalanceReply_MoneyData {
     pub agent_id: Uuid,
     pub transaction_id: Uuid,
@@ -8684,7 +8782,7 @@ pub struct RoutedMoneyBalanceReply_MoneyData {
     pub description: Vec<u8>,
 }
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct RoutedMoneyBalanceReply_TransactionInfo {
     pub transaction_type: i32,
     pub source_id: Uuid,
@@ -8702,7 +8800,7 @@ pub struct RoutedMoneyBalanceReply_TransactionInfo {
 /// dataserver -> simulator -> spaceserver -> simulator -> viewer
 /// reliable
 /// See MoneyBalanceReply above.
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct RoutedMoneyBalanceReply {
     pub target_block: RoutedMoneyBalanceReply_TargetBlock,
     pub money_data: RoutedMoneyBalanceReply_MoneyData,
@@ -8710,14 +8808,14 @@ pub struct RoutedMoneyBalanceReply {
 }
 
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct ActivateGestures_AgentData {
     pub agent_id: Uuid,
     pub session_id: Uuid,
     pub flags: u32,
 }
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct ActivateGestures_Data {
     pub item_id: Uuid,
     pub asset_id: Uuid,
@@ -8726,21 +8824,21 @@ pub struct ActivateGestures_Data {
 
 /// Tell the database that some gestures are now active
 /// viewer -> sim -> data
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct ActivateGestures {
     pub agent_data: ActivateGestures_AgentData,
     pub data: Vec<ActivateGestures_Data>,
 }
 
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct DeactivateGestures_AgentData {
     pub agent_id: Uuid,
     pub session_id: Uuid,
     pub flags: u32,
 }
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct DeactivateGestures_Data {
     pub item_id: Uuid,
     pub gesture_flags: u32,
@@ -8748,45 +8846,45 @@ pub struct DeactivateGestures_Data {
 
 /// Tell the database some gestures are no longer active
 /// viewer -> sim -> data
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct DeactivateGestures {
     pub agent_data: DeactivateGestures_AgentData,
     pub data: Vec<DeactivateGestures_Data>,
 }
 
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct MuteListUpdate_MuteData {
     pub agent_id: Uuid,
     pub filename: Vec<u8>,
 }
 
 /// dataserver-> userserver -> viewer to move around the mute list
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct MuteListUpdate {
     pub mute_data: MuteListUpdate_MuteData,
 }
 
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct UseCachedMuteList_AgentData {
     pub agent_id: Uuid,
 }
 
 /// tell viewer to use the local mute cache
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct UseCachedMuteList {
     pub agent_data: UseCachedMuteList_AgentData,
 }
 
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct GrantUserRights_AgentData {
     pub agent_id: Uuid,
     pub session_id: Uuid,
 }
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct GrantUserRights_Rights {
     pub agent_related: Uuid,
     pub related_rights: i32,
@@ -8798,19 +8896,19 @@ pub struct GrantUserRights_Rights {
 /// viewer, and a presence lookup will be performed to find
 /// agent-related and the same PUT will be issued to the sim host if
 /// they are online.
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct GrantUserRights {
     pub agent_data: GrantUserRights_AgentData,
     pub rights: Vec<GrantUserRights_Rights>,
 }
 
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct ChangeUserRights_AgentData {
     pub agent_id: Uuid,
 }
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct ChangeUserRights_Rights {
     pub agent_related: Uuid,
     pub related_rights: i32,
@@ -8821,45 +8919,45 @@ pub struct ChangeUserRights_Rights {
 /// request and the target agent if it is a modify or map
 /// right. Adding/removing online status rights will show up as an
 /// online/offline notification.
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct ChangeUserRights {
     pub agent_data: ChangeUserRights_AgentData,
     pub rights: Vec<ChangeUserRights_Rights>,
 }
 
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct OnlineNotification_AgentBlock {
     pub agent_id: Uuid,
 }
 
 /// notification for login and logout.
 /// source_sim -> dest_viewer
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct OnlineNotification {
     pub agent_block: Vec<OnlineNotification_AgentBlock>,
 }
 
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct OfflineNotification_AgentBlock {
     pub agent_id: Uuid,
 }
 
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct OfflineNotification {
     pub agent_block: Vec<OfflineNotification_AgentBlock>,
 }
 
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct SetStartLocationRequest_AgentData {
     pub agent_id: Uuid,
     pub session_id: Uuid,
 }
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct SetStartLocationRequest_StartLocationData {
     pub sim_name: Vec<u8>,
     pub location_id: u32,
@@ -8871,14 +8969,14 @@ pub struct SetStartLocationRequest_StartLocationData {
 /// viewer -> sim
 /// failure checked at sim and triggers ImprovedInstantMessage
 /// success triggers SetStartLocation
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct SetStartLocationRequest {
     pub agent_data: SetStartLocationRequest_AgentData,
     pub start_location_data: SetStartLocationRequest_StartLocationData,
 }
 
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct SetStartLocation_StartLocationData {
     pub agent_id: Uuid,
     pub region_id: Uuid,
@@ -8890,112 +8988,112 @@ pub struct SetStartLocation_StartLocationData {
 
 /// SetStartLocation
 /// sim -> dataserver
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct SetStartLocation {
     pub start_location_data: SetStartLocation_StartLocationData,
 }
 
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct NetTest_NetBlock {
     pub port: IpPort,
 }
 
 /// NetTest - This goes back and forth to the space server because of
 /// problems determining the port
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct NetTest {
     pub net_block: NetTest_NetBlock,
 }
 
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct SetCPURatio_Data {
     pub ratio: u8,
 }
 
 /// SetChildCount - Sent to launcher to adjust nominal child count
 /// Simulator sends this increase the sim/cpu ratio on startup
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct SetCPURatio {
     pub data: SetCPURatio_Data,
 }
 
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct SimCrashed_Data {
     pub region_x: u32,
     pub region_y: u32,
 }
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct SimCrashed_Users {
     pub agent_id: Uuid,
 }
 
 /// SimCrashed - Sent to dataserver when the sim goes down.
 /// Maybe we should notify the spaceserver as well?
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct SimCrashed {
     pub data: SimCrashed_Data,
     pub users: Vec<SimCrashed_Users>,
 }
 
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct NameValuePair_TaskData {
     pub id: Uuid,
 }
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct NameValuePair_NameValueData {
     pub nv_pair: Vec<u8>,
 }
 
 /// NameValuePair - if the specific task exists on simulator, add or replace this name value pair
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct NameValuePair {
     pub task_data: NameValuePair_TaskData,
     pub name_value_data: Vec<NameValuePair_NameValueData>,
 }
 
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct RemoveNameValuePair_TaskData {
     pub id: Uuid,
 }
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct RemoveNameValuePair_NameValueData {
     pub nv_pair: Vec<u8>,
 }
 
 /// NameValuePair - if the specific task exists on simulator or dataserver, remove the name value pair (value is ignored)
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct RemoveNameValuePair {
     pub task_data: RemoveNameValuePair_TaskData,
     pub name_value_data: Vec<RemoveNameValuePair_NameValueData>,
 }
 
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct UpdateAttachment_AgentData {
     pub agent_id: Uuid,
     pub session_id: Uuid,
 }
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct UpdateAttachment_AttachmentBlock {
     pub attachment_point: u8,
 }
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct UpdateAttachment_OperationData {
     pub add_item: bool,
     pub use_existing_asset: bool,
 }
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct UpdateAttachment_InventoryData {
     pub item_id: Uuid,
     pub folder_id: Uuid,
@@ -9021,7 +9119,7 @@ pub struct UpdateAttachment_InventoryData {
 }
 
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct UpdateAttachment {
     pub agent_data: UpdateAttachment_AgentData,
     pub attachment_block: UpdateAttachment_AttachmentBlock,
@@ -9030,27 +9128,27 @@ pub struct UpdateAttachment {
 }
 
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct RemoveAttachment_AgentData {
     pub agent_id: Uuid,
     pub session_id: Uuid,
 }
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct RemoveAttachment_AttachmentBlock {
     pub attachment_point: u8,
     pub item_id: Uuid,
 }
 
 /// Simulator informs Dataserver that attachment has been taken off
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct RemoveAttachment {
     pub agent_data: RemoveAttachment_AgentData,
     pub attachment_block: RemoveAttachment_AttachmentBlock,
 }
 
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct SoundTrigger_SoundData {
     pub sound_id: Uuid,
     pub owner_id: Uuid,
@@ -9062,13 +9160,13 @@ pub struct SoundTrigger_SoundData {
 }
 
 /// SoundTrigger - Sent by simulator to viewer to trigger sound outside current region
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct SoundTrigger {
     pub sound_data: SoundTrigger_SoundData,
 }
 
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct AttachedSound_DataBlock {
     pub sound_id: Uuid,
     pub object_id: Uuid,
@@ -9078,26 +9176,26 @@ pub struct AttachedSound_DataBlock {
 }
 
 /// AttachedSound - Sent by simulator to viewer to play sound attached with an object
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct AttachedSound {
     pub data_block: AttachedSound_DataBlock,
 }
 
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct AttachedSoundGainChange_DataBlock {
     pub object_id: Uuid,
     pub gain: f32,
 }
 
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct AttachedSoundGainChange {
     pub data_block: AttachedSoundGainChange_DataBlock,
 }
 
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct PreloadSound_DataBlock {
     pub object_id: Uuid,
     pub owner_id: Uuid,
@@ -9105,13 +9203,13 @@ pub struct PreloadSound_DataBlock {
 }
 
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct PreloadSound {
     pub data_block: Vec<PreloadSound_DataBlock>,
 }
 
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct AssetUploadRequest_AssetBlock {
     pub transaction_id: Uuid,
     pub type_: i8,
@@ -9121,13 +9219,13 @@ pub struct AssetUploadRequest_AssetBlock {
 }
 
 /// current assumes an existing UUID, need to enhance for new assets
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct AssetUploadRequest {
     pub asset_block: AssetUploadRequest_AssetBlock,
 }
 
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct AssetUploadComplete_AssetBlock {
     pub uuid: Uuid,
     pub type_: i8,
@@ -9135,13 +9233,13 @@ pub struct AssetUploadComplete_AssetBlock {
 }
 
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct AssetUploadComplete {
     pub asset_block: AssetUploadComplete_AssetBlock,
 }
 
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct EmailMessageRequest_DataBlock {
     pub object_id: Uuid,
     pub from_address: Vec<u8>,
@@ -9150,13 +9248,13 @@ pub struct EmailMessageRequest_DataBlock {
 
 /// Script on simulator asks dataserver if there are any email messages
 /// waiting.
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct EmailMessageRequest {
     pub data_block: EmailMessageRequest_DataBlock,
 }
 
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct EmailMessageReply_DataBlock {
     pub object_id: Uuid,
     pub more: u32,
@@ -9169,13 +9267,13 @@ pub struct EmailMessageReply_DataBlock {
 
 /// Dataserver gives simulator the oldest email message in the queue, along with
 /// how many messages are left in the queue.  And passes back the filter used to request emails.
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct EmailMessageReply {
     pub data_block: EmailMessageReply_DataBlock,
 }
 
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct InternalScriptMail_DataBlock {
     pub from: Vec<u8>,
     pub to: Uuid,
@@ -9184,13 +9282,13 @@ pub struct InternalScriptMail_DataBlock {
 }
 
 /// Script on simulator sends mail to another script
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct InternalScriptMail {
     pub data_block: InternalScriptMail_DataBlock,
 }
 
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct ScriptDataRequest_DataBlock {
     pub hash: u64,
     pub request_type: i8,
@@ -9198,32 +9296,32 @@ pub struct ScriptDataRequest_DataBlock {
 }
 
 /// Script on simulator asks dataserver for information
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct ScriptDataRequest {
     pub data_block: Vec<ScriptDataRequest_DataBlock>,
 }
 
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct ScriptDataReply_DataBlock {
     pub hash: u64,
     pub reply: Vec<u8>,
 }
 
 /// Data server responds with data
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct ScriptDataReply {
     pub data_block: Vec<ScriptDataReply_DataBlock>,
 }
 
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct CreateGroupRequest_AgentData {
     pub agent_id: Uuid,
     pub session_id: Uuid,
 }
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct CreateGroupRequest_GroupData {
     pub name: Vec<u8>,
     pub charter: Vec<u8>,
@@ -9237,21 +9335,20 @@ pub struct CreateGroupRequest_GroupData {
 
 /// CreateGroupRequest
 /// viewer -> simulator
-/// simulator -> dataserver
 /// reliable
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct CreateGroupRequest {
     pub agent_data: CreateGroupRequest_AgentData,
     pub group_data: CreateGroupRequest_GroupData,
 }
 
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct CreateGroupReply_AgentData {
     pub agent_id: Uuid,
 }
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct CreateGroupReply_ReplyData {
     pub group_id: Uuid,
     pub success: bool,
@@ -9262,20 +9359,20 @@ pub struct CreateGroupReply_ReplyData {
 /// dataserver -> simulator
 /// simulator -> viewer
 /// reliable
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct CreateGroupReply {
     pub agent_data: CreateGroupReply_AgentData,
     pub reply_data: CreateGroupReply_ReplyData,
 }
 
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct UpdateGroupInfo_AgentData {
     pub agent_id: Uuid,
     pub session_id: Uuid,
 }
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct UpdateGroupInfo_GroupData {
     pub group_id: Uuid,
     pub charter: Vec<u8>,
@@ -9291,21 +9388,21 @@ pub struct UpdateGroupInfo_GroupData {
 /// viewer -> simulator
 /// simulator -> dataserver
 /// reliable
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct UpdateGroupInfo {
     pub agent_data: UpdateGroupInfo_AgentData,
     pub group_data: UpdateGroupInfo_GroupData,
 }
 
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct GroupRoleChanges_AgentData {
     pub agent_id: Uuid,
     pub session_id: Uuid,
     pub group_id: Uuid,
 }
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct GroupRoleChanges_RoleChange {
     pub role_id: Uuid,
     pub member_id: Uuid,
@@ -9315,40 +9412,40 @@ pub struct GroupRoleChanges_RoleChange {
 /// GroupRoleChanges
 /// viewer -> simulator -> dataserver
 /// reliable
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct GroupRoleChanges {
     pub agent_data: GroupRoleChanges_AgentData,
     pub role_change: Vec<GroupRoleChanges_RoleChange>,
 }
 
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct JoinGroupRequest_AgentData {
     pub agent_id: Uuid,
     pub session_id: Uuid,
 }
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct JoinGroupRequest_GroupData {
     pub group_id: Uuid,
 }
 
 /// JoinGroupRequest
-/// viewer -> simulator -> dataserver
+/// viewer -> simulator
 /// reliable
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct JoinGroupRequest {
     pub agent_data: JoinGroupRequest_AgentData,
     pub group_data: JoinGroupRequest_GroupData,
 }
 
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct JoinGroupReply_AgentData {
     pub agent_id: Uuid,
 }
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct JoinGroupReply_GroupData {
     pub group_id: Uuid,
     pub success: bool,
@@ -9356,25 +9453,25 @@ pub struct JoinGroupReply_GroupData {
 
 /// JoinGroupReply
 /// dataserver -> simulator -> viewer
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct JoinGroupReply {
     pub agent_data: JoinGroupReply_AgentData,
     pub group_data: JoinGroupReply_GroupData,
 }
 
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct EjectGroupMemberRequest_AgentData {
     pub agent_id: Uuid,
     pub session_id: Uuid,
 }
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct EjectGroupMemberRequest_GroupData {
     pub group_id: Uuid,
 }
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct EjectGroupMemberRequest_EjectData {
     pub ejectee_id: Uuid,
 }
@@ -9382,7 +9479,7 @@ pub struct EjectGroupMemberRequest_EjectData {
 /// EjectGroupMemberRequest
 /// viewer -> simulator -> dataserver
 /// reliable
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct EjectGroupMemberRequest {
     pub agent_data: EjectGroupMemberRequest_AgentData,
     pub group_data: EjectGroupMemberRequest_GroupData,
@@ -9390,17 +9487,17 @@ pub struct EjectGroupMemberRequest {
 }
 
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct EjectGroupMemberReply_AgentData {
     pub agent_id: Uuid,
 }
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct EjectGroupMemberReply_GroupData {
     pub group_id: Uuid,
 }
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct EjectGroupMemberReply_EjectData {
     pub success: bool,
 }
@@ -9408,7 +9505,7 @@ pub struct EjectGroupMemberReply_EjectData {
 /// EjectGroupMemberReply
 /// dataserver -> simulator -> viewer
 /// reliable
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct EjectGroupMemberReply {
     pub agent_data: EjectGroupMemberReply_AgentData,
     pub group_data: EjectGroupMemberReply_GroupData,
@@ -9416,13 +9513,13 @@ pub struct EjectGroupMemberReply {
 }
 
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct LeaveGroupRequest_AgentData {
     pub agent_id: Uuid,
     pub session_id: Uuid,
 }
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct LeaveGroupRequest_GroupData {
     pub group_id: Uuid,
 }
@@ -9430,19 +9527,19 @@ pub struct LeaveGroupRequest_GroupData {
 /// LeaveGroupRequest
 /// viewer -> simulator -> dataserver
 /// reliable
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct LeaveGroupRequest {
     pub agent_data: LeaveGroupRequest_AgentData,
     pub group_data: LeaveGroupRequest_GroupData,
 }
 
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct LeaveGroupReply_AgentData {
     pub agent_id: Uuid,
 }
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct LeaveGroupReply_GroupData {
     pub group_id: Uuid,
     pub success: bool,
@@ -9450,25 +9547,25 @@ pub struct LeaveGroupReply_GroupData {
 
 /// LeaveGroupReply
 /// dataserver -> simulator -> viewer
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct LeaveGroupReply {
     pub agent_data: LeaveGroupReply_AgentData,
     pub group_data: LeaveGroupReply_GroupData,
 }
 
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct InviteGroupRequest_AgentData {
     pub agent_id: Uuid,
     pub session_id: Uuid,
 }
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct InviteGroupRequest_GroupData {
     pub group_id: Uuid,
 }
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct InviteGroupRequest_InviteData {
     pub invitee_id: Uuid,
     pub role_id: Uuid,
@@ -9477,7 +9574,7 @@ pub struct InviteGroupRequest_InviteData {
 /// InviteGroupRequest
 /// viewer -> simulator -> dataserver
 /// reliable
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct InviteGroupRequest {
     pub agent_data: InviteGroupRequest_AgentData,
     pub group_data: InviteGroupRequest_GroupData,
@@ -9485,7 +9582,7 @@ pub struct InviteGroupRequest {
 }
 
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct InviteGroupResponse_InviteData {
     pub agent_id: Uuid,
     pub invitee_id: Uuid,
@@ -9494,22 +9591,28 @@ pub struct InviteGroupResponse_InviteData {
     pub membership_fee: i32,
 }
 
+#[derive(Clone, Debug)]
+pub struct InviteGroupResponse_GroupData {
+    pub group_limit: i32,
+}
+
 /// InviteGroupResponse
 /// simulator -> dataserver
 /// reliable
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct InviteGroupResponse {
     pub invite_data: InviteGroupResponse_InviteData,
+    pub group_data: InviteGroupResponse_GroupData,
 }
 
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct GroupProfileRequest_AgentData {
     pub agent_id: Uuid,
     pub session_id: Uuid,
 }
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct GroupProfileRequest_GroupData {
     pub group_id: Uuid,
 }
@@ -9517,19 +9620,19 @@ pub struct GroupProfileRequest_GroupData {
 /// GroupProfileRequest
 /// viewer-> simulator -> dataserver
 /// reliable
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct GroupProfileRequest {
     pub agent_data: GroupProfileRequest_AgentData,
     pub group_data: GroupProfileRequest_GroupData,
 }
 
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct GroupProfileReply_AgentData {
     pub agent_id: Uuid,
 }
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct GroupProfileReply_GroupData {
     pub group_id: Uuid,
     pub name: Vec<u8>,
@@ -9552,21 +9655,21 @@ pub struct GroupProfileReply_GroupData {
 /// GroupProfileReply
 /// dataserver -> simulator -> viewer
 /// reliable
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct GroupProfileReply {
     pub agent_data: GroupProfileReply_AgentData,
     pub group_data: GroupProfileReply_GroupData,
 }
 
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct GroupAccountSummaryRequest_AgentData {
     pub agent_id: Uuid,
     pub session_id: Uuid,
     pub group_id: Uuid,
 }
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct GroupAccountSummaryRequest_MoneyData {
     pub request_id: Uuid,
     pub interval_days: i32,
@@ -9577,20 +9680,20 @@ pub struct GroupAccountSummaryRequest_MoneyData {
 /// CurrentInterval = 1  =>  last period
 /// viewer -> simulator -> dataserver
 /// reliable
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct GroupAccountSummaryRequest {
     pub agent_data: GroupAccountSummaryRequest_AgentData,
     pub money_data: GroupAccountSummaryRequest_MoneyData,
 }
 
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct GroupAccountSummaryReply_AgentData {
     pub agent_id: Uuid,
     pub group_id: Uuid,
 }
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct GroupAccountSummaryReply_MoneyData {
     pub request_id: Uuid,
     pub interval_days: i32,
@@ -9616,21 +9719,21 @@ pub struct GroupAccountSummaryReply_MoneyData {
 
 /// dataserver -> simulator -> viewer
 /// Reliable
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct GroupAccountSummaryReply {
     pub agent_data: GroupAccountSummaryReply_AgentData,
     pub money_data: GroupAccountSummaryReply_MoneyData,
 }
 
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct GroupAccountDetailsRequest_AgentData {
     pub agent_id: Uuid,
     pub session_id: Uuid,
     pub group_id: Uuid,
 }
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct GroupAccountDetailsRequest_MoneyData {
     pub request_id: Uuid,
     pub interval_days: i32,
@@ -9638,20 +9741,20 @@ pub struct GroupAccountDetailsRequest_MoneyData {
 }
 
 /// Reliable
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct GroupAccountDetailsRequest {
     pub agent_data: GroupAccountDetailsRequest_AgentData,
     pub money_data: GroupAccountDetailsRequest_MoneyData,
 }
 
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct GroupAccountDetailsReply_AgentData {
     pub agent_id: Uuid,
     pub group_id: Uuid,
 }
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct GroupAccountDetailsReply_MoneyData {
     pub request_id: Uuid,
     pub interval_days: i32,
@@ -9659,14 +9762,14 @@ pub struct GroupAccountDetailsReply_MoneyData {
     pub start_date: Vec<u8>,
 }
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct GroupAccountDetailsReply_HistoryData {
     pub description: Vec<u8>,
     pub amount: i32,
 }
 
 /// Reliable
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct GroupAccountDetailsReply {
     pub agent_data: GroupAccountDetailsReply_AgentData,
     pub money_data: GroupAccountDetailsReply_MoneyData,
@@ -9674,14 +9777,14 @@ pub struct GroupAccountDetailsReply {
 }
 
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct GroupAccountTransactionsRequest_AgentData {
     pub agent_id: Uuid,
     pub session_id: Uuid,
     pub group_id: Uuid,
 }
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct GroupAccountTransactionsRequest_MoneyData {
     pub request_id: Uuid,
     pub interval_days: i32,
@@ -9689,20 +9792,20 @@ pub struct GroupAccountTransactionsRequest_MoneyData {
 }
 
 /// Reliable
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct GroupAccountTransactionsRequest {
     pub agent_data: GroupAccountTransactionsRequest_AgentData,
     pub money_data: GroupAccountTransactionsRequest_MoneyData,
 }
 
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct GroupAccountTransactionsReply_AgentData {
     pub agent_id: Uuid,
     pub group_id: Uuid,
 }
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct GroupAccountTransactionsReply_MoneyData {
     pub request_id: Uuid,
     pub interval_days: i32,
@@ -9710,7 +9813,7 @@ pub struct GroupAccountTransactionsReply_MoneyData {
     pub start_date: Vec<u8>,
 }
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct GroupAccountTransactionsReply_HistoryData {
     pub time: Vec<u8>,
     pub user: Vec<u8>,
@@ -9720,7 +9823,7 @@ pub struct GroupAccountTransactionsReply_HistoryData {
 }
 
 /// Reliable
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct GroupAccountTransactionsReply {
     pub agent_data: GroupAccountTransactionsReply_AgentData,
     pub money_data: GroupAccountTransactionsReply_MoneyData,
@@ -9728,18 +9831,18 @@ pub struct GroupAccountTransactionsReply {
 }
 
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct GroupActiveProposalsRequest_AgentData {
     pub agent_id: Uuid,
     pub session_id: Uuid,
 }
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct GroupActiveProposalsRequest_GroupData {
     pub group_id: Uuid,
 }
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct GroupActiveProposalsRequest_TransactionData {
     pub transaction_id: Uuid,
 }
@@ -9747,7 +9850,7 @@ pub struct GroupActiveProposalsRequest_TransactionData {
 /// GroupActiveProposalsRequest
 /// viewer -> simulator -> dataserver
 ///reliable
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct GroupActiveProposalsRequest {
     pub agent_data: GroupActiveProposalsRequest_AgentData,
     pub group_data: GroupActiveProposalsRequest_GroupData,
@@ -9755,19 +9858,19 @@ pub struct GroupActiveProposalsRequest {
 }
 
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct GroupActiveProposalItemReply_AgentData {
     pub agent_id: Uuid,
     pub group_id: Uuid,
 }
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct GroupActiveProposalItemReply_TransactionData {
     pub transaction_id: Uuid,
     pub total_num_items: u32,
 }
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct GroupActiveProposalItemReply_ProposalData {
     pub vote_id: Uuid,
     pub vote_initiator: Uuid,
@@ -9784,7 +9887,7 @@ pub struct GroupActiveProposalItemReply_ProposalData {
 /// GroupActiveProposalItemReply
 /// dataserver -> simulator -> viewer
 /// reliable
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct GroupActiveProposalItemReply {
     pub agent_data: GroupActiveProposalItemReply_AgentData,
     pub transaction_data: GroupActiveProposalItemReply_TransactionData,
@@ -9792,18 +9895,18 @@ pub struct GroupActiveProposalItemReply {
 }
 
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct GroupVoteHistoryRequest_AgentData {
     pub agent_id: Uuid,
     pub session_id: Uuid,
 }
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct GroupVoteHistoryRequest_GroupData {
     pub group_id: Uuid,
 }
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct GroupVoteHistoryRequest_TransactionData {
     pub transaction_id: Uuid,
 }
@@ -9811,7 +9914,7 @@ pub struct GroupVoteHistoryRequest_TransactionData {
 /// GroupVoteHistoryRequest
 /// viewer -> simulator -> dataserver
 ///reliable
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct GroupVoteHistoryRequest {
     pub agent_data: GroupVoteHistoryRequest_AgentData,
     pub group_data: GroupVoteHistoryRequest_GroupData,
@@ -9819,19 +9922,19 @@ pub struct GroupVoteHistoryRequest {
 }
 
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct GroupVoteHistoryItemReply_AgentData {
     pub agent_id: Uuid,
     pub group_id: Uuid,
 }
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct GroupVoteHistoryItemReply_TransactionData {
     pub transaction_id: Uuid,
     pub total_num_items: u32,
 }
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct GroupVoteHistoryItemReply_HistoryItemData {
     pub vote_id: Uuid,
     pub terse_date_id: Vec<u8>,
@@ -9845,7 +9948,7 @@ pub struct GroupVoteHistoryItemReply_HistoryItemData {
     pub proposal_text: Vec<u8>,
 }
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct GroupVoteHistoryItemReply_VoteItem {
     pub candidate_id: Uuid,
     pub vote_cast: Vec<u8>,
@@ -9855,7 +9958,7 @@ pub struct GroupVoteHistoryItemReply_VoteItem {
 /// GroupVoteHistoryItemReply
 /// dataserver -> simulator -> viewer
 /// reliable
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct GroupVoteHistoryItemReply {
     pub agent_data: GroupVoteHistoryItemReply_AgentData,
     pub transaction_data: GroupVoteHistoryItemReply_TransactionData,
@@ -9864,13 +9967,13 @@ pub struct GroupVoteHistoryItemReply {
 }
 
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct StartGroupProposal_AgentData {
     pub agent_id: Uuid,
     pub session_id: Uuid,
 }
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct StartGroupProposal_ProposalData {
     pub group_id: Uuid,
     pub quorum: i32,
@@ -9882,20 +9985,20 @@ pub struct StartGroupProposal_ProposalData {
 /// StartGroupProposal
 /// viewer -> simulator -> dataserver
 /// reliable
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct StartGroupProposal {
     pub agent_data: StartGroupProposal_AgentData,
     pub proposal_data: StartGroupProposal_ProposalData,
 }
 
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct GroupProposalBallot_AgentData {
     pub agent_id: Uuid,
     pub session_id: Uuid,
 }
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct GroupProposalBallot_ProposalData {
     pub proposal_id: Uuid,
     pub group_id: Uuid,
@@ -9905,7 +10008,7 @@ pub struct GroupProposalBallot_ProposalData {
 /// GroupProposalBallot
 /// viewer -> simulator -> dataserver
 /// reliable
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct GroupProposalBallot {
     pub agent_data: GroupProposalBallot_AgentData,
     pub proposal_data: GroupProposalBallot_ProposalData,
@@ -9914,17 +10017,17 @@ pub struct GroupProposalBallot {
 
 /// TallyVotes userserver -> dataserver
 /// reliable
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct TallyVotes {}
 
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct GroupMembersRequest_AgentData {
     pub agent_id: Uuid,
     pub session_id: Uuid,
 }
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct GroupMembersRequest_GroupData {
     pub group_id: Uuid,
     pub request_id: Uuid,
@@ -9934,26 +10037,26 @@ pub struct GroupMembersRequest_GroupData {
 /// get the group members
 /// simulator -> dataserver
 /// reliable
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct GroupMembersRequest {
     pub agent_data: GroupMembersRequest_AgentData,
     pub group_data: GroupMembersRequest_GroupData,
 }
 
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct GroupMembersReply_AgentData {
     pub agent_id: Uuid,
 }
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct GroupMembersReply_GroupData {
     pub group_id: Uuid,
     pub request_id: Uuid,
     pub member_count: i32,
 }
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct GroupMembersReply_MemberData {
     pub agent_id: Uuid,
     pub contribution: i32,
@@ -9967,7 +10070,7 @@ pub struct GroupMembersReply_MemberData {
 /// list of uuids for the group members
 /// dataserver -> simulator
 /// reliable
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct GroupMembersReply {
     pub agent_data: GroupMembersReply_AgentData,
     pub group_data: GroupMembersReply_GroupData,
@@ -9975,7 +10078,7 @@ pub struct GroupMembersReply {
 }
 
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct ActivateGroup_AgentData {
     pub agent_id: Uuid,
     pub session_id: Uuid,
@@ -9984,51 +10087,51 @@ pub struct ActivateGroup_AgentData {
 
 /// used to switch an agent's currently active group.
 /// viewer -> simulator -> dataserver -> AgentDataUpdate...
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct ActivateGroup {
     pub agent_data: ActivateGroup_AgentData,
 }
 
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct SetGroupContribution_AgentData {
     pub agent_id: Uuid,
     pub session_id: Uuid,
 }
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct SetGroupContribution_Data {
     pub group_id: Uuid,
     pub contribution: i32,
 }
 
 /// viewer -> simulator -> dataserver
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct SetGroupContribution {
     pub agent_data: SetGroupContribution_AgentData,
     pub data: SetGroupContribution_Data,
 }
 
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct SetGroupAcceptNotices_AgentData {
     pub agent_id: Uuid,
     pub session_id: Uuid,
 }
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct SetGroupAcceptNotices_Data {
     pub group_id: Uuid,
     pub accept_notices: bool,
 }
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct SetGroupAcceptNotices_NewData {
     pub list_in_profile: bool,
 }
 
 /// viewer -> simulator -> dataserver
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct SetGroupAcceptNotices {
     pub agent_data: SetGroupAcceptNotices_AgentData,
     pub data: SetGroupAcceptNotices_Data,
@@ -10036,13 +10139,13 @@ pub struct SetGroupAcceptNotices {
 }
 
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct GroupRoleDataRequest_AgentData {
     pub agent_id: Uuid,
     pub session_id: Uuid,
 }
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct GroupRoleDataRequest_GroupData {
     pub group_id: Uuid,
     pub request_id: Uuid,
@@ -10050,26 +10153,26 @@ pub struct GroupRoleDataRequest_GroupData {
 
 /// GroupRoleDataRequest
 /// viewer -> simulator -> dataserver
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct GroupRoleDataRequest {
     pub agent_data: GroupRoleDataRequest_AgentData,
     pub group_data: GroupRoleDataRequest_GroupData,
 }
 
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct GroupRoleDataReply_AgentData {
     pub agent_id: Uuid,
 }
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct GroupRoleDataReply_GroupData {
     pub group_id: Uuid,
     pub request_id: Uuid,
     pub role_count: i32,
 }
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct GroupRoleDataReply_RoleData {
     pub role_id: Uuid,
     pub name: Vec<u8>,
@@ -10082,7 +10185,7 @@ pub struct GroupRoleDataReply_RoleData {
 /// GroupRoleDataReply
 /// All role data for this group
 /// dataserver -> simulator -> agent
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct GroupRoleDataReply {
     pub agent_data: GroupRoleDataReply_AgentData,
     pub group_data: GroupRoleDataReply_GroupData,
@@ -10090,13 +10193,13 @@ pub struct GroupRoleDataReply {
 }
 
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct GroupRoleMembersRequest_AgentData {
     pub agent_id: Uuid,
     pub session_id: Uuid,
 }
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct GroupRoleMembersRequest_GroupData {
     pub group_id: Uuid,
     pub request_id: Uuid,
@@ -10104,14 +10207,14 @@ pub struct GroupRoleMembersRequest_GroupData {
 
 /// GroupRoleMembersRequest
 /// viewer -> simulator -> dataserver
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct GroupRoleMembersRequest {
     pub agent_data: GroupRoleMembersRequest_AgentData,
     pub group_data: GroupRoleMembersRequest_GroupData,
 }
 
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct GroupRoleMembersReply_AgentData {
     pub agent_id: Uuid,
     pub group_id: Uuid,
@@ -10119,7 +10222,7 @@ pub struct GroupRoleMembersReply_AgentData {
     pub total_pairs: u32,
 }
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct GroupRoleMembersReply_MemberData {
     pub role_id: Uuid,
     pub member_id: Uuid,
@@ -10128,14 +10231,14 @@ pub struct GroupRoleMembersReply_MemberData {
 /// GroupRoleMembersReply
 /// All role::member pairs for this group.
 /// dataserver -> simulator -> agent
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct GroupRoleMembersReply {
     pub agent_data: GroupRoleMembersReply_AgentData,
     pub member_data: Vec<GroupRoleMembersReply_MemberData>,
 }
 
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct GroupTitlesRequest_AgentData {
     pub agent_id: Uuid,
     pub session_id: Uuid,
@@ -10145,20 +10248,20 @@ pub struct GroupTitlesRequest_AgentData {
 
 /// GroupTitlesRequest
 /// viewer -> simulator -> dataserver
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct GroupTitlesRequest {
     pub agent_data: GroupTitlesRequest_AgentData,
 }
 
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct GroupTitlesReply_AgentData {
     pub agent_id: Uuid,
     pub group_id: Uuid,
     pub request_id: Uuid,
 }
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct GroupTitlesReply_GroupData {
     pub title: Vec<u8>,
     pub role_id: Uuid,
@@ -10167,14 +10270,14 @@ pub struct GroupTitlesReply_GroupData {
 
 /// GroupTitlesReply
 /// dataserver -> simulator -> viewer
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct GroupTitlesReply {
     pub agent_data: GroupTitlesReply_AgentData,
     pub group_data: Vec<GroupTitlesReply_GroupData>,
 }
 
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct GroupTitleUpdate_AgentData {
     pub agent_id: Uuid,
     pub session_id: Uuid,
@@ -10184,20 +10287,20 @@ pub struct GroupTitleUpdate_AgentData {
 
 /// GroupTitleUpdate
 /// viewer -> simulator -> dataserver
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct GroupTitleUpdate {
     pub agent_data: GroupTitleUpdate_AgentData,
 }
 
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct GroupRoleUpdate_AgentData {
     pub agent_id: Uuid,
     pub session_id: Uuid,
     pub group_id: Uuid,
 }
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct GroupRoleUpdate_RoleData {
     pub role_id: Uuid,
     pub name: Vec<u8>,
@@ -10209,14 +10312,14 @@ pub struct GroupRoleUpdate_RoleData {
 
 /// GroupRoleUpdate
 /// viewer -> simulator -> dataserver
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct GroupRoleUpdate {
     pub agent_data: GroupRoleUpdate_AgentData,
     pub role_data: Vec<GroupRoleUpdate_RoleData>,
 }
 
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct LiveHelpGroupRequest_RequestData {
     pub request_id: Uuid,
     pub agent_id: Uuid,
@@ -10224,13 +10327,13 @@ pub struct LiveHelpGroupRequest_RequestData {
 
 /// Request the members of the live help group needed for requesting agent.
 /// userserver -> dataserver
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct LiveHelpGroupRequest {
     pub request_data: LiveHelpGroupRequest_RequestData,
 }
 
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct LiveHelpGroupReply_ReplyData {
     pub request_id: Uuid,
     pub group_id: Uuid,
@@ -10239,13 +10342,13 @@ pub struct LiveHelpGroupReply_ReplyData {
 
 /// Send down the group
 /// dataserver -> userserver
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct LiveHelpGroupReply {
     pub reply_data: LiveHelpGroupReply_ReplyData,
 }
 
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct AgentWearablesRequest_AgentData {
     pub agent_id: Uuid,
     pub session_id: Uuid,
@@ -10255,20 +10358,20 @@ pub struct AgentWearablesRequest_AgentData {
 /// (a.k.a. "Tell me what the avatar is wearing.")
 /// viewer -> simulator -> dataserver
 /// reliable
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct AgentWearablesRequest {
     pub agent_data: AgentWearablesRequest_AgentData,
 }
 
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct AgentWearablesUpdate_AgentData {
     pub agent_id: Uuid,
     pub session_id: Uuid,
     pub serial_num: u32,
 }
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct AgentWearablesUpdate_WearableData {
     pub item_id: Uuid,
     pub asset_id: Uuid,
@@ -10280,20 +10383,20 @@ pub struct AgentWearablesUpdate_WearableData {
 /// dataserver -> userserver -> viewer
 /// reliable
 /// NEVER from viewer to sim
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct AgentWearablesUpdate {
     pub agent_data: AgentWearablesUpdate_AgentData,
     pub wearable_data: Vec<AgentWearablesUpdate_WearableData>,
 }
 
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct AgentIsNowWearing_AgentData {
     pub agent_id: Uuid,
     pub session_id: Uuid,
 }
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct AgentIsNowWearing_WearableData {
     pub item_id: Uuid,
     pub wearable_type: u8,
@@ -10304,21 +10407,21 @@ pub struct AgentIsNowWearing_WearableData {
 /// (a.k.a. "Here's what I'm wearing now.")
 /// viewer->sim->dataserver
 /// reliable
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct AgentIsNowWearing {
     pub agent_data: AgentIsNowWearing_AgentData,
     pub wearable_data: Vec<AgentIsNowWearing_WearableData>,
 }
 
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct AgentCachedTexture_AgentData {
     pub agent_id: Uuid,
     pub session_id: Uuid,
     pub serial_num: i32,
 }
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct AgentCachedTexture_WearableData {
     pub id: Uuid,
     pub texture_index: u8,
@@ -10328,21 +10431,21 @@ pub struct AgentCachedTexture_WearableData {
 /// viewer queries for cached textures on dataserver (via simulator)
 /// viewer -> simulator -> dataserver
 /// reliable
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct AgentCachedTexture {
     pub agent_data: AgentCachedTexture_AgentData,
     pub wearable_data: Vec<AgentCachedTexture_WearableData>,
 }
 
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct AgentCachedTextureResponse_AgentData {
     pub agent_id: Uuid,
     pub session_id: Uuid,
     pub serial_num: i32,
 }
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct AgentCachedTextureResponse_WearableData {
     pub texture_id: Uuid,
     pub texture_index: u8,
@@ -10353,27 +10456,27 @@ pub struct AgentCachedTextureResponse_WearableData {
 /// response to viewer queries for cached textures on dataserver (via simulator)
 /// dataserver -> simulator -> viewer
 /// reliable
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct AgentCachedTextureResponse {
     pub agent_data: AgentCachedTextureResponse_AgentData,
     pub wearable_data: Vec<AgentCachedTextureResponse_WearableData>,
 }
 
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct AgentDataUpdateRequest_AgentData {
     pub agent_id: Uuid,
     pub session_id: Uuid,
 }
 
 /// Request an AgentDataUpdate without changing any agent data.
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct AgentDataUpdateRequest {
     pub agent_data: AgentDataUpdateRequest_AgentData,
 }
 
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct AgentDataUpdate_AgentData {
     pub agent_id: Uuid,
     pub first_name: Vec<u8>,
@@ -10389,13 +10492,13 @@ pub struct AgentDataUpdate_AgentData {
 /// Used, for example, when an agent's group changes.
 /// dataserver -> simulator -> viewer
 /// reliable
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct AgentDataUpdate {
     pub agent_data: AgentDataUpdate_AgentData,
 }
 
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct GroupDataUpdate_AgentGroupData {
     pub agent_id: Uuid,
     pub group_id: Uuid,
@@ -10406,18 +10509,18 @@ pub struct GroupDataUpdate_AgentGroupData {
 /// GroupDataUpdate
 /// This is a bunch of group data that needs to be appropriatly routed based on presence info.
 /// dataserver -> simulator
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct GroupDataUpdate {
     pub agent_group_data: Vec<GroupDataUpdate_AgentGroupData>,
 }
 
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct AgentGroupDataUpdate_AgentData {
     pub agent_id: Uuid,
 }
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct AgentGroupDataUpdate_GroupData {
     pub group_id: Uuid,
     pub group_powers: u64,
@@ -10431,14 +10534,14 @@ pub struct AgentGroupDataUpdate_GroupData {
 /// Updates a viewer or simulator's impression of the groups an agent is in.
 /// dataserver -> simulator -> viewer
 /// reliable
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct AgentGroupDataUpdate {
     pub agent_data: AgentGroupDataUpdate_AgentData,
     pub group_data: Vec<AgentGroupDataUpdate_GroupData>,
 }
 
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct AgentDropGroup_AgentData {
     pub agent_id: Uuid,
     pub group_id: Uuid,
@@ -10449,13 +10552,13 @@ pub struct AgentDropGroup_AgentData {
 /// dataserver -> simulator -> viewer
 /// dataserver -> userserver
 /// reliable
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct AgentDropGroup {
     pub agent_data: AgentDropGroup_AgentData,
 }
 
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct LogTextMessage_DataBlock {
     pub from_agent_id: Uuid,
     pub to_agent_id: Uuid,
@@ -10469,19 +10572,19 @@ pub struct LogTextMessage_DataBlock {
 /// Asks the dataserver to log the contents of this message in the
 /// chat and IM log table.
 /// Sent from userserver (IM logging) and simulator (chat logging).
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct LogTextMessage {
     pub data_block: Vec<LogTextMessage_DataBlock>,
 }
 
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct ViewerEffect_AgentData {
     pub agent_id: Uuid,
     pub session_id: Uuid,
 }
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct ViewerEffect_Effect {
     pub id: Uuid,
     pub agent_id: Uuid,
@@ -10496,14 +10599,14 @@ pub struct ViewerEffect_Effect {
 /// viewer-->sim (single effect created by viewer)
 /// sim-->viewer (multiple effects that can be seen by viewer)
 /// the AgentData block used for authentication for viewer-->sim messages
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct ViewerEffect {
     pub agent_data: ViewerEffect_AgentData,
     pub effect: Vec<ViewerEffect_Effect>,
 }
 
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct CreateTrustedCircuit_DataBlock {
     pub end_point_id: Uuid,
     pub digest: [u8; 32],
@@ -10512,13 +10615,13 @@ pub struct CreateTrustedCircuit_DataBlock {
 /// CreateTrustedCircuit
 /// Sent to establish a trust relationship between two components.
 /// Only sent in response to a DenyTrustedCircuit message.
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct CreateTrustedCircuit {
     pub data_block: CreateTrustedCircuit_DataBlock,
 }
 
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct DenyTrustedCircuit_DataBlock {
     pub end_point_id: Uuid,
 }
@@ -10529,7 +10632,7 @@ pub struct DenyTrustedCircuit_DataBlock {
 /// - to force the remote end-point to try to establish a trusted circuit
 /// - the reception of a trusted message on a non-trusted circuit
 /// This allows us to re-auth a circuit if it gets closed due to timeouts or network failures.
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct DenyTrustedCircuit {
     pub data_block: DenyTrustedCircuit_DataBlock,
 }
@@ -10537,17 +10640,17 @@ pub struct DenyTrustedCircuit {
 
 /// RequestTrustedCircuit
 /// If the destination does not trust the sender, a Deny is sent back.
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct RequestTrustedCircuit {}
 
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct RezSingleAttachmentFromInv_AgentData {
     pub agent_id: Uuid,
     pub session_id: Uuid,
 }
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct RezSingleAttachmentFromInv_ObjectData {
     pub item_id: Uuid,
     pub owner_id: Uuid,
@@ -10561,27 +10664,27 @@ pub struct RezSingleAttachmentFromInv_ObjectData {
 }
 
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct RezSingleAttachmentFromInv {
     pub agent_data: RezSingleAttachmentFromInv_AgentData,
     pub object_data: RezSingleAttachmentFromInv_ObjectData,
 }
 
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct RezMultipleAttachmentsFromInv_AgentData {
     pub agent_id: Uuid,
     pub session_id: Uuid,
 }
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct RezMultipleAttachmentsFromInv_HeaderData {
     pub compound_msg_id: Uuid,
     pub total_objects: u8,
     pub first_detach_all: bool,
 }
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct RezMultipleAttachmentsFromInv_ObjectData {
     pub item_id: Uuid,
     pub owner_id: Uuid,
@@ -10595,7 +10698,7 @@ pub struct RezMultipleAttachmentsFromInv_ObjectData {
 }
 
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct RezMultipleAttachmentsFromInv {
     pub agent_data: RezMultipleAttachmentsFromInv_AgentData,
     pub header_data: RezMultipleAttachmentsFromInv_HeaderData,
@@ -10603,31 +10706,31 @@ pub struct RezMultipleAttachmentsFromInv {
 }
 
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct DetachAttachmentIntoInv_ObjectData {
     pub agent_id: Uuid,
     pub item_id: Uuid,
 }
 
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct DetachAttachmentIntoInv {
     pub object_data: DetachAttachmentIntoInv_ObjectData,
 }
 
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct CreateNewOutfitAttachments_AgentData {
     pub agent_id: Uuid,
     pub session_id: Uuid,
 }
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct CreateNewOutfitAttachments_HeaderData {
     pub new_folder_id: Uuid,
 }
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct CreateNewOutfitAttachments_ObjectData {
     pub old_item_id: Uuid,
     pub old_folder_id: Uuid,
@@ -10635,7 +10738,7 @@ pub struct CreateNewOutfitAttachments_ObjectData {
 
 /// Viewer -> Sim
 /// Used in "Make New Outfit"
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct CreateNewOutfitAttachments {
     pub agent_data: CreateNewOutfitAttachments_AgentData,
     pub header_data: CreateNewOutfitAttachments_HeaderData,
@@ -10643,25 +10746,25 @@ pub struct CreateNewOutfitAttachments {
 }
 
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct UserInfoRequest_AgentData {
     pub agent_id: Uuid,
     pub session_id: Uuid,
 }
 
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct UserInfoRequest {
     pub agent_data: UserInfoRequest_AgentData,
 }
 
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct UserInfoReply_AgentData {
     pub agent_id: Uuid,
 }
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct UserInfoReply_UserData {
     pub im_via_e_mail: bool,
     pub directory_visibility: Vec<u8>,
@@ -10669,34 +10772,34 @@ pub struct UserInfoReply_UserData {
 }
 
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct UserInfoReply {
     pub agent_data: UserInfoReply_AgentData,
     pub user_data: UserInfoReply_UserData,
 }
 
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct UpdateUserInfo_AgentData {
     pub agent_id: Uuid,
     pub session_id: Uuid,
 }
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct UpdateUserInfo_UserData {
     pub im_via_e_mail: bool,
     pub directory_visibility: Vec<u8>,
 }
 
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct UpdateUserInfo {
     pub agent_data: UpdateUserInfo_AgentData,
     pub user_data: UpdateUserInfo_UserData,
 }
 
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct ParcelRename_ParcelData {
     pub parcel_id: Uuid,
     pub new_name: Vec<u8>,
@@ -10704,18 +10807,18 @@ pub struct ParcelRename_ParcelData {
 
 /// spaceserver -> sim
 /// tell a particular simulator to rename a parcel
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct ParcelRename {
     pub parcel_data: Vec<ParcelRename_ParcelData>,
 }
 
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct InitiateDownload_AgentData {
     pub agent_id: Uuid,
 }
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct InitiateDownload_FileData {
     pub sim_filename: Vec<u8>,
     pub viewer_filename: Vec<u8>,
@@ -10723,35 +10826,35 @@ pub struct InitiateDownload_FileData {
 
 /// sim -> viewer
 /// initiate upload. primarily used for uploading raw files.
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct InitiateDownload {
     pub agent_data: InitiateDownload_AgentData,
     pub file_data: InitiateDownload_FileData,
 }
 
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct SystemMessage_MethodData {
     pub method: Vec<u8>,
     pub invoice: Uuid,
     pub digest: [u8; 32],
 }
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct SystemMessage_ParamList {
     pub parameter: Vec<u8>,
 }
 
 /// Generalized system message. Each Requst has its own protocol for
 /// the StringData block format and contents.
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct SystemMessage {
     pub method_data: SystemMessage_MethodData,
     pub param_list: Vec<SystemMessage_ParamList>,
 }
 
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct MapLayerRequest_AgentData {
     pub agent_id: Uuid,
     pub session_id: Uuid,
@@ -10765,19 +10868,19 @@ pub struct MapLayerRequest_AgentData {
 /// This message is sent up from the viewer to (eventually) get a list
 /// of all map layers and NULL-layer sims.
 /// Returns: MapLayerReply and MapBlockReply
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct MapLayerRequest {
     pub agent_data: MapLayerRequest_AgentData,
 }
 
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct MapLayerReply_AgentData {
     pub agent_id: Uuid,
     pub flags: u32,
 }
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct MapLayerReply_LayerData {
     pub left: u32,
     pub right: u32,
@@ -10787,14 +10890,14 @@ pub struct MapLayerReply_LayerData {
 }
 
 /// sim -> viewer
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct MapLayerReply {
     pub agent_data: MapLayerReply_AgentData,
     pub layer_data: Vec<MapLayerReply_LayerData>,
 }
 
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct MapBlockRequest_AgentData {
     pub agent_id: Uuid,
     pub session_id: Uuid,
@@ -10803,7 +10906,7 @@ pub struct MapBlockRequest_AgentData {
     pub godlike: bool,
 }
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct MapBlockRequest_PositionData {
     pub min_x: u16,
     pub max_x: u16,
@@ -10815,14 +10918,14 @@ pub struct MapBlockRequest_PositionData {
 /// This message is sent up from the viewer to get a list
 /// of the sims in a specified region.
 /// Returns: MapBlockReply
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct MapBlockRequest {
     pub agent_data: MapBlockRequest_AgentData,
     pub position_data: MapBlockRequest_PositionData,
 }
 
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct MapNameRequest_AgentData {
     pub agent_id: Uuid,
     pub session_id: Uuid,
@@ -10831,7 +10934,7 @@ pub struct MapNameRequest_AgentData {
     pub godlike: bool,
 }
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct MapNameRequest_NameData {
     pub name: Vec<u8>,
 }
@@ -10840,20 +10943,20 @@ pub struct MapNameRequest_NameData {
 /// This message is sent up from the viewer to get a list
 /// of the sims with a given name.
 /// Returns: MapBlockReply
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct MapNameRequest {
     pub agent_data: MapNameRequest_AgentData,
     pub name_data: MapNameRequest_NameData,
 }
 
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct MapBlockReply_AgentData {
     pub agent_id: Uuid,
     pub flags: u32,
 }
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct MapBlockReply_Data {
     pub x: u16,
     pub y: u16,
@@ -10866,14 +10969,14 @@ pub struct MapBlockReply_Data {
 }
 
 /// sim -> viewer
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct MapBlockReply {
     pub agent_data: MapBlockReply_AgentData,
     pub data: Vec<MapBlockReply_Data>,
 }
 
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct MapItemRequest_AgentData {
     pub agent_id: Uuid,
     pub session_id: Uuid,
@@ -10882,7 +10985,7 @@ pub struct MapItemRequest_AgentData {
     pub godlike: bool,
 }
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct MapItemRequest_RequestData {
     pub item_type: u32,
     pub region_handle: u64,
@@ -10893,25 +10996,25 @@ pub struct MapItemRequest_RequestData {
 /// of the items of a particular type on the map.
 /// Used for Telehubs, Agents, Events, Popular Places, etc.
 /// Returns: MapBlockReply
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct MapItemRequest {
     pub agent_data: MapItemRequest_AgentData,
     pub request_data: MapItemRequest_RequestData,
 }
 
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct MapItemReply_AgentData {
     pub agent_id: Uuid,
     pub flags: u32,
 }
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct MapItemReply_RequestData {
     pub item_type: u32,
 }
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct MapItemReply_Data {
     pub x: u32,
     pub y: u32,
@@ -10922,7 +11025,7 @@ pub struct MapItemReply_Data {
 }
 
 /// sim -> viewer
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct MapItemReply {
     pub agent_data: MapItemReply_AgentData,
     pub request_data: MapItemReply_RequestData,
@@ -10930,7 +11033,7 @@ pub struct MapItemReply {
 }
 
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct SendPostcard_AgentData {
     pub agent_id: Uuid,
     pub session_id: Uuid,
@@ -10949,13 +11052,13 @@ pub struct SendPostcard_AgentData {
 /// Postcard messages
 ///-----------------------------------------------------------------------------
 /// reliable
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct SendPostcard {
     pub agent_data: SendPostcard_AgentData,
 }
 
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct RpcChannelRequest_DataBlock {
     pub grid_x: u32,
     pub grid_y: u32,
@@ -10966,13 +11069,13 @@ pub struct RpcChannelRequest_DataBlock {
 /// RPC messages
 /// Script on simulator requests rpc channel from rpcserver
 /// simulator -> dataserver -> MySQL
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct RpcChannelRequest {
     pub data_block: RpcChannelRequest_DataBlock,
 }
 
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct RpcChannelReply_DataBlock {
     pub task_id: Uuid,
     pub item_id: Uuid,
@@ -10982,19 +11085,19 @@ pub struct RpcChannelReply_DataBlock {
 /// RpcServer allocated a session for the script
 /// ChannelID will be the NULL UUID if unable to register
 /// dataserver -> simulator
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct RpcChannelReply {
     pub data_block: RpcChannelReply_DataBlock,
 }
 
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct RpcScriptRequestInbound_TargetBlock {
     pub grid_x: u32,
     pub grid_y: u32,
 }
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct RpcScriptRequestInbound_DataBlock {
     pub task_id: Uuid,
     pub item_id: Uuid,
@@ -11007,14 +11110,14 @@ pub struct RpcScriptRequestInbound_DataBlock {
 /// RpcScriptRequestInbound: rpcserver -> spaceserver
 /// RpcScriptRequestInboundForward: spaceserver -> simulator
 /// reply: simulator -> rpcserver
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct RpcScriptRequestInbound {
     pub target_block: RpcScriptRequestInbound_TargetBlock,
     pub data_block: RpcScriptRequestInbound_DataBlock,
 }
 
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct RpcScriptRequestInboundForward_DataBlock {
     pub rpc_server_ip: Ip4Addr,
     pub rpc_server_port: IpPort,
@@ -11026,13 +11129,13 @@ pub struct RpcScriptRequestInboundForward_DataBlock {
 }
 
 /// spaceserver -> simulator
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct RpcScriptRequestInboundForward {
     pub data_block: RpcScriptRequestInboundForward_DataBlock,
 }
 
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct RpcScriptReplyInbound_DataBlock {
     pub task_id: Uuid,
     pub item_id: Uuid,
@@ -11043,13 +11146,13 @@ pub struct RpcScriptReplyInbound_DataBlock {
 
 /// simulator -> rpcserver
 /// Not trusted because trust establishment doesn't work here.
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct RpcScriptReplyInbound {
     pub data_block: RpcScriptReplyInbound_DataBlock,
 }
 
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct ScriptMailRegistration_DataBlock {
     pub target_ip: Vec<u8>,
     pub target_port: IpPort,
@@ -11059,13 +11162,13 @@ pub struct ScriptMailRegistration_DataBlock {
 
 /// ScriptMailRegistration
 /// Simulator -> dataserver
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct ScriptMailRegistration {
     pub data_block: ScriptMailRegistration_DataBlock,
 }
 
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct ParcelMediaCommandMessage_CommandBlock {
     pub flags: u32,
     pub command: u32,
@@ -11074,20 +11177,20 @@ pub struct ParcelMediaCommandMessage_CommandBlock {
 
 /// ParcelMediaCommandMessage
 /// Sends a parcel media command
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct ParcelMediaCommandMessage {
     pub command_block: ParcelMediaCommandMessage_CommandBlock,
 }
 
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct ParcelMediaUpdate_DataBlock {
     pub media_url: Vec<u8>,
     pub media_id: Uuid,
     pub media_auto_scale: u8,
 }
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct ParcelMediaUpdate_DataBlockExtended {
     pub media_type: Vec<u8>,
     pub media_desc: Vec<u8>,
@@ -11099,20 +11202,20 @@ pub struct ParcelMediaUpdate_DataBlockExtended {
 /// ParcelMediaUpdate
 /// Sends a parcel media update to a single user
 /// For global updates use the parcel manager.
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct ParcelMediaUpdate {
     pub data_block: ParcelMediaUpdate_DataBlock,
     pub data_block_extended: ParcelMediaUpdate_DataBlockExtended,
 }
 
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct LandStatRequest_AgentData {
     pub agent_id: Uuid,
     pub session_id: Uuid,
 }
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct LandStatRequest_RequestData {
     pub report_type: u32,
     pub request_flags: u32,
@@ -11122,21 +11225,21 @@ pub struct LandStatRequest_RequestData {
 
 /// LandStatRequest
 /// Sent by the viewer to request collider/script information for a parcel
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct LandStatRequest {
     pub agent_data: LandStatRequest_AgentData,
     pub request_data: LandStatRequest_RequestData,
 }
 
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct LandStatReply_RequestData {
     pub report_type: u32,
     pub request_flags: u32,
     pub total_object_count: u32,
 }
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct LandStatReply_ReportData {
     pub task_local_id: u32,
     pub task_id: Uuid,
@@ -11150,19 +11253,19 @@ pub struct LandStatReply_ReportData {
 
 /// LandStatReply
 /// Sent by the simulator in response to LandStatRequest
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct LandStatReply {
     pub request_data: LandStatReply_RequestData,
     pub report_data: Vec<LandStatReply_ReportData>,
 }
 
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct Error_AgentData {
     pub agent_id: Uuid,
 }
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct Error_Data {
     pub code: i32,
     pub token: Vec<u8>,
@@ -11177,20 +11280,20 @@ pub struct Error_Data {
 /// log the message. More sophisticated receivers can do something
 /// smarter, for example, a money transaction failure can put up a
 /// more user visible UI widget.
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct Error {
     pub agent_data: Error_AgentData,
     pub data: Error_Data,
 }
 
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct ObjectIncludeInSearch_AgentData {
     pub agent_id: Uuid,
     pub session_id: Uuid,
 }
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct ObjectIncludeInSearch_ObjectData {
     pub object_local_id: u32,
     pub include_in_search: bool,
@@ -11198,20 +11301,20 @@ pub struct ObjectIncludeInSearch_ObjectData {
 
 /// ObjectIncludeInSearch
 /// viewer -> simulator
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct ObjectIncludeInSearch {
     pub agent_data: ObjectIncludeInSearch_AgentData,
     pub object_data: Vec<ObjectIncludeInSearch_ObjectData>,
 }
 
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct RezRestoreToWorld_AgentData {
     pub agent_id: Uuid,
     pub session_id: Uuid,
 }
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct RezRestoreToWorld_InventoryData {
     pub item_id: Uuid,
     pub folder_id: Uuid,
@@ -11239,20 +11342,20 @@ pub struct RezRestoreToWorld_InventoryData {
 /// This message is sent from viewer -> simulator when the viewer wants
 /// to rez an object out of inventory back to its position before it
 /// last moved into the inventory
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct RezRestoreToWorld {
     pub agent_data: RezRestoreToWorld_AgentData,
     pub inventory_data: RezRestoreToWorld_InventoryData,
 }
 
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct LinkInventoryItem_AgentData {
     pub agent_id: Uuid,
     pub session_id: Uuid,
 }
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct LinkInventoryItem_InventoryBlock {
     pub callback_id: u32,
     pub folder_id: Uuid,
@@ -11265,14 +11368,82 @@ pub struct LinkInventoryItem_InventoryBlock {
 }
 
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct LinkInventoryItem {
     pub agent_data: LinkInventoryItem_AgentData,
     pub inventory_block: LinkInventoryItem_InventoryBlock,
 }
 
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
+pub struct RetrieveIMsExtended_AgentData {
+    pub agent_id: Uuid,
+    pub session_id: Uuid,
+    pub is_premium: bool,
+}
+
+/// RetrieveIMsExtended - extended version of RetrieveInstantMessages,
+///  used to get instant messages that were persisted out to the database while the user was offline
+///  sent between the simulator and dataserver
+#[derive(Clone, Debug)]
+pub struct RetrieveIMsExtended {
+    pub agent_data: RetrieveIMsExtended_AgentData,
+}
+
+
+#[derive(Clone, Debug)]
+pub struct JoinGroupRequestExtended_AgentData {
+    pub agent_id: Uuid,
+    pub session_id: Uuid,
+    pub group_limit: i32,
+}
+
+#[derive(Clone, Debug)]
+pub struct JoinGroupRequestExtended_GroupData {
+    pub group_id: Uuid,
+}
+
+/// JoinGroupRequestExtended
+/// Extends JoinGroupRequest from viewer and passed to dataserver
+/// simulator -> dataserver
+/// reliable
+#[derive(Clone, Debug)]
+pub struct JoinGroupRequestExtended {
+    pub agent_data: JoinGroupRequestExtended_AgentData,
+    pub group_data: JoinGroupRequestExtended_GroupData,
+}
+
+
+#[derive(Clone, Debug)]
+pub struct CreateGroupRequestExtended_AgentData {
+    pub agent_id: Uuid,
+    pub session_id: Uuid,
+    pub group_limit: i32,
+}
+
+#[derive(Clone, Debug)]
+pub struct CreateGroupRequestExtended_GroupData {
+    pub name: Vec<u8>,
+    pub charter: Vec<u8>,
+    pub show_in_list: bool,
+    pub insignia_id: Uuid,
+    pub membership_fee: i32,
+    pub open_enrollment: bool,
+    pub allow_publish: bool,
+    pub mature_publish: bool,
+}
+
+/// CreateGroupRequestExtended
+/// simulator -> dataserver, extends data from CreateGroupRequest
+/// reliable
+#[derive(Clone, Debug)]
+pub struct CreateGroupRequestExtended {
+    pub agent_data: CreateGroupRequestExtended_AgentData,
+    pub group_data: CreateGroupRequestExtended_GroupData,
+}
+
+
+#[derive(Clone, Debug)]
 pub enum MessageInstance {
     TestMessage(TestMessage),
     PacketAck(PacketAck),
@@ -11749,6 +11920,9 @@ pub enum MessageInstance {
     ObjectIncludeInSearch(ObjectIncludeInSearch),
     RezRestoreToWorld(RezRestoreToWorld),
     LinkInventoryItem(LinkInventoryItem),
+    RetrieveIMsExtended(RetrieveIMsExtended),
+    JoinGroupRequestExtended(JoinGroupRequestExtended),
+    CreateGroupRequestExtended(CreateGroupRequestExtended),
 }
 
 impl MessageInstance {
@@ -12229,6 +12403,9 @@ impl MessageInstance {
             MessageInstance::ObjectIncludeInSearch(ref msg) => msg.write_to(buffer),
             MessageInstance::RezRestoreToWorld(ref msg) => msg.write_to(buffer),
             MessageInstance::LinkInventoryItem(ref msg) => msg.write_to(buffer),
+            MessageInstance::RetrieveIMsExtended(ref msg) => msg.write_to(buffer),
+            MessageInstance::JoinGroupRequestExtended(ref msg) => msg.write_to(buffer),
+            MessageInstance::CreateGroupRequestExtended(ref msg) => msg.write_to(buffer),
         }
     }
 }
@@ -15083,6 +15260,24 @@ impl From<LinkInventoryItem> for MessageInstance {
     }
 }
 
+impl From<RetrieveIMsExtended> for MessageInstance {
+    fn from(msg: RetrieveIMsExtended) -> Self {
+        MessageInstance::RetrieveIMsExtended(msg)
+    }
+}
+
+impl From<JoinGroupRequestExtended> for MessageInstance {
+    fn from(msg: JoinGroupRequestExtended) -> Self {
+        MessageInstance::JoinGroupRequestExtended(msg)
+    }
+}
+
+impl From<CreateGroupRequestExtended> for MessageInstance {
+    fn from(msg: CreateGroupRequestExtended) -> Self {
+        MessageInstance::CreateGroupRequestExtended(msg)
+    }
+}
+
 
 
 // Block IMPLEMENTATIONS
@@ -15090,7 +15285,7 @@ impl From<LinkInventoryItem> for MessageInstance {
 
 
 impl TestMessage_TestBlock1 {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
@@ -15101,7 +15296,7 @@ impl TestMessage_TestBlock1 {
 }
 
 impl TestMessage_NeighborBlock {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
@@ -15114,7 +15309,7 @@ impl TestMessage_NeighborBlock {
 }
 
 impl PacketAck_Packets {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
@@ -15123,13 +15318,13 @@ impl PacketAck_Packets {
 }
 
 impl OpenCircuit_CircuitInfo {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
         Ok(OpenCircuit_CircuitInfo {
             ip: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 4];
                 buffer.read_exact(&mut raw)?;
                 Ip4Addr::from(raw)
             },
@@ -15139,7 +15334,7 @@ impl OpenCircuit_CircuitInfo {
 }
 
 impl StartPingCheck_PingID {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
@@ -15151,7 +15346,7 @@ impl StartPingCheck_PingID {
 }
 
 impl CompletePingCheck_PingID {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
@@ -15160,19 +15355,19 @@ impl CompletePingCheck_PingID {
 }
 
 impl AddCircuitCode_CircuitCode {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
         Ok(AddCircuitCode_CircuitCode {
             code: buffer.read_u32::<LittleEndian>()?,
             session_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
             agent_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -15181,19 +15376,19 @@ impl AddCircuitCode_CircuitCode {
 }
 
 impl UseCircuitCode_CircuitCode {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
         Ok(UseCircuitCode_CircuitCode {
             code: buffer.read_u32::<LittleEndian>()?,
             session_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
             id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -15202,25 +15397,25 @@ impl UseCircuitCode_CircuitCode {
 }
 
 impl NeighborList_NeighborBlock {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
         Ok(NeighborList_NeighborBlock {
             ip: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 4];
                 buffer.read_exact(&mut raw)?;
                 Ip4Addr::from(raw)
             },
             port: buffer.read_u16::<LittleEndian>()?,
             public_ip: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 4];
                 buffer.read_exact(&mut raw)?;
                 Ip4Addr::from(raw)
             },
             public_port: buffer.read_u16::<LittleEndian>()?,
             region_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -15236,13 +15431,13 @@ impl NeighborList_NeighborBlock {
 }
 
 impl AvatarTextureUpdate_AgentData {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
         Ok(AvatarTextureUpdate_AgentData {
             agent_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -15252,13 +15447,13 @@ impl AvatarTextureUpdate_AgentData {
 }
 
 impl AvatarTextureUpdate_WearableData {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
         Ok(AvatarTextureUpdate_WearableData {
             cache_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -15274,13 +15469,13 @@ impl AvatarTextureUpdate_WearableData {
 }
 
 impl AvatarTextureUpdate_TextureData {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
         Ok(AvatarTextureUpdate_TextureData {
             texture_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -15289,7 +15484,7 @@ impl AvatarTextureUpdate_TextureData {
 }
 
 impl SimulatorMapUpdate_MapData {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
@@ -15300,7 +15495,7 @@ impl SimulatorMapUpdate_MapData {
 }
 
 impl SimulatorSetMap_MapData {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
@@ -15308,7 +15503,7 @@ impl SimulatorSetMap_MapData {
             region_handle: buffer.read_u64::<LittleEndian>()?,
             type_: buffer.read_i32::<LittleEndian>()?,
             map_image: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -15317,7 +15512,7 @@ impl SimulatorSetMap_MapData {
 }
 
 impl SimulatorReady_SimulatorBlock {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
@@ -15331,7 +15526,7 @@ impl SimulatorReady_SimulatorBlock {
             sim_access: buffer.read_u8()?,
             region_flags: buffer.read_u32::<LittleEndian>()?,
             region_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -15342,7 +15537,7 @@ impl SimulatorReady_SimulatorBlock {
 }
 
 impl SimulatorReady_TelehubBlock {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
@@ -15358,13 +15553,13 @@ impl SimulatorReady_TelehubBlock {
 }
 
 impl TelehubInfo_TelehubBlock {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
         Ok(TelehubInfo_TelehubBlock {
             object_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -15392,7 +15587,7 @@ impl TelehubInfo_TelehubBlock {
 }
 
 impl TelehubInfo_SpawnPointBlock {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
@@ -15407,14 +15602,14 @@ impl TelehubInfo_SpawnPointBlock {
 }
 
 impl SimulatorPresentAtLocation_SimulatorPublicHostBlock {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
         Ok(SimulatorPresentAtLocation_SimulatorPublicHostBlock {
             port: buffer.read_u16::<LittleEndian>()?,
             simulator_ip: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 4];
                 buffer.read_exact(&mut raw)?;
                 Ip4Addr::from(raw)
             },
@@ -15425,13 +15620,13 @@ impl SimulatorPresentAtLocation_SimulatorPublicHostBlock {
 }
 
 impl SimulatorPresentAtLocation_NeighborBlock {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
         Ok(SimulatorPresentAtLocation_NeighborBlock {
             ip: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 4];
                 buffer.read_exact(&mut raw)?;
                 Ip4Addr::from(raw)
             },
@@ -15441,7 +15636,7 @@ impl SimulatorPresentAtLocation_NeighborBlock {
 }
 
 impl SimulatorPresentAtLocation_SimulatorBlock {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
@@ -15455,7 +15650,7 @@ impl SimulatorPresentAtLocation_SimulatorBlock {
             sim_access: buffer.read_u8()?,
             region_flags: buffer.read_u32::<LittleEndian>()?,
             region_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -15466,7 +15661,7 @@ impl SimulatorPresentAtLocation_SimulatorBlock {
 }
 
 impl SimulatorPresentAtLocation_TelehubBlock {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
@@ -15482,7 +15677,7 @@ impl SimulatorPresentAtLocation_TelehubBlock {
 }
 
 impl SimulatorLoad_SimulatorLoad {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
@@ -15495,7 +15690,7 @@ impl SimulatorLoad_SimulatorLoad {
 }
 
 impl SimulatorLoad_AgentList {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
@@ -15508,13 +15703,13 @@ impl SimulatorLoad_AgentList {
 }
 
 impl RegionPresenceRequestByRegionID_RegionData {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
         Ok(RegionPresenceRequestByRegionID_RegionData {
             region_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -15523,7 +15718,7 @@ impl RegionPresenceRequestByRegionID_RegionData {
 }
 
 impl RegionPresenceRequestByHandle_RegionData {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
@@ -15534,24 +15729,24 @@ impl RegionPresenceRequestByHandle_RegionData {
 }
 
 impl RegionPresenceResponse_RegionData {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
         Ok(RegionPresenceResponse_RegionData {
             region_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
             region_handle: buffer.read_u64::<LittleEndian>()?,
             internal_region_ip: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 4];
                 buffer.read_exact(&mut raw)?;
                 Ip4Addr::from(raw)
             },
             external_region_ip: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 4];
                 buffer.read_exact(&mut raw)?;
                 Ip4Addr::from(raw)
             },
@@ -15568,13 +15763,13 @@ impl RegionPresenceResponse_RegionData {
 }
 
 impl UpdateSimulator_SimulatorInfo {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
         Ok(UpdateSimulator_SimulatorInfo {
             region_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -15591,18 +15786,18 @@ impl UpdateSimulator_SimulatorInfo {
 }
 
 impl LogDwellTime_DwellInfo {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
         Ok(LogDwellTime_DwellInfo {
             agent_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
             session_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -15622,7 +15817,7 @@ impl LogDwellTime_DwellInfo {
 }
 
 impl FeatureDisabled_FailureInfo {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
@@ -15634,12 +15829,12 @@ impl FeatureDisabled_FailureInfo {
                 raw
             },
             agent_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
             transaction_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -15648,32 +15843,32 @@ impl FeatureDisabled_FailureInfo {
 }
 
 impl LogFailedMoneyTransaction_TransactionData {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
         Ok(LogFailedMoneyTransaction_TransactionData {
             transaction_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
             transaction_time: buffer.read_u32::<LittleEndian>()?,
             transaction_type: buffer.read_i32::<LittleEndian>()?,
             source_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
             dest_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
             flags: buffer.read_u8()?,
             amount: buffer.read_i32::<LittleEndian>()?,
             simulator_ip: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 4];
                 buffer.read_exact(&mut raw)?;
                 Ip4Addr::from(raw)
             },
@@ -15685,7 +15880,7 @@ impl LogFailedMoneyTransaction_TransactionData {
 }
 
 impl UserReportInternal_ReportData {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
@@ -15693,7 +15888,7 @@ impl UserReportInternal_ReportData {
             report_type: buffer.read_u8()?,
             category: buffer.read_u8()?,
             reporter_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -15708,37 +15903,37 @@ impl UserReportInternal_ReportData {
                 buffer.read_f32::<LittleEndian>()?,
             ),
             screenshot_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
             object_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
             owner_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
             last_owner_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
             creator_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
             region_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
             abuser_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -15749,7 +15944,7 @@ impl UserReportInternal_ReportData {
                 raw
             },
             abuse_region_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -15776,13 +15971,13 @@ impl UserReportInternal_ReportData {
 }
 
 impl SetSimStatusInDatabase_Data {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
         Ok(SetSimStatusInDatabase_Data {
             region_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -15808,13 +16003,13 @@ impl SetSimStatusInDatabase_Data {
 }
 
 impl SetSimPresenceInDatabase_SimData {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
         Ok(SetSimPresenceInDatabase_SimData {
             region_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -15840,7 +16035,7 @@ impl SetSimPresenceInDatabase_SimData {
 }
 
 impl EconomyData_Info {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
@@ -15867,23 +16062,23 @@ impl EconomyData_Info {
 }
 
 impl AvatarPickerRequest_AgentData {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
         Ok(AvatarPickerRequest_AgentData {
             agent_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
             session_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
             query_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -15892,7 +16087,7 @@ impl AvatarPickerRequest_AgentData {
 }
 
 impl AvatarPickerRequest_Data {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
@@ -15908,23 +16103,23 @@ impl AvatarPickerRequest_Data {
 }
 
 impl AvatarPickerRequestBackend_AgentData {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
         Ok(AvatarPickerRequestBackend_AgentData {
             agent_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
             session_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
             query_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -15934,7 +16129,7 @@ impl AvatarPickerRequestBackend_AgentData {
 }
 
 impl AvatarPickerRequestBackend_Data {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
@@ -15950,18 +16145,18 @@ impl AvatarPickerRequestBackend_Data {
 }
 
 impl AvatarPickerReply_AgentData {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
         Ok(AvatarPickerReply_AgentData {
             agent_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
             query_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -15970,13 +16165,13 @@ impl AvatarPickerReply_AgentData {
 }
 
 impl AvatarPickerReply_Data {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
         Ok(AvatarPickerReply_Data {
             avatar_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -15997,23 +16192,23 @@ impl AvatarPickerReply_Data {
 }
 
 impl PlacesQuery_AgentData {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
         Ok(PlacesQuery_AgentData {
             agent_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
             session_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
             query_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -16022,13 +16217,13 @@ impl PlacesQuery_AgentData {
 }
 
 impl PlacesQuery_TransactionData {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
         Ok(PlacesQuery_TransactionData {
             transaction_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -16037,7 +16232,7 @@ impl PlacesQuery_TransactionData {
 }
 
 impl PlacesQuery_QueryData {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
@@ -16061,18 +16256,18 @@ impl PlacesQuery_QueryData {
 }
 
 impl PlacesReply_AgentData {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
         Ok(PlacesReply_AgentData {
             agent_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
             query_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -16081,13 +16276,13 @@ impl PlacesReply_AgentData {
 }
 
 impl PlacesReply_TransactionData {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
         Ok(PlacesReply_TransactionData {
             transaction_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -16096,13 +16291,13 @@ impl PlacesReply_TransactionData {
 }
 
 impl PlacesReply_QueryData {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
         Ok(PlacesReply_QueryData {
             owner_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -16131,7 +16326,7 @@ impl PlacesReply_QueryData {
                 raw
             },
             snapshot_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -16142,18 +16337,18 @@ impl PlacesReply_QueryData {
 }
 
 impl DirFindQuery_AgentData {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
         Ok(DirFindQuery_AgentData {
             agent_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
             session_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -16162,13 +16357,13 @@ impl DirFindQuery_AgentData {
 }
 
 impl DirFindQuery_QueryData {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
         Ok(DirFindQuery_QueryData {
             query_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -16185,13 +16380,13 @@ impl DirFindQuery_QueryData {
 }
 
 impl DirFindQueryBackend_AgentData {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
         Ok(DirFindQueryBackend_AgentData {
             agent_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -16200,13 +16395,13 @@ impl DirFindQueryBackend_AgentData {
 }
 
 impl DirFindQueryBackend_QueryData {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
         Ok(DirFindQueryBackend_QueryData {
             query_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -16225,18 +16420,18 @@ impl DirFindQueryBackend_QueryData {
 }
 
 impl DirPlacesQuery_AgentData {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
         Ok(DirPlacesQuery_AgentData {
             agent_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
             session_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -16245,13 +16440,13 @@ impl DirPlacesQuery_AgentData {
 }
 
 impl DirPlacesQuery_QueryData {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
         Ok(DirPlacesQuery_QueryData {
             query_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -16275,13 +16470,13 @@ impl DirPlacesQuery_QueryData {
 }
 
 impl DirPlacesQueryBackend_AgentData {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
         Ok(DirPlacesQueryBackend_AgentData {
             agent_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -16290,13 +16485,13 @@ impl DirPlacesQueryBackend_AgentData {
 }
 
 impl DirPlacesQueryBackend_QueryData {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
         Ok(DirPlacesQueryBackend_QueryData {
             query_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -16322,13 +16517,13 @@ impl DirPlacesQueryBackend_QueryData {
 }
 
 impl DirPlacesReply_AgentData {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
         Ok(DirPlacesReply_AgentData {
             agent_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -16337,13 +16532,13 @@ impl DirPlacesReply_AgentData {
 }
 
 impl DirPlacesReply_QueryData {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
         Ok(DirPlacesReply_QueryData {
             query_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -16352,13 +16547,13 @@ impl DirPlacesReply_QueryData {
 }
 
 impl DirPlacesReply_QueryReplies {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
         Ok(DirPlacesReply_QueryReplies {
             parcel_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -16376,7 +16571,7 @@ impl DirPlacesReply_QueryReplies {
 }
 
 impl DirPlacesReply_StatusData {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
@@ -16387,13 +16582,13 @@ impl DirPlacesReply_StatusData {
 }
 
 impl DirPeopleReply_AgentData {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
         Ok(DirPeopleReply_AgentData {
             agent_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -16402,13 +16597,13 @@ impl DirPeopleReply_AgentData {
 }
 
 impl DirPeopleReply_QueryData {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
         Ok(DirPeopleReply_QueryData {
             query_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -16417,13 +16612,13 @@ impl DirPeopleReply_QueryData {
 }
 
 impl DirPeopleReply_QueryReplies {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
         Ok(DirPeopleReply_QueryReplies {
             agent_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -16452,13 +16647,13 @@ impl DirPeopleReply_QueryReplies {
 }
 
 impl DirEventsReply_AgentData {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
         Ok(DirEventsReply_AgentData {
             agent_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -16467,13 +16662,13 @@ impl DirEventsReply_AgentData {
 }
 
 impl DirEventsReply_QueryData {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
         Ok(DirEventsReply_QueryData {
             query_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -16482,13 +16677,13 @@ impl DirEventsReply_QueryData {
 }
 
 impl DirEventsReply_QueryReplies {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
         Ok(DirEventsReply_QueryReplies {
             owner_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -16512,7 +16707,7 @@ impl DirEventsReply_QueryReplies {
 }
 
 impl DirEventsReply_StatusData {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
@@ -16523,13 +16718,13 @@ impl DirEventsReply_StatusData {
 }
 
 impl DirGroupsReply_AgentData {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
         Ok(DirGroupsReply_AgentData {
             agent_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -16538,13 +16733,13 @@ impl DirGroupsReply_AgentData {
 }
 
 impl DirGroupsReply_QueryData {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
         Ok(DirGroupsReply_QueryData {
             query_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -16553,13 +16748,13 @@ impl DirGroupsReply_QueryData {
 }
 
 impl DirGroupsReply_QueryReplies {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
         Ok(DirGroupsReply_QueryReplies {
             group_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -16576,18 +16771,18 @@ impl DirGroupsReply_QueryReplies {
 }
 
 impl DirClassifiedQuery_AgentData {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
         Ok(DirClassifiedQuery_AgentData {
             agent_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
             session_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -16596,13 +16791,13 @@ impl DirClassifiedQuery_AgentData {
 }
 
 impl DirClassifiedQuery_QueryData {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
         Ok(DirClassifiedQuery_QueryData {
             query_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -16620,13 +16815,13 @@ impl DirClassifiedQuery_QueryData {
 }
 
 impl DirClassifiedQueryBackend_AgentData {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
         Ok(DirClassifiedQueryBackend_AgentData {
             agent_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -16635,13 +16830,13 @@ impl DirClassifiedQueryBackend_AgentData {
 }
 
 impl DirClassifiedQueryBackend_QueryData {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
         Ok(DirClassifiedQueryBackend_QueryData {
             query_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -16661,13 +16856,13 @@ impl DirClassifiedQueryBackend_QueryData {
 }
 
 impl DirClassifiedReply_AgentData {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
         Ok(DirClassifiedReply_AgentData {
             agent_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -16676,13 +16871,13 @@ impl DirClassifiedReply_AgentData {
 }
 
 impl DirClassifiedReply_QueryData {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
         Ok(DirClassifiedReply_QueryData {
             query_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -16691,13 +16886,13 @@ impl DirClassifiedReply_QueryData {
 }
 
 impl DirClassifiedReply_QueryReplies {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
         Ok(DirClassifiedReply_QueryReplies {
             classified_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -16716,7 +16911,7 @@ impl DirClassifiedReply_QueryReplies {
 }
 
 impl DirClassifiedReply_StatusData {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
@@ -16727,18 +16922,18 @@ impl DirClassifiedReply_StatusData {
 }
 
 impl AvatarClassifiedReply_AgentData {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
         Ok(AvatarClassifiedReply_AgentData {
             agent_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
             target_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -16747,13 +16942,13 @@ impl AvatarClassifiedReply_AgentData {
 }
 
 impl AvatarClassifiedReply_Data {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
         Ok(AvatarClassifiedReply_Data {
             classified_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -16768,18 +16963,18 @@ impl AvatarClassifiedReply_Data {
 }
 
 impl ClassifiedInfoRequest_AgentData {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
         Ok(ClassifiedInfoRequest_AgentData {
             agent_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
             session_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -16788,13 +16983,13 @@ impl ClassifiedInfoRequest_AgentData {
 }
 
 impl ClassifiedInfoRequest_Data {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
         Ok(ClassifiedInfoRequest_Data {
             classified_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -16803,13 +16998,13 @@ impl ClassifiedInfoRequest_Data {
 }
 
 impl ClassifiedInfoReply_AgentData {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
         Ok(ClassifiedInfoReply_AgentData {
             agent_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -16818,18 +17013,18 @@ impl ClassifiedInfoReply_AgentData {
 }
 
 impl ClassifiedInfoReply_Data {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
         Ok(ClassifiedInfoReply_Data {
             classified_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
             creator_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -16849,13 +17044,13 @@ impl ClassifiedInfoReply_Data {
                 raw
             },
             parcel_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
             parent_estate: buffer.read_u32::<LittleEndian>()?,
             snapshot_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -16883,18 +17078,18 @@ impl ClassifiedInfoReply_Data {
 }
 
 impl ClassifiedInfoUpdate_AgentData {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
         Ok(ClassifiedInfoUpdate_AgentData {
             agent_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
             session_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -16903,13 +17098,13 @@ impl ClassifiedInfoUpdate_AgentData {
 }
 
 impl ClassifiedInfoUpdate_Data {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
         Ok(ClassifiedInfoUpdate_Data {
             classified_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -16927,13 +17122,13 @@ impl ClassifiedInfoUpdate_Data {
                 raw
             },
             parcel_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
             parent_estate: buffer.read_u32::<LittleEndian>()?,
             snapshot_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -16949,18 +17144,18 @@ impl ClassifiedInfoUpdate_Data {
 }
 
 impl ClassifiedDelete_AgentData {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
         Ok(ClassifiedDelete_AgentData {
             agent_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
             session_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -16969,13 +17164,13 @@ impl ClassifiedDelete_AgentData {
 }
 
 impl ClassifiedDelete_Data {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
         Ok(ClassifiedDelete_Data {
             classified_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -16984,18 +17179,18 @@ impl ClassifiedDelete_Data {
 }
 
 impl ClassifiedGodDelete_AgentData {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
         Ok(ClassifiedGodDelete_AgentData {
             agent_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
             session_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -17004,18 +17199,18 @@ impl ClassifiedGodDelete_AgentData {
 }
 
 impl ClassifiedGodDelete_Data {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
         Ok(ClassifiedGodDelete_Data {
             classified_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
             query_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -17024,18 +17219,18 @@ impl ClassifiedGodDelete_Data {
 }
 
 impl DirLandQuery_AgentData {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
         Ok(DirLandQuery_AgentData {
             agent_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
             session_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -17044,13 +17239,13 @@ impl DirLandQuery_AgentData {
 }
 
 impl DirLandQuery_QueryData {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
         Ok(DirLandQuery_QueryData {
             query_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -17064,13 +17259,13 @@ impl DirLandQuery_QueryData {
 }
 
 impl DirLandQueryBackend_AgentData {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
         Ok(DirLandQueryBackend_AgentData {
             agent_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -17079,13 +17274,13 @@ impl DirLandQueryBackend_AgentData {
 }
 
 impl DirLandQueryBackend_QueryData {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
         Ok(DirLandQueryBackend_QueryData {
             query_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -17101,13 +17296,13 @@ impl DirLandQueryBackend_QueryData {
 }
 
 impl DirLandReply_AgentData {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
         Ok(DirLandReply_AgentData {
             agent_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -17116,13 +17311,13 @@ impl DirLandReply_AgentData {
 }
 
 impl DirLandReply_QueryData {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
         Ok(DirLandReply_QueryData {
             query_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -17131,13 +17326,13 @@ impl DirLandReply_QueryData {
 }
 
 impl DirLandReply_QueryReplies {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
         Ok(DirLandReply_QueryReplies {
             parcel_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -17156,18 +17351,18 @@ impl DirLandReply_QueryReplies {
 }
 
 impl DirPopularQuery_AgentData {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
         Ok(DirPopularQuery_AgentData {
             agent_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
             session_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -17176,13 +17371,13 @@ impl DirPopularQuery_AgentData {
 }
 
 impl DirPopularQuery_QueryData {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
         Ok(DirPopularQuery_QueryData {
             query_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -17192,13 +17387,13 @@ impl DirPopularQuery_QueryData {
 }
 
 impl DirPopularQueryBackend_AgentData {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
         Ok(DirPopularQueryBackend_AgentData {
             agent_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -17207,13 +17402,13 @@ impl DirPopularQueryBackend_AgentData {
 }
 
 impl DirPopularQueryBackend_QueryData {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
         Ok(DirPopularQueryBackend_QueryData {
             query_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -17225,13 +17420,13 @@ impl DirPopularQueryBackend_QueryData {
 }
 
 impl DirPopularReply_AgentData {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
         Ok(DirPopularReply_AgentData {
             agent_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -17240,13 +17435,13 @@ impl DirPopularReply_AgentData {
 }
 
 impl DirPopularReply_QueryData {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
         Ok(DirPopularReply_QueryData {
             query_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -17255,13 +17450,13 @@ impl DirPopularReply_QueryData {
 }
 
 impl DirPopularReply_QueryReplies {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
         Ok(DirPopularReply_QueryReplies {
             parcel_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -17277,18 +17472,18 @@ impl DirPopularReply_QueryReplies {
 }
 
 impl ParcelInfoRequest_AgentData {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
         Ok(ParcelInfoRequest_AgentData {
             agent_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
             session_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -17297,13 +17492,13 @@ impl ParcelInfoRequest_AgentData {
 }
 
 impl ParcelInfoRequest_Data {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
         Ok(ParcelInfoRequest_Data {
             parcel_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -17312,13 +17507,13 @@ impl ParcelInfoRequest_Data {
 }
 
 impl ParcelInfoReply_AgentData {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
         Ok(ParcelInfoReply_AgentData {
             agent_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -17327,18 +17522,18 @@ impl ParcelInfoReply_AgentData {
 }
 
 impl ParcelInfoReply_Data {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
         Ok(ParcelInfoReply_Data {
             parcel_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
             owner_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -17367,7 +17562,7 @@ impl ParcelInfoReply_Data {
                 raw
             },
             snapshot_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -17379,18 +17574,18 @@ impl ParcelInfoReply_Data {
 }
 
 impl ParcelObjectOwnersRequest_AgentData {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
         Ok(ParcelObjectOwnersRequest_AgentData {
             agent_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
             session_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -17399,7 +17594,7 @@ impl ParcelObjectOwnersRequest_AgentData {
 }
 
 impl ParcelObjectOwnersRequest_ParcelData {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
@@ -17410,13 +17605,13 @@ impl ParcelObjectOwnersRequest_ParcelData {
 }
 
 impl ParcelObjectOwnersReply_Data {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
         Ok(ParcelObjectOwnersReply_Data {
             owner_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -17428,18 +17623,18 @@ impl ParcelObjectOwnersReply_Data {
 }
 
 impl GroupNoticesListRequest_AgentData {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
         Ok(GroupNoticesListRequest_AgentData {
             agent_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
             session_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -17448,13 +17643,13 @@ impl GroupNoticesListRequest_AgentData {
 }
 
 impl GroupNoticesListRequest_Data {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
         Ok(GroupNoticesListRequest_Data {
             group_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -17463,18 +17658,18 @@ impl GroupNoticesListRequest_Data {
 }
 
 impl GroupNoticesListReply_AgentData {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
         Ok(GroupNoticesListReply_AgentData {
             agent_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
             group_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -17483,13 +17678,13 @@ impl GroupNoticesListReply_AgentData {
 }
 
 impl GroupNoticesListReply_Data {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
         Ok(GroupNoticesListReply_Data {
             notice_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -17513,18 +17708,18 @@ impl GroupNoticesListReply_Data {
 }
 
 impl GroupNoticeRequest_AgentData {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
         Ok(GroupNoticeRequest_AgentData {
             agent_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
             session_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -17533,13 +17728,13 @@ impl GroupNoticeRequest_AgentData {
 }
 
 impl GroupNoticeRequest_Data {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
         Ok(GroupNoticeRequest_Data {
             group_notice_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -17548,13 +17743,13 @@ impl GroupNoticeRequest_Data {
 }
 
 impl GroupNoticeAdd_AgentData {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
         Ok(GroupNoticeAdd_AgentData {
             agent_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -17563,18 +17758,18 @@ impl GroupNoticeAdd_AgentData {
 }
 
 impl GroupNoticeAdd_MessageBlock {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
         Ok(GroupNoticeAdd_MessageBlock {
             to_group_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
             id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -17602,18 +17797,18 @@ impl GroupNoticeAdd_MessageBlock {
 }
 
 impl TeleportRequest_AgentData {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
         Ok(TeleportRequest_AgentData {
             agent_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
             session_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -17622,13 +17817,13 @@ impl TeleportRequest_AgentData {
 }
 
 impl TeleportRequest_Info {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
         Ok(TeleportRequest_Info {
             region_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -17647,18 +17842,18 @@ impl TeleportRequest_Info {
 }
 
 impl TeleportLocationRequest_AgentData {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
         Ok(TeleportLocationRequest_AgentData {
             agent_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
             session_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -17667,7 +17862,7 @@ impl TeleportLocationRequest_AgentData {
 }
 
 impl TeleportLocationRequest_Info {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
@@ -17688,13 +17883,13 @@ impl TeleportLocationRequest_Info {
 }
 
 impl TeleportLocal_Info {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
         Ok(TeleportLocal_Info {
             agent_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -17715,23 +17910,23 @@ impl TeleportLocal_Info {
 }
 
 impl TeleportLandmarkRequest_Info {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
         Ok(TeleportLandmarkRequest_Info {
             agent_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
             session_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
             landmark_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -17740,13 +17935,13 @@ impl TeleportLandmarkRequest_Info {
 }
 
 impl TeleportProgress_AgentData {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
         Ok(TeleportProgress_AgentData {
             agent_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -17755,7 +17950,7 @@ impl TeleportProgress_AgentData {
 }
 
 impl TeleportProgress_Info {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
@@ -17772,13 +17967,13 @@ impl TeleportProgress_Info {
 }
 
 impl DataHomeLocationRequest_Info {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
         Ok(DataHomeLocationRequest_Info {
             agent_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -17788,7 +17983,7 @@ impl DataHomeLocationRequest_Info {
 }
 
 impl DataHomeLocationRequest_AgentInfo {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
@@ -17799,13 +17994,13 @@ impl DataHomeLocationRequest_AgentInfo {
 }
 
 impl DataHomeLocationReply_Info {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
         Ok(DataHomeLocationReply_Info {
             agent_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -17825,19 +18020,19 @@ impl DataHomeLocationReply_Info {
 }
 
 impl TeleportFinish_Info {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
         Ok(TeleportFinish_Info {
             agent_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
             location_id: buffer.read_u32::<LittleEndian>()?,
             sim_ip: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 4];
                 buffer.read_exact(&mut raw)?;
                 Ip4Addr::from(raw)
             },
@@ -17856,18 +18051,18 @@ impl TeleportFinish_Info {
 }
 
 impl StartLure_AgentData {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
         Ok(StartLure_AgentData {
             agent_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
             session_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -17876,7 +18071,7 @@ impl StartLure_AgentData {
 }
 
 impl StartLure_Info {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
@@ -17893,13 +18088,13 @@ impl StartLure_Info {
 }
 
 impl StartLure_TargetData {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
         Ok(StartLure_TargetData {
             target_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -17908,23 +18103,23 @@ impl StartLure_TargetData {
 }
 
 impl TeleportLureRequest_Info {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
         Ok(TeleportLureRequest_Info {
             agent_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
             session_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
             lure_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -17934,18 +18129,18 @@ impl TeleportLureRequest_Info {
 }
 
 impl TeleportCancel_Info {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
         Ok(TeleportCancel_Info {
             agent_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
             session_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -17954,7 +18149,7 @@ impl TeleportCancel_Info {
 }
 
 impl TeleportStart_Info {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
@@ -17965,13 +18160,13 @@ impl TeleportStart_Info {
 }
 
 impl TeleportFailed_Info {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
         Ok(TeleportFailed_Info {
             agent_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -17986,7 +18181,7 @@ impl TeleportFailed_Info {
 }
 
 impl TeleportFailed_AlertInfo {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
@@ -18008,23 +18203,23 @@ impl TeleportFailed_AlertInfo {
 }
 
 impl Undo_AgentData {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
         Ok(Undo_AgentData {
             agent_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
             session_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
             group_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -18033,13 +18228,13 @@ impl Undo_AgentData {
 }
 
 impl Undo_ObjectData {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
         Ok(Undo_ObjectData {
             object_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -18048,23 +18243,23 @@ impl Undo_ObjectData {
 }
 
 impl Redo_AgentData {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
         Ok(Redo_AgentData {
             agent_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
             session_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
             group_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -18073,13 +18268,13 @@ impl Redo_AgentData {
 }
 
 impl Redo_ObjectData {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
         Ok(Redo_ObjectData {
             object_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -18088,18 +18283,18 @@ impl Redo_ObjectData {
 }
 
 impl UndoLand_AgentData {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
         Ok(UndoLand_AgentData {
             agent_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
             session_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -18108,18 +18303,18 @@ impl UndoLand_AgentData {
 }
 
 impl AgentPause_AgentData {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
         Ok(AgentPause_AgentData {
             agent_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
             session_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -18129,18 +18324,18 @@ impl AgentPause_AgentData {
 }
 
 impl AgentResume_AgentData {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
         Ok(AgentResume_AgentData {
             agent_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
             session_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -18150,18 +18345,18 @@ impl AgentResume_AgentData {
 }
 
 impl AgentUpdate_AgentData {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
         Ok(AgentUpdate_AgentData {
             agent_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
             session_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -18210,18 +18405,18 @@ impl AgentUpdate_AgentData {
 }
 
 impl ChatFromViewer_AgentData {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
         Ok(ChatFromViewer_AgentData {
             agent_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
             session_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -18230,7 +18425,7 @@ impl ChatFromViewer_AgentData {
 }
 
 impl ChatFromViewer_ChatData {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
@@ -18248,18 +18443,18 @@ impl ChatFromViewer_ChatData {
 }
 
 impl AgentThrottle_AgentData {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
         Ok(AgentThrottle_AgentData {
             agent_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
             session_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -18269,7 +18464,7 @@ impl AgentThrottle_AgentData {
 }
 
 impl AgentThrottle_Throttle {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
@@ -18286,18 +18481,18 @@ impl AgentThrottle_Throttle {
 }
 
 impl AgentFOV_AgentData {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
         Ok(AgentFOV_AgentData {
             agent_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
             session_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -18307,7 +18502,7 @@ impl AgentFOV_AgentData {
 }
 
 impl AgentFOV_FOVBlock {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
@@ -18319,18 +18514,18 @@ impl AgentFOV_FOVBlock {
 }
 
 impl AgentHeightWidth_AgentData {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
         Ok(AgentHeightWidth_AgentData {
             agent_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
             session_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -18340,7 +18535,7 @@ impl AgentHeightWidth_AgentData {
 }
 
 impl AgentHeightWidth_HeightWidthBlock {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
@@ -18353,18 +18548,18 @@ impl AgentHeightWidth_HeightWidthBlock {
 }
 
 impl AgentSetAppearance_AgentData {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
         Ok(AgentSetAppearance_AgentData {
             agent_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
             session_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -18379,13 +18574,13 @@ impl AgentSetAppearance_AgentData {
 }
 
 impl AgentSetAppearance_WearableData {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
         Ok(AgentSetAppearance_WearableData {
             cache_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -18395,7 +18590,7 @@ impl AgentSetAppearance_WearableData {
 }
 
 impl AgentSetAppearance_ObjectData {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
@@ -18411,7 +18606,7 @@ impl AgentSetAppearance_ObjectData {
 }
 
 impl AgentSetAppearance_VisualParam {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
@@ -18422,18 +18617,18 @@ impl AgentSetAppearance_VisualParam {
 }
 
 impl AgentAnimation_AgentData {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
         Ok(AgentAnimation_AgentData {
             agent_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
             session_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -18442,13 +18637,13 @@ impl AgentAnimation_AgentData {
 }
 
 impl AgentAnimation_AnimationList {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
         Ok(AgentAnimation_AnimationList {
             anim_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -18458,7 +18653,7 @@ impl AgentAnimation_AnimationList {
 }
 
 impl AgentAnimation_PhysicalAvatarEventList {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
@@ -18474,18 +18669,18 @@ impl AgentAnimation_PhysicalAvatarEventList {
 }
 
 impl AgentRequestSit_AgentData {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
         Ok(AgentRequestSit_AgentData {
             agent_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
             session_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -18494,13 +18689,13 @@ impl AgentRequestSit_AgentData {
 }
 
 impl AgentRequestSit_TargetObject {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
         Ok(AgentRequestSit_TargetObject {
             target_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -18514,18 +18709,18 @@ impl AgentRequestSit_TargetObject {
 }
 
 impl AgentSit_AgentData {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
         Ok(AgentSit_AgentData {
             agent_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
             session_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -18534,18 +18729,18 @@ impl AgentSit_AgentData {
 }
 
 impl AgentQuitCopy_AgentData {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
         Ok(AgentQuitCopy_AgentData {
             agent_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
             session_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -18554,7 +18749,7 @@ impl AgentQuitCopy_AgentData {
 }
 
 impl AgentQuitCopy_FuseBlock {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
@@ -18565,18 +18760,18 @@ impl AgentQuitCopy_FuseBlock {
 }
 
 impl RequestImage_AgentData {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
         Ok(RequestImage_AgentData {
             agent_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
             session_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -18585,13 +18780,13 @@ impl RequestImage_AgentData {
 }
 
 impl RequestImage_RequestImage {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
         Ok(RequestImage_RequestImage {
             image: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -18604,13 +18799,13 @@ impl RequestImage_RequestImage {
 }
 
 impl ImageNotInDatabase_ImageID {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
         Ok(ImageNotInDatabase_ImageID {
             id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -18619,13 +18814,13 @@ impl ImageNotInDatabase_ImageID {
 }
 
 impl RebakeAvatarTextures_TextureData {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
         Ok(RebakeAvatarTextures_TextureData {
             texture_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -18634,18 +18829,18 @@ impl RebakeAvatarTextures_TextureData {
 }
 
 impl SetAlwaysRun_AgentData {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
         Ok(SetAlwaysRun_AgentData {
             agent_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
             session_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -18655,23 +18850,23 @@ impl SetAlwaysRun_AgentData {
 }
 
 impl ObjectAdd_AgentData {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
         Ok(ObjectAdd_AgentData {
             agent_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
             session_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
             group_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -18680,7 +18875,7 @@ impl ObjectAdd_AgentData {
 }
 
 impl ObjectAdd_ObjectData {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
@@ -18718,7 +18913,7 @@ impl ObjectAdd_ObjectData {
                 buffer.read_f32::<LittleEndian>()?,
             ),
             ray_target_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -18742,18 +18937,18 @@ impl ObjectAdd_ObjectData {
 }
 
 impl ObjectDelete_AgentData {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
         Ok(ObjectDelete_AgentData {
             agent_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
             session_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -18763,7 +18958,7 @@ impl ObjectDelete_AgentData {
 }
 
 impl ObjectDelete_ObjectData {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
@@ -18774,23 +18969,23 @@ impl ObjectDelete_ObjectData {
 }
 
 impl ObjectDuplicate_AgentData {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
         Ok(ObjectDuplicate_AgentData {
             agent_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
             session_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
             group_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -18799,7 +18994,7 @@ impl ObjectDuplicate_AgentData {
 }
 
 impl ObjectDuplicate_SharedData {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
@@ -18815,7 +19010,7 @@ impl ObjectDuplicate_SharedData {
 }
 
 impl ObjectDuplicate_ObjectData {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
@@ -18826,23 +19021,23 @@ impl ObjectDuplicate_ObjectData {
 }
 
 impl ObjectDuplicateOnRay_AgentData {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
         Ok(ObjectDuplicateOnRay_AgentData {
             agent_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
             session_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
             group_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -18861,7 +19056,7 @@ impl ObjectDuplicateOnRay_AgentData {
             copy_centers: buffer.read_u8()? == 1,
             copy_rotates: buffer.read_u8()? == 1,
             ray_target_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -18871,7 +19066,7 @@ impl ObjectDuplicateOnRay_AgentData {
 }
 
 impl ObjectDuplicateOnRay_ObjectData {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
@@ -18882,18 +19077,18 @@ impl ObjectDuplicateOnRay_ObjectData {
 }
 
 impl MultipleObjectUpdate_AgentData {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
         Ok(MultipleObjectUpdate_AgentData {
             agent_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
             session_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -18902,7 +19097,7 @@ impl MultipleObjectUpdate_AgentData {
 }
 
 impl MultipleObjectUpdate_ObjectData {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
@@ -18920,18 +19115,18 @@ impl MultipleObjectUpdate_ObjectData {
 }
 
 impl RequestMultipleObjects_AgentData {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
         Ok(RequestMultipleObjects_AgentData {
             agent_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
             session_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -18940,7 +19135,7 @@ impl RequestMultipleObjects_AgentData {
 }
 
 impl RequestMultipleObjects_ObjectData {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
@@ -18952,18 +19147,18 @@ impl RequestMultipleObjects_ObjectData {
 }
 
 impl ObjectPosition_AgentData {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
         Ok(ObjectPosition_AgentData {
             agent_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
             session_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -18972,7 +19167,7 @@ impl ObjectPosition_AgentData {
 }
 
 impl ObjectPosition_ObjectData {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
@@ -18988,18 +19183,18 @@ impl ObjectPosition_ObjectData {
 }
 
 impl ObjectScale_AgentData {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
         Ok(ObjectScale_AgentData {
             agent_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
             session_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -19008,7 +19203,7 @@ impl ObjectScale_AgentData {
 }
 
 impl ObjectScale_ObjectData {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
@@ -19024,18 +19219,18 @@ impl ObjectScale_ObjectData {
 }
 
 impl ObjectRotation_AgentData {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
         Ok(ObjectRotation_AgentData {
             agent_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
             session_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -19044,7 +19239,7 @@ impl ObjectRotation_AgentData {
 }
 
 impl ObjectRotation_ObjectData {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
@@ -19063,18 +19258,18 @@ impl ObjectRotation_ObjectData {
 }
 
 impl ObjectFlagUpdate_AgentData {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
         Ok(ObjectFlagUpdate_AgentData {
             agent_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
             session_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -19087,19 +19282,34 @@ impl ObjectFlagUpdate_AgentData {
     }
 }
 
+impl ObjectFlagUpdate_ExtraPhysics {
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
+    where
+        R: Read,
+    {
+        Ok(ObjectFlagUpdate_ExtraPhysics {
+            physics_shape_type: buffer.read_u8()?,
+            density: buffer.read_f32::<LittleEndian>()?,
+            friction: buffer.read_f32::<LittleEndian>()?,
+            restitution: buffer.read_f32::<LittleEndian>()?,
+            gravity_multiplier: buffer.read_f32::<LittleEndian>()?,
+        })
+    }
+}
+
 impl ObjectClickAction_AgentData {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
         Ok(ObjectClickAction_AgentData {
             agent_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
             session_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -19108,7 +19318,7 @@ impl ObjectClickAction_AgentData {
 }
 
 impl ObjectClickAction_ObjectData {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
@@ -19120,18 +19330,18 @@ impl ObjectClickAction_ObjectData {
 }
 
 impl ObjectImage_AgentData {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
         Ok(ObjectImage_AgentData {
             agent_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
             session_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -19140,7 +19350,7 @@ impl ObjectImage_AgentData {
 }
 
 impl ObjectImage_ObjectData {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
@@ -19163,18 +19373,18 @@ impl ObjectImage_ObjectData {
 }
 
 impl ObjectMaterial_AgentData {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
         Ok(ObjectMaterial_AgentData {
             agent_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
             session_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -19183,7 +19393,7 @@ impl ObjectMaterial_AgentData {
 }
 
 impl ObjectMaterial_ObjectData {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
@@ -19195,18 +19405,18 @@ impl ObjectMaterial_ObjectData {
 }
 
 impl ObjectShape_AgentData {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
         Ok(ObjectShape_AgentData {
             agent_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
             session_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -19215,7 +19425,7 @@ impl ObjectShape_AgentData {
 }
 
 impl ObjectShape_ObjectData {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
@@ -19244,18 +19454,18 @@ impl ObjectShape_ObjectData {
 }
 
 impl ObjectExtraParams_AgentData {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
         Ok(ObjectExtraParams_AgentData {
             agent_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
             session_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -19264,7 +19474,7 @@ impl ObjectExtraParams_AgentData {
 }
 
 impl ObjectExtraParams_ObjectData {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
@@ -19284,18 +19494,18 @@ impl ObjectExtraParams_ObjectData {
 }
 
 impl ObjectOwner_AgentData {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
         Ok(ObjectOwner_AgentData {
             agent_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
             session_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -19304,19 +19514,19 @@ impl ObjectOwner_AgentData {
 }
 
 impl ObjectOwner_HeaderData {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
         Ok(ObjectOwner_HeaderData {
             override_: buffer.read_u8()? == 1,
             owner_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
             group_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -19325,7 +19535,7 @@ impl ObjectOwner_HeaderData {
 }
 
 impl ObjectOwner_ObjectData {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
@@ -19336,23 +19546,23 @@ impl ObjectOwner_ObjectData {
 }
 
 impl ObjectGroup_AgentData {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
         Ok(ObjectGroup_AgentData {
             agent_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
             session_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
             group_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -19361,7 +19571,7 @@ impl ObjectGroup_AgentData {
 }
 
 impl ObjectGroup_ObjectData {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
@@ -19372,28 +19582,28 @@ impl ObjectGroup_ObjectData {
 }
 
 impl ObjectBuy_AgentData {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
         Ok(ObjectBuy_AgentData {
             agent_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
             session_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
             group_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
             category_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -19402,7 +19612,7 @@ impl ObjectBuy_AgentData {
 }
 
 impl ObjectBuy_ObjectData {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
@@ -19415,18 +19625,18 @@ impl ObjectBuy_ObjectData {
 }
 
 impl BuyObjectInventory_AgentData {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
         Ok(BuyObjectInventory_AgentData {
             agent_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
             session_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -19435,23 +19645,23 @@ impl BuyObjectInventory_AgentData {
 }
 
 impl BuyObjectInventory_Data {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
         Ok(BuyObjectInventory_Data {
             object_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
             item_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
             folder_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -19460,13 +19670,13 @@ impl BuyObjectInventory_Data {
 }
 
 impl DerezContainer_Data {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
         Ok(DerezContainer_Data {
             object_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -19476,18 +19686,18 @@ impl DerezContainer_Data {
 }
 
 impl ObjectPermissions_AgentData {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
         Ok(ObjectPermissions_AgentData {
             agent_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
             session_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -19496,7 +19706,7 @@ impl ObjectPermissions_AgentData {
 }
 
 impl ObjectPermissions_HeaderData {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
@@ -19507,7 +19717,7 @@ impl ObjectPermissions_HeaderData {
 }
 
 impl ObjectPermissions_ObjectData {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
@@ -19521,18 +19731,18 @@ impl ObjectPermissions_ObjectData {
 }
 
 impl ObjectSaleInfo_AgentData {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
         Ok(ObjectSaleInfo_AgentData {
             agent_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
             session_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -19541,7 +19751,7 @@ impl ObjectSaleInfo_AgentData {
 }
 
 impl ObjectSaleInfo_ObjectData {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
@@ -19554,18 +19764,18 @@ impl ObjectSaleInfo_ObjectData {
 }
 
 impl ObjectName_AgentData {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
         Ok(ObjectName_AgentData {
             agent_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
             session_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -19574,7 +19784,7 @@ impl ObjectName_AgentData {
 }
 
 impl ObjectName_ObjectData {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
@@ -19591,18 +19801,18 @@ impl ObjectName_ObjectData {
 }
 
 impl ObjectDescription_AgentData {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
         Ok(ObjectDescription_AgentData {
             agent_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
             session_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -19611,7 +19821,7 @@ impl ObjectDescription_AgentData {
 }
 
 impl ObjectDescription_ObjectData {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
@@ -19628,18 +19838,18 @@ impl ObjectDescription_ObjectData {
 }
 
 impl ObjectCategory_AgentData {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
         Ok(ObjectCategory_AgentData {
             agent_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
             session_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -19648,7 +19858,7 @@ impl ObjectCategory_AgentData {
 }
 
 impl ObjectCategory_ObjectData {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
@@ -19660,18 +19870,18 @@ impl ObjectCategory_ObjectData {
 }
 
 impl ObjectSelect_AgentData {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
         Ok(ObjectSelect_AgentData {
             agent_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
             session_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -19680,7 +19890,7 @@ impl ObjectSelect_AgentData {
 }
 
 impl ObjectSelect_ObjectData {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
@@ -19691,18 +19901,18 @@ impl ObjectSelect_ObjectData {
 }
 
 impl ObjectDeselect_AgentData {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
         Ok(ObjectDeselect_AgentData {
             agent_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
             session_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -19711,7 +19921,7 @@ impl ObjectDeselect_AgentData {
 }
 
 impl ObjectDeselect_ObjectData {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
@@ -19722,18 +19932,18 @@ impl ObjectDeselect_ObjectData {
 }
 
 impl ObjectAttach_AgentData {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
         Ok(ObjectAttach_AgentData {
             agent_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
             session_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -19743,7 +19953,7 @@ impl ObjectAttach_AgentData {
 }
 
 impl ObjectAttach_ObjectData {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
@@ -19762,18 +19972,18 @@ impl ObjectAttach_ObjectData {
 }
 
 impl ObjectDetach_AgentData {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
         Ok(ObjectDetach_AgentData {
             agent_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
             session_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -19782,7 +19992,7 @@ impl ObjectDetach_AgentData {
 }
 
 impl ObjectDetach_ObjectData {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
@@ -19793,18 +20003,18 @@ impl ObjectDetach_ObjectData {
 }
 
 impl ObjectDrop_AgentData {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
         Ok(ObjectDrop_AgentData {
             agent_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
             session_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -19813,7 +20023,7 @@ impl ObjectDrop_AgentData {
 }
 
 impl ObjectDrop_ObjectData {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
@@ -19824,18 +20034,18 @@ impl ObjectDrop_ObjectData {
 }
 
 impl ObjectLink_AgentData {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
         Ok(ObjectLink_AgentData {
             agent_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
             session_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -19844,7 +20054,7 @@ impl ObjectLink_AgentData {
 }
 
 impl ObjectLink_ObjectData {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
@@ -19855,18 +20065,18 @@ impl ObjectLink_ObjectData {
 }
 
 impl ObjectDelink_AgentData {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
         Ok(ObjectDelink_AgentData {
             agent_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
             session_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -19875,7 +20085,7 @@ impl ObjectDelink_AgentData {
 }
 
 impl ObjectDelink_ObjectData {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
@@ -19886,18 +20096,18 @@ impl ObjectDelink_ObjectData {
 }
 
 impl ObjectGrab_AgentData {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
         Ok(ObjectGrab_AgentData {
             agent_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
             session_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -19906,7 +20116,7 @@ impl ObjectGrab_AgentData {
 }
 
 impl ObjectGrab_ObjectData {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
@@ -19922,7 +20132,7 @@ impl ObjectGrab_ObjectData {
 }
 
 impl ObjectGrab_SurfaceInfo {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
@@ -19958,18 +20168,18 @@ impl ObjectGrab_SurfaceInfo {
 }
 
 impl ObjectGrabUpdate_AgentData {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
         Ok(ObjectGrabUpdate_AgentData {
             agent_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
             session_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -19978,13 +20188,13 @@ impl ObjectGrabUpdate_AgentData {
 }
 
 impl ObjectGrabUpdate_ObjectData {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
         Ok(ObjectGrabUpdate_ObjectData {
             object_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -20004,7 +20214,7 @@ impl ObjectGrabUpdate_ObjectData {
 }
 
 impl ObjectGrabUpdate_SurfaceInfo {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
@@ -20040,18 +20250,18 @@ impl ObjectGrabUpdate_SurfaceInfo {
 }
 
 impl ObjectDeGrab_AgentData {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
         Ok(ObjectDeGrab_AgentData {
             agent_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
             session_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -20060,7 +20270,7 @@ impl ObjectDeGrab_AgentData {
 }
 
 impl ObjectDeGrab_ObjectData {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
@@ -20071,7 +20281,7 @@ impl ObjectDeGrab_ObjectData {
 }
 
 impl ObjectDeGrab_SurfaceInfo {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
@@ -20107,18 +20317,18 @@ impl ObjectDeGrab_SurfaceInfo {
 }
 
 impl ObjectSpinStart_AgentData {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
         Ok(ObjectSpinStart_AgentData {
             agent_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
             session_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -20127,13 +20337,13 @@ impl ObjectSpinStart_AgentData {
 }
 
 impl ObjectSpinStart_ObjectData {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
         Ok(ObjectSpinStart_ObjectData {
             object_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -20142,18 +20352,18 @@ impl ObjectSpinStart_ObjectData {
 }
 
 impl ObjectSpinUpdate_AgentData {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
         Ok(ObjectSpinUpdate_AgentData {
             agent_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
             session_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -20162,13 +20372,13 @@ impl ObjectSpinUpdate_AgentData {
 }
 
 impl ObjectSpinUpdate_ObjectData {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
         Ok(ObjectSpinUpdate_ObjectData {
             object_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -20185,18 +20395,18 @@ impl ObjectSpinUpdate_ObjectData {
 }
 
 impl ObjectSpinStop_AgentData {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
         Ok(ObjectSpinStop_AgentData {
             agent_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
             session_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -20205,13 +20415,13 @@ impl ObjectSpinStop_AgentData {
 }
 
 impl ObjectSpinStop_ObjectData {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
         Ok(ObjectSpinStop_ObjectData {
             object_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -20220,18 +20430,18 @@ impl ObjectSpinStop_ObjectData {
 }
 
 impl ObjectExportSelected_AgentData {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
         Ok(ObjectExportSelected_AgentData {
             agent_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
             request_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -20241,13 +20451,13 @@ impl ObjectExportSelected_AgentData {
 }
 
 impl ObjectExportSelected_ObjectData {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
         Ok(ObjectExportSelected_ObjectData {
             object_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -20256,18 +20466,18 @@ impl ObjectExportSelected_ObjectData {
 }
 
 impl ModifyLand_AgentData {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
         Ok(ModifyLand_AgentData {
             agent_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
             session_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -20276,7 +20486,7 @@ impl ModifyLand_AgentData {
 }
 
 impl ModifyLand_ModifyBlock {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
@@ -20290,7 +20500,7 @@ impl ModifyLand_ModifyBlock {
 }
 
 impl ModifyLand_ParcelData {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
@@ -20305,7 +20515,7 @@ impl ModifyLand_ParcelData {
 }
 
 impl ModifyLand_ModifyBlockExtended {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
@@ -20316,18 +20526,18 @@ impl ModifyLand_ModifyBlockExtended {
 }
 
 impl VelocityInterpolateOn_AgentData {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
         Ok(VelocityInterpolateOn_AgentData {
             agent_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
             session_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -20336,18 +20546,18 @@ impl VelocityInterpolateOn_AgentData {
 }
 
 impl VelocityInterpolateOff_AgentData {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
         Ok(VelocityInterpolateOff_AgentData {
             agent_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
             session_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -20356,18 +20566,18 @@ impl VelocityInterpolateOff_AgentData {
 }
 
 impl StateSave_AgentData {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
         Ok(StateSave_AgentData {
             agent_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
             session_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -20376,7 +20586,7 @@ impl StateSave_AgentData {
 }
 
 impl StateSave_DataBlock {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
@@ -20392,7 +20602,7 @@ impl StateSave_DataBlock {
 }
 
 impl ReportAutosaveCrash_AutosaveData {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
@@ -20404,18 +20614,18 @@ impl ReportAutosaveCrash_AutosaveData {
 }
 
 impl SimWideDeletes_AgentData {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
         Ok(SimWideDeletes_AgentData {
             agent_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
             session_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -20424,13 +20634,13 @@ impl SimWideDeletes_AgentData {
 }
 
 impl SimWideDeletes_DataBlock {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
         Ok(SimWideDeletes_DataBlock {
             target_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -20440,18 +20650,18 @@ impl SimWideDeletes_DataBlock {
 }
 
 impl RequestObjectPropertiesFamily_AgentData {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
         Ok(RequestObjectPropertiesFamily_AgentData {
             agent_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
             session_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -20460,14 +20670,14 @@ impl RequestObjectPropertiesFamily_AgentData {
 }
 
 impl RequestObjectPropertiesFamily_ObjectData {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
         Ok(RequestObjectPropertiesFamily_ObjectData {
             request_flags: buffer.read_u32::<LittleEndian>()?,
             object_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -20476,18 +20686,18 @@ impl RequestObjectPropertiesFamily_ObjectData {
 }
 
 impl TrackAgent_AgentData {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
         Ok(TrackAgent_AgentData {
             agent_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
             session_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -20496,13 +20706,13 @@ impl TrackAgent_AgentData {
 }
 
 impl TrackAgent_TargetData {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
         Ok(TrackAgent_TargetData {
             prey_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -20511,23 +20721,23 @@ impl TrackAgent_TargetData {
 }
 
 impl ViewerStats_AgentData {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
         Ok(ViewerStats_AgentData {
             agent_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
             session_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
             ip: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 4];
                 buffer.read_exact(&mut raw)?;
                 Ip4Addr::from(raw)
             },
@@ -20563,7 +20773,7 @@ impl ViewerStats_AgentData {
 }
 
 impl ViewerStats_DownloadTotals {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
@@ -20576,7 +20786,7 @@ impl ViewerStats_DownloadTotals {
 }
 
 impl ViewerStats_NetStats {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
@@ -20590,7 +20800,7 @@ impl ViewerStats_NetStats {
 }
 
 impl ViewerStats_FailStats {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
@@ -20606,7 +20816,7 @@ impl ViewerStats_FailStats {
 }
 
 impl ViewerStats_MiscStats {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
@@ -20618,18 +20828,18 @@ impl ViewerStats_MiscStats {
 }
 
 impl ScriptAnswerYes_AgentData {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
         Ok(ScriptAnswerYes_AgentData {
             agent_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
             session_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -20638,18 +20848,18 @@ impl ScriptAnswerYes_AgentData {
 }
 
 impl ScriptAnswerYes_Data {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
         Ok(ScriptAnswerYes_Data {
             task_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
             item_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -20659,18 +20869,18 @@ impl ScriptAnswerYes_Data {
 }
 
 impl UserReport_AgentData {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
         Ok(UserReport_AgentData {
             agent_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
             session_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -20679,7 +20889,7 @@ impl UserReport_AgentData {
 }
 
 impl UserReport_ReportData {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
@@ -20693,17 +20903,17 @@ impl UserReport_ReportData {
             ),
             check_flags: buffer.read_u8()?,
             screenshot_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
             object_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
             abuser_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -20714,7 +20924,7 @@ impl UserReport_ReportData {
                 raw
             },
             abuse_region_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -20741,7 +20951,7 @@ impl UserReport_ReportData {
 }
 
 impl AlertMessage_AlertData {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
@@ -20757,7 +20967,7 @@ impl AlertMessage_AlertData {
 }
 
 impl AlertMessage_AlertInfo {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
@@ -20778,14 +20988,29 @@ impl AlertMessage_AlertInfo {
     }
 }
 
+impl AlertMessage_AgentInfo {
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
+    where
+        R: Read,
+    {
+        Ok(AlertMessage_AgentInfo {
+            agent_id: {
+                let mut raw = [0u8; 16];
+                buffer.read_exact(&mut raw)?;
+                Uuid::from_bytes(&raw)?
+            },
+        })
+    }
+}
+
 impl AgentAlertMessage_AgentData {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
         Ok(AgentAlertMessage_AgentData {
             agent_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -20794,7 +21019,7 @@ impl AgentAlertMessage_AgentData {
 }
 
 impl AgentAlertMessage_AlertData {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
@@ -20811,18 +21036,18 @@ impl AgentAlertMessage_AlertData {
 }
 
 impl MeanCollisionAlert_MeanCollision {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
         Ok(MeanCollisionAlert_MeanCollision {
             victim: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
             perp: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -20834,7 +21059,7 @@ impl MeanCollisionAlert_MeanCollision {
 }
 
 impl ViewerFrozenMessage_FrozenData {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
@@ -20845,7 +21070,7 @@ impl ViewerFrozenMessage_FrozenData {
 }
 
 impl HealthMessage_HealthData {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
@@ -20856,7 +21081,7 @@ impl HealthMessage_HealthData {
 }
 
 impl ChatFromSimulator_ChatData {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
@@ -20868,12 +21093,12 @@ impl ChatFromSimulator_ChatData {
                 raw
             },
             source_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
             owner_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -20896,7 +21121,7 @@ impl ChatFromSimulator_ChatData {
 }
 
 impl SimStats_Region {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
@@ -20910,7 +21135,7 @@ impl SimStats_Region {
 }
 
 impl SimStats_Stat {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
@@ -20922,7 +21147,7 @@ impl SimStats_Stat {
 }
 
 impl SimStats_PidStat {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
@@ -20930,19 +21155,30 @@ impl SimStats_PidStat {
     }
 }
 
+impl SimStats_RegionInfo {
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
+    where
+        R: Read,
+    {
+        Ok(SimStats_RegionInfo {
+            region_flags_extended: buffer.read_u64::<LittleEndian>()?,
+        })
+    }
+}
+
 impl RequestRegionInfo_AgentData {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
         Ok(RequestRegionInfo_AgentData {
             agent_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
             session_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -20951,18 +21187,18 @@ impl RequestRegionInfo_AgentData {
 }
 
 impl RegionInfo_AgentData {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
         Ok(RegionInfo_AgentData {
             agent_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
             session_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -20971,7 +21207,7 @@ impl RegionInfo_AgentData {
 }
 
 impl RegionInfo_RegionInfo {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
@@ -21002,7 +21238,7 @@ impl RegionInfo_RegionInfo {
 }
 
 impl RegionInfo_RegionInfo2 {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
@@ -21026,19 +21262,30 @@ impl RegionInfo_RegionInfo2 {
     }
 }
 
+impl RegionInfo_RegionInfo3 {
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
+    where
+        R: Read,
+    {
+        Ok(RegionInfo_RegionInfo3 {
+            region_flags_extended: buffer.read_u64::<LittleEndian>()?,
+        })
+    }
+}
+
 impl GodUpdateRegionInfo_AgentData {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
         Ok(GodUpdateRegionInfo_AgentData {
             agent_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
             session_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -21047,7 +21294,7 @@ impl GodUpdateRegionInfo_AgentData {
 }
 
 impl GodUpdateRegionInfo_RegionInfo {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
@@ -21069,8 +21316,19 @@ impl GodUpdateRegionInfo_RegionInfo {
     }
 }
 
+impl GodUpdateRegionInfo_RegionInfo2 {
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
+    where
+        R: Read,
+    {
+        Ok(GodUpdateRegionInfo_RegionInfo2 {
+            region_flags_extended: buffer.read_u64::<LittleEndian>()?,
+        })
+    }
+}
+
 impl NearestLandingRegionRequest_RequestingRegionData {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
@@ -21081,7 +21339,7 @@ impl NearestLandingRegionRequest_RequestingRegionData {
 }
 
 impl NearestLandingRegionReply_LandingRegionData {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
@@ -21092,7 +21350,7 @@ impl NearestLandingRegionReply_LandingRegionData {
 }
 
 impl NearestLandingRegionUpdated_RegionData {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
@@ -21103,7 +21361,7 @@ impl NearestLandingRegionUpdated_RegionData {
 }
 
 impl TeleportLandingStatusChanged_RegionData {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
@@ -21114,7 +21372,7 @@ impl TeleportLandingStatusChanged_RegionData {
 }
 
 impl RegionHandshake_RegionInfo {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
@@ -21128,7 +21386,7 @@ impl RegionHandshake_RegionInfo {
                 raw
             },
             sim_owner: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -21136,47 +21394,47 @@ impl RegionHandshake_RegionInfo {
             water_height: buffer.read_f32::<LittleEndian>()?,
             billable_factor: buffer.read_f32::<LittleEndian>()?,
             cache_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
             terrain_base0: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
             terrain_base1: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
             terrain_base2: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
             terrain_base3: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
             terrain_detail0: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
             terrain_detail1: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
             terrain_detail2: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
             terrain_detail3: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -21193,13 +21451,13 @@ impl RegionHandshake_RegionInfo {
 }
 
 impl RegionHandshake_RegionInfo2 {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
         Ok(RegionHandshake_RegionInfo2 {
             region_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -21208,7 +21466,7 @@ impl RegionHandshake_RegionInfo2 {
 }
 
 impl RegionHandshake_RegionInfo3 {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
@@ -21237,19 +21495,31 @@ impl RegionHandshake_RegionInfo3 {
     }
 }
 
+impl RegionHandshake_RegionInfo4 {
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
+    where
+        R: Read,
+    {
+        Ok(RegionHandshake_RegionInfo4 {
+            region_flags_extended: buffer.read_u64::<LittleEndian>()?,
+            region_protocols: buffer.read_u64::<LittleEndian>()?,
+        })
+    }
+}
+
 impl RegionHandshakeReply_AgentData {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
         Ok(RegionHandshakeReply_AgentData {
             agent_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
             session_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -21258,7 +21528,7 @@ impl RegionHandshakeReply_AgentData {
 }
 
 impl RegionHandshakeReply_RegionInfo {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
@@ -21269,7 +21539,7 @@ impl RegionHandshakeReply_RegionInfo {
 }
 
 impl CoarseLocationUpdate_Location {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
@@ -21282,7 +21552,7 @@ impl CoarseLocationUpdate_Location {
 }
 
 impl CoarseLocationUpdate_Index {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
@@ -21294,13 +21564,13 @@ impl CoarseLocationUpdate_Index {
 }
 
 impl CoarseLocationUpdate_AgentData {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
         Ok(CoarseLocationUpdate_AgentData {
             agent_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -21309,13 +21579,13 @@ impl CoarseLocationUpdate_AgentData {
 }
 
 impl ImageData_ImageID {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
         Ok(ImageData_ImageID {
             id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -21327,7 +21597,7 @@ impl ImageData_ImageID {
 }
 
 impl ImageData_ImageData {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
@@ -21343,13 +21613,13 @@ impl ImageData_ImageData {
 }
 
 impl ImagePacket_ImageID {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
         Ok(ImagePacket_ImageID {
             id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -21359,7 +21629,7 @@ impl ImagePacket_ImageID {
 }
 
 impl ImagePacket_ImageData {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
@@ -21375,7 +21645,7 @@ impl ImagePacket_ImageData {
 }
 
 impl LayerData_LayerID {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
@@ -21384,7 +21654,7 @@ impl LayerData_LayerID {
 }
 
 impl LayerData_LayerData {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
@@ -21400,7 +21670,7 @@ impl LayerData_LayerData {
 }
 
 impl ObjectUpdate_RegionData {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
@@ -21412,7 +21682,7 @@ impl ObjectUpdate_RegionData {
 }
 
 impl ObjectUpdate_ObjectData {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
@@ -21420,7 +21690,7 @@ impl ObjectUpdate_ObjectData {
             id: buffer.read_u32::<LittleEndian>()?,
             state: buffer.read_u8()?,
             full_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -21513,12 +21783,12 @@ impl ObjectUpdate_ObjectData {
                 raw
             },
             sound: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
             owner_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -21541,7 +21811,7 @@ impl ObjectUpdate_ObjectData {
 }
 
 impl ObjectUpdateCompressed_RegionData {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
@@ -21553,7 +21823,7 @@ impl ObjectUpdateCompressed_RegionData {
 }
 
 impl ObjectUpdateCompressed_ObjectData {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
@@ -21570,7 +21840,7 @@ impl ObjectUpdateCompressed_ObjectData {
 }
 
 impl ObjectUpdateCached_RegionData {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
@@ -21582,7 +21852,7 @@ impl ObjectUpdateCached_RegionData {
 }
 
 impl ObjectUpdateCached_ObjectData {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
@@ -21595,7 +21865,7 @@ impl ObjectUpdateCached_ObjectData {
 }
 
 impl ImprovedTerseObjectUpdate_RegionData {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
@@ -21607,7 +21877,7 @@ impl ImprovedTerseObjectUpdate_RegionData {
 }
 
 impl ImprovedTerseObjectUpdate_ObjectData {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
@@ -21629,7 +21899,7 @@ impl ImprovedTerseObjectUpdate_ObjectData {
 }
 
 impl KillObject_ObjectData {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
@@ -21640,18 +21910,18 @@ impl KillObject_ObjectData {
 }
 
 impl CrossedRegion_AgentData {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
         Ok(CrossedRegion_AgentData {
             agent_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
             session_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -21660,13 +21930,13 @@ impl CrossedRegion_AgentData {
 }
 
 impl CrossedRegion_RegionData {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
         Ok(CrossedRegion_RegionData {
             sim_ip: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 4];
                 buffer.read_exact(&mut raw)?;
                 Ip4Addr::from(raw)
             },
@@ -21683,7 +21953,7 @@ impl CrossedRegion_RegionData {
 }
 
 impl CrossedRegion_Info {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
@@ -21703,7 +21973,7 @@ impl CrossedRegion_Info {
 }
 
 impl SimulatorViewerTimeMessage_TimeInfo {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
@@ -21727,14 +21997,14 @@ impl SimulatorViewerTimeMessage_TimeInfo {
 }
 
 impl EnableSimulator_SimulatorInfo {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
         Ok(EnableSimulator_SimulatorInfo {
             handle: buffer.read_u64::<LittleEndian>()?,
             ip: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 4];
                 buffer.read_exact(&mut raw)?;
                 Ip4Addr::from(raw)
             },
@@ -21744,18 +22014,18 @@ impl EnableSimulator_SimulatorInfo {
 }
 
 impl ConfirmEnableSimulator_AgentData {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
         Ok(ConfirmEnableSimulator_AgentData {
             agent_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
             session_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -21764,13 +22034,13 @@ impl ConfirmEnableSimulator_AgentData {
 }
 
 impl TransferRequest_TransferInfo {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
         Ok(TransferRequest_TransferInfo {
             transfer_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -21788,13 +22058,13 @@ impl TransferRequest_TransferInfo {
 }
 
 impl TransferInfo_TransferInfo {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
         Ok(TransferInfo_TransferInfo {
             transfer_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -21813,13 +22083,13 @@ impl TransferInfo_TransferInfo {
 }
 
 impl TransferPacket_TransferData {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
         Ok(TransferPacket_TransferData {
             transfer_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -21837,13 +22107,13 @@ impl TransferPacket_TransferData {
 }
 
 impl TransferAbort_TransferInfo {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
         Ok(TransferAbort_TransferInfo {
             transfer_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -21853,7 +22123,7 @@ impl TransferAbort_TransferInfo {
 }
 
 impl RequestXfer_XferID {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
@@ -21869,7 +22139,7 @@ impl RequestXfer_XferID {
             delete_on_completion: buffer.read_u8()? == 1,
             use_big_packets: buffer.read_u8()? == 1,
             v_file_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -21879,7 +22149,7 @@ impl RequestXfer_XferID {
 }
 
 impl SendXferPacket_XferID {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
@@ -21891,7 +22161,7 @@ impl SendXferPacket_XferID {
 }
 
 impl SendXferPacket_DataPacket {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
@@ -21907,7 +22177,7 @@ impl SendXferPacket_DataPacket {
 }
 
 impl ConfirmXferPacket_XferID {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
@@ -21919,7 +22189,7 @@ impl ConfirmXferPacket_XferID {
 }
 
 impl AbortXfer_XferID {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
@@ -21931,13 +22201,13 @@ impl AbortXfer_XferID {
 }
 
 impl AvatarAnimation_Sender {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
         Ok(AvatarAnimation_Sender {
             id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -21946,13 +22216,13 @@ impl AvatarAnimation_Sender {
 }
 
 impl AvatarAnimation_AnimationList {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
         Ok(AvatarAnimation_AnimationList {
             anim_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -21962,13 +22232,13 @@ impl AvatarAnimation_AnimationList {
 }
 
 impl AvatarAnimation_AnimationSourceList {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
         Ok(AvatarAnimation_AnimationSourceList {
             object_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -21977,7 +22247,7 @@ impl AvatarAnimation_AnimationSourceList {
 }
 
 impl AvatarAnimation_PhysicalAvatarEventList {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
@@ -21993,13 +22263,13 @@ impl AvatarAnimation_PhysicalAvatarEventList {
 }
 
 impl AvatarAppearance_Sender {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
         Ok(AvatarAppearance_Sender {
             id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -22009,7 +22279,7 @@ impl AvatarAppearance_Sender {
 }
 
 impl AvatarAppearance_ObjectData {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
@@ -22025,7 +22295,7 @@ impl AvatarAppearance_ObjectData {
 }
 
 impl AvatarAppearance_VisualParam {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
@@ -22035,14 +22305,42 @@ impl AvatarAppearance_VisualParam {
     }
 }
 
+impl AvatarAppearance_AppearanceData {
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
+    where
+        R: Read,
+    {
+        Ok(AvatarAppearance_AppearanceData {
+            appearance_version: buffer.read_u8()?,
+            cof_version: buffer.read_i32::<LittleEndian>()?,
+            flags: buffer.read_u32::<LittleEndian>()?,
+        })
+    }
+}
+
+impl AvatarAppearance_AppearanceHover {
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
+    where
+        R: Read,
+    {
+        Ok(AvatarAppearance_AppearanceHover {
+            hover_height: Vector3::new(
+                buffer.read_f32::<LittleEndian>()?,
+                buffer.read_f32::<LittleEndian>()?,
+                buffer.read_f32::<LittleEndian>()?,
+            ),
+        })
+    }
+}
+
 impl AvatarSitResponse_SitObject {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
         Ok(AvatarSitResponse_SitObject {
             id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -22051,7 +22349,7 @@ impl AvatarSitResponse_SitObject {
 }
 
 impl AvatarSitResponse_SitTransform {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
@@ -22086,13 +22384,13 @@ impl AvatarSitResponse_SitTransform {
 }
 
 impl SetFollowCamProperties_ObjectData {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
         Ok(SetFollowCamProperties_ObjectData {
             object_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -22101,7 +22399,7 @@ impl SetFollowCamProperties_ObjectData {
 }
 
 impl SetFollowCamProperties_CameraProperty {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
@@ -22113,13 +22411,13 @@ impl SetFollowCamProperties_CameraProperty {
 }
 
 impl ClearFollowCamProperties_ObjectData {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
         Ok(ClearFollowCamProperties_ObjectData {
             object_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -22128,7 +22426,7 @@ impl ClearFollowCamProperties_ObjectData {
 }
 
 impl CameraConstraint_CameraCollidePlane {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
@@ -22144,28 +22442,28 @@ impl CameraConstraint_CameraCollidePlane {
 }
 
 impl ObjectProperties_ObjectData {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
         Ok(ObjectProperties_ObjectData {
             object_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
             creator_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
             owner_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
             group_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -22184,22 +22482,22 @@ impl ObjectProperties_ObjectData {
             category: buffer.read_u32::<LittleEndian>()?,
             inventory_serial: buffer.read_i16::<LittleEndian>()?,
             item_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
             folder_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
             from_task_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
             last_owner_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -22238,24 +22536,24 @@ impl ObjectProperties_ObjectData {
 }
 
 impl ObjectPropertiesFamily_ObjectData {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
         Ok(ObjectPropertiesFamily_ObjectData {
             request_flags: buffer.read_u32::<LittleEndian>()?,
             object_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
             owner_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
             group_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -22269,7 +22567,7 @@ impl ObjectPropertiesFamily_ObjectData {
             sale_price: buffer.read_i32::<LittleEndian>()?,
             category: buffer.read_u32::<LittleEndian>()?,
             last_owner_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -22290,13 +22588,13 @@ impl ObjectPropertiesFamily_ObjectData {
 }
 
 impl RequestPayPrice_ObjectData {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
         Ok(RequestPayPrice_ObjectData {
             object_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -22305,13 +22603,13 @@ impl RequestPayPrice_ObjectData {
 }
 
 impl PayPriceReply_ObjectData {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
         Ok(PayPriceReply_ObjectData {
             object_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -22321,7 +22619,7 @@ impl PayPriceReply_ObjectData {
 }
 
 impl PayPriceReply_ButtonData {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
@@ -22332,13 +22630,13 @@ impl PayPriceReply_ButtonData {
 }
 
 impl KickUser_TargetBlock {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
         Ok(KickUser_TargetBlock {
             target_ip: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 4];
                 buffer.read_exact(&mut raw)?;
                 Ip4Addr::from(raw)
             },
@@ -22348,18 +22646,18 @@ impl KickUser_TargetBlock {
 }
 
 impl KickUser_UserInfo {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
         Ok(KickUser_UserInfo {
             agent_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
             session_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -22374,13 +22672,13 @@ impl KickUser_UserInfo {
 }
 
 impl KickUserAck_UserInfo {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
         Ok(KickUserAck_UserInfo {
             session_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -22390,23 +22688,23 @@ impl KickUserAck_UserInfo {
 }
 
 impl GodKickUser_UserInfo {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
         Ok(GodKickUser_UserInfo {
             god_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
             god_session_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
             agent_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -22422,13 +22720,13 @@ impl GodKickUser_UserInfo {
 }
 
 impl SystemKickUser_AgentInfo {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
         Ok(SystemKickUser_AgentInfo {
             agent_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -22437,18 +22735,18 @@ impl SystemKickUser_AgentInfo {
 }
 
 impl EjectUser_AgentData {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
         Ok(EjectUser_AgentData {
             agent_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
             session_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -22457,13 +22755,13 @@ impl EjectUser_AgentData {
 }
 
 impl EjectUser_Data {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
         Ok(EjectUser_Data {
             target_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -22473,18 +22771,18 @@ impl EjectUser_Data {
 }
 
 impl FreezeUser_AgentData {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
         Ok(FreezeUser_AgentData {
             agent_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
             session_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -22493,13 +22791,13 @@ impl FreezeUser_AgentData {
 }
 
 impl FreezeUser_Data {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
         Ok(FreezeUser_Data {
             target_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -22509,23 +22807,23 @@ impl FreezeUser_Data {
 }
 
 impl AvatarPropertiesRequest_AgentData {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
         Ok(AvatarPropertiesRequest_AgentData {
             agent_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
             session_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
             avatar_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -22534,18 +22832,18 @@ impl AvatarPropertiesRequest_AgentData {
 }
 
 impl AvatarPropertiesRequestBackend_AgentData {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
         Ok(AvatarPropertiesRequestBackend_AgentData {
             agent_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
             avatar_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -22556,18 +22854,18 @@ impl AvatarPropertiesRequestBackend_AgentData {
 }
 
 impl AvatarPropertiesReply_AgentData {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
         Ok(AvatarPropertiesReply_AgentData {
             agent_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
             avatar_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -22576,23 +22874,23 @@ impl AvatarPropertiesReply_AgentData {
 }
 
 impl AvatarPropertiesReply_PropertiesData {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
         Ok(AvatarPropertiesReply_PropertiesData {
             image_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
             fl_image_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
             partner_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -22632,18 +22930,18 @@ impl AvatarPropertiesReply_PropertiesData {
 }
 
 impl AvatarInterestsReply_AgentData {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
         Ok(AvatarInterestsReply_AgentData {
             agent_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
             avatar_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -22652,7 +22950,7 @@ impl AvatarInterestsReply_AgentData {
 }
 
 impl AvatarInterestsReply_PropertiesData {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
@@ -22682,18 +22980,18 @@ impl AvatarInterestsReply_PropertiesData {
 }
 
 impl AvatarGroupsReply_AgentData {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
         Ok(AvatarGroupsReply_AgentData {
             agent_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
             avatar_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -22702,7 +23000,7 @@ impl AvatarGroupsReply_AgentData {
 }
 
 impl AvatarGroupsReply_GroupData {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
@@ -22716,7 +23014,7 @@ impl AvatarGroupsReply_GroupData {
                 raw
             },
             group_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -22727,7 +23025,7 @@ impl AvatarGroupsReply_GroupData {
                 raw
             },
             group_insignia_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -22736,7 +23034,7 @@ impl AvatarGroupsReply_GroupData {
 }
 
 impl AvatarGroupsReply_NewGroupData {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
@@ -22747,18 +23045,18 @@ impl AvatarGroupsReply_NewGroupData {
 }
 
 impl AvatarPropertiesUpdate_AgentData {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
         Ok(AvatarPropertiesUpdate_AgentData {
             agent_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
             session_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -22767,18 +23065,18 @@ impl AvatarPropertiesUpdate_AgentData {
 }
 
 impl AvatarPropertiesUpdate_PropertiesData {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
         Ok(AvatarPropertiesUpdate_PropertiesData {
             image_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
             fl_image_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -22807,18 +23105,18 @@ impl AvatarPropertiesUpdate_PropertiesData {
 }
 
 impl AvatarInterestsUpdate_AgentData {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
         Ok(AvatarInterestsUpdate_AgentData {
             agent_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
             session_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -22827,7 +23125,7 @@ impl AvatarInterestsUpdate_AgentData {
 }
 
 impl AvatarInterestsUpdate_PropertiesData {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
@@ -22857,13 +23155,13 @@ impl AvatarInterestsUpdate_PropertiesData {
 }
 
 impl AvatarNotesReply_AgentData {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
         Ok(AvatarNotesReply_AgentData {
             agent_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -22872,13 +23170,13 @@ impl AvatarNotesReply_AgentData {
 }
 
 impl AvatarNotesReply_Data {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
         Ok(AvatarNotesReply_Data {
             target_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -22893,18 +23191,18 @@ impl AvatarNotesReply_Data {
 }
 
 impl AvatarNotesUpdate_AgentData {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
         Ok(AvatarNotesUpdate_AgentData {
             agent_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
             session_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -22913,13 +23211,13 @@ impl AvatarNotesUpdate_AgentData {
 }
 
 impl AvatarNotesUpdate_Data {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
         Ok(AvatarNotesUpdate_Data {
             target_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -22934,18 +23232,18 @@ impl AvatarNotesUpdate_Data {
 }
 
 impl AvatarPicksReply_AgentData {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
         Ok(AvatarPicksReply_AgentData {
             agent_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
             target_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -22954,13 +23252,13 @@ impl AvatarPicksReply_AgentData {
 }
 
 impl AvatarPicksReply_Data {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
         Ok(AvatarPicksReply_Data {
             pick_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -22975,18 +23273,18 @@ impl AvatarPicksReply_Data {
 }
 
 impl EventInfoRequest_AgentData {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
         Ok(EventInfoRequest_AgentData {
             agent_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
             session_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -22995,7 +23293,7 @@ impl EventInfoRequest_AgentData {
 }
 
 impl EventInfoRequest_EventData {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
@@ -23006,13 +23304,13 @@ impl EventInfoRequest_EventData {
 }
 
 impl EventInfoReply_AgentData {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
         Ok(EventInfoReply_AgentData {
             agent_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -23021,7 +23319,7 @@ impl EventInfoReply_AgentData {
 }
 
 impl EventInfoReply_EventData {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
@@ -23078,18 +23376,18 @@ impl EventInfoReply_EventData {
 }
 
 impl EventNotificationAddRequest_AgentData {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
         Ok(EventNotificationAddRequest_AgentData {
             agent_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
             session_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -23098,7 +23396,7 @@ impl EventNotificationAddRequest_AgentData {
 }
 
 impl EventNotificationAddRequest_EventData {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
@@ -23109,18 +23407,18 @@ impl EventNotificationAddRequest_EventData {
 }
 
 impl EventNotificationRemoveRequest_AgentData {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
         Ok(EventNotificationRemoveRequest_AgentData {
             agent_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
             session_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -23129,7 +23427,7 @@ impl EventNotificationRemoveRequest_AgentData {
 }
 
 impl EventNotificationRemoveRequest_EventData {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
@@ -23140,18 +23438,18 @@ impl EventNotificationRemoveRequest_EventData {
 }
 
 impl EventGodDelete_AgentData {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
         Ok(EventGodDelete_AgentData {
             agent_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
             session_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -23160,7 +23458,7 @@ impl EventGodDelete_AgentData {
 }
 
 impl EventGodDelete_EventData {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
@@ -23171,13 +23469,13 @@ impl EventGodDelete_EventData {
 }
 
 impl EventGodDelete_QueryData {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
         Ok(EventGodDelete_QueryData {
             query_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -23194,13 +23492,13 @@ impl EventGodDelete_QueryData {
 }
 
 impl PickInfoReply_AgentData {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
         Ok(PickInfoReply_AgentData {
             agent_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -23209,24 +23507,24 @@ impl PickInfoReply_AgentData {
 }
 
 impl PickInfoReply_Data {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
         Ok(PickInfoReply_Data {
             pick_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
             creator_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
             top_pick: buffer.read_u8()? == 1,
             parcel_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -23243,7 +23541,7 @@ impl PickInfoReply_Data {
                 raw
             },
             snapshot_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -23277,18 +23575,18 @@ impl PickInfoReply_Data {
 }
 
 impl PickInfoUpdate_AgentData {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
         Ok(PickInfoUpdate_AgentData {
             agent_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
             session_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -23297,24 +23595,24 @@ impl PickInfoUpdate_AgentData {
 }
 
 impl PickInfoUpdate_Data {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
         Ok(PickInfoUpdate_Data {
             pick_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
             creator_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
             top_pick: buffer.read_u8()? == 1,
             parcel_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -23331,7 +23629,7 @@ impl PickInfoUpdate_Data {
                 raw
             },
             snapshot_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -23347,18 +23645,18 @@ impl PickInfoUpdate_Data {
 }
 
 impl PickDelete_AgentData {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
         Ok(PickDelete_AgentData {
             agent_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
             session_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -23367,13 +23665,13 @@ impl PickDelete_AgentData {
 }
 
 impl PickDelete_Data {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
         Ok(PickDelete_Data {
             pick_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -23382,18 +23680,18 @@ impl PickDelete_Data {
 }
 
 impl PickGodDelete_AgentData {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
         Ok(PickGodDelete_AgentData {
             agent_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
             session_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -23402,18 +23700,18 @@ impl PickGodDelete_AgentData {
 }
 
 impl PickGodDelete_Data {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
         Ok(PickGodDelete_Data {
             pick_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
             query_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -23422,18 +23720,18 @@ impl PickGodDelete_Data {
 }
 
 impl ScriptQuestion_Data {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
         Ok(ScriptQuestion_Data {
             task_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
             item_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -23454,8 +23752,23 @@ impl ScriptQuestion_Data {
     }
 }
 
+impl ScriptQuestion_Experience {
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
+    where
+        R: Read,
+    {
+        Ok(ScriptQuestion_Experience {
+            experience_id: {
+                let mut raw = [0u8; 16];
+                buffer.read_exact(&mut raw)?;
+                Uuid::from_bytes(&raw)?
+            },
+        })
+    }
+}
+
 impl ScriptControlChange_Data {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
@@ -23468,13 +23781,13 @@ impl ScriptControlChange_Data {
 }
 
 impl ScriptDialog_Data {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
         Ok(ScriptDialog_Data {
             object_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -23504,7 +23817,7 @@ impl ScriptDialog_Data {
             },
             chat_channel: buffer.read_i32::<LittleEndian>()?,
             image_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -23513,7 +23826,7 @@ impl ScriptDialog_Data {
 }
 
 impl ScriptDialog_Buttons {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
@@ -23529,13 +23842,13 @@ impl ScriptDialog_Buttons {
 }
 
 impl ScriptDialog_OwnerData {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
         Ok(ScriptDialog_OwnerData {
             owner_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -23544,18 +23857,18 @@ impl ScriptDialog_OwnerData {
 }
 
 impl ScriptDialogReply_AgentData {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
         Ok(ScriptDialogReply_AgentData {
             agent_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
             session_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -23564,13 +23877,13 @@ impl ScriptDialogReply_AgentData {
 }
 
 impl ScriptDialogReply_Data {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
         Ok(ScriptDialogReply_Data {
             object_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -23587,18 +23900,18 @@ impl ScriptDialogReply_Data {
 }
 
 impl ForceScriptControlRelease_AgentData {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
         Ok(ForceScriptControlRelease_AgentData {
             agent_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
             session_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -23607,18 +23920,18 @@ impl ForceScriptControlRelease_AgentData {
 }
 
 impl RevokePermissions_AgentData {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
         Ok(RevokePermissions_AgentData {
             agent_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
             session_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -23627,13 +23940,13 @@ impl RevokePermissions_AgentData {
 }
 
 impl RevokePermissions_Data {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
         Ok(RevokePermissions_Data {
             object_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -23643,7 +23956,7 @@ impl RevokePermissions_Data {
 }
 
 impl LoadURL_Data {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
@@ -23655,12 +23968,12 @@ impl LoadURL_Data {
                 raw
             },
             object_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
             owner_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -23682,7 +23995,7 @@ impl LoadURL_Data {
 }
 
 impl ScriptTeleportRequest_Data {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
@@ -23714,7 +24027,7 @@ impl ScriptTeleportRequest_Data {
 }
 
 impl ParcelOverlay_ParcelData {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
@@ -23731,18 +24044,18 @@ impl ParcelOverlay_ParcelData {
 }
 
 impl ParcelPropertiesRequest_AgentData {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
         Ok(ParcelPropertiesRequest_AgentData {
             agent_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
             session_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -23751,7 +24064,7 @@ impl ParcelPropertiesRequest_AgentData {
 }
 
 impl ParcelPropertiesRequest_ParcelData {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
@@ -23767,18 +24080,18 @@ impl ParcelPropertiesRequest_ParcelData {
 }
 
 impl ParcelPropertiesRequestByID_AgentData {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
         Ok(ParcelPropertiesRequestByID_AgentData {
             agent_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
             session_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -23787,7 +24100,7 @@ impl ParcelPropertiesRequestByID_AgentData {
 }
 
 impl ParcelPropertiesRequestByID_ParcelData {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
@@ -23799,7 +24112,7 @@ impl ParcelPropertiesRequestByID_ParcelData {
 }
 
 impl ParcelProperties_ParcelData {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
@@ -23812,7 +24125,7 @@ impl ParcelProperties_ParcelData {
             public_count: buffer.read_i32::<LittleEndian>()?,
             local_id: buffer.read_i32::<LittleEndian>()?,
             owner_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -23876,13 +24189,13 @@ impl ParcelProperties_ParcelData {
                 raw
             },
             media_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
             media_auto_scale: buffer.read_u8()?,
             group_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -23890,12 +24203,12 @@ impl ParcelProperties_ParcelData {
             pass_hours: buffer.read_f32::<LittleEndian>()?,
             category: buffer.read_u8()?,
             auth_buyer_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
             snapshot_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -23919,7 +24232,7 @@ impl ParcelProperties_ParcelData {
 }
 
 impl ParcelProperties_AgeVerificationBlock {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
@@ -23929,19 +24242,30 @@ impl ParcelProperties_AgeVerificationBlock {
     }
 }
 
+impl ParcelProperties_RegionAllowAccessBlock {
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
+    where
+        R: Read,
+    {
+        Ok(ParcelProperties_RegionAllowAccessBlock {
+            region_allow_access_override: buffer.read_u8()? == 1,
+        })
+    }
+}
+
 impl ParcelPropertiesUpdate_AgentData {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
         Ok(ParcelPropertiesUpdate_AgentData {
             agent_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
             session_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -23950,7 +24274,7 @@ impl ParcelPropertiesUpdate_AgentData {
 }
 
 impl ParcelPropertiesUpdate_ParcelData {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
@@ -23984,13 +24308,13 @@ impl ParcelPropertiesUpdate_ParcelData {
                 raw
             },
             media_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
             media_auto_scale: buffer.read_u8()?,
             group_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -23998,12 +24322,12 @@ impl ParcelPropertiesUpdate_ParcelData {
             pass_hours: buffer.read_f32::<LittleEndian>()?,
             category: buffer.read_u8()?,
             auth_buyer_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
             snapshot_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -24023,18 +24347,18 @@ impl ParcelPropertiesUpdate_ParcelData {
 }
 
 impl ParcelReturnObjects_AgentData {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
         Ok(ParcelReturnObjects_AgentData {
             agent_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
             session_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -24043,7 +24367,7 @@ impl ParcelReturnObjects_AgentData {
 }
 
 impl ParcelReturnObjects_ParcelData {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
@@ -24055,13 +24379,13 @@ impl ParcelReturnObjects_ParcelData {
 }
 
 impl ParcelReturnObjects_TaskIDs {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
         Ok(ParcelReturnObjects_TaskIDs {
             task_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -24070,13 +24394,13 @@ impl ParcelReturnObjects_TaskIDs {
 }
 
 impl ParcelReturnObjects_OwnerIDs {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
         Ok(ParcelReturnObjects_OwnerIDs {
             owner_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -24085,18 +24409,18 @@ impl ParcelReturnObjects_OwnerIDs {
 }
 
 impl ParcelSetOtherCleanTime_AgentData {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
         Ok(ParcelSetOtherCleanTime_AgentData {
             agent_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
             session_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -24105,7 +24429,7 @@ impl ParcelSetOtherCleanTime_AgentData {
 }
 
 impl ParcelSetOtherCleanTime_ParcelData {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
@@ -24117,18 +24441,18 @@ impl ParcelSetOtherCleanTime_ParcelData {
 }
 
 impl ParcelDisableObjects_AgentData {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
         Ok(ParcelDisableObjects_AgentData {
             agent_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
             session_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -24137,7 +24461,7 @@ impl ParcelDisableObjects_AgentData {
 }
 
 impl ParcelDisableObjects_ParcelData {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
@@ -24149,13 +24473,13 @@ impl ParcelDisableObjects_ParcelData {
 }
 
 impl ParcelDisableObjects_TaskIDs {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
         Ok(ParcelDisableObjects_TaskIDs {
             task_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -24164,13 +24488,13 @@ impl ParcelDisableObjects_TaskIDs {
 }
 
 impl ParcelDisableObjects_OwnerIDs {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
         Ok(ParcelDisableObjects_OwnerIDs {
             owner_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -24179,18 +24503,18 @@ impl ParcelDisableObjects_OwnerIDs {
 }
 
 impl ParcelSelectObjects_AgentData {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
         Ok(ParcelSelectObjects_AgentData {
             agent_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
             session_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -24199,7 +24523,7 @@ impl ParcelSelectObjects_AgentData {
 }
 
 impl ParcelSelectObjects_ParcelData {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
@@ -24211,13 +24535,13 @@ impl ParcelSelectObjects_ParcelData {
 }
 
 impl ParcelSelectObjects_ReturnIDs {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
         Ok(ParcelSelectObjects_ReturnIDs {
             return_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -24226,18 +24550,18 @@ impl ParcelSelectObjects_ReturnIDs {
 }
 
 impl EstateCovenantRequest_AgentData {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
         Ok(EstateCovenantRequest_AgentData {
             agent_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
             session_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -24246,13 +24570,13 @@ impl EstateCovenantRequest_AgentData {
 }
 
 impl EstateCovenantReply_Data {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
         Ok(EstateCovenantReply_Data {
             covenant_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -24264,7 +24588,7 @@ impl EstateCovenantReply_Data {
                 raw
             },
             estate_owner_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -24273,7 +24597,7 @@ impl EstateCovenantReply_Data {
 }
 
 impl ForceObjectSelect_Header {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
@@ -24284,7 +24608,7 @@ impl ForceObjectSelect_Header {
 }
 
 impl ForceObjectSelect_Data {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
@@ -24295,18 +24619,18 @@ impl ForceObjectSelect_Data {
 }
 
 impl ParcelBuyPass_AgentData {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
         Ok(ParcelBuyPass_AgentData {
             agent_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
             session_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -24315,7 +24639,7 @@ impl ParcelBuyPass_AgentData {
 }
 
 impl ParcelBuyPass_ParcelData {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
@@ -24326,18 +24650,18 @@ impl ParcelBuyPass_ParcelData {
 }
 
 impl ParcelDeedToGroup_AgentData {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
         Ok(ParcelDeedToGroup_AgentData {
             agent_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
             session_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -24346,13 +24670,13 @@ impl ParcelDeedToGroup_AgentData {
 }
 
 impl ParcelDeedToGroup_Data {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
         Ok(ParcelDeedToGroup_Data {
             group_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -24362,18 +24686,18 @@ impl ParcelDeedToGroup_Data {
 }
 
 impl ParcelReclaim_AgentData {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
         Ok(ParcelReclaim_AgentData {
             agent_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
             session_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -24382,7 +24706,7 @@ impl ParcelReclaim_AgentData {
 }
 
 impl ParcelReclaim_Data {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
@@ -24393,18 +24717,18 @@ impl ParcelReclaim_Data {
 }
 
 impl ParcelClaim_AgentData {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
         Ok(ParcelClaim_AgentData {
             agent_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
             session_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -24413,13 +24737,13 @@ impl ParcelClaim_AgentData {
 }
 
 impl ParcelClaim_Data {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
         Ok(ParcelClaim_Data {
             group_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -24430,7 +24754,7 @@ impl ParcelClaim_Data {
 }
 
 impl ParcelClaim_ParcelData {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
@@ -24444,18 +24768,18 @@ impl ParcelClaim_ParcelData {
 }
 
 impl ParcelJoin_AgentData {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
         Ok(ParcelJoin_AgentData {
             agent_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
             session_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -24464,7 +24788,7 @@ impl ParcelJoin_AgentData {
 }
 
 impl ParcelJoin_ParcelData {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
@@ -24478,18 +24802,18 @@ impl ParcelJoin_ParcelData {
 }
 
 impl ParcelDivide_AgentData {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
         Ok(ParcelDivide_AgentData {
             agent_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
             session_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -24498,7 +24822,7 @@ impl ParcelDivide_AgentData {
 }
 
 impl ParcelDivide_ParcelData {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
@@ -24512,18 +24836,18 @@ impl ParcelDivide_ParcelData {
 }
 
 impl ParcelRelease_AgentData {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
         Ok(ParcelRelease_AgentData {
             agent_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
             session_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -24532,7 +24856,7 @@ impl ParcelRelease_AgentData {
 }
 
 impl ParcelRelease_Data {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
@@ -24543,18 +24867,18 @@ impl ParcelRelease_Data {
 }
 
 impl ParcelBuy_AgentData {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
         Ok(ParcelBuy_AgentData {
             agent_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
             session_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -24563,13 +24887,13 @@ impl ParcelBuy_AgentData {
 }
 
 impl ParcelBuy_Data {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
         Ok(ParcelBuy_Data {
             group_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -24582,7 +24906,7 @@ impl ParcelBuy_Data {
 }
 
 impl ParcelBuy_ParcelData {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
@@ -24594,18 +24918,18 @@ impl ParcelBuy_ParcelData {
 }
 
 impl ParcelGodForceOwner_AgentData {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
         Ok(ParcelGodForceOwner_AgentData {
             agent_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
             session_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -24614,13 +24938,13 @@ impl ParcelGodForceOwner_AgentData {
 }
 
 impl ParcelGodForceOwner_Data {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
         Ok(ParcelGodForceOwner_Data {
             owner_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -24630,18 +24954,18 @@ impl ParcelGodForceOwner_Data {
 }
 
 impl ParcelAccessListRequest_AgentData {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
         Ok(ParcelAccessListRequest_AgentData {
             agent_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
             session_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -24650,7 +24974,7 @@ impl ParcelAccessListRequest_AgentData {
 }
 
 impl ParcelAccessListRequest_Data {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
@@ -24663,13 +24987,13 @@ impl ParcelAccessListRequest_Data {
 }
 
 impl ParcelAccessListReply_Data {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
         Ok(ParcelAccessListReply_Data {
             agent_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -24681,13 +25005,13 @@ impl ParcelAccessListReply_Data {
 }
 
 impl ParcelAccessListReply_List {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
         Ok(ParcelAccessListReply_List {
             id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -24698,18 +25022,18 @@ impl ParcelAccessListReply_List {
 }
 
 impl ParcelAccessListUpdate_AgentData {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
         Ok(ParcelAccessListUpdate_AgentData {
             agent_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
             session_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -24718,7 +25042,7 @@ impl ParcelAccessListUpdate_AgentData {
 }
 
 impl ParcelAccessListUpdate_Data {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
@@ -24726,7 +25050,7 @@ impl ParcelAccessListUpdate_Data {
             flags: buffer.read_u32::<LittleEndian>()?,
             local_id: buffer.read_i32::<LittleEndian>()?,
             transaction_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -24737,13 +25061,13 @@ impl ParcelAccessListUpdate_Data {
 }
 
 impl ParcelAccessListUpdate_List {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
         Ok(ParcelAccessListUpdate_List {
             id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -24754,18 +25078,18 @@ impl ParcelAccessListUpdate_List {
 }
 
 impl ParcelDwellRequest_AgentData {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
         Ok(ParcelDwellRequest_AgentData {
             agent_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
             session_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -24774,14 +25098,14 @@ impl ParcelDwellRequest_AgentData {
 }
 
 impl ParcelDwellRequest_Data {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
         Ok(ParcelDwellRequest_Data {
             local_id: buffer.read_i32::<LittleEndian>()?,
             parcel_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -24790,13 +25114,13 @@ impl ParcelDwellRequest_Data {
 }
 
 impl ParcelDwellReply_AgentData {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
         Ok(ParcelDwellReply_AgentData {
             agent_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -24805,14 +25129,14 @@ impl ParcelDwellReply_AgentData {
 }
 
 impl ParcelDwellReply_Data {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
         Ok(ParcelDwellReply_Data {
             local_id: buffer.read_i32::<LittleEndian>()?,
             parcel_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -24822,29 +25146,29 @@ impl ParcelDwellReply_Data {
 }
 
 impl RequestParcelTransfer_Data {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
         Ok(RequestParcelTransfer_Data {
             transaction_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
             transaction_time: buffer.read_u32::<LittleEndian>()?,
             source_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
             dest_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
             owner_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -24859,13 +25183,13 @@ impl RequestParcelTransfer_Data {
 }
 
 impl RequestParcelTransfer_RegionData {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
         Ok(RequestParcelTransfer_RegionData {
             region_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -24876,19 +25200,19 @@ impl RequestParcelTransfer_RegionData {
 }
 
 impl UpdateParcel_ParcelData {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
         Ok(UpdateParcel_ParcelData {
             parcel_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
             region_handle: buffer.read_u64::<LittleEndian>()?,
             owner_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -24920,7 +25244,7 @@ impl UpdateParcel_ParcelData {
             is_for_sale: buffer.read_u8()? == 1,
             category: buffer.read_u8()?,
             snapshot_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -24931,7 +25255,7 @@ impl UpdateParcel_ParcelData {
             ),
             sale_price: buffer.read_i32::<LittleEndian>()?,
             authorized_buyer_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -24942,13 +25266,13 @@ impl UpdateParcel_ParcelData {
 }
 
 impl RemoveParcel_ParcelData {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
         Ok(RemoveParcel_ParcelData {
             parcel_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -24957,13 +25281,13 @@ impl RemoveParcel_ParcelData {
 }
 
 impl MergeParcel_MasterParcelData {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
         Ok(MergeParcel_MasterParcelData {
             master_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -24972,13 +25296,13 @@ impl MergeParcel_MasterParcelData {
 }
 
 impl MergeParcel_SlaveParcelData {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
         Ok(MergeParcel_SlaveParcelData {
             slave_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -24987,13 +25311,13 @@ impl MergeParcel_SlaveParcelData {
 }
 
 impl LogParcelChanges_AgentData {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
         Ok(LogParcelChanges_AgentData {
             agent_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -25002,7 +25326,7 @@ impl LogParcelChanges_AgentData {
 }
 
 impl LogParcelChanges_RegionData {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
@@ -25013,18 +25337,18 @@ impl LogParcelChanges_RegionData {
 }
 
 impl LogParcelChanges_ParcelData {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
         Ok(LogParcelChanges_ParcelData {
             parcel_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
             owner_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -25032,7 +25356,7 @@ impl LogParcelChanges_ParcelData {
             actual_area: buffer.read_i32::<LittleEndian>()?,
             action: buffer.read_i8()?,
             transaction_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -25041,7 +25365,7 @@ impl LogParcelChanges_ParcelData {
 }
 
 impl CheckParcelSales_RegionData {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
@@ -25052,18 +25376,18 @@ impl CheckParcelSales_RegionData {
 }
 
 impl ParcelSales_ParcelData {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
         Ok(ParcelSales_ParcelData {
             parcel_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
             buyer_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -25072,18 +25396,18 @@ impl ParcelSales_ParcelData {
 }
 
 impl ParcelGodMarkAsContent_AgentData {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
         Ok(ParcelGodMarkAsContent_AgentData {
             agent_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
             session_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -25092,7 +25416,7 @@ impl ParcelGodMarkAsContent_AgentData {
 }
 
 impl ParcelGodMarkAsContent_ParcelData {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
@@ -25103,18 +25427,18 @@ impl ParcelGodMarkAsContent_ParcelData {
 }
 
 impl ViewerStartAuction_AgentData {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
         Ok(ViewerStartAuction_AgentData {
             agent_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
             session_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -25123,14 +25447,14 @@ impl ViewerStartAuction_AgentData {
 }
 
 impl ViewerStartAuction_ParcelData {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
         Ok(ViewerStartAuction_ParcelData {
             local_id: buffer.read_i32::<LittleEndian>()?,
             snapshot_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -25139,13 +25463,13 @@ impl ViewerStartAuction_ParcelData {
 }
 
 impl StartAuction_AgentData {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
         Ok(StartAuction_AgentData {
             agent_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -25154,18 +25478,18 @@ impl StartAuction_AgentData {
 }
 
 impl StartAuction_ParcelData {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
         Ok(StartAuction_ParcelData {
             parcel_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
             snapshot_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -25180,13 +25504,13 @@ impl StartAuction_ParcelData {
 }
 
 impl ConfirmAuctionStart_AuctionData {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
         Ok(ConfirmAuctionStart_AuctionData {
             parcel_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -25196,13 +25520,13 @@ impl ConfirmAuctionStart_AuctionData {
 }
 
 impl CompleteAuction_ParcelData {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
         Ok(CompleteAuction_ParcelData {
             parcel_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -25211,13 +25535,13 @@ impl CompleteAuction_ParcelData {
 }
 
 impl CancelAuction_ParcelData {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
         Ok(CancelAuction_ParcelData {
             parcel_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -25226,7 +25550,7 @@ impl CancelAuction_ParcelData {
 }
 
 impl CheckParcelAuctions_RegionData {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
@@ -25237,18 +25561,18 @@ impl CheckParcelAuctions_RegionData {
 }
 
 impl ParcelAuctions_ParcelData {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
         Ok(ParcelAuctions_ParcelData {
             parcel_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
             winner_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -25257,13 +25581,13 @@ impl ParcelAuctions_ParcelData {
 }
 
 impl UUIDNameRequest_UUIDNameBlock {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
         Ok(UUIDNameRequest_UUIDNameBlock {
             id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -25272,13 +25596,13 @@ impl UUIDNameRequest_UUIDNameBlock {
 }
 
 impl UUIDNameReply_UUIDNameBlock {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
         Ok(UUIDNameReply_UUIDNameBlock {
             id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -25299,13 +25623,13 @@ impl UUIDNameReply_UUIDNameBlock {
 }
 
 impl UUIDGroupNameRequest_UUIDNameBlock {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
         Ok(UUIDGroupNameRequest_UUIDNameBlock {
             id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -25314,13 +25638,13 @@ impl UUIDGroupNameRequest_UUIDNameBlock {
 }
 
 impl UUIDGroupNameReply_UUIDNameBlock {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
         Ok(UUIDGroupNameReply_UUIDNameBlock {
             id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -25335,7 +25659,7 @@ impl UUIDGroupNameReply_UUIDNameBlock {
 }
 
 impl ChatPass_ChatData {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
@@ -25347,12 +25671,12 @@ impl ChatPass_ChatData {
                 buffer.read_f32::<LittleEndian>()?,
             ),
             id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
             owner_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -25377,7 +25701,7 @@ impl ChatPass_ChatData {
 }
 
 impl EdgeDataPacket_EdgeData {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
@@ -25395,7 +25719,7 @@ impl EdgeDataPacket_EdgeData {
 }
 
 impl SimStatus_SimStatus {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
@@ -25406,8 +25730,19 @@ impl SimStatus_SimStatus {
     }
 }
 
+impl SimStatus_SimFlags {
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
+    where
+        R: Read,
+    {
+        Ok(SimStatus_SimFlags {
+            flags: buffer.read_u64::<LittleEndian>()?,
+        })
+    }
+}
+
 impl ChildAgentUpdate_AgentData {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
@@ -25415,12 +25750,12 @@ impl ChildAgentUpdate_AgentData {
             region_handle: buffer.read_u64::<LittleEndian>()?,
             viewer_circuit_code: buffer.read_u32::<LittleEndian>()?,
             agent_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
             session_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -25490,7 +25825,7 @@ impl ChildAgentUpdate_AgentData {
             god_level: buffer.read_u8()?,
             always_run: buffer.read_u8()? == 1,
             prey_agent: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -25502,7 +25837,7 @@ impl ChildAgentUpdate_AgentData {
                 raw
             },
             active_group_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -25511,13 +25846,13 @@ impl ChildAgentUpdate_AgentData {
 }
 
 impl ChildAgentUpdate_GroupData {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
         Ok(ChildAgentUpdate_GroupData {
             group_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -25528,18 +25863,18 @@ impl ChildAgentUpdate_GroupData {
 }
 
 impl ChildAgentUpdate_AnimationData {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
         Ok(ChildAgentUpdate_AnimationData {
             animation: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
             object_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -25548,13 +25883,13 @@ impl ChildAgentUpdate_AnimationData {
 }
 
 impl ChildAgentUpdate_GranterBlock {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
         Ok(ChildAgentUpdate_GranterBlock {
             granter_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -25563,7 +25898,7 @@ impl ChildAgentUpdate_GranterBlock {
 }
 
 impl ChildAgentUpdate_NVPairData {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
@@ -25579,7 +25914,7 @@ impl ChildAgentUpdate_NVPairData {
 }
 
 impl ChildAgentUpdate_VisualParam {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
@@ -25590,7 +25925,7 @@ impl ChildAgentUpdate_VisualParam {
 }
 
 impl ChildAgentUpdate_AgentAccess {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
@@ -25602,7 +25937,7 @@ impl ChildAgentUpdate_AgentAccess {
 }
 
 impl ChildAgentUpdate_AgentInfo {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
@@ -25612,8 +25947,24 @@ impl ChildAgentUpdate_AgentInfo {
     }
 }
 
+impl ChildAgentUpdate_AgentInventoryHost {
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
+    where
+        R: Read,
+    {
+        Ok(ChildAgentUpdate_AgentInventoryHost {
+            inventory_host: {
+                let n = buffer.read_u8()? as usize;
+                let mut raw = vec![0; n];
+                buffer.read_exact(&mut raw)?;
+                raw
+            },
+        })
+    }
+}
+
 impl ChildAgentAlive_AgentData {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
@@ -25621,12 +25972,12 @@ impl ChildAgentAlive_AgentData {
             region_handle: buffer.read_u64::<LittleEndian>()?,
             viewer_circuit_code: buffer.read_u32::<LittleEndian>()?,
             agent_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
             session_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -25635,7 +25986,7 @@ impl ChildAgentAlive_AgentData {
 }
 
 impl ChildAgentPositionUpdate_AgentData {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
@@ -25643,12 +25994,12 @@ impl ChildAgentPositionUpdate_AgentData {
             region_handle: buffer.read_u64::<LittleEndian>()?,
             viewer_circuit_code: buffer.read_u32::<LittleEndian>()?,
             agent_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
             session_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -25693,18 +26044,18 @@ impl ChildAgentPositionUpdate_AgentData {
 }
 
 impl ChildAgentDying_AgentData {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
         Ok(ChildAgentDying_AgentData {
             agent_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
             session_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -25713,18 +26064,18 @@ impl ChildAgentDying_AgentData {
 }
 
 impl ChildAgentUnknown_AgentData {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
         Ok(ChildAgentUnknown_AgentData {
             agent_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
             session_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -25733,13 +26084,13 @@ impl ChildAgentUnknown_AgentData {
 }
 
 impl AtomicPassObject_TaskData {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
         Ok(AtomicPassObject_TaskData {
             task_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -25749,13 +26100,13 @@ impl AtomicPassObject_TaskData {
 }
 
 impl KillChildAgents_IDBlock {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
         Ok(KillChildAgents_IDBlock {
             agent_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -25764,18 +26115,18 @@ impl KillChildAgents_IDBlock {
 }
 
 impl GetScriptRunning_Script {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
         Ok(GetScriptRunning_Script {
             object_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
             item_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -25784,18 +26135,18 @@ impl GetScriptRunning_Script {
 }
 
 impl ScriptRunningReply_Script {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
         Ok(ScriptRunningReply_Script {
             object_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
             item_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -25805,18 +26156,18 @@ impl ScriptRunningReply_Script {
 }
 
 impl SetScriptRunning_AgentData {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
         Ok(SetScriptRunning_AgentData {
             agent_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
             session_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -25825,18 +26176,18 @@ impl SetScriptRunning_AgentData {
 }
 
 impl SetScriptRunning_Script {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
         Ok(SetScriptRunning_Script {
             object_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
             item_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -25846,18 +26197,18 @@ impl SetScriptRunning_Script {
 }
 
 impl ScriptReset_AgentData {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
         Ok(ScriptReset_AgentData {
             agent_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
             session_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -25866,18 +26217,18 @@ impl ScriptReset_AgentData {
 }
 
 impl ScriptReset_Script {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
         Ok(ScriptReset_Script {
             object_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
             item_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -25886,23 +26237,23 @@ impl ScriptReset_Script {
 }
 
 impl ScriptSensorRequest_Requester {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
         Ok(ScriptSensorRequest_Requester {
             source_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
             request_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
             search_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -25935,13 +26286,13 @@ impl ScriptSensorRequest_Requester {
 }
 
 impl ScriptSensorReply_Requester {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
         Ok(ScriptSensorReply_Requester {
             source_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -25950,23 +26301,23 @@ impl ScriptSensorReply_Requester {
 }
 
 impl ScriptSensorReply_SensedData {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
         Ok(ScriptSensorReply_SensedData {
             object_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
             owner_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
             group_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -26001,18 +26352,18 @@ impl ScriptSensorReply_SensedData {
 }
 
 impl CompleteAgentMovement_AgentData {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
         Ok(CompleteAgentMovement_AgentData {
             agent_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
             session_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -26022,18 +26373,18 @@ impl CompleteAgentMovement_AgentData {
 }
 
 impl AgentMovementComplete_AgentData {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
         Ok(AgentMovementComplete_AgentData {
             agent_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
             session_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -26042,7 +26393,7 @@ impl AgentMovementComplete_AgentData {
 }
 
 impl AgentMovementComplete_Data {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
@@ -26064,7 +26415,7 @@ impl AgentMovementComplete_Data {
 }
 
 impl AgentMovementComplete_SimData {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
@@ -26080,24 +26431,24 @@ impl AgentMovementComplete_SimData {
 }
 
 impl DataServerLogout_UserData {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
         Ok(DataServerLogout_UserData {
             agent_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
             viewer_ip: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 4];
                 buffer.read_exact(&mut raw)?;
                 Ip4Addr::from(raw)
             },
             disconnect: buffer.read_u8()? == 1,
             session_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -26106,18 +26457,18 @@ impl DataServerLogout_UserData {
 }
 
 impl LogoutRequest_AgentData {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
         Ok(LogoutRequest_AgentData {
             agent_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
             session_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -26126,18 +26477,18 @@ impl LogoutRequest_AgentData {
 }
 
 impl LogoutReply_AgentData {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
         Ok(LogoutReply_AgentData {
             agent_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
             session_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -26146,13 +26497,13 @@ impl LogoutReply_AgentData {
 }
 
 impl LogoutReply_InventoryData {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
         Ok(LogoutReply_InventoryData {
             item_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -26161,18 +26512,18 @@ impl LogoutReply_InventoryData {
 }
 
 impl ImprovedInstantMessage_AgentData {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
         Ok(ImprovedInstantMessage_AgentData {
             agent_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
             session_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -26181,20 +26532,20 @@ impl ImprovedInstantMessage_AgentData {
 }
 
 impl ImprovedInstantMessage_MessageBlock {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
         Ok(ImprovedInstantMessage_MessageBlock {
             from_group: buffer.read_u8()? == 1,
             to_agent_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
             parent_estate_id: buffer.read_u32::<LittleEndian>()?,
             region_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -26206,7 +26557,7 @@ impl ImprovedInstantMessage_MessageBlock {
             offline: buffer.read_u8()?,
             dialog: buffer.read_u8()?,
             id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -26233,19 +26584,30 @@ impl ImprovedInstantMessage_MessageBlock {
     }
 }
 
+impl ImprovedInstantMessage_EstateBlock {
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
+    where
+        R: Read,
+    {
+        Ok(ImprovedInstantMessage_EstateBlock {
+            estate_id: buffer.read_u32::<LittleEndian>()?,
+        })
+    }
+}
+
 impl RetrieveInstantMessages_AgentData {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
         Ok(RetrieveInstantMessages_AgentData {
             agent_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
             session_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -26254,23 +26616,23 @@ impl RetrieveInstantMessages_AgentData {
 }
 
 impl FindAgent_AgentBlock {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
         Ok(FindAgent_AgentBlock {
             hunter: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
             prey: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
             space_ip: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 4];
                 buffer.read_exact(&mut raw)?;
                 Ip4Addr::from(raw)
             },
@@ -26279,7 +26641,7 @@ impl FindAgent_AgentBlock {
 }
 
 impl FindAgent_LocationBlock {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
@@ -26291,18 +26653,18 @@ impl FindAgent_LocationBlock {
 }
 
 impl RequestGodlikePowers_AgentData {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
         Ok(RequestGodlikePowers_AgentData {
             agent_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
             session_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -26311,14 +26673,14 @@ impl RequestGodlikePowers_AgentData {
 }
 
 impl RequestGodlikePowers_RequestBlock {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
         Ok(RequestGodlikePowers_RequestBlock {
             godlike: buffer.read_u8()? == 1,
             token: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -26327,18 +26689,18 @@ impl RequestGodlikePowers_RequestBlock {
 }
 
 impl GrantGodlikePowers_AgentData {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
         Ok(GrantGodlikePowers_AgentData {
             agent_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
             session_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -26347,14 +26709,14 @@ impl GrantGodlikePowers_AgentData {
 }
 
 impl GrantGodlikePowers_GrantData {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
         Ok(GrantGodlikePowers_GrantData {
             god_level: buffer.read_u8()?,
             token: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -26363,23 +26725,23 @@ impl GrantGodlikePowers_GrantData {
 }
 
 impl GodlikeMessage_AgentData {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
         Ok(GodlikeMessage_AgentData {
             agent_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
             session_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
             transaction_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -26388,7 +26750,7 @@ impl GodlikeMessage_AgentData {
 }
 
 impl GodlikeMessage_MethodData {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
@@ -26400,7 +26762,7 @@ impl GodlikeMessage_MethodData {
                 raw
             },
             invoice: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -26409,7 +26771,7 @@ impl GodlikeMessage_MethodData {
 }
 
 impl GodlikeMessage_ParamList {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
@@ -26425,23 +26787,23 @@ impl GodlikeMessage_ParamList {
 }
 
 impl EstateOwnerMessage_AgentData {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
         Ok(EstateOwnerMessage_AgentData {
             agent_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
             session_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
             transaction_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -26450,7 +26812,7 @@ impl EstateOwnerMessage_AgentData {
 }
 
 impl EstateOwnerMessage_MethodData {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
@@ -26462,7 +26824,7 @@ impl EstateOwnerMessage_MethodData {
                 raw
             },
             invoice: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -26471,7 +26833,7 @@ impl EstateOwnerMessage_MethodData {
 }
 
 impl EstateOwnerMessage_ParamList {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
@@ -26487,23 +26849,23 @@ impl EstateOwnerMessage_ParamList {
 }
 
 impl GenericMessage_AgentData {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
         Ok(GenericMessage_AgentData {
             agent_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
             session_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
             transaction_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -26512,7 +26874,7 @@ impl GenericMessage_AgentData {
 }
 
 impl GenericMessage_MethodData {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
@@ -26524,7 +26886,7 @@ impl GenericMessage_MethodData {
                 raw
             },
             invoice: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -26533,7 +26895,7 @@ impl GenericMessage_MethodData {
 }
 
 impl GenericMessage_ParamList {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
@@ -26549,18 +26911,18 @@ impl GenericMessage_ParamList {
 }
 
 impl MuteListRequest_AgentData {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
         Ok(MuteListRequest_AgentData {
             agent_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
             session_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -26569,7 +26931,7 @@ impl MuteListRequest_AgentData {
 }
 
 impl MuteListRequest_MuteData {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
@@ -26580,18 +26942,18 @@ impl MuteListRequest_MuteData {
 }
 
 impl UpdateMuteListEntry_AgentData {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
         Ok(UpdateMuteListEntry_AgentData {
             agent_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
             session_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -26600,13 +26962,13 @@ impl UpdateMuteListEntry_AgentData {
 }
 
 impl UpdateMuteListEntry_MuteData {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
         Ok(UpdateMuteListEntry_MuteData {
             mute_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -26623,18 +26985,18 @@ impl UpdateMuteListEntry_MuteData {
 }
 
 impl RemoveMuteListEntry_AgentData {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
         Ok(RemoveMuteListEntry_AgentData {
             agent_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
             session_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -26643,13 +27005,13 @@ impl RemoveMuteListEntry_AgentData {
 }
 
 impl RemoveMuteListEntry_MuteData {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
         Ok(RemoveMuteListEntry_MuteData {
             mute_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -26664,18 +27026,18 @@ impl RemoveMuteListEntry_MuteData {
 }
 
 impl CopyInventoryFromNotecard_AgentData {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
         Ok(CopyInventoryFromNotecard_AgentData {
             agent_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
             session_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -26684,18 +27046,18 @@ impl CopyInventoryFromNotecard_AgentData {
 }
 
 impl CopyInventoryFromNotecard_NotecardData {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
         Ok(CopyInventoryFromNotecard_NotecardData {
             notecard_item_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
             object_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -26704,18 +27066,18 @@ impl CopyInventoryFromNotecard_NotecardData {
 }
 
 impl CopyInventoryFromNotecard_InventoryData {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
         Ok(CopyInventoryFromNotecard_InventoryData {
             item_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
             folder_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -26724,23 +27086,23 @@ impl CopyInventoryFromNotecard_InventoryData {
 }
 
 impl UpdateInventoryItem_AgentData {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
         Ok(UpdateInventoryItem_AgentData {
             agent_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
             session_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
             transaction_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -26749,34 +27111,34 @@ impl UpdateInventoryItem_AgentData {
 }
 
 impl UpdateInventoryItem_InventoryData {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
         Ok(UpdateInventoryItem_InventoryData {
             item_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
             folder_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
             callback_id: buffer.read_u32::<LittleEndian>()?,
             creator_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
             owner_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
             group_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -26787,7 +27149,7 @@ impl UpdateInventoryItem_InventoryData {
             next_owner_mask: buffer.read_u32::<LittleEndian>()?,
             group_owned: buffer.read_u8()? == 1,
             transaction_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -26815,19 +27177,19 @@ impl UpdateInventoryItem_InventoryData {
 }
 
 impl UpdateCreateInventoryItem_AgentData {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
         Ok(UpdateCreateInventoryItem_AgentData {
             agent_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
             sim_approved: buffer.read_u8()? == 1,
             transaction_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -26836,34 +27198,34 @@ impl UpdateCreateInventoryItem_AgentData {
 }
 
 impl UpdateCreateInventoryItem_InventoryData {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
         Ok(UpdateCreateInventoryItem_InventoryData {
             item_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
             folder_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
             callback_id: buffer.read_u32::<LittleEndian>()?,
             creator_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
             owner_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
             group_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -26874,7 +27236,7 @@ impl UpdateCreateInventoryItem_InventoryData {
             next_owner_mask: buffer.read_u32::<LittleEndian>()?,
             group_owned: buffer.read_u8()? == 1,
             asset_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -26902,18 +27264,18 @@ impl UpdateCreateInventoryItem_InventoryData {
 }
 
 impl MoveInventoryItem_AgentData {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
         Ok(MoveInventoryItem_AgentData {
             agent_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
             session_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -26923,18 +27285,18 @@ impl MoveInventoryItem_AgentData {
 }
 
 impl MoveInventoryItem_InventoryData {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
         Ok(MoveInventoryItem_InventoryData {
             item_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
             folder_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -26949,18 +27311,18 @@ impl MoveInventoryItem_InventoryData {
 }
 
 impl CopyInventoryItem_AgentData {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
         Ok(CopyInventoryItem_AgentData {
             agent_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
             session_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -26969,24 +27331,24 @@ impl CopyInventoryItem_AgentData {
 }
 
 impl CopyInventoryItem_InventoryData {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
         Ok(CopyInventoryItem_InventoryData {
             callback_id: buffer.read_u32::<LittleEndian>()?,
             old_agent_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
             old_item_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
             new_folder_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -27001,18 +27363,18 @@ impl CopyInventoryItem_InventoryData {
 }
 
 impl RemoveInventoryItem_AgentData {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
         Ok(RemoveInventoryItem_AgentData {
             agent_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
             session_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -27021,13 +27383,13 @@ impl RemoveInventoryItem_AgentData {
 }
 
 impl RemoveInventoryItem_InventoryData {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
         Ok(RemoveInventoryItem_InventoryData {
             item_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -27036,18 +27398,18 @@ impl RemoveInventoryItem_InventoryData {
 }
 
 impl ChangeInventoryItemFlags_AgentData {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
         Ok(ChangeInventoryItemFlags_AgentData {
             agent_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
             session_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -27056,13 +27418,13 @@ impl ChangeInventoryItemFlags_AgentData {
 }
 
 impl ChangeInventoryItemFlags_InventoryData {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
         Ok(ChangeInventoryItemFlags_InventoryData {
             item_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -27072,13 +27434,13 @@ impl ChangeInventoryItemFlags_InventoryData {
 }
 
 impl SaveAssetIntoInventory_AgentData {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
         Ok(SaveAssetIntoInventory_AgentData {
             agent_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -27087,18 +27449,18 @@ impl SaveAssetIntoInventory_AgentData {
 }
 
 impl SaveAssetIntoInventory_InventoryData {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
         Ok(SaveAssetIntoInventory_InventoryData {
             item_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
             new_asset_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -27107,18 +27469,18 @@ impl SaveAssetIntoInventory_InventoryData {
 }
 
 impl CreateInventoryFolder_AgentData {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
         Ok(CreateInventoryFolder_AgentData {
             agent_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
             session_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -27127,18 +27489,18 @@ impl CreateInventoryFolder_AgentData {
 }
 
 impl CreateInventoryFolder_FolderData {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
         Ok(CreateInventoryFolder_FolderData {
             folder_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
             parent_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -27154,18 +27516,18 @@ impl CreateInventoryFolder_FolderData {
 }
 
 impl UpdateInventoryFolder_AgentData {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
         Ok(UpdateInventoryFolder_AgentData {
             agent_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
             session_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -27174,18 +27536,18 @@ impl UpdateInventoryFolder_AgentData {
 }
 
 impl UpdateInventoryFolder_FolderData {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
         Ok(UpdateInventoryFolder_FolderData {
             folder_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
             parent_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -27201,18 +27563,18 @@ impl UpdateInventoryFolder_FolderData {
 }
 
 impl MoveInventoryFolder_AgentData {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
         Ok(MoveInventoryFolder_AgentData {
             agent_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
             session_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -27222,18 +27584,18 @@ impl MoveInventoryFolder_AgentData {
 }
 
 impl MoveInventoryFolder_InventoryData {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
         Ok(MoveInventoryFolder_InventoryData {
             folder_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
             parent_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -27242,18 +27604,18 @@ impl MoveInventoryFolder_InventoryData {
 }
 
 impl RemoveInventoryFolder_AgentData {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
         Ok(RemoveInventoryFolder_AgentData {
             agent_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
             session_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -27262,13 +27624,13 @@ impl RemoveInventoryFolder_AgentData {
 }
 
 impl RemoveInventoryFolder_FolderData {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
         Ok(RemoveInventoryFolder_FolderData {
             folder_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -27277,18 +27639,18 @@ impl RemoveInventoryFolder_FolderData {
 }
 
 impl FetchInventoryDescendents_AgentData {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
         Ok(FetchInventoryDescendents_AgentData {
             agent_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
             session_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -27297,18 +27659,18 @@ impl FetchInventoryDescendents_AgentData {
 }
 
 impl FetchInventoryDescendents_InventoryData {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
         Ok(FetchInventoryDescendents_InventoryData {
             folder_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
             owner_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -27320,23 +27682,23 @@ impl FetchInventoryDescendents_InventoryData {
 }
 
 impl InventoryDescendents_AgentData {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
         Ok(InventoryDescendents_AgentData {
             agent_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
             folder_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
             owner_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -27347,18 +27709,18 @@ impl InventoryDescendents_AgentData {
 }
 
 impl InventoryDescendents_FolderData {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
         Ok(InventoryDescendents_FolderData {
             folder_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
             parent_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -27374,33 +27736,33 @@ impl InventoryDescendents_FolderData {
 }
 
 impl InventoryDescendents_ItemData {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
         Ok(InventoryDescendents_ItemData {
             item_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
             folder_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
             creator_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
             owner_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
             group_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -27411,7 +27773,7 @@ impl InventoryDescendents_ItemData {
             next_owner_mask: buffer.read_u32::<LittleEndian>()?,
             group_owned: buffer.read_u8()? == 1,
             asset_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -27439,18 +27801,18 @@ impl InventoryDescendents_ItemData {
 }
 
 impl FetchInventory_AgentData {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
         Ok(FetchInventory_AgentData {
             agent_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
             session_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -27459,18 +27821,18 @@ impl FetchInventory_AgentData {
 }
 
 impl FetchInventory_InventoryData {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
         Ok(FetchInventory_InventoryData {
             owner_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
             item_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -27479,13 +27841,13 @@ impl FetchInventory_InventoryData {
 }
 
 impl FetchInventoryReply_AgentData {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
         Ok(FetchInventoryReply_AgentData {
             agent_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -27494,33 +27856,33 @@ impl FetchInventoryReply_AgentData {
 }
 
 impl FetchInventoryReply_InventoryData {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
         Ok(FetchInventoryReply_InventoryData {
             item_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
             folder_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
             creator_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
             owner_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
             group_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -27531,7 +27893,7 @@ impl FetchInventoryReply_InventoryData {
             next_owner_mask: buffer.read_u32::<LittleEndian>()?,
             group_owned: buffer.read_u8()? == 1,
             asset_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -27559,18 +27921,18 @@ impl FetchInventoryReply_InventoryData {
 }
 
 impl BulkUpdateInventory_AgentData {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
         Ok(BulkUpdateInventory_AgentData {
             agent_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
             transaction_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -27579,18 +27941,18 @@ impl BulkUpdateInventory_AgentData {
 }
 
 impl BulkUpdateInventory_FolderData {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
         Ok(BulkUpdateInventory_FolderData {
             folder_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
             parent_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -27606,34 +27968,34 @@ impl BulkUpdateInventory_FolderData {
 }
 
 impl BulkUpdateInventory_ItemData {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
         Ok(BulkUpdateInventory_ItemData {
             item_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
             callback_id: buffer.read_u32::<LittleEndian>()?,
             folder_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
             creator_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
             owner_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
             group_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -27644,7 +28006,7 @@ impl BulkUpdateInventory_ItemData {
             next_owner_mask: buffer.read_u32::<LittleEndian>()?,
             group_owned: buffer.read_u8()? == 1,
             asset_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -27672,28 +28034,28 @@ impl BulkUpdateInventory_ItemData {
 }
 
 impl RequestInventoryAsset_QueryData {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
         Ok(RequestInventoryAsset_QueryData {
             query_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
             agent_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
             owner_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
             item_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -27702,18 +28064,18 @@ impl RequestInventoryAsset_QueryData {
 }
 
 impl InventoryAssetResponse_QueryData {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
         Ok(InventoryAssetResponse_QueryData {
             query_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
             asset_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -27723,18 +28085,18 @@ impl InventoryAssetResponse_QueryData {
 }
 
 impl RemoveInventoryObjects_AgentData {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
         Ok(RemoveInventoryObjects_AgentData {
             agent_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
             session_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -27743,13 +28105,13 @@ impl RemoveInventoryObjects_AgentData {
 }
 
 impl RemoveInventoryObjects_FolderData {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
         Ok(RemoveInventoryObjects_FolderData {
             folder_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -27758,13 +28120,13 @@ impl RemoveInventoryObjects_FolderData {
 }
 
 impl RemoveInventoryObjects_ItemData {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
         Ok(RemoveInventoryObjects_ItemData {
             item_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -27773,18 +28135,18 @@ impl RemoveInventoryObjects_ItemData {
 }
 
 impl PurgeInventoryDescendents_AgentData {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
         Ok(PurgeInventoryDescendents_AgentData {
             agent_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
             session_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -27793,13 +28155,13 @@ impl PurgeInventoryDescendents_AgentData {
 }
 
 impl PurgeInventoryDescendents_InventoryData {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
         Ok(PurgeInventoryDescendents_InventoryData {
             folder_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -27808,18 +28170,18 @@ impl PurgeInventoryDescendents_InventoryData {
 }
 
 impl UpdateTaskInventory_AgentData {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
         Ok(UpdateTaskInventory_AgentData {
             agent_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
             session_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -27828,7 +28190,7 @@ impl UpdateTaskInventory_AgentData {
 }
 
 impl UpdateTaskInventory_UpdateData {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
@@ -27840,33 +28202,33 @@ impl UpdateTaskInventory_UpdateData {
 }
 
 impl UpdateTaskInventory_InventoryData {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
         Ok(UpdateTaskInventory_InventoryData {
             item_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
             folder_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
             creator_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
             owner_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
             group_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -27877,7 +28239,7 @@ impl UpdateTaskInventory_InventoryData {
             next_owner_mask: buffer.read_u32::<LittleEndian>()?,
             group_owned: buffer.read_u8()? == 1,
             transaction_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -27905,18 +28267,18 @@ impl UpdateTaskInventory_InventoryData {
 }
 
 impl RemoveTaskInventory_AgentData {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
         Ok(RemoveTaskInventory_AgentData {
             agent_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
             session_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -27925,14 +28287,14 @@ impl RemoveTaskInventory_AgentData {
 }
 
 impl RemoveTaskInventory_InventoryData {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
         Ok(RemoveTaskInventory_InventoryData {
             local_id: buffer.read_u32::<LittleEndian>()?,
             item_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -27941,23 +28303,23 @@ impl RemoveTaskInventory_InventoryData {
 }
 
 impl MoveTaskInventory_AgentData {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
         Ok(MoveTaskInventory_AgentData {
             agent_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
             session_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
             folder_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -27966,14 +28328,14 @@ impl MoveTaskInventory_AgentData {
 }
 
 impl MoveTaskInventory_InventoryData {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
         Ok(MoveTaskInventory_InventoryData {
             local_id: buffer.read_u32::<LittleEndian>()?,
             item_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -27982,18 +28344,18 @@ impl MoveTaskInventory_InventoryData {
 }
 
 impl RequestTaskInventory_AgentData {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
         Ok(RequestTaskInventory_AgentData {
             agent_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
             session_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -28002,7 +28364,7 @@ impl RequestTaskInventory_AgentData {
 }
 
 impl RequestTaskInventory_InventoryData {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
@@ -28013,13 +28375,13 @@ impl RequestTaskInventory_InventoryData {
 }
 
 impl ReplyTaskInventory_InventoryData {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
         Ok(ReplyTaskInventory_InventoryData {
             task_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -28035,18 +28397,18 @@ impl ReplyTaskInventory_InventoryData {
 }
 
 impl DeRezObject_AgentData {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
         Ok(DeRezObject_AgentData {
             agent_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
             session_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -28055,24 +28417,24 @@ impl DeRezObject_AgentData {
 }
 
 impl DeRezObject_AgentBlock {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
         Ok(DeRezObject_AgentBlock {
             group_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
             destination: buffer.read_u8()?,
             destination_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
             transaction_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -28083,7 +28445,7 @@ impl DeRezObject_AgentBlock {
 }
 
 impl DeRezObject_ObjectData {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
@@ -28094,13 +28456,13 @@ impl DeRezObject_ObjectData {
 }
 
 impl DeRezAck_TransactionData {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
         Ok(DeRezAck_TransactionData {
             transaction_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -28110,23 +28472,23 @@ impl DeRezAck_TransactionData {
 }
 
 impl RezObject_AgentData {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
         Ok(RezObject_AgentData {
             agent_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
             session_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
             group_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -28135,13 +28497,13 @@ impl RezObject_AgentData {
 }
 
 impl RezObject_RezData {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
         Ok(RezObject_RezData {
             from_task_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -28157,7 +28519,7 @@ impl RezObject_RezData {
                 buffer.read_f32::<LittleEndian>()?,
             ),
             ray_target_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -28173,33 +28535,33 @@ impl RezObject_RezData {
 }
 
 impl RezObject_InventoryData {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
         Ok(RezObject_InventoryData {
             item_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
             folder_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
             creator_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
             owner_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
             group_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -28210,7 +28572,7 @@ impl RezObject_InventoryData {
             next_owner_mask: buffer.read_u32::<LittleEndian>()?,
             group_owned: buffer.read_u8()? == 1,
             transaction_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -28238,23 +28600,23 @@ impl RezObject_InventoryData {
 }
 
 impl RezObjectFromNotecard_AgentData {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
         Ok(RezObjectFromNotecard_AgentData {
             agent_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
             session_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
             group_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -28263,13 +28625,13 @@ impl RezObjectFromNotecard_AgentData {
 }
 
 impl RezObjectFromNotecard_RezData {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
         Ok(RezObjectFromNotecard_RezData {
             from_task_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -28285,7 +28647,7 @@ impl RezObjectFromNotecard_RezData {
                 buffer.read_f32::<LittleEndian>()?,
             ),
             ray_target_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -28301,18 +28663,18 @@ impl RezObjectFromNotecard_RezData {
 }
 
 impl RezObjectFromNotecard_NotecardData {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
         Ok(RezObjectFromNotecard_NotecardData {
             notecard_item_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
             object_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -28321,13 +28683,13 @@ impl RezObjectFromNotecard_NotecardData {
 }
 
 impl RezObjectFromNotecard_InventoryData {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
         Ok(RezObjectFromNotecard_InventoryData {
             item_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -28336,23 +28698,23 @@ impl RezObjectFromNotecard_InventoryData {
 }
 
 impl TransferInventory_InfoBlock {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
         Ok(TransferInventory_InfoBlock {
             source_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
             dest_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
             transaction_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -28361,13 +28723,13 @@ impl TransferInventory_InfoBlock {
 }
 
 impl TransferInventory_InventoryBlock {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
         Ok(TransferInventory_InventoryBlock {
             inventory_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -28376,19 +28738,31 @@ impl TransferInventory_InventoryBlock {
     }
 }
 
+impl TransferInventory_ValidationBlock {
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
+    where
+        R: Read,
+    {
+        Ok(TransferInventory_ValidationBlock {
+            needs_validation: buffer.read_u8()? == 1,
+            estate_id: buffer.read_u32::<LittleEndian>()?,
+        })
+    }
+}
+
 impl TransferInventoryAck_InfoBlock {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
         Ok(TransferInventoryAck_InfoBlock {
             transaction_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
             inventory_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -28397,18 +28771,18 @@ impl TransferInventoryAck_InfoBlock {
 }
 
 impl AcceptFriendship_AgentData {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
         Ok(AcceptFriendship_AgentData {
             agent_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
             session_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -28417,13 +28791,13 @@ impl AcceptFriendship_AgentData {
 }
 
 impl AcceptFriendship_TransactionBlock {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
         Ok(AcceptFriendship_TransactionBlock {
             transaction_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -28432,13 +28806,13 @@ impl AcceptFriendship_TransactionBlock {
 }
 
 impl AcceptFriendship_FolderData {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
         Ok(AcceptFriendship_FolderData {
             folder_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -28447,18 +28821,18 @@ impl AcceptFriendship_FolderData {
 }
 
 impl DeclineFriendship_AgentData {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
         Ok(DeclineFriendship_AgentData {
             agent_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
             session_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -28467,13 +28841,13 @@ impl DeclineFriendship_AgentData {
 }
 
 impl DeclineFriendship_TransactionBlock {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
         Ok(DeclineFriendship_TransactionBlock {
             transaction_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -28482,18 +28856,18 @@ impl DeclineFriendship_TransactionBlock {
 }
 
 impl FormFriendship_AgentBlock {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
         Ok(FormFriendship_AgentBlock {
             source_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
             dest_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -28502,18 +28876,18 @@ impl FormFriendship_AgentBlock {
 }
 
 impl TerminateFriendship_AgentData {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
         Ok(TerminateFriendship_AgentData {
             agent_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
             session_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -28522,13 +28896,13 @@ impl TerminateFriendship_AgentData {
 }
 
 impl TerminateFriendship_ExBlock {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
         Ok(TerminateFriendship_ExBlock {
             other_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -28537,18 +28911,18 @@ impl TerminateFriendship_ExBlock {
 }
 
 impl OfferCallingCard_AgentData {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
         Ok(OfferCallingCard_AgentData {
             agent_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
             session_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -28557,18 +28931,18 @@ impl OfferCallingCard_AgentData {
 }
 
 impl OfferCallingCard_AgentBlock {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
         Ok(OfferCallingCard_AgentBlock {
             dest_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
             transaction_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -28577,18 +28951,18 @@ impl OfferCallingCard_AgentBlock {
 }
 
 impl AcceptCallingCard_AgentData {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
         Ok(AcceptCallingCard_AgentData {
             agent_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
             session_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -28597,13 +28971,13 @@ impl AcceptCallingCard_AgentData {
 }
 
 impl AcceptCallingCard_TransactionBlock {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
         Ok(AcceptCallingCard_TransactionBlock {
             transaction_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -28612,13 +28986,13 @@ impl AcceptCallingCard_TransactionBlock {
 }
 
 impl AcceptCallingCard_FolderData {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
         Ok(AcceptCallingCard_FolderData {
             folder_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -28627,18 +29001,18 @@ impl AcceptCallingCard_FolderData {
 }
 
 impl DeclineCallingCard_AgentData {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
         Ok(DeclineCallingCard_AgentData {
             agent_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
             session_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -28647,13 +29021,13 @@ impl DeclineCallingCard_AgentData {
 }
 
 impl DeclineCallingCard_TransactionBlock {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
         Ok(DeclineCallingCard_TransactionBlock {
             transaction_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -28662,23 +29036,23 @@ impl DeclineCallingCard_TransactionBlock {
 }
 
 impl RezScript_AgentData {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
         Ok(RezScript_AgentData {
             agent_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
             session_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
             group_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -28687,7 +29061,7 @@ impl RezScript_AgentData {
 }
 
 impl RezScript_UpdateBlock {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
@@ -28699,33 +29073,33 @@ impl RezScript_UpdateBlock {
 }
 
 impl RezScript_InventoryBlock {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
         Ok(RezScript_InventoryBlock {
             item_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
             folder_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
             creator_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
             owner_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
             group_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -28736,7 +29110,7 @@ impl RezScript_InventoryBlock {
             next_owner_mask: buffer.read_u32::<LittleEndian>()?,
             group_owned: buffer.read_u8()? == 1,
             transaction_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -28764,18 +29138,18 @@ impl RezScript_InventoryBlock {
 }
 
 impl CreateInventoryItem_AgentData {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
         Ok(CreateInventoryItem_AgentData {
             agent_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
             session_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -28784,19 +29158,19 @@ impl CreateInventoryItem_AgentData {
 }
 
 impl CreateInventoryItem_InventoryBlock {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
         Ok(CreateInventoryItem_InventoryBlock {
             callback_id: buffer.read_u32::<LittleEndian>()?,
             folder_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
             transaction_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -28821,18 +29195,18 @@ impl CreateInventoryItem_InventoryBlock {
 }
 
 impl CreateLandmarkForEvent_AgentData {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
         Ok(CreateLandmarkForEvent_AgentData {
             agent_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
             session_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -28841,7 +29215,7 @@ impl CreateLandmarkForEvent_AgentData {
 }
 
 impl CreateLandmarkForEvent_EventData {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
@@ -28852,13 +29226,13 @@ impl CreateLandmarkForEvent_EventData {
 }
 
 impl CreateLandmarkForEvent_InventoryBlock {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
         Ok(CreateLandmarkForEvent_InventoryBlock {
             folder_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -28873,13 +29247,13 @@ impl CreateLandmarkForEvent_InventoryBlock {
 }
 
 impl EventLocationRequest_QueryData {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
         Ok(EventLocationRequest_QueryData {
             query_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -28888,7 +29262,7 @@ impl EventLocationRequest_QueryData {
 }
 
 impl EventLocationRequest_EventData {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
@@ -28899,13 +29273,13 @@ impl EventLocationRequest_EventData {
 }
 
 impl EventLocationReply_QueryData {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
         Ok(EventLocationReply_QueryData {
             query_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -28914,14 +29288,14 @@ impl EventLocationReply_QueryData {
 }
 
 impl EventLocationReply_EventData {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
         Ok(EventLocationReply_EventData {
             success: buffer.read_u8()? == 1,
             region_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -28935,13 +29309,13 @@ impl EventLocationReply_EventData {
 }
 
 impl RegionHandleRequest_RequestBlock {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
         Ok(RegionHandleRequest_RequestBlock {
             region_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -28950,13 +29324,13 @@ impl RegionHandleRequest_RequestBlock {
 }
 
 impl RegionIDAndHandleReply_ReplyBlock {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
         Ok(RegionIDAndHandleReply_ReplyBlock {
             region_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -28966,18 +29340,18 @@ impl RegionIDAndHandleReply_ReplyBlock {
 }
 
 impl MoneyTransferRequest_AgentData {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
         Ok(MoneyTransferRequest_AgentData {
             agent_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
             session_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -28986,18 +29360,18 @@ impl MoneyTransferRequest_AgentData {
 }
 
 impl MoneyTransferRequest_MoneyData {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
         Ok(MoneyTransferRequest_MoneyData {
             source_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
             dest_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -29017,24 +29391,24 @@ impl MoneyTransferRequest_MoneyData {
 }
 
 impl MoneyTransferBackend_MoneyData {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
         Ok(MoneyTransferBackend_MoneyData {
             transaction_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
             transaction_time: buffer.read_u32::<LittleEndian>()?,
             source_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
             dest_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -29044,7 +29418,7 @@ impl MoneyTransferBackend_MoneyData {
             aggregate_perm_inventory: buffer.read_u8()?,
             transaction_type: buffer.read_i32::<LittleEndian>()?,
             region_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -29061,18 +29435,18 @@ impl MoneyTransferBackend_MoneyData {
 }
 
 impl MoneyBalanceRequest_AgentData {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
         Ok(MoneyBalanceRequest_AgentData {
             agent_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
             session_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -29081,13 +29455,13 @@ impl MoneyBalanceRequest_AgentData {
 }
 
 impl MoneyBalanceRequest_MoneyData {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
         Ok(MoneyBalanceRequest_MoneyData {
             transaction_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -29096,18 +29470,18 @@ impl MoneyBalanceRequest_MoneyData {
 }
 
 impl MoneyBalanceReply_MoneyData {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
         Ok(MoneyBalanceReply_MoneyData {
             agent_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
             transaction_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -29126,20 +29500,20 @@ impl MoneyBalanceReply_MoneyData {
 }
 
 impl MoneyBalanceReply_TransactionInfo {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
         Ok(MoneyBalanceReply_TransactionInfo {
             transaction_type: buffer.read_i32::<LittleEndian>()?,
             source_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
             is_source_group: buffer.read_u8()? == 1,
             dest_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -29156,13 +29530,13 @@ impl MoneyBalanceReply_TransactionInfo {
 }
 
 impl RoutedMoneyBalanceReply_TargetBlock {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
         Ok(RoutedMoneyBalanceReply_TargetBlock {
             target_ip: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 4];
                 buffer.read_exact(&mut raw)?;
                 Ip4Addr::from(raw)
             },
@@ -29172,18 +29546,18 @@ impl RoutedMoneyBalanceReply_TargetBlock {
 }
 
 impl RoutedMoneyBalanceReply_MoneyData {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
         Ok(RoutedMoneyBalanceReply_MoneyData {
             agent_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
             transaction_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -29202,20 +29576,20 @@ impl RoutedMoneyBalanceReply_MoneyData {
 }
 
 impl RoutedMoneyBalanceReply_TransactionInfo {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
         Ok(RoutedMoneyBalanceReply_TransactionInfo {
             transaction_type: buffer.read_i32::<LittleEndian>()?,
             source_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
             is_source_group: buffer.read_u8()? == 1,
             dest_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -29232,18 +29606,18 @@ impl RoutedMoneyBalanceReply_TransactionInfo {
 }
 
 impl ActivateGestures_AgentData {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
         Ok(ActivateGestures_AgentData {
             agent_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
             session_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -29253,18 +29627,18 @@ impl ActivateGestures_AgentData {
 }
 
 impl ActivateGestures_Data {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
         Ok(ActivateGestures_Data {
             item_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
             asset_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -29274,18 +29648,18 @@ impl ActivateGestures_Data {
 }
 
 impl DeactivateGestures_AgentData {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
         Ok(DeactivateGestures_AgentData {
             agent_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
             session_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -29295,13 +29669,13 @@ impl DeactivateGestures_AgentData {
 }
 
 impl DeactivateGestures_Data {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
         Ok(DeactivateGestures_Data {
             item_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -29311,13 +29685,13 @@ impl DeactivateGestures_Data {
 }
 
 impl MuteListUpdate_MuteData {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
         Ok(MuteListUpdate_MuteData {
             agent_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -29332,13 +29706,13 @@ impl MuteListUpdate_MuteData {
 }
 
 impl UseCachedMuteList_AgentData {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
         Ok(UseCachedMuteList_AgentData {
             agent_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -29347,18 +29721,18 @@ impl UseCachedMuteList_AgentData {
 }
 
 impl GrantUserRights_AgentData {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
         Ok(GrantUserRights_AgentData {
             agent_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
             session_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -29367,13 +29741,13 @@ impl GrantUserRights_AgentData {
 }
 
 impl GrantUserRights_Rights {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
         Ok(GrantUserRights_Rights {
             agent_related: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -29383,13 +29757,13 @@ impl GrantUserRights_Rights {
 }
 
 impl ChangeUserRights_AgentData {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
         Ok(ChangeUserRights_AgentData {
             agent_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -29398,13 +29772,13 @@ impl ChangeUserRights_AgentData {
 }
 
 impl ChangeUserRights_Rights {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
         Ok(ChangeUserRights_Rights {
             agent_related: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -29414,13 +29788,13 @@ impl ChangeUserRights_Rights {
 }
 
 impl OnlineNotification_AgentBlock {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
         Ok(OnlineNotification_AgentBlock {
             agent_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -29429,13 +29803,13 @@ impl OnlineNotification_AgentBlock {
 }
 
 impl OfflineNotification_AgentBlock {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
         Ok(OfflineNotification_AgentBlock {
             agent_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -29444,18 +29818,18 @@ impl OfflineNotification_AgentBlock {
 }
 
 impl SetStartLocationRequest_AgentData {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
         Ok(SetStartLocationRequest_AgentData {
             agent_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
             session_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -29464,7 +29838,7 @@ impl SetStartLocationRequest_AgentData {
 }
 
 impl SetStartLocationRequest_StartLocationData {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
@@ -29491,18 +29865,18 @@ impl SetStartLocationRequest_StartLocationData {
 }
 
 impl SetStartLocation_StartLocationData {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
         Ok(SetStartLocation_StartLocationData {
             agent_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
             region_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -29523,7 +29897,7 @@ impl SetStartLocation_StartLocationData {
 }
 
 impl NetTest_NetBlock {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
@@ -29534,7 +29908,7 @@ impl NetTest_NetBlock {
 }
 
 impl SetCPURatio_Data {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
@@ -29543,7 +29917,7 @@ impl SetCPURatio_Data {
 }
 
 impl SimCrashed_Data {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
@@ -29555,13 +29929,13 @@ impl SimCrashed_Data {
 }
 
 impl SimCrashed_Users {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
         Ok(SimCrashed_Users {
             agent_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -29570,13 +29944,13 @@ impl SimCrashed_Users {
 }
 
 impl NameValuePair_TaskData {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
         Ok(NameValuePair_TaskData {
             id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -29585,7 +29959,7 @@ impl NameValuePair_TaskData {
 }
 
 impl NameValuePair_NameValueData {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
@@ -29601,13 +29975,13 @@ impl NameValuePair_NameValueData {
 }
 
 impl RemoveNameValuePair_TaskData {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
         Ok(RemoveNameValuePair_TaskData {
             id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -29616,7 +29990,7 @@ impl RemoveNameValuePair_TaskData {
 }
 
 impl RemoveNameValuePair_NameValueData {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
@@ -29632,18 +30006,18 @@ impl RemoveNameValuePair_NameValueData {
 }
 
 impl UpdateAttachment_AgentData {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
         Ok(UpdateAttachment_AgentData {
             agent_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
             session_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -29652,7 +30026,7 @@ impl UpdateAttachment_AgentData {
 }
 
 impl UpdateAttachment_AttachmentBlock {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
@@ -29663,7 +30037,7 @@ impl UpdateAttachment_AttachmentBlock {
 }
 
 impl UpdateAttachment_OperationData {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
@@ -29675,33 +30049,33 @@ impl UpdateAttachment_OperationData {
 }
 
 impl UpdateAttachment_InventoryData {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
         Ok(UpdateAttachment_InventoryData {
             item_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
             folder_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
             creator_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
             owner_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
             group_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -29712,7 +30086,7 @@ impl UpdateAttachment_InventoryData {
             next_owner_mask: buffer.read_u32::<LittleEndian>()?,
             group_owned: buffer.read_u8()? == 1,
             asset_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -29740,18 +30114,18 @@ impl UpdateAttachment_InventoryData {
 }
 
 impl RemoveAttachment_AgentData {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
         Ok(RemoveAttachment_AgentData {
             agent_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
             session_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -29760,14 +30134,14 @@ impl RemoveAttachment_AgentData {
 }
 
 impl RemoveAttachment_AttachmentBlock {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
         Ok(RemoveAttachment_AttachmentBlock {
             attachment_point: buffer.read_u8()?,
             item_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -29776,28 +30150,28 @@ impl RemoveAttachment_AttachmentBlock {
 }
 
 impl SoundTrigger_SoundData {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
         Ok(SoundTrigger_SoundData {
             sound_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
             owner_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
             object_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
             parent_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -29813,23 +30187,23 @@ impl SoundTrigger_SoundData {
 }
 
 impl AttachedSound_DataBlock {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
         Ok(AttachedSound_DataBlock {
             sound_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
             object_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
             owner_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -29840,13 +30214,13 @@ impl AttachedSound_DataBlock {
 }
 
 impl AttachedSoundGainChange_DataBlock {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
         Ok(AttachedSoundGainChange_DataBlock {
             object_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -29856,23 +30230,23 @@ impl AttachedSoundGainChange_DataBlock {
 }
 
 impl PreloadSound_DataBlock {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
         Ok(PreloadSound_DataBlock {
             object_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
             owner_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
             sound_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -29881,13 +30255,13 @@ impl PreloadSound_DataBlock {
 }
 
 impl AssetUploadRequest_AssetBlock {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
         Ok(AssetUploadRequest_AssetBlock {
             transaction_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -29905,13 +30279,13 @@ impl AssetUploadRequest_AssetBlock {
 }
 
 impl AssetUploadComplete_AssetBlock {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
         Ok(AssetUploadComplete_AssetBlock {
             uuid: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -29922,13 +30296,13 @@ impl AssetUploadComplete_AssetBlock {
 }
 
 impl EmailMessageRequest_DataBlock {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
         Ok(EmailMessageRequest_DataBlock {
             object_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -29949,13 +30323,13 @@ impl EmailMessageRequest_DataBlock {
 }
 
 impl EmailMessageReply_DataBlock {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
         Ok(EmailMessageReply_DataBlock {
             object_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -29990,7 +30364,7 @@ impl EmailMessageReply_DataBlock {
 }
 
 impl InternalScriptMail_DataBlock {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
@@ -30002,7 +30376,7 @@ impl InternalScriptMail_DataBlock {
                 raw
             },
             to: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -30023,7 +30397,7 @@ impl InternalScriptMail_DataBlock {
 }
 
 impl ScriptDataRequest_DataBlock {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
@@ -30041,7 +30415,7 @@ impl ScriptDataRequest_DataBlock {
 }
 
 impl ScriptDataReply_DataBlock {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
@@ -30058,18 +30432,18 @@ impl ScriptDataReply_DataBlock {
 }
 
 impl CreateGroupRequest_AgentData {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
         Ok(CreateGroupRequest_AgentData {
             agent_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
             session_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -30078,7 +30452,7 @@ impl CreateGroupRequest_AgentData {
 }
 
 impl CreateGroupRequest_GroupData {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
@@ -30097,7 +30471,7 @@ impl CreateGroupRequest_GroupData {
             },
             show_in_list: buffer.read_u8()? == 1,
             insignia_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -30110,13 +30484,13 @@ impl CreateGroupRequest_GroupData {
 }
 
 impl CreateGroupReply_AgentData {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
         Ok(CreateGroupReply_AgentData {
             agent_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -30125,13 +30499,13 @@ impl CreateGroupReply_AgentData {
 }
 
 impl CreateGroupReply_ReplyData {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
         Ok(CreateGroupReply_ReplyData {
             group_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -30147,18 +30521,18 @@ impl CreateGroupReply_ReplyData {
 }
 
 impl UpdateGroupInfo_AgentData {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
         Ok(UpdateGroupInfo_AgentData {
             agent_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
             session_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -30167,13 +30541,13 @@ impl UpdateGroupInfo_AgentData {
 }
 
 impl UpdateGroupInfo_GroupData {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
         Ok(UpdateGroupInfo_GroupData {
             group_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -30185,7 +30559,7 @@ impl UpdateGroupInfo_GroupData {
             },
             show_in_list: buffer.read_u8()? == 1,
             insignia_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -30198,23 +30572,23 @@ impl UpdateGroupInfo_GroupData {
 }
 
 impl GroupRoleChanges_AgentData {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
         Ok(GroupRoleChanges_AgentData {
             agent_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
             session_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
             group_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -30223,18 +30597,18 @@ impl GroupRoleChanges_AgentData {
 }
 
 impl GroupRoleChanges_RoleChange {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
         Ok(GroupRoleChanges_RoleChange {
             role_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
             member_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -30244,18 +30618,18 @@ impl GroupRoleChanges_RoleChange {
 }
 
 impl JoinGroupRequest_AgentData {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
         Ok(JoinGroupRequest_AgentData {
             agent_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
             session_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -30264,13 +30638,13 @@ impl JoinGroupRequest_AgentData {
 }
 
 impl JoinGroupRequest_GroupData {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
         Ok(JoinGroupRequest_GroupData {
             group_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -30279,13 +30653,13 @@ impl JoinGroupRequest_GroupData {
 }
 
 impl JoinGroupReply_AgentData {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
         Ok(JoinGroupReply_AgentData {
             agent_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -30294,13 +30668,13 @@ impl JoinGroupReply_AgentData {
 }
 
 impl JoinGroupReply_GroupData {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
         Ok(JoinGroupReply_GroupData {
             group_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -30310,18 +30684,18 @@ impl JoinGroupReply_GroupData {
 }
 
 impl EjectGroupMemberRequest_AgentData {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
         Ok(EjectGroupMemberRequest_AgentData {
             agent_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
             session_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -30330,13 +30704,13 @@ impl EjectGroupMemberRequest_AgentData {
 }
 
 impl EjectGroupMemberRequest_GroupData {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
         Ok(EjectGroupMemberRequest_GroupData {
             group_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -30345,13 +30719,13 @@ impl EjectGroupMemberRequest_GroupData {
 }
 
 impl EjectGroupMemberRequest_EjectData {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
         Ok(EjectGroupMemberRequest_EjectData {
             ejectee_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -30360,13 +30734,13 @@ impl EjectGroupMemberRequest_EjectData {
 }
 
 impl EjectGroupMemberReply_AgentData {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
         Ok(EjectGroupMemberReply_AgentData {
             agent_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -30375,13 +30749,13 @@ impl EjectGroupMemberReply_AgentData {
 }
 
 impl EjectGroupMemberReply_GroupData {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
         Ok(EjectGroupMemberReply_GroupData {
             group_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -30390,7 +30764,7 @@ impl EjectGroupMemberReply_GroupData {
 }
 
 impl EjectGroupMemberReply_EjectData {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
@@ -30401,18 +30775,18 @@ impl EjectGroupMemberReply_EjectData {
 }
 
 impl LeaveGroupRequest_AgentData {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
         Ok(LeaveGroupRequest_AgentData {
             agent_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
             session_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -30421,13 +30795,13 @@ impl LeaveGroupRequest_AgentData {
 }
 
 impl LeaveGroupRequest_GroupData {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
         Ok(LeaveGroupRequest_GroupData {
             group_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -30436,13 +30810,13 @@ impl LeaveGroupRequest_GroupData {
 }
 
 impl LeaveGroupReply_AgentData {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
         Ok(LeaveGroupReply_AgentData {
             agent_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -30451,13 +30825,13 @@ impl LeaveGroupReply_AgentData {
 }
 
 impl LeaveGroupReply_GroupData {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
         Ok(LeaveGroupReply_GroupData {
             group_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -30467,18 +30841,18 @@ impl LeaveGroupReply_GroupData {
 }
 
 impl InviteGroupRequest_AgentData {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
         Ok(InviteGroupRequest_AgentData {
             agent_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
             session_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -30487,13 +30861,13 @@ impl InviteGroupRequest_AgentData {
 }
 
 impl InviteGroupRequest_GroupData {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
         Ok(InviteGroupRequest_GroupData {
             group_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -30502,18 +30876,18 @@ impl InviteGroupRequest_GroupData {
 }
 
 impl InviteGroupRequest_InviteData {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
         Ok(InviteGroupRequest_InviteData {
             invitee_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
             role_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -30522,28 +30896,28 @@ impl InviteGroupRequest_InviteData {
 }
 
 impl InviteGroupResponse_InviteData {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
         Ok(InviteGroupResponse_InviteData {
             agent_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
             invitee_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
             group_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
             role_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -30552,19 +30926,30 @@ impl InviteGroupResponse_InviteData {
     }
 }
 
+impl InviteGroupResponse_GroupData {
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
+    where
+        R: Read,
+    {
+        Ok(InviteGroupResponse_GroupData {
+            group_limit: buffer.read_i32::<LittleEndian>()?,
+        })
+    }
+}
+
 impl GroupProfileRequest_AgentData {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
         Ok(GroupProfileRequest_AgentData {
             agent_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
             session_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -30573,13 +30958,13 @@ impl GroupProfileRequest_AgentData {
 }
 
 impl GroupProfileRequest_GroupData {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
         Ok(GroupProfileRequest_GroupData {
             group_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -30588,13 +30973,13 @@ impl GroupProfileRequest_GroupData {
 }
 
 impl GroupProfileReply_AgentData {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
         Ok(GroupProfileReply_AgentData {
             agent_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -30603,13 +30988,13 @@ impl GroupProfileReply_AgentData {
 }
 
 impl GroupProfileReply_GroupData {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
         Ok(GroupProfileReply_GroupData {
             group_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -30634,12 +31019,12 @@ impl GroupProfileReply_GroupData {
             },
             powers_mask: buffer.read_u64::<LittleEndian>()?,
             insignia_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
             founder_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -30651,7 +31036,7 @@ impl GroupProfileReply_GroupData {
             allow_publish: buffer.read_u8()? == 1,
             mature_publish: buffer.read_u8()? == 1,
             owner_role: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -30660,23 +31045,23 @@ impl GroupProfileReply_GroupData {
 }
 
 impl GroupAccountSummaryRequest_AgentData {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
         Ok(GroupAccountSummaryRequest_AgentData {
             agent_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
             session_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
             group_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -30685,13 +31070,13 @@ impl GroupAccountSummaryRequest_AgentData {
 }
 
 impl GroupAccountSummaryRequest_MoneyData {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
         Ok(GroupAccountSummaryRequest_MoneyData {
             request_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -30702,18 +31087,18 @@ impl GroupAccountSummaryRequest_MoneyData {
 }
 
 impl GroupAccountSummaryReply_AgentData {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
         Ok(GroupAccountSummaryReply_AgentData {
             agent_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
             group_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -30722,13 +31107,13 @@ impl GroupAccountSummaryReply_AgentData {
 }
 
 impl GroupAccountSummaryReply_MoneyData {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
         Ok(GroupAccountSummaryReply_MoneyData {
             request_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -30771,23 +31156,23 @@ impl GroupAccountSummaryReply_MoneyData {
 }
 
 impl GroupAccountDetailsRequest_AgentData {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
         Ok(GroupAccountDetailsRequest_AgentData {
             agent_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
             session_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
             group_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -30796,13 +31181,13 @@ impl GroupAccountDetailsRequest_AgentData {
 }
 
 impl GroupAccountDetailsRequest_MoneyData {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
         Ok(GroupAccountDetailsRequest_MoneyData {
             request_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -30813,18 +31198,18 @@ impl GroupAccountDetailsRequest_MoneyData {
 }
 
 impl GroupAccountDetailsReply_AgentData {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
         Ok(GroupAccountDetailsReply_AgentData {
             agent_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
             group_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -30833,13 +31218,13 @@ impl GroupAccountDetailsReply_AgentData {
 }
 
 impl GroupAccountDetailsReply_MoneyData {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
         Ok(GroupAccountDetailsReply_MoneyData {
             request_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -30856,7 +31241,7 @@ impl GroupAccountDetailsReply_MoneyData {
 }
 
 impl GroupAccountDetailsReply_HistoryData {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
@@ -30873,23 +31258,23 @@ impl GroupAccountDetailsReply_HistoryData {
 }
 
 impl GroupAccountTransactionsRequest_AgentData {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
         Ok(GroupAccountTransactionsRequest_AgentData {
             agent_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
             session_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
             group_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -30898,13 +31283,13 @@ impl GroupAccountTransactionsRequest_AgentData {
 }
 
 impl GroupAccountTransactionsRequest_MoneyData {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
         Ok(GroupAccountTransactionsRequest_MoneyData {
             request_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -30915,18 +31300,18 @@ impl GroupAccountTransactionsRequest_MoneyData {
 }
 
 impl GroupAccountTransactionsReply_AgentData {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
         Ok(GroupAccountTransactionsReply_AgentData {
             agent_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
             group_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -30935,13 +31320,13 @@ impl GroupAccountTransactionsReply_AgentData {
 }
 
 impl GroupAccountTransactionsReply_MoneyData {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
         Ok(GroupAccountTransactionsReply_MoneyData {
             request_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -30958,7 +31343,7 @@ impl GroupAccountTransactionsReply_MoneyData {
 }
 
 impl GroupAccountTransactionsReply_HistoryData {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
@@ -30988,18 +31373,18 @@ impl GroupAccountTransactionsReply_HistoryData {
 }
 
 impl GroupActiveProposalsRequest_AgentData {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
         Ok(GroupActiveProposalsRequest_AgentData {
             agent_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
             session_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -31008,13 +31393,13 @@ impl GroupActiveProposalsRequest_AgentData {
 }
 
 impl GroupActiveProposalsRequest_GroupData {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
         Ok(GroupActiveProposalsRequest_GroupData {
             group_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -31023,13 +31408,13 @@ impl GroupActiveProposalsRequest_GroupData {
 }
 
 impl GroupActiveProposalsRequest_TransactionData {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
         Ok(GroupActiveProposalsRequest_TransactionData {
             transaction_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -31038,18 +31423,18 @@ impl GroupActiveProposalsRequest_TransactionData {
 }
 
 impl GroupActiveProposalItemReply_AgentData {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
         Ok(GroupActiveProposalItemReply_AgentData {
             agent_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
             group_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -31058,13 +31443,13 @@ impl GroupActiveProposalItemReply_AgentData {
 }
 
 impl GroupActiveProposalItemReply_TransactionData {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
         Ok(GroupActiveProposalItemReply_TransactionData {
             transaction_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -31074,18 +31459,18 @@ impl GroupActiveProposalItemReply_TransactionData {
 }
 
 impl GroupActiveProposalItemReply_ProposalData {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
         Ok(GroupActiveProposalItemReply_ProposalData {
             vote_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
             vote_initiator: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -31127,18 +31512,18 @@ impl GroupActiveProposalItemReply_ProposalData {
 }
 
 impl GroupVoteHistoryRequest_AgentData {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
         Ok(GroupVoteHistoryRequest_AgentData {
             agent_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
             session_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -31147,13 +31532,13 @@ impl GroupVoteHistoryRequest_AgentData {
 }
 
 impl GroupVoteHistoryRequest_GroupData {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
         Ok(GroupVoteHistoryRequest_GroupData {
             group_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -31162,13 +31547,13 @@ impl GroupVoteHistoryRequest_GroupData {
 }
 
 impl GroupVoteHistoryRequest_TransactionData {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
         Ok(GroupVoteHistoryRequest_TransactionData {
             transaction_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -31177,18 +31562,18 @@ impl GroupVoteHistoryRequest_TransactionData {
 }
 
 impl GroupVoteHistoryItemReply_AgentData {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
         Ok(GroupVoteHistoryItemReply_AgentData {
             agent_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
             group_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -31197,13 +31582,13 @@ impl GroupVoteHistoryItemReply_AgentData {
 }
 
 impl GroupVoteHistoryItemReply_TransactionData {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
         Ok(GroupVoteHistoryItemReply_TransactionData {
             transaction_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -31213,13 +31598,13 @@ impl GroupVoteHistoryItemReply_TransactionData {
 }
 
 impl GroupVoteHistoryItemReply_HistoryItemData {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
         Ok(GroupVoteHistoryItemReply_HistoryItemData {
             vote_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -31242,7 +31627,7 @@ impl GroupVoteHistoryItemReply_HistoryItemData {
                 raw
             },
             vote_initiator: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -31271,13 +31656,13 @@ impl GroupVoteHistoryItemReply_HistoryItemData {
 }
 
 impl GroupVoteHistoryItemReply_VoteItem {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
         Ok(GroupVoteHistoryItemReply_VoteItem {
             candidate_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -31293,18 +31678,18 @@ impl GroupVoteHistoryItemReply_VoteItem {
 }
 
 impl StartGroupProposal_AgentData {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
         Ok(StartGroupProposal_AgentData {
             agent_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
             session_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -31313,13 +31698,13 @@ impl StartGroupProposal_AgentData {
 }
 
 impl StartGroupProposal_ProposalData {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
         Ok(StartGroupProposal_ProposalData {
             group_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -31337,18 +31722,18 @@ impl StartGroupProposal_ProposalData {
 }
 
 impl GroupProposalBallot_AgentData {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
         Ok(GroupProposalBallot_AgentData {
             agent_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
             session_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -31357,18 +31742,18 @@ impl GroupProposalBallot_AgentData {
 }
 
 impl GroupProposalBallot_ProposalData {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
         Ok(GroupProposalBallot_ProposalData {
             proposal_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
             group_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -31383,18 +31768,18 @@ impl GroupProposalBallot_ProposalData {
 }
 
 impl GroupMembersRequest_AgentData {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
         Ok(GroupMembersRequest_AgentData {
             agent_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
             session_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -31403,18 +31788,18 @@ impl GroupMembersRequest_AgentData {
 }
 
 impl GroupMembersRequest_GroupData {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
         Ok(GroupMembersRequest_GroupData {
             group_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
             request_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -31423,13 +31808,13 @@ impl GroupMembersRequest_GroupData {
 }
 
 impl GroupMembersReply_AgentData {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
         Ok(GroupMembersReply_AgentData {
             agent_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -31438,18 +31823,18 @@ impl GroupMembersReply_AgentData {
 }
 
 impl GroupMembersReply_GroupData {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
         Ok(GroupMembersReply_GroupData {
             group_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
             request_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -31459,13 +31844,13 @@ impl GroupMembersReply_GroupData {
 }
 
 impl GroupMembersReply_MemberData {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
         Ok(GroupMembersReply_MemberData {
             agent_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -31489,23 +31874,23 @@ impl GroupMembersReply_MemberData {
 }
 
 impl ActivateGroup_AgentData {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
         Ok(ActivateGroup_AgentData {
             agent_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
             session_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
             group_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -31514,18 +31899,18 @@ impl ActivateGroup_AgentData {
 }
 
 impl SetGroupContribution_AgentData {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
         Ok(SetGroupContribution_AgentData {
             agent_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
             session_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -31534,13 +31919,13 @@ impl SetGroupContribution_AgentData {
 }
 
 impl SetGroupContribution_Data {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
         Ok(SetGroupContribution_Data {
             group_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -31550,18 +31935,18 @@ impl SetGroupContribution_Data {
 }
 
 impl SetGroupAcceptNotices_AgentData {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
         Ok(SetGroupAcceptNotices_AgentData {
             agent_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
             session_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -31570,13 +31955,13 @@ impl SetGroupAcceptNotices_AgentData {
 }
 
 impl SetGroupAcceptNotices_Data {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
         Ok(SetGroupAcceptNotices_Data {
             group_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -31586,7 +31971,7 @@ impl SetGroupAcceptNotices_Data {
 }
 
 impl SetGroupAcceptNotices_NewData {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
@@ -31597,18 +31982,18 @@ impl SetGroupAcceptNotices_NewData {
 }
 
 impl GroupRoleDataRequest_AgentData {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
         Ok(GroupRoleDataRequest_AgentData {
             agent_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
             session_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -31617,18 +32002,18 @@ impl GroupRoleDataRequest_AgentData {
 }
 
 impl GroupRoleDataRequest_GroupData {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
         Ok(GroupRoleDataRequest_GroupData {
             group_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
             request_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -31637,13 +32022,13 @@ impl GroupRoleDataRequest_GroupData {
 }
 
 impl GroupRoleDataReply_AgentData {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
         Ok(GroupRoleDataReply_AgentData {
             agent_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -31652,18 +32037,18 @@ impl GroupRoleDataReply_AgentData {
 }
 
 impl GroupRoleDataReply_GroupData {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
         Ok(GroupRoleDataReply_GroupData {
             group_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
             request_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -31673,13 +32058,13 @@ impl GroupRoleDataReply_GroupData {
 }
 
 impl GroupRoleDataReply_RoleData {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
         Ok(GroupRoleDataReply_RoleData {
             role_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -31708,18 +32093,18 @@ impl GroupRoleDataReply_RoleData {
 }
 
 impl GroupRoleMembersRequest_AgentData {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
         Ok(GroupRoleMembersRequest_AgentData {
             agent_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
             session_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -31728,18 +32113,18 @@ impl GroupRoleMembersRequest_AgentData {
 }
 
 impl GroupRoleMembersRequest_GroupData {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
         Ok(GroupRoleMembersRequest_GroupData {
             group_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
             request_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -31748,23 +32133,23 @@ impl GroupRoleMembersRequest_GroupData {
 }
 
 impl GroupRoleMembersReply_AgentData {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
         Ok(GroupRoleMembersReply_AgentData {
             agent_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
             group_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
             request_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -31774,18 +32159,18 @@ impl GroupRoleMembersReply_AgentData {
 }
 
 impl GroupRoleMembersReply_MemberData {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
         Ok(GroupRoleMembersReply_MemberData {
             role_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
             member_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -31794,28 +32179,28 @@ impl GroupRoleMembersReply_MemberData {
 }
 
 impl GroupTitlesRequest_AgentData {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
         Ok(GroupTitlesRequest_AgentData {
             agent_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
             session_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
             group_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
             request_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -31824,23 +32209,23 @@ impl GroupTitlesRequest_AgentData {
 }
 
 impl GroupTitlesReply_AgentData {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
         Ok(GroupTitlesReply_AgentData {
             agent_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
             group_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
             request_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -31849,7 +32234,7 @@ impl GroupTitlesReply_AgentData {
 }
 
 impl GroupTitlesReply_GroupData {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
@@ -31861,7 +32246,7 @@ impl GroupTitlesReply_GroupData {
                 raw
             },
             role_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -31871,28 +32256,28 @@ impl GroupTitlesReply_GroupData {
 }
 
 impl GroupTitleUpdate_AgentData {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
         Ok(GroupTitleUpdate_AgentData {
             agent_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
             session_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
             group_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
             title_role_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -31901,23 +32286,23 @@ impl GroupTitleUpdate_AgentData {
 }
 
 impl GroupRoleUpdate_AgentData {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
         Ok(GroupRoleUpdate_AgentData {
             agent_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
             session_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
             group_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -31926,13 +32311,13 @@ impl GroupRoleUpdate_AgentData {
 }
 
 impl GroupRoleUpdate_RoleData {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
         Ok(GroupRoleUpdate_RoleData {
             role_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -31961,18 +32346,18 @@ impl GroupRoleUpdate_RoleData {
 }
 
 impl LiveHelpGroupRequest_RequestData {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
         Ok(LiveHelpGroupRequest_RequestData {
             request_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
             agent_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -31981,18 +32366,18 @@ impl LiveHelpGroupRequest_RequestData {
 }
 
 impl LiveHelpGroupReply_ReplyData {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
         Ok(LiveHelpGroupReply_ReplyData {
             request_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
             group_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -32007,18 +32392,18 @@ impl LiveHelpGroupReply_ReplyData {
 }
 
 impl AgentWearablesRequest_AgentData {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
         Ok(AgentWearablesRequest_AgentData {
             agent_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
             session_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -32027,18 +32412,18 @@ impl AgentWearablesRequest_AgentData {
 }
 
 impl AgentWearablesUpdate_AgentData {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
         Ok(AgentWearablesUpdate_AgentData {
             agent_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
             session_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -32048,18 +32433,18 @@ impl AgentWearablesUpdate_AgentData {
 }
 
 impl AgentWearablesUpdate_WearableData {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
         Ok(AgentWearablesUpdate_WearableData {
             item_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
             asset_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -32069,18 +32454,18 @@ impl AgentWearablesUpdate_WearableData {
 }
 
 impl AgentIsNowWearing_AgentData {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
         Ok(AgentIsNowWearing_AgentData {
             agent_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
             session_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -32089,13 +32474,13 @@ impl AgentIsNowWearing_AgentData {
 }
 
 impl AgentIsNowWearing_WearableData {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
         Ok(AgentIsNowWearing_WearableData {
             item_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -32105,18 +32490,18 @@ impl AgentIsNowWearing_WearableData {
 }
 
 impl AgentCachedTexture_AgentData {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
         Ok(AgentCachedTexture_AgentData {
             agent_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
             session_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -32126,13 +32511,13 @@ impl AgentCachedTexture_AgentData {
 }
 
 impl AgentCachedTexture_WearableData {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
         Ok(AgentCachedTexture_WearableData {
             id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -32142,18 +32527,18 @@ impl AgentCachedTexture_WearableData {
 }
 
 impl AgentCachedTextureResponse_AgentData {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
         Ok(AgentCachedTextureResponse_AgentData {
             agent_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
             session_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -32163,13 +32548,13 @@ impl AgentCachedTextureResponse_AgentData {
 }
 
 impl AgentCachedTextureResponse_WearableData {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
         Ok(AgentCachedTextureResponse_WearableData {
             texture_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -32185,18 +32570,18 @@ impl AgentCachedTextureResponse_WearableData {
 }
 
 impl AgentDataUpdateRequest_AgentData {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
         Ok(AgentDataUpdateRequest_AgentData {
             agent_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
             session_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -32205,13 +32590,13 @@ impl AgentDataUpdateRequest_AgentData {
 }
 
 impl AgentDataUpdate_AgentData {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
         Ok(AgentDataUpdate_AgentData {
             agent_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -32234,7 +32619,7 @@ impl AgentDataUpdate_AgentData {
                 raw
             },
             active_group_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -32250,18 +32635,18 @@ impl AgentDataUpdate_AgentData {
 }
 
 impl GroupDataUpdate_AgentGroupData {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
         Ok(GroupDataUpdate_AgentGroupData {
             agent_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
             group_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -32277,13 +32662,13 @@ impl GroupDataUpdate_AgentGroupData {
 }
 
 impl AgentGroupDataUpdate_AgentData {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
         Ok(AgentGroupDataUpdate_AgentData {
             agent_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -32292,20 +32677,20 @@ impl AgentGroupDataUpdate_AgentData {
 }
 
 impl AgentGroupDataUpdate_GroupData {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
         Ok(AgentGroupDataUpdate_GroupData {
             group_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
             group_powers: buffer.read_u64::<LittleEndian>()?,
             accept_notices: buffer.read_u8()? == 1,
             group_insignia_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -32321,18 +32706,18 @@ impl AgentGroupDataUpdate_GroupData {
 }
 
 impl AgentDropGroup_AgentData {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
         Ok(AgentDropGroup_AgentData {
             agent_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
             group_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -32341,18 +32726,18 @@ impl AgentDropGroup_AgentData {
 }
 
 impl LogTextMessage_DataBlock {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
         Ok(LogTextMessage_DataBlock {
             from_agent_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
             to_agent_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -32370,18 +32755,18 @@ impl LogTextMessage_DataBlock {
 }
 
 impl ViewerEffect_AgentData {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
         Ok(ViewerEffect_AgentData {
             agent_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
             session_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -32390,18 +32775,18 @@ impl ViewerEffect_AgentData {
 }
 
 impl ViewerEffect_Effect {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
         Ok(ViewerEffect_Effect {
             id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
             agent_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -32423,13 +32808,13 @@ impl ViewerEffect_Effect {
 }
 
 impl CreateTrustedCircuit_DataBlock {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
         Ok(CreateTrustedCircuit_DataBlock {
             end_point_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -32443,13 +32828,13 @@ impl CreateTrustedCircuit_DataBlock {
 }
 
 impl DenyTrustedCircuit_DataBlock {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
         Ok(DenyTrustedCircuit_DataBlock {
             end_point_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -32458,18 +32843,18 @@ impl DenyTrustedCircuit_DataBlock {
 }
 
 impl RezSingleAttachmentFromInv_AgentData {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
         Ok(RezSingleAttachmentFromInv_AgentData {
             agent_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
             session_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -32478,18 +32863,18 @@ impl RezSingleAttachmentFromInv_AgentData {
 }
 
 impl RezSingleAttachmentFromInv_ObjectData {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
         Ok(RezSingleAttachmentFromInv_ObjectData {
             item_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
             owner_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -32515,18 +32900,18 @@ impl RezSingleAttachmentFromInv_ObjectData {
 }
 
 impl RezMultipleAttachmentsFromInv_AgentData {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
         Ok(RezMultipleAttachmentsFromInv_AgentData {
             agent_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
             session_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -32535,13 +32920,13 @@ impl RezMultipleAttachmentsFromInv_AgentData {
 }
 
 impl RezMultipleAttachmentsFromInv_HeaderData {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
         Ok(RezMultipleAttachmentsFromInv_HeaderData {
             compound_msg_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -32552,18 +32937,18 @@ impl RezMultipleAttachmentsFromInv_HeaderData {
 }
 
 impl RezMultipleAttachmentsFromInv_ObjectData {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
         Ok(RezMultipleAttachmentsFromInv_ObjectData {
             item_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
             owner_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -32589,18 +32974,18 @@ impl RezMultipleAttachmentsFromInv_ObjectData {
 }
 
 impl DetachAttachmentIntoInv_ObjectData {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
         Ok(DetachAttachmentIntoInv_ObjectData {
             agent_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
             item_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -32609,18 +32994,18 @@ impl DetachAttachmentIntoInv_ObjectData {
 }
 
 impl CreateNewOutfitAttachments_AgentData {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
         Ok(CreateNewOutfitAttachments_AgentData {
             agent_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
             session_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -32629,13 +33014,13 @@ impl CreateNewOutfitAttachments_AgentData {
 }
 
 impl CreateNewOutfitAttachments_HeaderData {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
         Ok(CreateNewOutfitAttachments_HeaderData {
             new_folder_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -32644,18 +33029,18 @@ impl CreateNewOutfitAttachments_HeaderData {
 }
 
 impl CreateNewOutfitAttachments_ObjectData {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
         Ok(CreateNewOutfitAttachments_ObjectData {
             old_item_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
             old_folder_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -32664,18 +33049,18 @@ impl CreateNewOutfitAttachments_ObjectData {
 }
 
 impl UserInfoRequest_AgentData {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
         Ok(UserInfoRequest_AgentData {
             agent_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
             session_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -32684,13 +33069,13 @@ impl UserInfoRequest_AgentData {
 }
 
 impl UserInfoReply_AgentData {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
         Ok(UserInfoReply_AgentData {
             agent_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -32699,7 +33084,7 @@ impl UserInfoReply_AgentData {
 }
 
 impl UserInfoReply_UserData {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
@@ -32722,18 +33107,18 @@ impl UserInfoReply_UserData {
 }
 
 impl UpdateUserInfo_AgentData {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
         Ok(UpdateUserInfo_AgentData {
             agent_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
             session_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -32742,7 +33127,7 @@ impl UpdateUserInfo_AgentData {
 }
 
 impl UpdateUserInfo_UserData {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
@@ -32759,13 +33144,13 @@ impl UpdateUserInfo_UserData {
 }
 
 impl ParcelRename_ParcelData {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
         Ok(ParcelRename_ParcelData {
             parcel_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -32780,13 +33165,13 @@ impl ParcelRename_ParcelData {
 }
 
 impl InitiateDownload_AgentData {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
         Ok(InitiateDownload_AgentData {
             agent_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -32795,7 +33180,7 @@ impl InitiateDownload_AgentData {
 }
 
 impl InitiateDownload_FileData {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
@@ -32817,7 +33202,7 @@ impl InitiateDownload_FileData {
 }
 
 impl SystemMessage_MethodData {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
@@ -32829,7 +33214,7 @@ impl SystemMessage_MethodData {
                 raw
             },
             invoice: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -32843,7 +33228,7 @@ impl SystemMessage_MethodData {
 }
 
 impl SystemMessage_ParamList {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
@@ -32859,18 +33244,18 @@ impl SystemMessage_ParamList {
 }
 
 impl MapLayerRequest_AgentData {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
         Ok(MapLayerRequest_AgentData {
             agent_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
             session_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -32882,13 +33267,13 @@ impl MapLayerRequest_AgentData {
 }
 
 impl MapLayerReply_AgentData {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
         Ok(MapLayerReply_AgentData {
             agent_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -32898,7 +33283,7 @@ impl MapLayerReply_AgentData {
 }
 
 impl MapLayerReply_LayerData {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
@@ -32908,7 +33293,7 @@ impl MapLayerReply_LayerData {
             top: buffer.read_u32::<LittleEndian>()?,
             bottom: buffer.read_u32::<LittleEndian>()?,
             image_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -32917,18 +33302,18 @@ impl MapLayerReply_LayerData {
 }
 
 impl MapBlockRequest_AgentData {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
         Ok(MapBlockRequest_AgentData {
             agent_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
             session_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -32940,7 +33325,7 @@ impl MapBlockRequest_AgentData {
 }
 
 impl MapBlockRequest_PositionData {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
@@ -32954,18 +33339,18 @@ impl MapBlockRequest_PositionData {
 }
 
 impl MapNameRequest_AgentData {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
         Ok(MapNameRequest_AgentData {
             agent_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
             session_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -32977,7 +33362,7 @@ impl MapNameRequest_AgentData {
 }
 
 impl MapNameRequest_NameData {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
@@ -32993,13 +33378,13 @@ impl MapNameRequest_NameData {
 }
 
 impl MapBlockReply_AgentData {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
         Ok(MapBlockReply_AgentData {
             agent_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -33009,7 +33394,7 @@ impl MapBlockReply_AgentData {
 }
 
 impl MapBlockReply_Data {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
@@ -33027,7 +33412,7 @@ impl MapBlockReply_Data {
             water_height: buffer.read_u8()?,
             agents: buffer.read_u8()?,
             map_image_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -33036,18 +33421,18 @@ impl MapBlockReply_Data {
 }
 
 impl MapItemRequest_AgentData {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
         Ok(MapItemRequest_AgentData {
             agent_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
             session_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -33059,7 +33444,7 @@ impl MapItemRequest_AgentData {
 }
 
 impl MapItemRequest_RequestData {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
@@ -33071,13 +33456,13 @@ impl MapItemRequest_RequestData {
 }
 
 impl MapItemReply_AgentData {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
         Ok(MapItemReply_AgentData {
             agent_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -33087,7 +33472,7 @@ impl MapItemReply_AgentData {
 }
 
 impl MapItemReply_RequestData {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
@@ -33098,7 +33483,7 @@ impl MapItemReply_RequestData {
 }
 
 impl MapItemReply_Data {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
@@ -33106,7 +33491,7 @@ impl MapItemReply_Data {
             x: buffer.read_u32::<LittleEndian>()?,
             y: buffer.read_u32::<LittleEndian>()?,
             id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -33123,23 +33508,23 @@ impl MapItemReply_Data {
 }
 
 impl SendPostcard_AgentData {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
         Ok(SendPostcard_AgentData {
             agent_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
             session_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
             asset_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -33185,7 +33570,7 @@ impl SendPostcard_AgentData {
 }
 
 impl RpcChannelRequest_DataBlock {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
@@ -33193,12 +33578,12 @@ impl RpcChannelRequest_DataBlock {
             grid_x: buffer.read_u32::<LittleEndian>()?,
             grid_y: buffer.read_u32::<LittleEndian>()?,
             task_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
             item_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -33207,23 +33592,23 @@ impl RpcChannelRequest_DataBlock {
 }
 
 impl RpcChannelReply_DataBlock {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
         Ok(RpcChannelReply_DataBlock {
             task_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
             item_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
             channel_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -33232,7 +33617,7 @@ impl RpcChannelReply_DataBlock {
 }
 
 impl RpcScriptRequestInbound_TargetBlock {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
@@ -33244,23 +33629,23 @@ impl RpcScriptRequestInbound_TargetBlock {
 }
 
 impl RpcScriptRequestInbound_DataBlock {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
         Ok(RpcScriptRequestInbound_DataBlock {
             task_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
             item_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
             channel_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -33276,29 +33661,29 @@ impl RpcScriptRequestInbound_DataBlock {
 }
 
 impl RpcScriptRequestInboundForward_DataBlock {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
         Ok(RpcScriptRequestInboundForward_DataBlock {
             rpc_server_ip: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 4];
                 buffer.read_exact(&mut raw)?;
                 Ip4Addr::from(raw)
             },
             rpc_server_port: buffer.read_u16::<LittleEndian>()?,
             task_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
             item_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
             channel_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -33314,23 +33699,23 @@ impl RpcScriptRequestInboundForward_DataBlock {
 }
 
 impl RpcScriptReplyInbound_DataBlock {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
         Ok(RpcScriptReplyInbound_DataBlock {
             task_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
             item_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
             channel_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -33346,7 +33731,7 @@ impl RpcScriptReplyInbound_DataBlock {
 }
 
 impl ScriptMailRegistration_DataBlock {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
@@ -33359,7 +33744,7 @@ impl ScriptMailRegistration_DataBlock {
             },
             target_port: buffer.read_u16::<LittleEndian>()?,
             task_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -33369,7 +33754,7 @@ impl ScriptMailRegistration_DataBlock {
 }
 
 impl ParcelMediaCommandMessage_CommandBlock {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
@@ -33382,7 +33767,7 @@ impl ParcelMediaCommandMessage_CommandBlock {
 }
 
 impl ParcelMediaUpdate_DataBlock {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
@@ -33394,7 +33779,7 @@ impl ParcelMediaUpdate_DataBlock {
                 raw
             },
             media_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -33404,7 +33789,7 @@ impl ParcelMediaUpdate_DataBlock {
 }
 
 impl ParcelMediaUpdate_DataBlockExtended {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
@@ -33429,18 +33814,18 @@ impl ParcelMediaUpdate_DataBlockExtended {
 }
 
 impl LandStatRequest_AgentData {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
         Ok(LandStatRequest_AgentData {
             agent_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
             session_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -33449,7 +33834,7 @@ impl LandStatRequest_AgentData {
 }
 
 impl LandStatRequest_RequestData {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
@@ -33468,7 +33853,7 @@ impl LandStatRequest_RequestData {
 }
 
 impl LandStatReply_RequestData {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
@@ -33481,14 +33866,14 @@ impl LandStatReply_RequestData {
 }
 
 impl LandStatReply_ReportData {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
         Ok(LandStatReply_ReportData {
             task_local_id: buffer.read_u32::<LittleEndian>()?,
             task_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -33513,13 +33898,13 @@ impl LandStatReply_ReportData {
 }
 
 impl Error_AgentData {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
         Ok(Error_AgentData {
             agent_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -33528,7 +33913,7 @@ impl Error_AgentData {
 }
 
 impl Error_Data {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
@@ -33541,7 +33926,7 @@ impl Error_Data {
                 raw
             },
             id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -33568,18 +33953,18 @@ impl Error_Data {
 }
 
 impl ObjectIncludeInSearch_AgentData {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
         Ok(ObjectIncludeInSearch_AgentData {
             agent_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
             session_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -33588,7 +33973,7 @@ impl ObjectIncludeInSearch_AgentData {
 }
 
 impl ObjectIncludeInSearch_ObjectData {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
@@ -33600,18 +33985,18 @@ impl ObjectIncludeInSearch_ObjectData {
 }
 
 impl RezRestoreToWorld_AgentData {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
         Ok(RezRestoreToWorld_AgentData {
             agent_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
             session_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -33620,33 +34005,33 @@ impl RezRestoreToWorld_AgentData {
 }
 
 impl RezRestoreToWorld_InventoryData {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
         Ok(RezRestoreToWorld_InventoryData {
             item_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
             folder_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
             creator_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
             owner_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
             group_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -33657,7 +34042,7 @@ impl RezRestoreToWorld_InventoryData {
             next_owner_mask: buffer.read_u32::<LittleEndian>()?,
             group_owned: buffer.read_u8()? == 1,
             transaction_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -33685,18 +34070,18 @@ impl RezRestoreToWorld_InventoryData {
 }
 
 impl LinkInventoryItem_AgentData {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
         Ok(LinkInventoryItem_AgentData {
             agent_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
             session_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -33705,24 +34090,24 @@ impl LinkInventoryItem_AgentData {
 }
 
 impl LinkInventoryItem_InventoryBlock {
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
     where
         R: Read,
     {
         Ok(LinkInventoryItem_InventoryBlock {
             callback_id: buffer.read_u32::<LittleEndian>()?,
             folder_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
             transaction_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
             old_item_id: {
-                let mut raw = [0; 4];
+                let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
                 Uuid::from_bytes(&raw)?
             },
@@ -33740,6 +34125,116 @@ impl LinkInventoryItem_InventoryBlock {
                 buffer.read_exact(&mut raw)?;
                 raw
             },
+        })
+    }
+}
+
+impl RetrieveIMsExtended_AgentData {
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
+    where
+        R: Read,
+    {
+        Ok(RetrieveIMsExtended_AgentData {
+            agent_id: {
+                let mut raw = [0u8; 16];
+                buffer.read_exact(&mut raw)?;
+                Uuid::from_bytes(&raw)?
+            },
+            session_id: {
+                let mut raw = [0u8; 16];
+                buffer.read_exact(&mut raw)?;
+                Uuid::from_bytes(&raw)?
+            },
+            is_premium: buffer.read_u8()? == 1,
+        })
+    }
+}
+
+impl JoinGroupRequestExtended_AgentData {
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
+    where
+        R: Read,
+    {
+        Ok(JoinGroupRequestExtended_AgentData {
+            agent_id: {
+                let mut raw = [0u8; 16];
+                buffer.read_exact(&mut raw)?;
+                Uuid::from_bytes(&raw)?
+            },
+            session_id: {
+                let mut raw = [0u8; 16];
+                buffer.read_exact(&mut raw)?;
+                Uuid::from_bytes(&raw)?
+            },
+            group_limit: buffer.read_i32::<LittleEndian>()?,
+        })
+    }
+}
+
+impl JoinGroupRequestExtended_GroupData {
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
+    where
+        R: Read,
+    {
+        Ok(JoinGroupRequestExtended_GroupData {
+            group_id: {
+                let mut raw = [0u8; 16];
+                buffer.read_exact(&mut raw)?;
+                Uuid::from_bytes(&raw)?
+            },
+        })
+    }
+}
+
+impl CreateGroupRequestExtended_AgentData {
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
+    where
+        R: Read,
+    {
+        Ok(CreateGroupRequestExtended_AgentData {
+            agent_id: {
+                let mut raw = [0u8; 16];
+                buffer.read_exact(&mut raw)?;
+                Uuid::from_bytes(&raw)?
+            },
+            session_id: {
+                let mut raw = [0u8; 16];
+                buffer.read_exact(&mut raw)?;
+                Uuid::from_bytes(&raw)?
+            },
+            group_limit: buffer.read_i32::<LittleEndian>()?,
+        })
+    }
+}
+
+impl CreateGroupRequestExtended_GroupData {
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
+    where
+        R: Read,
+    {
+        Ok(CreateGroupRequestExtended_GroupData {
+            name: {
+                let n = buffer.read_u8()? as usize;
+                let mut raw = vec![0; n];
+                buffer.read_exact(&mut raw)?;
+                raw
+            },
+            charter: {
+                let n = buffer.read_u8()? as usize;
+                let mut raw = vec![0; n];
+                buffer.read_exact(&mut raw)?;
+                raw
+            },
+            show_in_list: buffer.read_u8()? == 1,
+            insignia_id: {
+                let mut raw = [0u8; 16];
+                buffer.read_exact(&mut raw)?;
+                Uuid::from_bytes(&raw)?
+            },
+            membership_fee: buffer.read_i32::<LittleEndian>()?,
+            open_enrollment: buffer.read_u8()? == 1,
+            allow_publish: buffer.read_u8()? == 1,
+            mature_publish: buffer.read_u8()? == 1,
         })
     }
 }
@@ -33774,19 +34269,21 @@ impl Message for TestMessage {
         Ok(())
     }
 
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
     where
         R: Read,
     {
         // Block TestBlock1
         let test_block1 = TestMessage_TestBlock1::read_from(buffer)?;
         // Block NeighborBlock
-        let neighbor_block = [
-            TestMessage_NeighborBlock::read_from(buffer)?,
-            TestMessage_NeighborBlock::read_from(buffer)?,
-            TestMessage_NeighborBlock::read_from(buffer)?,
-            TestMessage_NeighborBlock::read_from(buffer)?,
-        ];
+        let neighbor_block = ArrayVec::from(
+            [
+                TestMessage_NeighborBlock::read_from(buffer)?,
+                TestMessage_NeighborBlock::read_from(buffer)?,
+                TestMessage_NeighborBlock::read_from(buffer)?,
+                TestMessage_NeighborBlock::read_from(buffer)?,
+            ],
+        );
         Ok(MessageInstance::TestMessage(TestMessage {
             test_block1: test_block1,
             neighbor_block: neighbor_block,
@@ -33809,7 +34306,7 @@ impl Message for PacketAck {
         Ok(())
     }
 
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
     where
         R: Read,
     {
@@ -33836,7 +34333,7 @@ impl Message for OpenCircuit {
         Ok(())
     }
 
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
     where
         R: Read,
     {
@@ -33858,7 +34355,7 @@ impl Message for CloseCircuit {
         Ok(())
     }
 
-    fn read_from<R: ?Sized>(_: &mut R) -> Result<MessageInstance, ReadMessageError>
+    fn read_from<R: ?Sized>(_: &mut R) -> Result<MessageInstance, ReadError>
     where
         R: Read,
     {
@@ -33881,7 +34378,7 @@ impl Message for StartPingCheck {
         Ok(())
     }
 
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
     where
         R: Read,
     {
@@ -33905,7 +34402,7 @@ impl Message for CompletePingCheck {
         Ok(())
     }
 
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
     where
         R: Read,
     {
@@ -33931,7 +34428,7 @@ impl Message for AddCircuitCode {
         Ok(())
     }
 
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
     where
         R: Read,
     {
@@ -33957,7 +34454,7 @@ impl Message for UseCircuitCode {
         Ok(())
     }
 
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
     where
         R: Read,
     {
@@ -33993,17 +34490,19 @@ impl Message for NeighborList {
         Ok(())
     }
 
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
     where
         R: Read,
     {
         // Block NeighborBlock
-        let neighbor_block = [
-            NeighborList_NeighborBlock::read_from(buffer)?,
-            NeighborList_NeighborBlock::read_from(buffer)?,
-            NeighborList_NeighborBlock::read_from(buffer)?,
-            NeighborList_NeighborBlock::read_from(buffer)?,
-        ];
+        let neighbor_block = ArrayVec::from(
+            [
+                NeighborList_NeighborBlock::read_from(buffer)?,
+                NeighborList_NeighborBlock::read_from(buffer)?,
+                NeighborList_NeighborBlock::read_from(buffer)?,
+                NeighborList_NeighborBlock::read_from(buffer)?,
+            ],
+        );
         Ok(MessageInstance::NeighborList(
             NeighborList { neighbor_block: neighbor_block },
         ))
@@ -34035,7 +34534,7 @@ impl Message for AvatarTextureUpdate {
         Ok(())
     }
 
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
     where
         R: Read,
     {
@@ -34073,7 +34572,7 @@ impl Message for SimulatorMapUpdate {
         Ok(())
     }
 
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
     where
         R: Read,
     {
@@ -34101,7 +34600,7 @@ impl Message for SimulatorSetMap {
         Ok(())
     }
 
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
     where
         R: Read,
     {
@@ -34123,7 +34622,7 @@ impl Message for SubscribeLoad {
         Ok(())
     }
 
-    fn read_from<R: ?Sized>(_: &mut R) -> Result<MessageInstance, ReadMessageError>
+    fn read_from<R: ?Sized>(_: &mut R) -> Result<MessageInstance, ReadError>
     where
         R: Read,
     {
@@ -34141,7 +34640,7 @@ impl Message for UnsubscribeLoad {
         Ok(())
     }
 
-    fn read_from<R: ?Sized>(_: &mut R) -> Result<MessageInstance, ReadMessageError>
+    fn read_from<R: ?Sized>(_: &mut R) -> Result<MessageInstance, ReadError>
     where
         R: Read,
     {
@@ -34183,7 +34682,7 @@ impl Message for SimulatorReady {
         Ok(())
     }
 
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
     where
         R: Read,
     {
@@ -34231,7 +34730,7 @@ impl Message for TelehubInfo {
         Ok(())
     }
 
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
     where
         R: Read,
     {
@@ -34301,7 +34800,7 @@ impl Message for SimulatorPresentAtLocation {
         Ok(())
     }
 
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
     where
         R: Read,
     {
@@ -34309,12 +34808,14 @@ impl Message for SimulatorPresentAtLocation {
         let simulator_public_host_block =
             SimulatorPresentAtLocation_SimulatorPublicHostBlock::read_from(buffer)?;
         // Block NeighborBlock
-        let neighbor_block = [
-            SimulatorPresentAtLocation_NeighborBlock::read_from(buffer)?,
-            SimulatorPresentAtLocation_NeighborBlock::read_from(buffer)?,
-            SimulatorPresentAtLocation_NeighborBlock::read_from(buffer)?,
-            SimulatorPresentAtLocation_NeighborBlock::read_from(buffer)?,
-        ];
+        let neighbor_block = ArrayVec::from(
+            [
+                SimulatorPresentAtLocation_NeighborBlock::read_from(buffer)?,
+                SimulatorPresentAtLocation_NeighborBlock::read_from(buffer)?,
+                SimulatorPresentAtLocation_NeighborBlock::read_from(buffer)?,
+                SimulatorPresentAtLocation_NeighborBlock::read_from(buffer)?,
+            ],
+        );
         // Block SimulatorBlock
         let simulator_block = SimulatorPresentAtLocation_SimulatorBlock::read_from(buffer)?;
         // Block TelehubBlock
@@ -34359,7 +34860,7 @@ impl Message for SimulatorLoad {
         Ok(())
     }
 
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
     where
         R: Read,
     {
@@ -34388,7 +34889,7 @@ impl Message for SimulatorShutdownRequest {
         Ok(())
     }
 
-    fn read_from<R: ?Sized>(_: &mut R) -> Result<MessageInstance, ReadMessageError>
+    fn read_from<R: ?Sized>(_: &mut R) -> Result<MessageInstance, ReadError>
     where
         R: Read,
     {
@@ -34413,7 +34914,7 @@ impl Message for RegionPresenceRequestByRegionID {
         Ok(())
     }
 
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
     where
         R: Read,
     {
@@ -34446,7 +34947,7 @@ impl Message for RegionPresenceRequestByHandle {
         Ok(())
     }
 
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
     where
         R: Read,
     {
@@ -34483,7 +34984,7 @@ impl Message for RegionPresenceResponse {
         Ok(())
     }
 
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
     where
         R: Read,
     {
@@ -34516,7 +35017,7 @@ impl Message for UpdateSimulator {
         Ok(())
     }
 
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
     where
         R: Read,
     {
@@ -34547,7 +35048,7 @@ impl Message for LogDwellTime {
         Ok(())
     }
 
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
     where
         R: Read,
     {
@@ -34573,7 +35074,7 @@ impl Message for FeatureDisabled {
         Ok(())
     }
 
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
     where
         R: Read,
     {
@@ -34619,7 +35120,7 @@ impl Message for LogFailedMoneyTransaction {
         Ok(())
     }
 
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
     where
         R: Read,
     {
@@ -34677,7 +35178,7 @@ impl Message for UserReportInternal {
         Ok(())
     }
 
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
     where
         R: Read,
     {
@@ -34708,7 +35209,7 @@ impl Message for SetSimStatusInDatabase {
         Ok(())
     }
 
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
     where
         R: Read,
     {
@@ -34739,7 +35240,7 @@ impl Message for SetSimPresenceInDatabase {
         Ok(())
     }
 
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
     where
         R: Read,
     {
@@ -34761,7 +35262,7 @@ impl Message for EconomyDataRequest {
         Ok(())
     }
 
-    fn read_from<R: ?Sized>(_: &mut R) -> Result<MessageInstance, ReadMessageError>
+    fn read_from<R: ?Sized>(_: &mut R) -> Result<MessageInstance, ReadError>
     where
         R: Read,
     {
@@ -34823,7 +35324,7 @@ impl Message for EconomyData {
         Ok(())
     }
 
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
     where
         R: Read,
     {
@@ -34849,7 +35350,7 @@ impl Message for AvatarPickerRequest {
         Ok(())
     }
 
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
     where
         R: Read,
     {
@@ -34881,7 +35382,7 @@ impl Message for AvatarPickerRequestBackend {
         Ok(())
     }
 
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
     where
         R: Read,
     {
@@ -34918,7 +35419,7 @@ impl Message for AvatarPickerReply {
         Ok(())
     }
 
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
     where
         R: Read,
     {
@@ -34962,7 +35463,7 @@ impl Message for PlacesQuery {
         Ok(())
     }
 
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
     where
         R: Read,
     {
@@ -35014,7 +35515,7 @@ impl Message for PlacesReply {
         Ok(())
     }
 
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
     where
         R: Read,
     {
@@ -35058,7 +35559,7 @@ impl Message for DirFindQuery {
         Ok(())
     }
 
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
     where
         R: Read,
     {
@@ -35096,7 +35597,7 @@ impl Message for DirFindQueryBackend {
         Ok(())
     }
 
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
     where
         R: Read,
     {
@@ -35135,7 +35636,7 @@ impl Message for DirPlacesQuery {
         Ok(())
     }
 
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
     where
         R: Read,
     {
@@ -35175,7 +35676,7 @@ impl Message for DirPlacesQueryBackend {
         Ok(())
     }
 
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
     where
         R: Read,
     {
@@ -35223,7 +35724,7 @@ impl Message for DirPlacesReply {
         Ok(())
     }
 
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
     where
         R: Read,
     {
@@ -35280,7 +35781,7 @@ impl Message for DirPeopleReply {
         Ok(())
     }
 
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
     where
         R: Read,
     {
@@ -35331,7 +35832,7 @@ impl Message for DirEventsReply {
         Ok(())
     }
 
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
     where
         R: Read,
     {
@@ -35382,7 +35883,7 @@ impl Message for DirGroupsReply {
         Ok(())
     }
 
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
     where
         R: Read,
     {
@@ -35427,7 +35928,7 @@ impl Message for DirClassifiedQuery {
         Ok(())
     }
 
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
     where
         R: Read,
     {
@@ -35466,7 +35967,7 @@ impl Message for DirClassifiedQueryBackend {
         Ok(())
     }
 
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
     where
         R: Read,
     {
@@ -35512,7 +36013,7 @@ impl Message for DirClassifiedReply {
         Ok(())
     }
 
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
     where
         R: Read,
     {
@@ -35560,7 +36061,7 @@ impl Message for AvatarClassifiedReply {
         Ok(())
     }
 
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
     where
         R: Read,
     {
@@ -35596,7 +36097,7 @@ impl Message for ClassifiedInfoRequest {
         Ok(())
     }
 
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
     where
         R: Read,
     {
@@ -35645,7 +36146,7 @@ impl Message for ClassifiedInfoReply {
         Ok(())
     }
 
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
     where
         R: Read,
     {
@@ -35688,7 +36189,7 @@ impl Message for ClassifiedInfoUpdate {
         Ok(())
     }
 
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
     where
         R: Read,
     {
@@ -35720,7 +36221,7 @@ impl Message for ClassifiedDelete {
         Ok(())
     }
 
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
     where
         R: Read,
     {
@@ -35751,7 +36252,7 @@ impl Message for ClassifiedGodDelete {
         Ok(())
     }
 
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
     where
         R: Read,
     {
@@ -35792,7 +36293,7 @@ impl Message for DirLandQuery {
         Ok(())
     }
 
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
     where
         R: Read,
     {
@@ -35834,7 +36335,7 @@ impl Message for DirLandQueryBackend {
         Ok(())
     }
 
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
     where
         R: Read,
     {
@@ -35873,7 +36374,7 @@ impl Message for DirLandReply {
         Ok(())
     }
 
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
     where
         R: Read,
     {
@@ -35913,7 +36414,7 @@ impl Message for DirPopularQuery {
         Ok(())
     }
 
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
     where
         R: Read,
     {
@@ -35947,7 +36448,7 @@ impl Message for DirPopularQueryBackend {
         Ok(())
     }
 
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
     where
         R: Read,
     {
@@ -35985,7 +36486,7 @@ impl Message for DirPopularReply {
         Ok(())
     }
 
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
     where
         R: Read,
     {
@@ -36022,7 +36523,7 @@ impl Message for ParcelInfoRequest {
         Ok(())
     }
 
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
     where
         R: Read,
     {
@@ -36065,7 +36566,7 @@ impl Message for ParcelInfoReply {
         Ok(())
     }
 
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
     where
         R: Read,
     {
@@ -36095,7 +36596,7 @@ impl Message for ParcelObjectOwnersRequest {
         Ok(())
     }
 
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
     where
         R: Read,
     {
@@ -36130,7 +36631,7 @@ impl Message for ParcelObjectOwnersReply {
         Ok(())
     }
 
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
     where
         R: Read,
     {
@@ -36161,7 +36662,7 @@ impl Message for GroupNoticesListRequest {
         Ok(())
     }
 
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
     where
         R: Read,
     {
@@ -36201,7 +36702,7 @@ impl Message for GroupNoticesListReply {
         Ok(())
     }
 
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
     where
         R: Read,
     {
@@ -36237,7 +36738,7 @@ impl Message for GroupNoticeRequest {
         Ok(())
     }
 
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
     where
         R: Read,
     {
@@ -36271,7 +36772,7 @@ impl Message for GroupNoticeAdd {
         Ok(())
     }
 
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
     where
         R: Read,
     {
@@ -36307,7 +36808,7 @@ impl Message for TeleportRequest {
         Ok(())
     }
 
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
     where
         R: Read,
     {
@@ -36343,7 +36844,7 @@ impl Message for TeleportLocationRequest {
         Ok(())
     }
 
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
     where
         R: Read,
     {
@@ -36380,7 +36881,7 @@ impl Message for TeleportLocal {
         Ok(())
     }
 
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
     where
         R: Read,
     {
@@ -36404,7 +36905,7 @@ impl Message for TeleportLandmarkRequest {
         Ok(())
     }
 
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
     where
         R: Read,
     {
@@ -36431,7 +36932,7 @@ impl Message for TeleportProgress {
         Ok(())
     }
 
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
     where
         R: Read,
     {
@@ -36465,7 +36966,7 @@ impl Message for DataHomeLocationRequest {
         Ok(())
     }
 
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
     where
         R: Read,
     {
@@ -36501,7 +37002,7 @@ impl Message for DataHomeLocationReply {
         Ok(())
     }
 
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
     where
         R: Read,
     {
@@ -36532,7 +37033,7 @@ impl Message for TeleportFinish {
         Ok(())
     }
 
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
     where
         R: Read,
     {
@@ -36565,7 +37066,7 @@ impl Message for StartLure {
         Ok(())
     }
 
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
     where
         R: Read,
     {
@@ -36602,7 +37103,7 @@ impl Message for TeleportLureRequest {
         Ok(())
     }
 
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
     where
         R: Read,
     {
@@ -36627,7 +37128,7 @@ impl Message for TeleportCancel {
         Ok(())
     }
 
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
     where
         R: Read,
     {
@@ -36651,7 +37152,7 @@ impl Message for TeleportStart {
         Ok(())
     }
 
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
     where
         R: Read,
     {
@@ -36680,7 +37181,7 @@ impl Message for TeleportFailed {
         Ok(())
     }
 
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
     where
         R: Read,
     {
@@ -36718,7 +37219,7 @@ impl Message for Undo {
         Ok(())
     }
 
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
     where
         R: Read,
     {
@@ -36756,7 +37257,7 @@ impl Message for Redo {
         Ok(())
     }
 
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
     where
         R: Read,
     {
@@ -36788,7 +37289,7 @@ impl Message for UndoLand {
         Ok(())
     }
 
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
     where
         R: Read,
     {
@@ -36814,7 +37315,7 @@ impl Message for AgentPause {
         Ok(())
     }
 
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
     where
         R: Read,
     {
@@ -36840,7 +37341,7 @@ impl Message for AgentResume {
         Ok(())
     }
 
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
     where
         R: Read,
     {
@@ -36915,7 +37416,7 @@ impl Message for AgentUpdate {
         Ok(())
     }
 
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
     where
         R: Read,
     {
@@ -36944,7 +37445,7 @@ impl Message for ChatFromViewer {
         Ok(())
     }
 
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
     where
         R: Read,
     {
@@ -36978,7 +37479,7 @@ impl Message for AgentThrottle {
         Ok(())
     }
 
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
     where
         R: Read,
     {
@@ -37014,7 +37515,7 @@ impl Message for AgentFOV {
         Ok(())
     }
 
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
     where
         R: Read,
     {
@@ -37055,7 +37556,7 @@ impl Message for AgentHeightWidth {
         Ok(())
     }
 
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
     where
         R: Read,
     {
@@ -37100,7 +37601,7 @@ impl Message for AgentSetAppearance {
         Ok(())
     }
 
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
     where
         R: Read,
     {
@@ -37153,7 +37654,7 @@ impl Message for AgentAnimation {
         Ok(())
     }
 
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
     where
         R: Read,
     {
@@ -37203,7 +37704,7 @@ impl Message for AgentRequestSit {
         Ok(())
     }
 
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
     where
         R: Read,
     {
@@ -37231,7 +37732,7 @@ impl Message for AgentSit {
         Ok(())
     }
 
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
     where
         R: Read,
     {
@@ -37260,7 +37761,7 @@ impl Message for AgentQuitCopy {
         Ok(())
     }
 
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
     where
         R: Read,
     {
@@ -37297,7 +37798,7 @@ impl Message for RequestImage {
         Ok(())
     }
 
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
     where
         R: Read,
     {
@@ -37328,7 +37829,7 @@ impl Message for ImageNotInDatabase {
         Ok(())
     }
 
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
     where
         R: Read,
     {
@@ -37352,7 +37853,7 @@ impl Message for RebakeAvatarTextures {
         Ok(())
     }
 
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
     where
         R: Read,
     {
@@ -37378,7 +37879,7 @@ impl Message for SetAlwaysRun {
         Ok(())
     }
 
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
     where
         R: Read,
     {
@@ -37457,7 +37958,7 @@ impl Message for ObjectAdd {
         Ok(())
     }
 
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
     where
         R: Read,
     {
@@ -37491,7 +37992,7 @@ impl Message for ObjectDelete {
         Ok(())
     }
 
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
     where
         R: Read,
     {
@@ -37536,7 +38037,7 @@ impl Message for ObjectDuplicate {
         Ok(())
     }
 
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
     where
         R: Read,
     {
@@ -37599,7 +38100,7 @@ impl Message for ObjectDuplicateOnRay {
         Ok(())
     }
 
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
     where
         R: Read,
     {
@@ -37640,7 +38141,7 @@ impl Message for MultipleObjectUpdate {
         Ok(())
     }
 
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
     where
         R: Read,
     {
@@ -37680,7 +38181,7 @@ impl Message for RequestMultipleObjects {
         Ok(())
     }
 
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
     where
         R: Read,
     {
@@ -37722,7 +38223,7 @@ impl Message for ObjectPosition {
         Ok(())
     }
 
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
     where
         R: Read,
     {
@@ -37762,7 +38263,7 @@ impl Message for ObjectScale {
         Ok(())
     }
 
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
     where
         R: Read,
     {
@@ -37803,7 +38304,7 @@ impl Message for ObjectRotation {
         Ok(())
     }
 
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
     where
         R: Read,
     {
@@ -37839,18 +38340,34 @@ impl Message for ObjectFlagUpdate {
         buffer.write_u8(self.agent_data.is_temporary as u8)?;
         buffer.write_u8(self.agent_data.is_phantom as u8)?;
         buffer.write_u8(self.agent_data.casts_shadows as u8)?;
+        // Block ExtraPhysics
+        buffer.write_u8(self.extra_physics.len() as u8)?;
+        for item in &self.extra_physics {
+            buffer.write_u8(item.physics_shape_type)?;
+            buffer.write_f32::<LittleEndian>(item.density)?;
+            buffer.write_f32::<LittleEndian>(item.friction)?;
+            buffer.write_f32::<LittleEndian>(item.restitution)?;
+            buffer.write_f32::<LittleEndian>(item.gravity_multiplier)?;
+        }
         Ok(())
     }
 
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
     where
         R: Read,
     {
         // Block AgentData
         let agent_data = ObjectFlagUpdate_AgentData::read_from(buffer)?;
-        Ok(MessageInstance::ObjectFlagUpdate(
-            ObjectFlagUpdate { agent_data: agent_data },
-        ))
+        // Block ExtraPhysics
+        let mut extra_physics = Vec::new();
+        let _extra_physics_count = buffer.read_u8()?;
+        for _ in 0.._extra_physics_count {
+            extra_physics.push(ObjectFlagUpdate_ExtraPhysics::read_from(buffer)?);
+        }
+        Ok(MessageInstance::ObjectFlagUpdate(ObjectFlagUpdate {
+            agent_data: agent_data,
+            extra_physics: extra_physics,
+        }))
     }
 }
 
@@ -37873,7 +38390,7 @@ impl Message for ObjectClickAction {
         Ok(())
     }
 
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
     where
         R: Read,
     {
@@ -37912,7 +38429,7 @@ impl Message for ObjectImage {
         Ok(())
     }
 
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
     where
         R: Read,
     {
@@ -37950,7 +38467,7 @@ impl Message for ObjectMaterial {
         Ok(())
     }
 
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
     where
         R: Read,
     {
@@ -38005,7 +38522,7 @@ impl Message for ObjectShape {
         Ok(())
     }
 
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
     where
         R: Read,
     {
@@ -38046,7 +38563,7 @@ impl Message for ObjectExtraParams {
         Ok(())
     }
 
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
     where
         R: Read,
     {
@@ -38087,7 +38604,7 @@ impl Message for ObjectOwner {
         Ok(())
     }
 
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
     where
         R: Read,
     {
@@ -38128,7 +38645,7 @@ impl Message for ObjectGroup {
         Ok(())
     }
 
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
     where
         R: Read,
     {
@@ -38169,7 +38686,7 @@ impl Message for ObjectBuy {
         Ok(())
     }
 
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
     where
         R: Read,
     {
@@ -38205,7 +38722,7 @@ impl Message for BuyObjectInventory {
         Ok(())
     }
 
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
     where
         R: Read,
     {
@@ -38233,7 +38750,7 @@ impl Message for DerezContainer {
         Ok(())
     }
 
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
     where
         R: Read,
     {
@@ -38268,7 +38785,7 @@ impl Message for ObjectPermissions {
         Ok(())
     }
 
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
     where
         R: Read,
     {
@@ -38310,7 +38827,7 @@ impl Message for ObjectSaleInfo {
         Ok(())
     }
 
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
     where
         R: Read,
     {
@@ -38348,7 +38865,7 @@ impl Message for ObjectName {
         Ok(())
     }
 
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
     where
         R: Read,
     {
@@ -38386,7 +38903,7 @@ impl Message for ObjectDescription {
         Ok(())
     }
 
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
     where
         R: Read,
     {
@@ -38424,7 +38941,7 @@ impl Message for ObjectCategory {
         Ok(())
     }
 
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
     where
         R: Read,
     {
@@ -38461,7 +38978,7 @@ impl Message for ObjectSelect {
         Ok(())
     }
 
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
     where
         R: Read,
     {
@@ -38498,7 +39015,7 @@ impl Message for ObjectDeselect {
         Ok(())
     }
 
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
     where
         R: Read,
     {
@@ -38540,7 +39057,7 @@ impl Message for ObjectAttach {
         Ok(())
     }
 
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
     where
         R: Read,
     {
@@ -38577,7 +39094,7 @@ impl Message for ObjectDetach {
         Ok(())
     }
 
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
     where
         R: Read,
     {
@@ -38614,7 +39131,7 @@ impl Message for ObjectDrop {
         Ok(())
     }
 
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
     where
         R: Read,
     {
@@ -38651,7 +39168,7 @@ impl Message for ObjectLink {
         Ok(())
     }
 
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
     where
         R: Read,
     {
@@ -38688,7 +39205,7 @@ impl Message for ObjectDelink {
         Ok(())
     }
 
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
     where
         R: Read,
     {
@@ -38751,7 +39268,7 @@ impl Message for ObjectGrab {
         Ok(())
     }
 
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
     where
         R: Read,
     {
@@ -38829,7 +39346,7 @@ impl Message for ObjectGrabUpdate {
         Ok(())
     }
 
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
     where
         R: Read,
     {
@@ -38886,7 +39403,7 @@ impl Message for ObjectDeGrab {
         Ok(())
     }
 
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
     where
         R: Read,
     {
@@ -38923,7 +39440,7 @@ impl Message for ObjectSpinStart {
         Ok(())
     }
 
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
     where
         R: Read,
     {
@@ -38957,7 +39474,7 @@ impl Message for ObjectSpinUpdate {
         Ok(())
     }
 
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
     where
         R: Read,
     {
@@ -38987,7 +39504,7 @@ impl Message for ObjectSpinStop {
         Ok(())
     }
 
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
     where
         R: Read,
     {
@@ -39023,7 +39540,7 @@ impl Message for ObjectExportSelected {
         Ok(())
     }
 
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
     where
         R: Read,
     {
@@ -39076,7 +39593,7 @@ impl Message for ModifyLand {
         Ok(())
     }
 
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
     where
         R: Read,
     {
@@ -39118,7 +39635,7 @@ impl Message for VelocityInterpolateOn {
         Ok(())
     }
 
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
     where
         R: Read,
     {
@@ -39143,7 +39660,7 @@ impl Message for VelocityInterpolateOff {
         Ok(())
     }
 
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
     where
         R: Read,
     {
@@ -39170,7 +39687,7 @@ impl Message for StateSave {
         Ok(())
     }
 
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
     where
         R: Read,
     {
@@ -39198,7 +39715,7 @@ impl Message for ReportAutosaveCrash {
         Ok(())
     }
 
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
     where
         R: Read,
     {
@@ -39226,7 +39743,7 @@ impl Message for SimWideDeletes {
         Ok(())
     }
 
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
     where
         R: Read,
     {
@@ -39259,7 +39776,7 @@ impl Message for RequestObjectPropertiesFamily {
         Ok(())
     }
 
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
     where
         R: Read,
     {
@@ -39291,7 +39808,7 @@ impl Message for TrackAgent {
         Ok(())
     }
 
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
     where
         R: Read,
     {
@@ -39372,7 +39889,7 @@ impl Message for ViewerStats {
         Ok(())
     }
 
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
     where
         R: Read,
     {
@@ -39381,10 +39898,12 @@ impl Message for ViewerStats {
         // Block DownloadTotals
         let download_totals = ViewerStats_DownloadTotals::read_from(buffer)?;
         // Block NetStats
-        let net_stats = [
-            ViewerStats_NetStats::read_from(buffer)?,
-            ViewerStats_NetStats::read_from(buffer)?,
-        ];
+        let net_stats = ArrayVec::from(
+            [
+                ViewerStats_NetStats::read_from(buffer)?,
+                ViewerStats_NetStats::read_from(buffer)?,
+            ],
+        );
         // Block FailStats
         let fail_stats = ViewerStats_FailStats::read_from(buffer)?;
         // Block MiscStats
@@ -39420,7 +39939,7 @@ impl Message for ScriptAnswerYes {
         Ok(())
     }
 
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
     where
         R: Read,
     {
@@ -39469,7 +39988,7 @@ impl Message for UserReport {
         Ok(())
     }
 
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
     where
         R: Read,
     {
@@ -39499,10 +40018,15 @@ impl Message for AlertMessage {
             buffer.write(&item.message[..])?;
             buffer.write(&item.extra_params[..])?;
         }
+        // Block AgentInfo
+        buffer.write_u8(self.agent_info.len() as u8)?;
+        for item in &self.agent_info {
+            buffer.write(item.agent_id.as_bytes())?;
+        }
         Ok(())
     }
 
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
     where
         R: Read,
     {
@@ -39514,9 +40038,16 @@ impl Message for AlertMessage {
         for _ in 0.._alert_info_count {
             alert_info.push(AlertMessage_AlertInfo::read_from(buffer)?);
         }
+        // Block AgentInfo
+        let mut agent_info = Vec::new();
+        let _agent_info_count = buffer.read_u8()?;
+        for _ in 0.._agent_info_count {
+            agent_info.push(AlertMessage_AgentInfo::read_from(buffer)?);
+        }
         Ok(MessageInstance::AlertMessage(AlertMessage {
             alert_data: alert_data,
             alert_info: alert_info,
+            agent_info: agent_info,
         }))
     }
 }
@@ -39536,7 +40067,7 @@ impl Message for AgentAlertMessage {
         Ok(())
     }
 
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
     where
         R: Read,
     {
@@ -39570,7 +40101,7 @@ impl Message for MeanCollisionAlert {
         Ok(())
     }
 
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
     where
         R: Read,
     {
@@ -39598,7 +40129,7 @@ impl Message for ViewerFrozenMessage {
         Ok(())
     }
 
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
     where
         R: Read,
     {
@@ -39622,7 +40153,7 @@ impl Message for HealthMessage {
         Ok(())
     }
 
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
     where
         R: Read,
     {
@@ -39655,7 +40186,7 @@ impl Message for ChatFromSimulator {
         Ok(())
     }
 
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
     where
         R: Read,
     {
@@ -39689,10 +40220,15 @@ impl Message for SimStats {
         }
         // Block PidStat
         buffer.write_i32::<LittleEndian>(self.pid_stat.pid)?;
+        // Block RegionInfo
+        buffer.write_u8(self.region_info.len() as u8)?;
+        for item in &self.region_info {
+            buffer.write_u64::<LittleEndian>(item.region_flags_extended)?;
+        }
         Ok(())
     }
 
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
     where
         R: Read,
     {
@@ -39706,10 +40242,17 @@ impl Message for SimStats {
         }
         // Block PidStat
         let pid_stat = SimStats_PidStat::read_from(buffer)?;
+        // Block RegionInfo
+        let mut region_info = Vec::new();
+        let _region_info_count = buffer.read_u8()?;
+        for _ in 0.._region_info_count {
+            region_info.push(SimStats_RegionInfo::read_from(buffer)?);
+        }
         Ok(MessageInstance::SimStats(SimStats {
             region: region,
             stat: stat,
             pid_stat: pid_stat,
+            region_info: region_info,
         }))
     }
 }
@@ -39727,7 +40270,7 @@ impl Message for RequestRegionInfo {
         Ok(())
     }
 
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
     where
         R: Read,
     {
@@ -39798,10 +40341,15 @@ impl Message for RegionInfo {
         buffer.write_u32::<LittleEndian>(
             self.region_info2.hard_max_objects,
         )?;
+        // Block RegionInfo3
+        buffer.write_u8(self.region_info3.len() as u8)?;
+        for item in &self.region_info3 {
+            buffer.write_u64::<LittleEndian>(item.region_flags_extended)?;
+        }
         Ok(())
     }
 
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
     where
         R: Read,
     {
@@ -39811,10 +40359,17 @@ impl Message for RegionInfo {
         let region_info = RegionInfo_RegionInfo::read_from(buffer)?;
         // Block RegionInfo2
         let region_info2 = RegionInfo_RegionInfo2::read_from(buffer)?;
+        // Block RegionInfo3
+        let mut region_info3 = Vec::new();
+        let _region_info3_count = buffer.read_u8()?;
+        for _ in 0.._region_info3_count {
+            region_info3.push(RegionInfo_RegionInfo3::read_from(buffer)?);
+        }
         Ok(MessageInstance::RegionInfo(RegionInfo {
             agent_data: agent_data,
             region_info: region_info,
             region_info2: region_info2,
+            region_info3: region_info3,
         }))
     }
 }
@@ -39850,10 +40405,15 @@ impl Message for GodUpdateRegionInfo {
         buffer.write_i32::<LittleEndian>(
             self.region_info.redirect_grid_y,
         )?;
+        // Block RegionInfo2
+        buffer.write_u8(self.region_info2.len() as u8)?;
+        for item in &self.region_info2 {
+            buffer.write_u64::<LittleEndian>(item.region_flags_extended)?;
+        }
         Ok(())
     }
 
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
     where
         R: Read,
     {
@@ -39861,9 +40421,16 @@ impl Message for GodUpdateRegionInfo {
         let agent_data = GodUpdateRegionInfo_AgentData::read_from(buffer)?;
         // Block RegionInfo
         let region_info = GodUpdateRegionInfo_RegionInfo::read_from(buffer)?;
+        // Block RegionInfo2
+        let mut region_info2 = Vec::new();
+        let _region_info2_count = buffer.read_u8()?;
+        for _ in 0.._region_info2_count {
+            region_info2.push(GodUpdateRegionInfo_RegionInfo2::read_from(buffer)?);
+        }
         Ok(MessageInstance::GodUpdateRegionInfo(GodUpdateRegionInfo {
             agent_data: agent_data,
             region_info: region_info,
+            region_info2: region_info2,
         }))
     }
 }
@@ -39882,7 +40449,7 @@ impl Message for NearestLandingRegionRequest {
         Ok(())
     }
 
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
     where
         R: Read,
     {
@@ -39910,7 +40477,7 @@ impl Message for NearestLandingRegionReply {
         Ok(())
     }
 
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
     where
         R: Read,
     {
@@ -39938,7 +40505,7 @@ impl Message for NearestLandingRegionUpdated {
         Ok(())
     }
 
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
     where
         R: Read,
     {
@@ -39964,7 +40531,7 @@ impl Message for TeleportLandingStatusChanged {
         Ok(())
     }
 
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
     where
         R: Read,
     {
@@ -40042,10 +40609,16 @@ impl Message for RegionHandshake {
         buffer.write(&self.region_info3.colo_name[..])?;
         buffer.write(&self.region_info3.product_sku[..])?;
         buffer.write(&self.region_info3.product_name[..])?;
+        // Block RegionInfo4
+        buffer.write_u8(self.region_info4.len() as u8)?;
+        for item in &self.region_info4 {
+            buffer.write_u64::<LittleEndian>(item.region_flags_extended)?;
+            buffer.write_u64::<LittleEndian>(item.region_protocols)?;
+        }
         Ok(())
     }
 
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
     where
         R: Read,
     {
@@ -40055,10 +40628,17 @@ impl Message for RegionHandshake {
         let region_info2 = RegionHandshake_RegionInfo2::read_from(buffer)?;
         // Block RegionInfo3
         let region_info3 = RegionHandshake_RegionInfo3::read_from(buffer)?;
+        // Block RegionInfo4
+        let mut region_info4 = Vec::new();
+        let _region_info4_count = buffer.read_u8()?;
+        for _ in 0.._region_info4_count {
+            region_info4.push(RegionHandshake_RegionInfo4::read_from(buffer)?);
+        }
         Ok(MessageInstance::RegionHandshake(RegionHandshake {
             region_info: region_info,
             region_info2: region_info2,
             region_info3: region_info3,
+            region_info4: region_info4,
         }))
     }
 }
@@ -40078,7 +40658,7 @@ impl Message for RegionHandshakeReply {
         Ok(())
     }
 
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
     where
         R: Read,
     {
@@ -40120,7 +40700,7 @@ impl Message for CoarseLocationUpdate {
         Ok(())
     }
 
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
     where
         R: Read,
     {
@@ -40165,7 +40745,7 @@ impl Message for ImageData {
         Ok(())
     }
 
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
     where
         R: Read,
     {
@@ -40195,7 +40775,7 @@ impl Message for ImagePacket {
         Ok(())
     }
 
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
     where
         R: Read,
     {
@@ -40224,7 +40804,7 @@ impl Message for LayerData {
         Ok(())
     }
 
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
     where
         R: Read,
     {
@@ -40318,7 +40898,7 @@ impl Message for ObjectUpdate {
         Ok(())
     }
 
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
     where
         R: Read,
     {
@@ -40360,7 +40940,7 @@ impl Message for ObjectUpdateCompressed {
         Ok(())
     }
 
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
     where
         R: Read,
     {
@@ -40405,7 +40985,7 @@ impl Message for ObjectUpdateCached {
         Ok(())
     }
 
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
     where
         R: Read,
     {
@@ -40447,7 +41027,7 @@ impl Message for ImprovedTerseObjectUpdate {
         Ok(())
     }
 
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
     where
         R: Read,
     {
@@ -40483,7 +41063,7 @@ impl Message for KillObject {
         Ok(())
     }
 
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
     where
         R: Read,
     {
@@ -40526,7 +41106,7 @@ impl Message for CrossedRegion {
         Ok(())
     }
 
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
     where
         R: Read,
     {
@@ -40581,7 +41161,7 @@ impl Message for SimulatorViewerTimeMessage {
         Ok(())
     }
 
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
     where
         R: Read,
     {
@@ -40607,7 +41187,7 @@ impl Message for EnableSimulator {
         Ok(())
     }
 
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
     where
         R: Read,
     {
@@ -40629,7 +41209,7 @@ impl Message for DisableSimulator {
         Ok(())
     }
 
-    fn read_from<R: ?Sized>(_: &mut R) -> Result<MessageInstance, ReadMessageError>
+    fn read_from<R: ?Sized>(_: &mut R) -> Result<MessageInstance, ReadError>
     where
         R: Read,
     {
@@ -40650,7 +41230,7 @@ impl Message for ConfirmEnableSimulator {
         Ok(())
     }
 
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
     where
         R: Read,
     {
@@ -40684,7 +41264,7 @@ impl Message for TransferRequest {
         Ok(())
     }
 
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
     where
         R: Read,
     {
@@ -40717,7 +41297,7 @@ impl Message for TransferInfo {
         Ok(())
     }
 
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
     where
         R: Read,
     {
@@ -40747,7 +41327,7 @@ impl Message for TransferPacket {
         Ok(())
     }
 
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
     where
         R: Read,
     {
@@ -40774,7 +41354,7 @@ impl Message for TransferAbort {
         Ok(())
     }
 
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
     where
         R: Read,
     {
@@ -40804,7 +41384,7 @@ impl Message for RequestXfer {
         Ok(())
     }
 
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
     where
         R: Read,
     {
@@ -40831,7 +41411,7 @@ impl Message for SendXferPacket {
         Ok(())
     }
 
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
     where
         R: Read,
     {
@@ -40859,7 +41439,7 @@ impl Message for ConfirmXferPacket {
         Ok(())
     }
 
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
     where
         R: Read,
     {
@@ -40884,7 +41464,7 @@ impl Message for AbortXfer {
         Ok(())
     }
 
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
     where
         R: Read,
     {
@@ -40922,7 +41502,7 @@ impl Message for AvatarAnimation {
         Ok(())
     }
 
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
     where
         R: Read,
     {
@@ -40972,10 +41552,24 @@ impl Message for AvatarAppearance {
         for item in &self.visual_param {
             buffer.write_u8(item.param_value)?;
         }
+        // Block AppearanceData
+        buffer.write_u8(self.appearance_data.len() as u8)?;
+        for item in &self.appearance_data {
+            buffer.write_u8(item.appearance_version)?;
+            buffer.write_i32::<LittleEndian>(item.cof_version)?;
+            buffer.write_u32::<LittleEndian>(item.flags)?;
+        }
+        // Block AppearanceHover
+        buffer.write_u8(self.appearance_hover.len() as u8)?;
+        for item in &self.appearance_hover {
+            buffer.write_f32::<LittleEndian>(item.hover_height.x)?;
+            buffer.write_f32::<LittleEndian>(item.hover_height.y)?;
+            buffer.write_f32::<LittleEndian>(item.hover_height.z)?;
+        }
         Ok(())
     }
 
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
     where
         R: Read,
     {
@@ -40989,10 +41583,24 @@ impl Message for AvatarAppearance {
         for _ in 0.._visual_param_count {
             visual_param.push(AvatarAppearance_VisualParam::read_from(buffer)?);
         }
+        // Block AppearanceData
+        let mut appearance_data = Vec::new();
+        let _appearance_data_count = buffer.read_u8()?;
+        for _ in 0.._appearance_data_count {
+            appearance_data.push(AvatarAppearance_AppearanceData::read_from(buffer)?);
+        }
+        // Block AppearanceHover
+        let mut appearance_hover = Vec::new();
+        let _appearance_hover_count = buffer.read_u8()?;
+        for _ in 0.._appearance_hover_count {
+            appearance_hover.push(AvatarAppearance_AppearanceHover::read_from(buffer)?);
+        }
         Ok(MessageInstance::AvatarAppearance(AvatarAppearance {
             sender: sender,
             object_data: object_data,
             visual_param: visual_param,
+            appearance_data: appearance_data,
+            appearance_hover: appearance_hover,
         }))
     }
 }
@@ -41043,7 +41651,7 @@ impl Message for AvatarSitResponse {
         Ok(())
     }
 
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
     where
         R: Read,
     {
@@ -41076,7 +41684,7 @@ impl Message for SetFollowCamProperties {
         Ok(())
     }
 
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
     where
         R: Read,
     {
@@ -41109,7 +41717,7 @@ impl Message for ClearFollowCamProperties {
         Ok(())
     }
 
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
     where
         R: Read,
     {
@@ -41144,7 +41752,7 @@ impl Message for CameraConstraint {
         Ok(())
     }
 
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
     where
         R: Read,
     {
@@ -41197,7 +41805,7 @@ impl Message for ObjectProperties {
         Ok(())
     }
 
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
     where
         R: Read,
     {
@@ -41254,7 +41862,7 @@ impl Message for ObjectPropertiesFamily {
         Ok(())
     }
 
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
     where
         R: Read,
     {
@@ -41278,7 +41886,7 @@ impl Message for RequestPayPrice {
         Ok(())
     }
 
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
     where
         R: Read,
     {
@@ -41310,7 +41918,7 @@ impl Message for PayPriceReply {
         Ok(())
     }
 
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
     where
         R: Read,
     {
@@ -41348,7 +41956,7 @@ impl Message for KickUser {
         Ok(())
     }
 
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
     where
         R: Read,
     {
@@ -41376,7 +41984,7 @@ impl Message for KickUserAck {
         Ok(())
     }
 
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
     where
         R: Read,
     {
@@ -41404,7 +42012,7 @@ impl Message for GodKickUser {
         Ok(())
     }
 
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
     where
         R: Read,
     {
@@ -41431,7 +42039,7 @@ impl Message for SystemKickUser {
         Ok(())
     }
 
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
     where
         R: Read,
     {
@@ -41463,7 +42071,7 @@ impl Message for EjectUser {
         Ok(())
     }
 
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
     where
         R: Read,
     {
@@ -41494,7 +42102,7 @@ impl Message for FreezeUser {
         Ok(())
     }
 
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
     where
         R: Read,
     {
@@ -41523,7 +42131,7 @@ impl Message for AvatarPropertiesRequest {
         Ok(())
     }
 
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
     where
         R: Read,
     {
@@ -41550,7 +42158,7 @@ impl Message for AvatarPropertiesRequestBackend {
         Ok(())
     }
 
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
     where
         R: Read,
     {
@@ -41585,7 +42193,7 @@ impl Message for AvatarPropertiesReply {
         Ok(())
     }
 
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
     where
         R: Read,
     {
@@ -41625,7 +42233,7 @@ impl Message for AvatarInterestsReply {
         Ok(())
     }
 
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
     where
         R: Read,
     {
@@ -41667,7 +42275,7 @@ impl Message for AvatarGroupsReply {
         Ok(())
     }
 
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
     where
         R: Read,
     {
@@ -41710,7 +42318,7 @@ impl Message for AvatarPropertiesUpdate {
         Ok(())
     }
 
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
     where
         R: Read,
     {
@@ -41750,7 +42358,7 @@ impl Message for AvatarInterestsUpdate {
         Ok(())
     }
 
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
     where
         R: Read,
     {
@@ -41782,7 +42390,7 @@ impl Message for AvatarNotesReply {
         Ok(())
     }
 
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
     where
         R: Read,
     {
@@ -41813,7 +42421,7 @@ impl Message for AvatarNotesUpdate {
         Ok(())
     }
 
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
     where
         R: Read,
     {
@@ -41847,7 +42455,7 @@ impl Message for AvatarPicksReply {
         Ok(())
     }
 
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
     where
         R: Read,
     {
@@ -41881,7 +42489,7 @@ impl Message for EventInfoRequest {
         Ok(())
     }
 
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
     where
         R: Read,
     {
@@ -41932,7 +42540,7 @@ impl Message for EventInfoReply {
         Ok(())
     }
 
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
     where
         R: Read,
     {
@@ -41962,7 +42570,7 @@ impl Message for EventNotificationAddRequest {
         Ok(())
     }
 
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
     where
         R: Read,
     {
@@ -41994,7 +42602,7 @@ impl Message for EventNotificationRemoveRequest {
         Ok(())
     }
 
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
     where
         R: Read,
     {
@@ -42035,7 +42643,7 @@ impl Message for EventGodDelete {
         Ok(())
     }
 
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
     where
         R: Read,
     {
@@ -42081,7 +42689,7 @@ impl Message for PickInfoReply {
         Ok(())
     }
 
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
     where
         R: Read,
     {
@@ -42122,7 +42730,7 @@ impl Message for PickInfoUpdate {
         Ok(())
     }
 
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
     where
         R: Read,
     {
@@ -42152,7 +42760,7 @@ impl Message for PickDelete {
         Ok(())
     }
 
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
     where
         R: Read,
     {
@@ -42183,7 +42791,7 @@ impl Message for PickGodDelete {
         Ok(())
     }
 
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
     where
         R: Read,
     {
@@ -42211,18 +42819,23 @@ impl Message for ScriptQuestion {
         buffer.write(&self.data.object_name[..])?;
         buffer.write(&self.data.object_owner[..])?;
         buffer.write_i32::<LittleEndian>(self.data.questions)?;
+        // Block Experience
+        buffer.write(self.experience.experience_id.as_bytes())?;
         Ok(())
     }
 
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
     where
         R: Read,
     {
         // Block Data
         let data = ScriptQuestion_Data::read_from(buffer)?;
-        Ok(MessageInstance::ScriptQuestion(
-            ScriptQuestion { data: data },
-        ))
+        // Block Experience
+        let experience = ScriptQuestion_Experience::read_from(buffer)?;
+        Ok(MessageInstance::ScriptQuestion(ScriptQuestion {
+            data: data,
+            experience: experience,
+        }))
     }
 }
 
@@ -42243,7 +42856,7 @@ impl Message for ScriptControlChange {
         Ok(())
     }
 
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
     where
         R: Read,
     {
@@ -42287,7 +42900,7 @@ impl Message for ScriptDialog {
         Ok(())
     }
 
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
     where
         R: Read,
     {
@@ -42331,7 +42944,7 @@ impl Message for ScriptDialogReply {
         Ok(())
     }
 
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
     where
         R: Read,
     {
@@ -42359,7 +42972,7 @@ impl Message for ForceScriptControlRelease {
         Ok(())
     }
 
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
     where
         R: Read,
     {
@@ -42389,7 +43002,7 @@ impl Message for RevokePermissions {
         Ok(())
     }
 
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
     where
         R: Read,
     {
@@ -42421,7 +43034,7 @@ impl Message for LoadURL {
         Ok(())
     }
 
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
     where
         R: Read,
     {
@@ -42450,7 +43063,7 @@ impl Message for ScriptTeleportRequest {
         Ok(())
     }
 
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
     where
         R: Read,
     {
@@ -42477,7 +43090,7 @@ impl Message for ParcelOverlay {
         Ok(())
     }
 
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
     where
         R: Read,
     {
@@ -42511,7 +43124,7 @@ impl Message for ParcelPropertiesRequest {
         Ok(())
     }
 
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
     where
         R: Read,
     {
@@ -42546,7 +43159,7 @@ impl Message for ParcelPropertiesRequestByID {
         Ok(())
     }
 
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
     where
         R: Read,
     {
@@ -42707,10 +43320,15 @@ impl Message for ParcelProperties {
             self.age_verification_block
                 .region_deny_age_unverified as u8,
         )?;
+        // Block RegionAllowAccessBlock
+        buffer.write_u8(
+            self.region_allow_access_block
+                .region_allow_access_override as u8,
+        )?;
         Ok(())
     }
 
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
     where
         R: Read,
     {
@@ -42718,9 +43336,12 @@ impl Message for ParcelProperties {
         let parcel_data = ParcelProperties_ParcelData::read_from(buffer)?;
         // Block AgeVerificationBlock
         let age_verification_block = ParcelProperties_AgeVerificationBlock::read_from(buffer)?;
+        // Block RegionAllowAccessBlock
+        let region_allow_access_block = ParcelProperties_RegionAllowAccessBlock::read_from(buffer)?;
         Ok(MessageInstance::ParcelProperties(ParcelProperties {
             parcel_data: parcel_data,
             age_verification_block: age_verification_block,
+            region_allow_access_block: region_allow_access_block,
         }))
     }
 }
@@ -42782,7 +43403,7 @@ impl Message for ParcelPropertiesUpdate {
         Ok(())
     }
 
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
     where
         R: Read,
     {
@@ -42827,7 +43448,7 @@ impl Message for ParcelReturnObjects {
         Ok(())
     }
 
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
     where
         R: Read,
     {
@@ -42874,7 +43495,7 @@ impl Message for ParcelSetOtherCleanTime {
         Ok(())
     }
 
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
     where
         R: Read,
     {
@@ -42919,7 +43540,7 @@ impl Message for ParcelDisableObjects {
         Ok(())
     }
 
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
     where
         R: Read,
     {
@@ -42973,7 +43594,7 @@ impl Message for ParcelSelectObjects {
         Ok(())
     }
 
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
     where
         R: Read,
     {
@@ -43008,7 +43629,7 @@ impl Message for EstateCovenantRequest {
         Ok(())
     }
 
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
     where
         R: Read,
     {
@@ -43037,7 +43658,7 @@ impl Message for EstateCovenantReply {
         Ok(())
     }
 
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
     where
         R: Read,
     {
@@ -43066,7 +43687,7 @@ impl Message for ForceObjectSelect {
         Ok(())
     }
 
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
     where
         R: Read,
     {
@@ -43100,7 +43721,7 @@ impl Message for ParcelBuyPass {
         Ok(())
     }
 
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
     where
         R: Read,
     {
@@ -43131,7 +43752,7 @@ impl Message for ParcelDeedToGroup {
         Ok(())
     }
 
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
     where
         R: Read,
     {
@@ -43161,7 +43782,7 @@ impl Message for ParcelReclaim {
         Ok(())
     }
 
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
     where
         R: Read,
     {
@@ -43201,7 +43822,7 @@ impl Message for ParcelClaim {
         Ok(())
     }
 
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
     where
         R: Read,
     {
@@ -43241,7 +43862,7 @@ impl Message for ParcelJoin {
         Ok(())
     }
 
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
     where
         R: Read,
     {
@@ -43274,7 +43895,7 @@ impl Message for ParcelDivide {
         Ok(())
     }
 
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
     where
         R: Read,
     {
@@ -43304,7 +43925,7 @@ impl Message for ParcelRelease {
         Ok(())
     }
 
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
     where
         R: Read,
     {
@@ -43341,7 +43962,7 @@ impl Message for ParcelBuy {
         Ok(())
     }
 
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
     where
         R: Read,
     {
@@ -43375,7 +43996,7 @@ impl Message for ParcelGodForceOwner {
         Ok(())
     }
 
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
     where
         R: Read,
     {
@@ -43407,7 +44028,7 @@ impl Message for ParcelAccessListRequest {
         Ok(())
     }
 
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
     where
         R: Read,
     {
@@ -43446,7 +44067,7 @@ impl Message for ParcelAccessListReply {
         Ok(())
     }
 
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
     where
         R: Read,
     {
@@ -43493,7 +44114,7 @@ impl Message for ParcelAccessListUpdate {
         Ok(())
     }
 
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
     where
         R: Read,
     {
@@ -43533,7 +44154,7 @@ impl Message for ParcelDwellRequest {
         Ok(())
     }
 
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
     where
         R: Read,
     {
@@ -43564,7 +44185,7 @@ impl Message for ParcelDwellReply {
         Ok(())
     }
 
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
     where
         R: Read,
     {
@@ -43605,7 +44226,7 @@ impl Message for RequestParcelTransfer {
         Ok(())
     }
 
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
     where
         R: Read,
     {
@@ -43672,7 +44293,7 @@ impl Message for UpdateParcel {
         Ok(())
     }
 
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
     where
         R: Read,
     {
@@ -43699,7 +44320,7 @@ impl Message for RemoveParcel {
         Ok(())
     }
 
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
     where
         R: Read,
     {
@@ -43732,7 +44353,7 @@ impl Message for MergeParcel {
         Ok(())
     }
 
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
     where
         R: Read,
     {
@@ -43777,7 +44398,7 @@ impl Message for LogParcelChanges {
         Ok(())
     }
 
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
     where
         R: Read,
     {
@@ -43814,7 +44435,7 @@ impl Message for CheckParcelSales {
         Ok(())
     }
 
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
     where
         R: Read,
     {
@@ -43846,7 +44467,7 @@ impl Message for ParcelSales {
         Ok(())
     }
 
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
     where
         R: Read,
     {
@@ -43877,7 +44498,7 @@ impl Message for ParcelGodMarkAsContent {
         Ok(())
     }
 
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
     where
         R: Read,
     {
@@ -43910,7 +44531,7 @@ impl Message for ViewerStartAuction {
         Ok(())
     }
 
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
     where
         R: Read,
     {
@@ -43941,7 +44562,7 @@ impl Message for StartAuction {
         Ok(())
     }
 
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
     where
         R: Read,
     {
@@ -43971,7 +44592,7 @@ impl Message for ConfirmAuctionStart {
         Ok(())
     }
 
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
     where
         R: Read,
     {
@@ -43998,7 +44619,7 @@ impl Message for CompleteAuction {
         Ok(())
     }
 
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
     where
         R: Read,
     {
@@ -44029,7 +44650,7 @@ impl Message for CancelAuction {
         Ok(())
     }
 
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
     where
         R: Read,
     {
@@ -44060,7 +44681,7 @@ impl Message for CheckParcelAuctions {
         Ok(())
     }
 
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
     where
         R: Read,
     {
@@ -44092,7 +44713,7 @@ impl Message for ParcelAuctions {
         Ok(())
     }
 
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
     where
         R: Read,
     {
@@ -44123,7 +44744,7 @@ impl Message for UUIDNameRequest {
         Ok(())
     }
 
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
     where
         R: Read,
     {
@@ -44156,7 +44777,7 @@ impl Message for UUIDNameReply {
         Ok(())
     }
 
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
     where
         R: Read,
     {
@@ -44187,7 +44808,7 @@ impl Message for UUIDGroupNameRequest {
         Ok(())
     }
 
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
     where
         R: Read,
     {
@@ -44219,7 +44840,7 @@ impl Message for UUIDGroupNameReply {
         Ok(())
     }
 
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
     where
         R: Read,
     {
@@ -44258,7 +44879,7 @@ impl Message for ChatPass {
         Ok(())
     }
 
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
     where
         R: Read,
     {
@@ -44282,7 +44903,7 @@ impl Message for EdgeDataPacket {
         Ok(())
     }
 
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
     where
         R: Read,
     {
@@ -44304,18 +44925,23 @@ impl Message for SimStatus {
         // Block SimStatus
         buffer.write_u8(self.sim_status.can_accept_agents as u8)?;
         buffer.write_u8(self.sim_status.can_accept_tasks as u8)?;
+        // Block SimFlags
+        buffer.write_u64::<LittleEndian>(self.sim_flags.flags)?;
         Ok(())
     }
 
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
     where
         R: Read,
     {
         // Block SimStatus
         let sim_status = SimStatus_SimStatus::read_from(buffer)?;
-        Ok(MessageInstance::SimStatus(
-            SimStatus { sim_status: sim_status },
-        ))
+        // Block SimFlags
+        let sim_flags = SimStatus_SimFlags::read_from(buffer)?;
+        Ok(MessageInstance::SimStatus(SimStatus {
+            sim_status: sim_status,
+            sim_flags: sim_flags,
+        }))
     }
 }
 
@@ -44440,10 +45066,15 @@ impl Message for ChildAgentUpdate {
         for item in &self.agent_info {
             buffer.write_u32::<LittleEndian>(item.flags)?;
         }
+        // Block AgentInventoryHost
+        buffer.write_u8(self.agent_inventory_host.len() as u8)?;
+        for item in &self.agent_inventory_host {
+            buffer.write(&item.inventory_host[..])?;
+        }
         Ok(())
     }
 
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
     where
         R: Read,
     {
@@ -44491,6 +45122,12 @@ impl Message for ChildAgentUpdate {
         for _ in 0.._agent_info_count {
             agent_info.push(ChildAgentUpdate_AgentInfo::read_from(buffer)?);
         }
+        // Block AgentInventoryHost
+        let mut agent_inventory_host = Vec::new();
+        let _agent_inventory_host_count = buffer.read_u8()?;
+        for _ in 0.._agent_inventory_host_count {
+            agent_inventory_host.push(ChildAgentUpdate_AgentInventoryHost::read_from(buffer)?);
+        }
         Ok(MessageInstance::ChildAgentUpdate(ChildAgentUpdate {
             agent_data: agent_data,
             group_data: group_data,
@@ -44500,6 +45137,7 @@ impl Message for ChildAgentUpdate {
             visual_param: visual_param,
             agent_access: agent_access,
             agent_info: agent_info,
+            agent_inventory_host: agent_inventory_host,
         }))
     }
 }
@@ -44523,7 +45161,7 @@ impl Message for ChildAgentAlive {
         Ok(())
     }
 
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
     where
         R: Read,
     {
@@ -44594,7 +45232,7 @@ impl Message for ChildAgentPositionUpdate {
         Ok(())
     }
 
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
     where
         R: Read,
     {
@@ -44619,7 +45257,7 @@ impl Message for ChildAgentDying {
         Ok(())
     }
 
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
     where
         R: Read,
     {
@@ -44644,7 +45282,7 @@ impl Message for ChildAgentUnknown {
         Ok(())
     }
 
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
     where
         R: Read,
     {
@@ -44669,7 +45307,7 @@ impl Message for AtomicPassObject {
         Ok(())
     }
 
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
     where
         R: Read,
     {
@@ -44693,7 +45331,7 @@ impl Message for KillChildAgents {
         Ok(())
     }
 
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
     where
         R: Read,
     {
@@ -44718,7 +45356,7 @@ impl Message for GetScriptRunning {
         Ok(())
     }
 
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
     where
         R: Read,
     {
@@ -44744,7 +45382,7 @@ impl Message for ScriptRunningReply {
         Ok(())
     }
 
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
     where
         R: Read,
     {
@@ -44773,7 +45411,7 @@ impl Message for SetScriptRunning {
         Ok(())
     }
 
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
     where
         R: Read,
     {
@@ -44804,7 +45442,7 @@ impl Message for ScriptReset {
         Ok(())
     }
 
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
     where
         R: Read,
     {
@@ -44854,7 +45492,7 @@ impl Message for ScriptSensorRequest {
         Ok(())
     }
 
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
     where
         R: Read,
     {
@@ -44898,7 +45536,7 @@ impl Message for ScriptSensorReply {
         Ok(())
     }
 
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
     where
         R: Read,
     {
@@ -44933,7 +45571,7 @@ impl Message for CompleteAgentMovement {
         Ok(())
     }
 
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
     where
         R: Read,
     {
@@ -44969,7 +45607,7 @@ impl Message for AgentMovementComplete {
         Ok(())
     }
 
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
     where
         R: Read,
     {
@@ -45004,7 +45642,7 @@ impl Message for DataServerLogout {
         Ok(())
     }
 
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
     where
         R: Read,
     {
@@ -45029,7 +45667,7 @@ impl Message for LogoutRequest {
         Ok(())
     }
 
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
     where
         R: Read,
     {
@@ -45059,7 +45697,7 @@ impl Message for LogoutReply {
         Ok(())
     }
 
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
     where
         R: Read,
     {
@@ -45113,10 +45751,14 @@ impl Message for ImprovedInstantMessage {
         buffer.write(&self.message_block.from_agent_name[..])?;
         buffer.write(&self.message_block.message[..])?;
         buffer.write(&self.message_block.binary_bucket[..])?;
+        // Block EstateBlock
+        buffer.write_u32::<LittleEndian>(
+            self.estate_block.estate_id,
+        )?;
         Ok(())
     }
 
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
     where
         R: Read,
     {
@@ -45124,10 +45766,13 @@ impl Message for ImprovedInstantMessage {
         let agent_data = ImprovedInstantMessage_AgentData::read_from(buffer)?;
         // Block MessageBlock
         let message_block = ImprovedInstantMessage_MessageBlock::read_from(buffer)?;
+        // Block EstateBlock
+        let estate_block = ImprovedInstantMessage_EstateBlock::read_from(buffer)?;
         Ok(MessageInstance::ImprovedInstantMessage(
             ImprovedInstantMessage {
                 agent_data: agent_data,
                 message_block: message_block,
+                estate_block: estate_block,
             },
         ))
     }
@@ -45146,7 +45791,7 @@ impl Message for RetrieveInstantMessages {
         Ok(())
     }
 
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
     where
         R: Read,
     {
@@ -45178,7 +45823,7 @@ impl Message for FindAgent {
         Ok(())
     }
 
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
     where
         R: Read,
     {
@@ -45213,7 +45858,7 @@ impl Message for RequestGodlikePowers {
         Ok(())
     }
 
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
     where
         R: Read,
     {
@@ -45246,7 +45891,7 @@ impl Message for GrantGodlikePowers {
         Ok(())
     }
 
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
     where
         R: Read,
     {
@@ -45283,7 +45928,7 @@ impl Message for GodlikeMessage {
         Ok(())
     }
 
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
     where
         R: Read,
     {
@@ -45327,7 +45972,7 @@ impl Message for EstateOwnerMessage {
         Ok(())
     }
 
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
     where
         R: Read,
     {
@@ -45371,7 +46016,7 @@ impl Message for GenericMessage {
         Ok(())
     }
 
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
     where
         R: Read,
     {
@@ -45408,7 +46053,7 @@ impl Message for MuteListRequest {
         Ok(())
     }
 
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
     where
         R: Read,
     {
@@ -45441,7 +46086,7 @@ impl Message for UpdateMuteListEntry {
         Ok(())
     }
 
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
     where
         R: Read,
     {
@@ -45472,7 +46117,7 @@ impl Message for RemoveMuteListEntry {
         Ok(())
     }
 
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
     where
         R: Read,
     {
@@ -45509,7 +46154,7 @@ impl Message for CopyInventoryFromNotecard {
         Ok(())
     }
 
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
     where
         R: Read,
     {
@@ -45573,7 +46218,7 @@ impl Message for UpdateInventoryItem {
         Ok(())
     }
 
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
     where
         R: Read,
     {
@@ -45632,7 +46277,7 @@ impl Message for UpdateCreateInventoryItem {
         Ok(())
     }
 
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
     where
         R: Read,
     {
@@ -45674,7 +46319,7 @@ impl Message for MoveInventoryItem {
         Ok(())
     }
 
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
     where
         R: Read,
     {
@@ -45715,7 +46360,7 @@ impl Message for CopyInventoryItem {
         Ok(())
     }
 
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
     where
         R: Read,
     {
@@ -45752,7 +46397,7 @@ impl Message for RemoveInventoryItem {
         Ok(())
     }
 
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
     where
         R: Read,
     {
@@ -45790,7 +46435,7 @@ impl Message for ChangeInventoryItemFlags {
         Ok(())
     }
 
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
     where
         R: Read,
     {
@@ -45826,7 +46471,7 @@ impl Message for SaveAssetIntoInventory {
         Ok(())
     }
 
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
     where
         R: Read,
     {
@@ -45861,7 +46506,7 @@ impl Message for CreateInventoryFolder {
         Ok(())
     }
 
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
     where
         R: Read,
     {
@@ -45899,7 +46544,7 @@ impl Message for UpdateInventoryFolder {
         Ok(())
     }
 
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
     where
         R: Read,
     {
@@ -45940,7 +46585,7 @@ impl Message for MoveInventoryFolder {
         Ok(())
     }
 
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
     where
         R: Read,
     {
@@ -45977,7 +46622,7 @@ impl Message for RemoveInventoryFolder {
         Ok(())
     }
 
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
     where
         R: Read,
     {
@@ -46019,7 +46664,7 @@ impl Message for FetchInventoryDescendents {
         Ok(())
     }
 
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
     where
         R: Read,
     {
@@ -46087,7 +46732,7 @@ impl Message for InventoryDescendents {
         Ok(())
     }
 
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
     where
         R: Read,
     {
@@ -46134,7 +46779,7 @@ impl Message for FetchInventory {
         Ok(())
     }
 
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
     where
         R: Read,
     {
@@ -46190,7 +46835,7 @@ impl Message for FetchInventoryReply {
         Ok(())
     }
 
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
     where
         R: Read,
     {
@@ -46256,7 +46901,7 @@ impl Message for BulkUpdateInventory {
         Ok(())
     }
 
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
     where
         R: Read,
     {
@@ -46297,7 +46942,7 @@ impl Message for RequestInventoryAsset {
         Ok(())
     }
 
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
     where
         R: Read,
     {
@@ -46323,7 +46968,7 @@ impl Message for InventoryAssetResponse {
         Ok(())
     }
 
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
     where
         R: Read,
     {
@@ -46358,7 +47003,7 @@ impl Message for RemoveInventoryObjects {
         Ok(())
     }
 
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
     where
         R: Read,
     {
@@ -46401,7 +47046,7 @@ impl Message for PurgeInventoryDescendents {
         Ok(())
     }
 
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
     where
         R: Read,
     {
@@ -46470,7 +47115,7 @@ impl Message for UpdateTaskInventory {
         Ok(())
     }
 
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
     where
         R: Read,
     {
@@ -46506,7 +47151,7 @@ impl Message for RemoveTaskInventory {
         Ok(())
     }
 
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
     where
         R: Read,
     {
@@ -46540,7 +47185,7 @@ impl Message for MoveTaskInventory {
         Ok(())
     }
 
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
     where
         R: Read,
     {
@@ -46572,7 +47217,7 @@ impl Message for RequestTaskInventory {
         Ok(())
     }
 
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
     where
         R: Read,
     {
@@ -46603,7 +47248,7 @@ impl Message for ReplyTaskInventory {
         Ok(())
     }
 
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
     where
         R: Read,
     {
@@ -46640,7 +47285,7 @@ impl Message for DeRezObject {
         Ok(())
     }
 
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
     where
         R: Read,
     {
@@ -46677,7 +47322,7 @@ impl Message for DeRezAck {
         Ok(())
     }
 
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
     where
         R: Read,
     {
@@ -46760,7 +47405,7 @@ impl Message for RezObject {
         Ok(())
     }
 
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
     where
         R: Read,
     {
@@ -46821,7 +47466,7 @@ impl Message for RezObjectFromNotecard {
         Ok(())
     }
 
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
     where
         R: Read,
     {
@@ -46865,10 +47510,17 @@ impl Message for TransferInventory {
             buffer.write(item.inventory_id.as_bytes())?;
             buffer.write_i8(item.type_)?;
         }
+        // Block ValidationBlock
+        buffer.write_u8(
+            self.validation_block.needs_validation as u8,
+        )?;
+        buffer.write_u32::<LittleEndian>(
+            self.validation_block.estate_id,
+        )?;
         Ok(())
     }
 
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
     where
         R: Read,
     {
@@ -46880,9 +47532,12 @@ impl Message for TransferInventory {
         for _ in 0.._inventory_block_count {
             inventory_block.push(TransferInventory_InventoryBlock::read_from(buffer)?);
         }
+        // Block ValidationBlock
+        let validation_block = TransferInventory_ValidationBlock::read_from(buffer)?;
         Ok(MessageInstance::TransferInventory(TransferInventory {
             info_block: info_block,
             inventory_block: inventory_block,
+            validation_block: validation_block,
         }))
     }
 }
@@ -46900,7 +47555,7 @@ impl Message for TransferInventoryAck {
         Ok(())
     }
 
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
     where
         R: Read,
     {
@@ -46934,7 +47589,7 @@ impl Message for AcceptFriendship {
         Ok(())
     }
 
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
     where
         R: Read,
     {
@@ -46973,7 +47628,7 @@ impl Message for DeclineFriendship {
         Ok(())
     }
 
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
     where
         R: Read,
     {
@@ -47001,7 +47656,7 @@ impl Message for FormFriendship {
         Ok(())
     }
 
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
     where
         R: Read,
     {
@@ -47028,7 +47683,7 @@ impl Message for TerminateFriendship {
         Ok(())
     }
 
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
     where
         R: Read,
     {
@@ -47059,7 +47714,7 @@ impl Message for OfferCallingCard {
         Ok(())
     }
 
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
     where
         R: Read,
     {
@@ -47096,7 +47751,7 @@ impl Message for AcceptCallingCard {
         Ok(())
     }
 
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
     where
         R: Read,
     {
@@ -47135,7 +47790,7 @@ impl Message for DeclineCallingCard {
         Ok(())
     }
 
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
     where
         R: Read,
     {
@@ -47205,7 +47860,7 @@ impl Message for RezScript {
         Ok(())
     }
 
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
     where
         R: Read,
     {
@@ -47250,7 +47905,7 @@ impl Message for CreateInventoryItem {
         Ok(())
     }
 
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
     where
         R: Read,
     {
@@ -47283,7 +47938,7 @@ impl Message for CreateLandmarkForEvent {
         Ok(())
     }
 
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
     where
         R: Read,
     {
@@ -47317,7 +47972,7 @@ impl Message for EventLocationRequest {
         Ok(())
     }
 
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
     where
         R: Read,
     {
@@ -47358,7 +48013,7 @@ impl Message for EventLocationReply {
         Ok(())
     }
 
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
     where
         R: Read,
     {
@@ -47385,7 +48040,7 @@ impl Message for RegionHandleRequest {
         Ok(())
     }
 
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
     where
         R: Read,
     {
@@ -47412,7 +48067,7 @@ impl Message for RegionIDAndHandleReply {
         Ok(())
     }
 
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
     where
         R: Read,
     {
@@ -47448,7 +48103,7 @@ impl Message for MoneyTransferRequest {
         Ok(())
     }
 
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
     where
         R: Read,
     {
@@ -47493,7 +48148,7 @@ impl Message for MoneyTransferBackend {
         Ok(())
     }
 
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
     where
         R: Read,
     {
@@ -47520,7 +48175,7 @@ impl Message for MoneyBalanceRequest {
         Ok(())
     }
 
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
     where
         R: Read,
     {
@@ -47571,7 +48226,7 @@ impl Message for MoneyBalanceReply {
         Ok(())
     }
 
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
     where
         R: Read,
     {
@@ -47627,7 +48282,7 @@ impl Message for RoutedMoneyBalanceReply {
         Ok(())
     }
 
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
     where
         R: Read,
     {
@@ -47668,7 +48323,7 @@ impl Message for ActivateGestures {
         Ok(())
     }
 
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
     where
         R: Read,
     {
@@ -47707,7 +48362,7 @@ impl Message for DeactivateGestures {
         Ok(())
     }
 
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
     where
         R: Read,
     {
@@ -47739,7 +48394,7 @@ impl Message for MuteListUpdate {
         Ok(())
     }
 
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
     where
         R: Read,
     {
@@ -47763,7 +48418,7 @@ impl Message for UseCachedMuteList {
         Ok(())
     }
 
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
     where
         R: Read,
     {
@@ -47794,7 +48449,7 @@ impl Message for GrantUserRights {
         Ok(())
     }
 
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
     where
         R: Read,
     {
@@ -47831,7 +48486,7 @@ impl Message for ChangeUserRights {
         Ok(())
     }
 
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
     where
         R: Read,
     {
@@ -47865,7 +48520,7 @@ impl Message for OnlineNotification {
         Ok(())
     }
 
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
     where
         R: Read,
     {
@@ -47896,7 +48551,7 @@ impl Message for OfflineNotification {
         Ok(())
     }
 
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
     where
         R: Read,
     {
@@ -47948,7 +48603,7 @@ impl Message for SetStartLocationRequest {
         Ok(())
     }
 
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
     where
         R: Read,
     {
@@ -48002,7 +48657,7 @@ impl Message for SetStartLocation {
         Ok(())
     }
 
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
     where
         R: Read,
     {
@@ -48026,7 +48681,7 @@ impl Message for NetTest {
         Ok(())
     }
 
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
     where
         R: Read,
     {
@@ -48048,7 +48703,7 @@ impl Message for SetCPURatio {
         Ok(())
     }
 
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
     where
         R: Read,
     {
@@ -48076,7 +48731,7 @@ impl Message for SimCrashed {
         Ok(())
     }
 
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
     where
         R: Read,
     {
@@ -48112,7 +48767,7 @@ impl Message for NameValuePair {
         Ok(())
     }
 
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
     where
         R: Read,
     {
@@ -48148,7 +48803,7 @@ impl Message for RemoveNameValuePair {
         Ok(())
     }
 
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
     where
         R: Read,
     {
@@ -48223,7 +48878,7 @@ impl Message for UpdateAttachment {
         Ok(())
     }
 
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
     where
         R: Read,
     {
@@ -48260,7 +48915,7 @@ impl Message for RemoveAttachment {
         Ok(())
     }
 
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
     where
         R: Read,
     {
@@ -48295,7 +48950,7 @@ impl Message for SoundTrigger {
         Ok(())
     }
 
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
     where
         R: Read,
     {
@@ -48323,7 +48978,7 @@ impl Message for AttachedSound {
         Ok(())
     }
 
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
     where
         R: Read,
     {
@@ -48348,7 +49003,7 @@ impl Message for AttachedSoundGainChange {
         Ok(())
     }
 
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
     where
         R: Read,
     {
@@ -48377,7 +49032,7 @@ impl Message for PreloadSound {
         Ok(())
     }
 
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
     where
         R: Read,
     {
@@ -48409,7 +49064,7 @@ impl Message for AssetUploadRequest {
         Ok(())
     }
 
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
     where
         R: Read,
     {
@@ -48435,7 +49090,7 @@ impl Message for AssetUploadComplete {
         Ok(())
     }
 
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
     where
         R: Read,
     {
@@ -48461,7 +49116,7 @@ impl Message for EmailMessageRequest {
         Ok(())
     }
 
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
     where
         R: Read,
     {
@@ -48491,7 +49146,7 @@ impl Message for EmailMessageReply {
         Ok(())
     }
 
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
     where
         R: Read,
     {
@@ -48518,7 +49173,7 @@ impl Message for InternalScriptMail {
         Ok(())
     }
 
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
     where
         R: Read,
     {
@@ -48547,7 +49202,7 @@ impl Message for ScriptDataRequest {
         Ok(())
     }
 
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
     where
         R: Read,
     {
@@ -48579,7 +49234,7 @@ impl Message for ScriptDataReply {
         Ok(())
     }
 
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
     where
         R: Read,
     {
@@ -48619,7 +49274,7 @@ impl Message for CreateGroupRequest {
         Ok(())
     }
 
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
     where
         R: Read,
     {
@@ -48650,7 +49305,7 @@ impl Message for CreateGroupReply {
         Ok(())
     }
 
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
     where
         R: Read,
     {
@@ -48689,7 +49344,7 @@ impl Message for UpdateGroupInfo {
         Ok(())
     }
 
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
     where
         R: Read,
     {
@@ -48725,7 +49380,7 @@ impl Message for GroupRoleChanges {
         Ok(())
     }
 
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
     where
         R: Read,
     {
@@ -48759,7 +49414,7 @@ impl Message for JoinGroupRequest {
         Ok(())
     }
 
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
     where
         R: Read,
     {
@@ -48789,7 +49444,7 @@ impl Message for JoinGroupReply {
         Ok(())
     }
 
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
     where
         R: Read,
     {
@@ -48824,7 +49479,7 @@ impl Message for EjectGroupMemberRequest {
         Ok(())
     }
 
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
     where
         R: Read,
     {
@@ -48864,7 +49519,7 @@ impl Message for EjectGroupMemberReply {
         Ok(())
     }
 
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
     where
         R: Read,
     {
@@ -48899,7 +49554,7 @@ impl Message for LeaveGroupRequest {
         Ok(())
     }
 
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
     where
         R: Read,
     {
@@ -48929,7 +49584,7 @@ impl Message for LeaveGroupReply {
         Ok(())
     }
 
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
     where
         R: Read,
     {
@@ -48965,7 +49620,7 @@ impl Message for InviteGroupRequest {
         Ok(())
     }
 
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
     where
         R: Read,
     {
@@ -49002,18 +49657,25 @@ impl Message for InviteGroupResponse {
         buffer.write_i32::<LittleEndian>(
             self.invite_data.membership_fee,
         )?;
+        // Block GroupData
+        buffer.write_i32::<LittleEndian>(
+            self.group_data.group_limit,
+        )?;
         Ok(())
     }
 
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
     where
         R: Read,
     {
         // Block InviteData
         let invite_data = InviteGroupResponse_InviteData::read_from(buffer)?;
-        Ok(MessageInstance::InviteGroupResponse(
-            InviteGroupResponse { invite_data: invite_data },
-        ))
+        // Block GroupData
+        let group_data = InviteGroupResponse_GroupData::read_from(buffer)?;
+        Ok(MessageInstance::InviteGroupResponse(InviteGroupResponse {
+            invite_data: invite_data,
+            group_data: group_data,
+        }))
     }
 }
 
@@ -49032,7 +49694,7 @@ impl Message for GroupProfileRequest {
         Ok(())
     }
 
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
     where
         R: Read,
     {
@@ -49084,7 +49746,7 @@ impl Message for GroupProfileReply {
         Ok(())
     }
 
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
     where
         R: Read,
     {
@@ -49121,7 +49783,7 @@ impl Message for GroupAccountSummaryRequest {
         Ok(())
     }
 
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
     where
         R: Read,
     {
@@ -49202,7 +49864,7 @@ impl Message for GroupAccountSummaryReply {
         Ok(())
     }
 
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
     where
         R: Read,
     {
@@ -49241,7 +49903,7 @@ impl Message for GroupAccountDetailsRequest {
         Ok(())
     }
 
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
     where
         R: Read,
     {
@@ -49286,7 +49948,7 @@ impl Message for GroupAccountDetailsReply {
         Ok(())
     }
 
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
     where
         R: Read,
     {
@@ -49332,7 +49994,7 @@ impl Message for GroupAccountTransactionsRequest {
         Ok(())
     }
 
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
     where
         R: Read,
     {
@@ -49380,7 +50042,7 @@ impl Message for GroupAccountTransactionsReply {
         Ok(())
     }
 
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
     where
         R: Read,
     {
@@ -49425,7 +50087,7 @@ impl Message for GroupActiveProposalsRequest {
         Ok(())
     }
 
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
     where
         R: Read,
     {
@@ -49479,7 +50141,7 @@ impl Message for GroupActiveProposalItemReply {
         Ok(())
     }
 
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
     where
         R: Read,
     {
@@ -49524,7 +50186,7 @@ impl Message for GroupVoteHistoryRequest {
         Ok(())
     }
 
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
     where
         R: Read,
     {
@@ -49588,7 +50250,7 @@ impl Message for GroupVoteHistoryItemReply {
         Ok(())
     }
 
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
     where
         R: Read,
     {
@@ -49638,7 +50300,7 @@ impl Message for StartGroupProposal {
         Ok(())
     }
 
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
     where
         R: Read,
     {
@@ -49670,7 +50332,7 @@ impl Message for GroupProposalBallot {
         Ok(())
     }
 
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
     where
         R: Read,
     {
@@ -49695,7 +50357,7 @@ impl Message for TallyVotes {
         Ok(())
     }
 
-    fn read_from<R: ?Sized>(_: &mut R) -> Result<MessageInstance, ReadMessageError>
+    fn read_from<R: ?Sized>(_: &mut R) -> Result<MessageInstance, ReadError>
     where
         R: Read,
     {
@@ -49719,7 +50381,7 @@ impl Message for GroupMembersRequest {
         Ok(())
     }
 
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
     where
         R: Read,
     {
@@ -49762,7 +50424,7 @@ impl Message for GroupMembersReply {
         Ok(())
     }
 
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
     where
         R: Read,
     {
@@ -49798,7 +50460,7 @@ impl Message for ActivateGroup {
         Ok(())
     }
 
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
     where
         R: Read,
     {
@@ -49826,7 +50488,7 @@ impl Message for SetGroupContribution {
         Ok(())
     }
 
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
     where
         R: Read,
     {
@@ -49861,7 +50523,7 @@ impl Message for SetGroupAcceptNotices {
         Ok(())
     }
 
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
     where
         R: Read,
     {
@@ -49897,7 +50559,7 @@ impl Message for GroupRoleDataRequest {
         Ok(())
     }
 
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
     where
         R: Read,
     {
@@ -49940,7 +50602,7 @@ impl Message for GroupRoleDataReply {
         Ok(())
     }
 
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
     where
         R: Read,
     {
@@ -49978,7 +50640,7 @@ impl Message for GroupRoleMembersRequest {
         Ok(())
     }
 
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
     where
         R: Read,
     {
@@ -50018,7 +50680,7 @@ impl Message for GroupRoleMembersReply {
         Ok(())
     }
 
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
     where
         R: Read,
     {
@@ -50054,7 +50716,7 @@ impl Message for GroupTitlesRequest {
         Ok(())
     }
 
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
     where
         R: Read,
     {
@@ -50087,7 +50749,7 @@ impl Message for GroupTitlesReply {
         Ok(())
     }
 
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
     where
         R: Read,
     {
@@ -50121,7 +50783,7 @@ impl Message for GroupTitleUpdate {
         Ok(())
     }
 
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
     where
         R: Read,
     {
@@ -50157,7 +50819,7 @@ impl Message for GroupRoleUpdate {
         Ok(())
     }
 
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
     where
         R: Read,
     {
@@ -50189,7 +50851,7 @@ impl Message for LiveHelpGroupRequest {
         Ok(())
     }
 
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
     where
         R: Read,
     {
@@ -50215,7 +50877,7 @@ impl Message for LiveHelpGroupReply {
         Ok(())
     }
 
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
     where
         R: Read,
     {
@@ -50240,7 +50902,7 @@ impl Message for AgentWearablesRequest {
         Ok(())
     }
 
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
     where
         R: Read,
     {
@@ -50273,7 +50935,7 @@ impl Message for AgentWearablesUpdate {
         Ok(())
     }
 
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
     where
         R: Read,
     {
@@ -50313,7 +50975,7 @@ impl Message for AgentIsNowWearing {
         Ok(())
     }
 
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
     where
         R: Read,
     {
@@ -50352,7 +51014,7 @@ impl Message for AgentCachedTexture {
         Ok(())
     }
 
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
     where
         R: Read,
     {
@@ -50392,7 +51054,7 @@ impl Message for AgentCachedTextureResponse {
         Ok(())
     }
 
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
     where
         R: Read,
     {
@@ -50426,7 +51088,7 @@ impl Message for AgentDataUpdateRequest {
         Ok(())
     }
 
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
     where
         R: Read,
     {
@@ -50458,7 +51120,7 @@ impl Message for AgentDataUpdate {
         Ok(())
     }
 
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
     where
         R: Read,
     {
@@ -50488,7 +51150,7 @@ impl Message for GroupDataUpdate {
         Ok(())
     }
 
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
     where
         R: Read,
     {
@@ -50526,7 +51188,7 @@ impl Message for AgentGroupDataUpdate {
         Ok(())
     }
 
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
     where
         R: Read,
     {
@@ -50560,7 +51222,7 @@ impl Message for AgentDropGroup {
         Ok(())
     }
 
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
     where
         R: Read,
     {
@@ -50592,7 +51254,7 @@ impl Message for LogTextMessage {
         Ok(())
     }
 
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
     where
         R: Read,
     {
@@ -50631,7 +51293,7 @@ impl Message for ViewerEffect {
         Ok(())
     }
 
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
     where
         R: Read,
     {
@@ -50663,7 +51325,7 @@ impl Message for CreateTrustedCircuit {
         Ok(())
     }
 
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
     where
         R: Read,
     {
@@ -50687,7 +51349,7 @@ impl Message for DenyTrustedCircuit {
         Ok(())
     }
 
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
     where
         R: Read,
     {
@@ -50709,7 +51371,7 @@ impl Message for RequestTrustedCircuit {
         Ok(())
     }
 
-    fn read_from<R: ?Sized>(_: &mut R) -> Result<MessageInstance, ReadMessageError>
+    fn read_from<R: ?Sized>(_: &mut R) -> Result<MessageInstance, ReadError>
     where
         R: Read,
     {
@@ -50750,7 +51412,7 @@ impl Message for RezSingleAttachmentFromInv {
         Ok(())
     }
 
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
     where
         R: Read,
     {
@@ -50797,7 +51459,7 @@ impl Message for RezMultipleAttachmentsFromInv {
         Ok(())
     }
 
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
     where
         R: Read,
     {
@@ -50834,7 +51496,7 @@ impl Message for DetachAttachmentIntoInv {
         Ok(())
     }
 
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
     where
         R: Read,
     {
@@ -50867,7 +51529,7 @@ impl Message for CreateNewOutfitAttachments {
         Ok(())
     }
 
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
     where
         R: Read,
     {
@@ -50904,7 +51566,7 @@ impl Message for UserInfoRequest {
         Ok(())
     }
 
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
     where
         R: Read,
     {
@@ -50932,7 +51594,7 @@ impl Message for UserInfoReply {
         Ok(())
     }
 
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
     where
         R: Read,
     {
@@ -50963,7 +51625,7 @@ impl Message for UpdateUserInfo {
         Ok(())
     }
 
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
     where
         R: Read,
     {
@@ -50994,7 +51656,7 @@ impl Message for ParcelRename {
         Ok(())
     }
 
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
     where
         R: Read,
     {
@@ -51025,7 +51687,7 @@ impl Message for InitiateDownload {
         Ok(())
     }
 
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
     where
         R: Read,
     {
@@ -51059,7 +51721,7 @@ impl Message for SystemMessage {
         Ok(())
     }
 
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
     where
         R: Read,
     {
@@ -51094,7 +51756,7 @@ impl Message for MapLayerRequest {
         Ok(())
     }
 
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
     where
         R: Read,
     {
@@ -51128,7 +51790,7 @@ impl Message for MapLayerReply {
         Ok(())
     }
 
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
     where
         R: Read,
     {
@@ -51168,7 +51830,7 @@ impl Message for MapBlockRequest {
         Ok(())
     }
 
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
     where
         R: Read,
     {
@@ -51201,7 +51863,7 @@ impl Message for MapNameRequest {
         Ok(())
     }
 
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
     where
         R: Read,
     {
@@ -51241,7 +51903,7 @@ impl Message for MapBlockReply {
         Ok(())
     }
 
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
     where
         R: Read,
     {
@@ -51283,7 +51945,7 @@ impl Message for MapItemRequest {
         Ok(())
     }
 
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
     where
         R: Read,
     {
@@ -51325,7 +51987,7 @@ impl Message for MapItemReply {
         Ok(())
     }
 
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
     where
         R: Read,
     {
@@ -51377,7 +52039,7 @@ impl Message for SendPostcard {
         Ok(())
     }
 
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
     where
         R: Read,
     {
@@ -51404,7 +52066,7 @@ impl Message for RpcChannelRequest {
         Ok(())
     }
 
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
     where
         R: Read,
     {
@@ -51430,7 +52092,7 @@ impl Message for RpcChannelReply {
         Ok(())
     }
 
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
     where
         R: Read,
     {
@@ -51461,7 +52123,7 @@ impl Message for RpcScriptRequestInbound {
         Ok(())
     }
 
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
     where
         R: Read,
     {
@@ -51498,7 +52160,7 @@ impl Message for RpcScriptRequestInboundForward {
         Ok(())
     }
 
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
     where
         R: Read,
     {
@@ -51526,7 +52188,7 @@ impl Message for RpcScriptReplyInbound {
         Ok(())
     }
 
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
     where
         R: Read,
     {
@@ -51555,7 +52217,7 @@ impl Message for ScriptMailRegistration {
         Ok(())
     }
 
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
     where
         R: Read,
     {
@@ -51581,7 +52243,7 @@ impl Message for ParcelMediaCommandMessage {
         Ok(())
     }
 
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
     where
         R: Read,
     {
@@ -51617,7 +52279,7 @@ impl Message for ParcelMediaUpdate {
         Ok(())
     }
 
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
     where
         R: Read,
     {
@@ -51656,7 +52318,7 @@ impl Message for LandStatRequest {
         Ok(())
     }
 
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
     where
         R: Read,
     {
@@ -51703,7 +52365,7 @@ impl Message for LandStatReply {
         Ok(())
     }
 
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
     where
         R: Read,
     {
@@ -51741,7 +52403,7 @@ impl Message for Error {
         Ok(())
     }
 
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
     where
         R: Read,
     {
@@ -51775,7 +52437,7 @@ impl Message for ObjectIncludeInSearch {
         Ok(())
     }
 
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
     where
         R: Read,
     {
@@ -51845,7 +52507,7 @@ impl Message for RezRestoreToWorld {
         Ok(())
     }
 
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
     where
         R: Read,
     {
@@ -51884,7 +52546,7 @@ impl Message for LinkInventoryItem {
         Ok(())
     }
 
-    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadMessageError>
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
     where
         R: Read,
     {
@@ -51896,5 +52558,110 @@ impl Message for LinkInventoryItem {
             agent_data: agent_data,
             inventory_block: inventory_block,
         }))
+    }
+}
+
+impl Message for RetrieveIMsExtended {
+    fn write_to<W: ?Sized>(&self, buffer: &mut W) -> WriteMessageResult
+    where
+        W: Write,
+    {
+        // Write the message number.
+        buffer.write(&[0xff, 0xff, 0x01, 0xab])?;
+        // Block AgentData
+        buffer.write(self.agent_data.agent_id.as_bytes())?;
+        buffer.write(self.agent_data.session_id.as_bytes())?;
+        buffer.write_u8(self.agent_data.is_premium as u8)?;
+        Ok(())
+    }
+
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
+    where
+        R: Read,
+    {
+        // Block AgentData
+        let agent_data = RetrieveIMsExtended_AgentData::read_from(buffer)?;
+        Ok(MessageInstance::RetrieveIMsExtended(
+            RetrieveIMsExtended { agent_data: agent_data },
+        ))
+    }
+}
+
+impl Message for JoinGroupRequestExtended {
+    fn write_to<W: ?Sized>(&self, buffer: &mut W) -> WriteMessageResult
+    where
+        W: Write,
+    {
+        // Write the message number.
+        buffer.write(&[0xff, 0xff, 0x01, 0xac])?;
+        // Block AgentData
+        buffer.write(self.agent_data.agent_id.as_bytes())?;
+        buffer.write(self.agent_data.session_id.as_bytes())?;
+        buffer.write_i32::<LittleEndian>(
+            self.agent_data.group_limit,
+        )?;
+        // Block GroupData
+        buffer.write(self.group_data.group_id.as_bytes())?;
+        Ok(())
+    }
+
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
+    where
+        R: Read,
+    {
+        // Block AgentData
+        let agent_data = JoinGroupRequestExtended_AgentData::read_from(buffer)?;
+        // Block GroupData
+        let group_data = JoinGroupRequestExtended_GroupData::read_from(buffer)?;
+        Ok(MessageInstance::JoinGroupRequestExtended(
+            JoinGroupRequestExtended {
+                agent_data: agent_data,
+                group_data: group_data,
+            },
+        ))
+    }
+}
+
+impl Message for CreateGroupRequestExtended {
+    fn write_to<W: ?Sized>(&self, buffer: &mut W) -> WriteMessageResult
+    where
+        W: Write,
+    {
+        // Write the message number.
+        buffer.write(&[0xff, 0xff, 0x01, 0xad])?;
+        // Block AgentData
+        buffer.write(self.agent_data.agent_id.as_bytes())?;
+        buffer.write(self.agent_data.session_id.as_bytes())?;
+        buffer.write_i32::<LittleEndian>(
+            self.agent_data.group_limit,
+        )?;
+        // Block GroupData
+        buffer.write(&self.group_data.name[..])?;
+        buffer.write(&self.group_data.charter[..])?;
+        buffer.write_u8(self.group_data.show_in_list as u8)?;
+        buffer.write(self.group_data.insignia_id.as_bytes())?;
+        buffer.write_i32::<LittleEndian>(
+            self.group_data.membership_fee,
+        )?;
+        buffer.write_u8(self.group_data.open_enrollment as u8)?;
+        buffer.write_u8(self.group_data.allow_publish as u8)?;
+        buffer.write_u8(self.group_data.mature_publish as u8)?;
+        Ok(())
+    }
+
+    fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
+    where
+        R: Read,
+    {
+        // Block AgentData
+        let agent_data = CreateGroupRequestExtended_AgentData::read_from(buffer)?;
+        // Block GroupData
+        let group_data = CreateGroupRequestExtended_GroupData::read_from(buffer)?;
+        Ok(MessageInstance::CreateGroupRequestExtended(
+            CreateGroupRequestExtended {
+                agent_data: agent_data,
+                group_data: group_data,
+            },
+        ))
     }
 }

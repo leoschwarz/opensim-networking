@@ -36,7 +36,9 @@ pub fn initiate(
         },
     };
 
+    info!(log, "sending UseCircuitCode and waiting for ack");
     circuit.send(msg1, true).wait()?;
+    info!(log, "sending CompleteAgentMovement and waiting for ack");
     circuit.send(msg2, true).wait()?;
     Ok(())
 }

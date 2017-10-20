@@ -27,7 +27,7 @@ def generate_struct(message)
     # Generate block definitions,
     code = ""
     message.blocks.each do |block|
-        code << "#[derive(Debug)]\n"
+        code << "#[derive(Clone, Debug)]\n"
         code << "pub struct #{block.r_name} {\n"
         block.fields.each do |field|
             code << "\tpub #{field.r_name}: #{field.r_type},\n"
@@ -37,14 +37,14 @@ def generate_struct(message)
 
     # Generate message definition.
     code << "#{message.comments}\n"
-    code << "#[derive(Debug)]\n"
+    code << "#[derive(Clone, Debug)]\n"
     code << "pub struct #{message.name} {\n"
 
     message.blocks.each do |block|
         if block.quantity.downcase == "single"
             code << "\tpub #{block.f_name}: #{block.r_name},\n"
         elsif block.quantity.downcase == "multiple"
-            code << "\tpub #{block.f_name}: [#{block.r_name}; #{block.quantity_count}],\n"
+            code << "\tpub #{block.f_name}: ArrayVec<[#{block.r_name}; #{block.quantity_count}]>,\n"
         elsif block.quantity.downcase == "variable"
             code << "\tpub #{block.f_name}: Vec<#{block.r_name}>,\n"
         end
@@ -56,7 +56,7 @@ end
 
 def generate_message_types_enum(messages)
     code = ""
-    code << "#[derive(Debug)]\n"
+    code << "#[derive(Clone, Debug)]\n"
     code << "pub enum MessageInstance {\n"
     messages.each do |message|
         code << "\t#{message.name}(#{message.name}),\n"
@@ -153,9 +153,9 @@ def generate_field_reader(field)
     elsif %w[u8 i8].include? r_type
         "buffer.read_#{r_type}()?"
     elsif r_type == "Uuid"
-        "{ let mut raw = [0; 4]; buffer.read_exact(&mut raw)?; Uuid::from_bytes(&raw)? }"
+        "{ let mut raw = [0u8; 16]; buffer.read_exact(&mut raw)?; Uuid::from_bytes(&raw)? }"
     elsif r_type == "Ip4Addr"
-        "{ let mut raw = [0; 4]; buffer.read_exact(&mut raw)?; Ip4Addr::from(raw) }"
+        "{ let mut raw = [0u8; 4]; buffer.read_exact(&mut raw)?; Ip4Addr::from(raw) }"
     elsif r_type == "IpPort"
         "buffer.read_u16::<LittleEndian>()?"
     elsif r_type == "Vector3<f32>" or r_type == "Vector3<f64>"
@@ -188,7 +188,7 @@ end
 def generate_block_reader_impl(block)
     out = ""
     out << "impl #{block.r_name} {\n"
-    out << "\tfn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadMessageError> where R: Read {\n"
+    out << "\tfn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError> where R: Read {\n"
     out << "\t\tOk(#{block.r_name} {\n"
     block.fields.each do |field|
         out << "\t\t\t#{field.r_name}: #{generate_field_reader(field)},\n"
@@ -237,17 +237,17 @@ def generate_message_impl(message)
     # Reader
     #########
     buffer_var = (message.blocks.map{|block| block.fields.count}.inject(:+).to_i != 0) ? "buffer" : "_"
-    out << "\tfn read_from<R: ?Sized>(#{buffer_var}: &mut R) -> Result<MessageInstance, ReadMessageError> where R: Read {\n"
+    out << "\tfn read_from<R: ?Sized>(#{buffer_var}: &mut R) -> Result<MessageInstance, ReadError> where R: Read {\n"
     message.blocks.each do |block|
         out << "\t\t// Block #{block.ll_name}\n"
         if block.quantity == "Single"
             out << "\t\tlet #{block.f_name} = #{block.r_name}::read_from(buffer)?;\n"
         elsif block.quantity == "Multiple"
-            out << "\t\tlet #{block.f_name} = [\n"
+            out << "\t\tlet #{block.f_name} = ArrayVec::from([\n"
             block.quantity_count.to_i.times do
                 out << "\t\t\t#{block.r_name}::read_from(buffer)?,\n"
             end
-            out << "\t\t];\n"
+            out << "\t\t]);\n"
         elsif block.quantity == "Variable"
             count_var = "_#{block.f_name}_count"
             out << "\t\tlet mut #{block.f_name} = Vec::new();\n"
@@ -276,14 +276,14 @@ end
 # Generates the read_message function that handles all possible message types.
 def generate_read_func(messages)
     out = ""
-    out << "pub fn read_message<R: ?Sized>(buffer: &mut R, message_num: u32) -> Result<MessageInstance, ReadMessageError> where R: Read {\n"
+    out << "pub fn read_message<R: ?Sized>(buffer: &mut R, message_num: u32) -> Result<MessageInstance, ReadError> where R: Read {\n"
     out << "\tmatch message_num {\n"
 
     messages.each do |message|
         out << "\t\t#{message.message_num} => return #{message.name}::read_from(buffer),\n"
     end
 
-    out << "\t\t_ => return Err(ReadMessageError::UnknownMessageNumber(message_num))\n"
+    out << "\t\t_ => return Err(ReadErrorKind::UnknownMessageNumber(message_num).into())\n"
 
     out << "\t}\n"
     out << "}\n\n"

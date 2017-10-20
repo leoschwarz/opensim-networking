@@ -11,9 +11,13 @@ extern crate regex;
 extern crate reqwest;
 #[macro_use]
 extern crate slog;
-extern crate time;
 extern crate ttl_cache;
 extern crate xmlrpc;
+
+#[cfg(test)]
+extern crate slog_async;
+#[cfg(test)]
+extern crate slog_term;
 
 pub extern crate opensim_messages as messages;
 extern crate opensim_types as types;
