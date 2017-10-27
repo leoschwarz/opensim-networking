@@ -16,13 +16,13 @@
 // - Once the rest is done: cleanup + verify corectness.
 // - Eliminate all unwraps from this module except where we can verify it will never fail.
 
+use logging::Logger;
 use login::LoginResponse;
 use messages::MessageInstance;
 use packet::Packet;
 use types::SequenceNumber;
 use util::FifoCache;
 
-use slog::Logger;
 use std::io::Error as IoError;
 use std::net::{SocketAddr, SocketAddrV4, UdpSocket};
 use std::sync::mpsc;
@@ -41,17 +41,15 @@ use self::status::SendMessageStatus;
 /// TODO:
 /// - Stop/exit functionality.
 pub struct Circuit {
-    /// The logger we use for logging Circuit related debug info.
-    logger: Logger,
     incoming: mpsc::Receiver<MessageInstance>,
     ackmgr_tx: AckManagerTx,
 }
 
 impl Circuit {
-    pub fn initiate(
+    pub fn initiate<L: Logger>(
         login_res: LoginResponse,
         config: CircuitConfig,
-        logger: Logger,
+        logger: L,
     ) -> Result<Circuit, IoError> {
         let sim_address = SocketAddr::V4(SocketAddrV4::new(login_res.sim_ip, login_res.sim_port));
 
@@ -66,7 +64,7 @@ impl Circuit {
         let socket_in = socket_out.try_clone()?;
 
         // Setup AckManager.
-        let (ackmgr_tx, mut ackmgr_rx) = self::ack_manager::new(config, &logger);
+        let (ackmgr_tx, mut ackmgr_rx) = self::ack_manager::new(config);
         let ackmgr_tx_1 = ackmgr_tx;
         let ackmgr_tx_2 = ackmgr_tx_1.clone();
 
@@ -82,7 +80,6 @@ impl Circuit {
         });
 
         // Create reader thread (2).
-        let logger2 = logger.new(o!("thread" => "Circuit::reader"));
         thread::spawn(move || {
             // TODO: Determine good maximum size. If it's too be big we are wasting memory,
             // if it's too small things will explode.
@@ -94,39 +91,27 @@ impl Circuit {
 
             loop {
                 // TODO: move back up after debugging
-                let mut buf = [0u8; 1000];
+                let mut buf = [0u8; 4096];
                 // Read from socket in blocking way.
                 socket_in.recv_from(&mut buf).unwrap();
 
                 // Parse the packet.
-                let packet = match Packet::read(&buf, &logger2) {
-                    Ok(p) => p,
-                    Err(err) => {
-                        error!(logger2, "reading packet failed: {:?}", err);
-
-                        let mut s = String::new();
-                        for &byte in buf.iter() {
-                            use std::fmt::Write;
-                            write!(&mut s, "{:02X} ", byte).unwrap();
-                        }
-                        debug!(logger2, "packet data: {}", s);
-                        continue;
-                    }
+                let packet_res = Packet::read(&buf);
+                logger.log_recv(&buf, &packet_res);
+                let packet = match packet_res {
+                    Ok(pkt) => pkt,
+                    Err(_) => continue,
                 };
-                debug!(logger2, "packet extracted: {:?}", packet);
 
                 // Read appended acks and send ack if requested (reliable packet).
                 {
                     for ack in packet.appended_acks.iter() {
-                        debug!(logger2, "registering ack: {:?}", ack);
                         ackmgr_tx_1.register_ack(*ack).unwrap();
                     }
                 }
                 if packet.is_reliable() {
                     {
-                        debug!(logger2, "before sending ack");
                         ackmgr_tx_1.send_ack(packet.sequence_number).unwrap();
-                        debug!(logger2, "after sending ack");
                     }
 
                     // Check if we did receive the packet already and the remote just resent it
@@ -156,7 +141,6 @@ impl Circuit {
         Ok(Circuit {
             incoming: incoming_rx,
             ackmgr_tx: ackmgr_tx_2,
-            logger: logger,
         })
     }
 

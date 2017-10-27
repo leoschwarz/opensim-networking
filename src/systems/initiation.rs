@@ -5,20 +5,20 @@ use Uuid;
 use circuit::{Circuit, SendMessageError};
 use messages::{UseCircuitCode, UseCircuitCode_CircuitCode};
 use messages::{CompleteAgentMovement, CompleteAgentMovement_AgentData};
-use futures::Future;
-use slog::Logger;
+use logging::Logger;
 
-pub fn initiate(
+use futures::Future;
+
+pub fn initiate<L: Logger>(
     circuit: &Circuit,
     circuit_code: u32,
     agent_id: Uuid,
     session_id: Uuid,
-    logger: &Logger,
+    logger: L,
 ) -> Result<(), SendMessageError> {
-    let log = logger.new(o!("action" => "circuit initiate"));
-    info!(log, "using circuit code: {}", circuit_code);
-    info!(log, "session_id: {}", session_id);
-    info!(log, "agent id: {}", agent_id);
+    logger.debug(format!("using circuit code: {}", circuit_code));
+    logger.debug(format!("session_id: {}", session_id));
+    logger.debug(format!("agent id: {}", agent_id));
 
     let msg1 = UseCircuitCode {
         circuit_code: UseCircuitCode_CircuitCode {
@@ -36,9 +36,9 @@ pub fn initiate(
         },
     };
 
-    info!(log, "sending UseCircuitCode and waiting for ack");
+    logger.info("sending UseCircuitCode and waiting for ack");
     circuit.send(msg1, true).wait()?;
-    info!(log, "sending CompleteAgentMovement and waiting for ack");
+    logger.info("sending CompleteAgentMovement and waiting for ack");
     circuit.send(msg2, true).wait()?;
     Ok(())
 }

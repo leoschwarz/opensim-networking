@@ -2,25 +2,21 @@ extern crate opensim_networking;
 extern crate futures;
 #[macro_use]
 extern crate serde_derive;
-#[macro_use]
-extern crate slog;
-extern crate slog_async;
-extern crate slog_term;
 extern crate toml;
 extern crate num_traits;
 
 use opensim_networking::login::{LoginRequest, hash_password};
 use opensim_networking::circuit::{Circuit, CircuitConfig};
 use opensim_networking::{Duration, Vector3, Quaternion};
-
 use opensim_networking::systems::agent_update::{AgentState, MoveDirection, Modality};
 use opensim_networking::messages::{AgentUpdate, AgentUpdate_AgentData};
+use opensim_networking::logging::FullDebugLogger;
+
 use num_traits::identities::{One, Zero};
 
 use std::io::prelude::*;
 use std::fs::File;
 use std::thread;
-use slog::Drain;
 use futures::future::Future;
 
 #[derive(Deserialize)]
@@ -43,10 +39,7 @@ struct ConfigSim {
 
 fn main() {
     // Setup our logger.
-    let decorator = slog_term::TermDecorator::new().build();
-    let drain = slog_term::FullFormat::new(decorator).build().fuse();
-    let drain = slog_async::Async::new(drain).build().fuse();
-    let log = slog::Logger::root(drain, o!());
+    let logger = FullDebugLogger::new("logdir").unwrap();
 
     // Read the configuration file.
     let mut file = File::open("establish-circuit.toml").expect(
@@ -82,7 +75,7 @@ fn main() {
     let agent_id = resp.agent_id.clone();
     let session_id = resp.session_id.clone();
     let circuit_code = resp.circuit_code.clone();
-    let circuit = match Circuit::initiate(resp, config, log.clone()) {
+    let circuit = match Circuit::initiate(resp, config, logger.clone()) {
         Err(e) => panic!("Circuit establishment failed, err: {:?}", e),
         Ok(c) => c,
     };
@@ -94,7 +87,7 @@ fn main() {
         circuit_code,
         agent_id,
         session_id,
-        &log,
+        logger,
     ).expect("circuit init sequence failed.");
     println!("Finish circuit initialization.");
 

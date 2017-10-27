@@ -24,7 +24,6 @@ use std::sync::mpsc;
 use std::sync::mpsc::TryRecvError;
 use std::time::{Duration, Instant};
 use std::thread;
-use slog::Logger;
 
 pub struct AckManagerRx {
     /// Messages waiting for their confirmation.
@@ -42,15 +41,12 @@ pub struct AckManagerRx {
     /// Copy of circuit config.
     config: CircuitConfig,
     sequence_counter: AtomicU32Counter,
-    logger: Logger,
 }
 
 impl AckManagerRx {
     fn _fetch_loop(&mut self) -> (Packet, SendMessage) {
         loop {
             if let Some(pending_msg) = self._next_message() {
-                debug!(self.logger, "next message: {:?}", pending_msg);
-
                 // Create packet instance and update status.
                 let mut future = pending_msg.future.clone();
                 let (packet, new_status) = self._prepare_packet(pending_msg);
@@ -94,12 +90,12 @@ impl AckManagerRx {
         // Apply all available incoming acks.
         while let Ok(ack) = self.acks_inc.try_recv() {
             if let Some(mut acked_msg) = self.acks_wait.remove_key(&ack) {
-                debug!(self.logger, "incoming ack (msg found): {}", ack);
+                //debug!(self.logger, "incoming ack (msg found): {}", ack);
 
                 // Mark the PendingMessage as successful.
                 acked_msg.future.update_status(SendMessageStatus::Success);
             } else {
-                debug!(self.logger, "incoming ack (msg not found): {}", ack);
+                //debug!(self.logger, "incoming ack (msg not found): {}", ack);
             }
         }
 
@@ -187,24 +183,23 @@ pub struct AckManagerTx {
 
     /// Copy of circuit config.
     config: CircuitConfig,
-    logger: Logger,
 }
 
 impl AckManagerTx {
     /// Queue an ack to be sent out as soon as possible.
     pub fn send_ack(&self, ack: SequenceNumber) -> Result<(), mpsc::SendError<SequenceNumber>> {
-        debug!(self.logger, "send_ack: {}", ack);
+        //debug!(self.logger, "send_ack: {}", ack);
         self.acks_out.send(ack)
     }
 
     /// Register an incoming ack to be processed.
     pub fn register_ack(&self, ack: SequenceNumber) -> Result<(), mpsc::SendError<SequenceNumber>> {
-        debug!(self.logger, "register_ack: {}", ack);
+        //debug!(self.logger, "register_ack: {}", ack);
         self.acks_inc.send(ack)
     }
 
     pub fn send_msg(&self, msg: MessageInstance, reliable: bool) -> SendMessage {
-        debug!(self.logger, "send_msg: {:?}", msg);
+        //debug!(self.logger, "send_msg: {:?}", msg);
         let future = SendMessage::new(SendMessageStatus::PendingSend { reliable: reliable });
         let p_m = PendingMessage {
             message: msg,
@@ -217,7 +212,7 @@ impl AckManagerTx {
 }
 
 /// Create a new instance of the AckManager tx and rx.
-pub fn new(config: CircuitConfig, p_logger: &Logger) -> (AckManagerTx, AckManagerRx) {
+pub fn new(config: CircuitConfig) -> (AckManagerTx, AckManagerRx) {
     let (acks_out_tx, acks_out_rx) = mpsc::channel();
     let (acks_inc_tx, acks_inc_rx) = mpsc::channel();
     let (msgs_out_tx, msgs_out_rx) = mpsc::channel();
@@ -227,7 +222,6 @@ pub fn new(config: CircuitConfig, p_logger: &Logger) -> (AckManagerTx, AckManage
         acks_inc: acks_inc_tx,
         msgs_out: msgs_out_tx,
         config: config.clone(),
-        logger: p_logger.new(o!("AckManager" => "tx")),
     };
     let rx = AckManagerRx {
         acks_wait: AddressableQueue::new(),
@@ -236,7 +230,6 @@ pub fn new(config: CircuitConfig, p_logger: &Logger) -> (AckManagerTx, AckManage
         msgs_out: msgs_out_rx,
         config: config,
         sequence_counter: AtomicU32Counter::new(0),
-        logger: p_logger.new(o!("AckManager" => "rx")),
     };
 
     (tx, rx)

@@ -9,8 +9,6 @@ extern crate futures;
 extern crate mio;
 extern crate regex;
 extern crate reqwest;
-#[macro_use]
-extern crate slog;
 extern crate ttl_cache;
 extern crate xmlrpc;
 
@@ -24,7 +22,8 @@ extern crate opensim_types as types;
 pub use types::*;
 
 mod util;
+pub mod circuit;
+pub mod logging;
 pub mod login;
 pub mod packet;
-pub mod circuit;
 pub mod systems;

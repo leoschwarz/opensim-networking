@@ -2,7 +2,6 @@ use messages::{MessageInstance, read_message};
 use types::SequenceNumber;
 
 use byteorder::{BigEndian, WriteBytesExt, ReadBytesExt};
-use slog::Logger;
 use std::io::{Read, Write};
 
 bitflags! {
@@ -75,7 +74,7 @@ impl Packet {
         Ok(())
     }
 
-    pub fn read<'a>(buf: &'a [u8], logger: &Logger) -> Result<Packet, ReadPacketError> {
+    pub fn read<'a>(buf: &'a [u8]) -> Result<Packet, ReadPacketError> {
         let mut reader = PacketReader::new(buf);
 
         let flags = PacketFlags::from_bits(reader.read_u8()?).unwrap();
@@ -89,13 +88,10 @@ impl Packet {
 
         // Read message.
         let message_num = reader.read_message_number()?;
-        debug!(logger, "message_num: {:8x}", message_num);
         if flags.contains(PacketFlags::ZEROCODED) {
             reader.zerocoding_enabled = true;
         }
-        debug!(logger, "starting to read message");
         let message = read_message(&mut reader, message_num)?;
-        debug!(logger, "reading message finished");
 
         // Read appended ACKs if there are supposed to be any.
         let mut acks = Vec::new();
