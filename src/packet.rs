@@ -176,8 +176,7 @@ impl<'a> PacketReader<'a> {
         }
     }
 
-    /// Just return the content of the very last byte of the message,
-    /// without changing the reader's state in any way.
+    /// Return the content of the very last byte of the message.
     fn peek_last_byte(&self) -> u8 {
         self.buf[self.buf.len() - 1]
     }

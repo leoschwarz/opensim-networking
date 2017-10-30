@@ -69,12 +69,15 @@ impl Circuit {
         let ackmgr_tx_2 = ackmgr_tx_1.clone();
 
         // Create sender thread (1).
+        let logger1 = logger.clone();
         thread::spawn(move || {
             // TODO: proper shutdown mechanism
             loop {
                 let packet = ackmgr_rx.fetch();
                 let mut buf = Vec::<u8>::new();
                 packet.write_to(&mut buf).unwrap();
+                logger1.log_send(&buf, &packet);
+
                 socket_out.send(&buf).unwrap();
             }
         });
