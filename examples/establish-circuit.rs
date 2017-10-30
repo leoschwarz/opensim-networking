@@ -104,7 +104,8 @@ fn main() {
     loop {
         for _ in 1..40 {
             let msg = state.to_update_message(agent_id, session_id);
-            circuit.send(msg, false).wait();
+            // TODO: change this to unreliable (false) after debugging
+            circuit.send(msg, true).wait().unwrap();
 
             thread::sleep(std::time::Duration::from_millis(50));
         }

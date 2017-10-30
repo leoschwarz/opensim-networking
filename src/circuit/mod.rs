@@ -96,11 +96,11 @@ impl Circuit {
                 // TODO: move back up after debugging
                 let mut buf = [0u8; 4096];
                 // Read from socket in blocking way.
-                socket_in.recv_from(&mut buf).unwrap();
+                let (buf_size, _) = socket_in.recv_from(&mut buf).unwrap();
 
                 // Parse the packet.
-                let packet_res = Packet::read(&buf);
-                logger.log_recv(&buf, &packet_res);
+                let packet_res = Packet::read(&buf[..buf_size]);
+                logger.log_recv(&buf[..buf_size], &packet_res);
                 let packet = match packet_res {
                     Ok(pkt) => pkt,
                     Err(_) => continue,

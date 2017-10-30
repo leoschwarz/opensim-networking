@@ -74,6 +74,10 @@ impl Packet {
         Ok(())
     }
 
+    /// Try to read a packet from the provided buffer.
+    ///
+    /// Note: Pass a slice only containing the relevant bytes, truncate all other noise
+    /// from previous reads etc from the slice!
     pub fn read<'a>(buf: &'a [u8]) -> Result<Packet, ReadPacketError> {
         let mut reader = PacketReader::new(buf);
 
