@@ -96,6 +96,11 @@ impl FullDebugLogger {
     }
 
     /// Create a new instance of the logger.
+    ///
+    /// Notice that the logger is expecting an empty directory, if the directory already contains
+    /// other files, it will most likely lead to an error.
+    /// So if you want stuff like log rotation, you have to implement it yourself, but be aware,
+    /// that with this uncompressed logging you can quickly accumulate lots of data.
     pub fn new<P: Into<PathBuf>>(path: P) -> Result<Self, IoError> {
         let dir = path.into();
         Self::assert_empty_dir(dir.join("recv"))?;
