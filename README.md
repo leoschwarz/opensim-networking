@@ -1,26 +1,42 @@
 # Aim
 This project's aim is to implement an efficient networking client for the [OpenSimulator](http://opensimulator.org/wiki/Main_Page) network protocol in Rust.
-Hopefully in the future it will allow for the implementation of NPCs and potentially a viewer written in Rust from scratch.
+The goal is to provide a client of high enough quality to implement a new viewer on top of it with matches or surpasses the performance of current viewers.
 
 ## Status
-Most of the UDP interaction should work by now, and the basic login with XML-RPC should also work.
-Usage of this crate is not very ergonomic however, it performs the ack logic, but there are many
-messages to be sent and received everywhere.
+As the documentation of the protocol is rather sparse and this library is still not that far, consider this an early work in progress.
+There are multiple coexisting "protocols" so following is a list of them and the respective status of their implementation in this library.
 
-## TODO
-There are some big TODOs:
+**Implemented**:
 
-- Where to get resources from? (I heard there is some new HTTP protocol for that.)
-- How is mesh data encoded? We will have to implement our own reader, so it can be used in a potential client not using any of the original Linden viewer code.
-- For the sake of it make sure that we are reading quaternions correctly, otherwise funny stuff is going to happen, which will be annoying to debug.
-- Generally improve logging further, viewer development will probably need a couple of these inspections where we have to take apart how the protocol works concretely.
+- UDP messages: Handling of acks works fine. More debugging utilities will have to be added because for viewer development it will most likely be needed.
+- Login protocol: Will need some more refinement and better error handling, but it's enough for testing purposes.
 
-## Standard
-We are tracking the protocol as used by the OpenSimulator project. Should there be future changes, we will follow their lead. Compatibility with Second Life is desirable but not a goal of the project.
+**To be implemented soon**:
+
+- Texture download
+- Region download
+
+**Not on the current worklist**:
+
+- Sound
+- Voice
+- Inventory
+
+## Protocol
+The main goal of this library is to stay compatible with current versions of OpenSimulator. Since Second Life is diverting from their protocol this library will most likely stop being usable with
+their servers (if it isn't already the case).
+
+I'm in the progress of collecting as much documentation on the protocol as possible, to write a good and correct client for it. Many pieces of information are found across
+the internet and in various sources, so I'm collecting my own conclusions on the protocol in the repo [opensim-protocol](https://github.com/leoschwarz/opensim-protocol).
+Ideally it should be an exact specification of the network protocol implemented by this client.
 
 # Architecture
-## Generator
-As there are many messages and we want to provide a type safe and efficient way to handle these, a bindings generator was written in Ruby.
-You can find more information on running it in the `generate/` subfolder's README.
+TODO: Actually this section might not always be that up to date and interesting, most likely it will make more sense to put such information into the relevant sub crates and only
+      explain the motivation behind the API actually used by viewers.
 
+## UDP messages
+For the UDP messages handling, a code generator written in Ruby is used. The relevant code can be found in the subcrate opensim_messages where you also find
+the generated code. The code generator is only needed when updating some of its input files, otherwise pure Rust code can be compiled.
 
+While the generated code bloats the binary size, it's actually one of the easiest ways to implement type safe handling of message data and should allow for
+fair performance, up to the point where one should not worry about it unless some performance benchmark indicates pathologically bad performance.
