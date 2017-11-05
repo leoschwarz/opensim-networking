@@ -3,6 +3,7 @@
 
 #[macro_use]
 extern crate bitflags;
+extern crate bitreader;
 extern crate byteorder;
 extern crate crypto;
 #[macro_use]
@@ -21,6 +22,7 @@ pub use types::*;
 
 mod util;
 pub mod circuit;
+pub mod layer_data;
 pub mod logging;
 pub mod login;
 pub mod packet;

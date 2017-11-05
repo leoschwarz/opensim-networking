@@ -12,8 +12,8 @@ opensim_messages = { path = "opensim_messages" }
 opensim_types = { path = "opensim_types" }
 
 bitflags = "1.0"
+bitreader = { git = "https://github.com/leoschwarz/bitreader", branch = "read-many" } # currently needed only for layer_data module.
 byteorder = "1.0"
-#crossbeam = "0.3.0"
 derive-error-chain = "0.11.0"
 error-chain = "0.11.0"
 futures = "0.1.10"
