@@ -1,13 +1,11 @@
-This directory contains the script to generate structs and trait implementations for all messages
-specified in the `message_template.msg` file.
+# opensim_messages: generator
+This script generates Rust code handling the messages as defined in the corresponding XML files.
+The advantage of this versus building directly from the LL message template, is that we can
+incooperate OpenSim specific extensions and our own comments into the generated code more easily.
 
-## Requirements
-* `ruby 2.3` (other versions of the ruby 2.\* branch will probably work as well)
-* `activesupport` (install with `gem install activesupport`)
-* `rustfmt` (install with `cargo install rustfmt`)
+## Required software
+The script was developed with Python 3.5.3, other versions (or at least newer ones) should work too.
+Following packages have to be installed from PyPI:
 
-## Running
-Just execute the file `./generator/generate.rb` and it should handle everything.  
-Rerun the generator script after making changes to it and check if it created the anticipated changes or
-preserved the current messages file if nothing was supposed to change.
-
+TODO
+- 

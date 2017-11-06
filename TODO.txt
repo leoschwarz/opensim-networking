@@ -1,0 +1,8 @@
+Textures
+========
+
+- The image crate seems to be the one supporting most of the formats needed so far.
+  However the following decoders are missing:
+  - JPEG 2000: This one is a must! https://github.com/PistonDevelopers/image/issues/631
+  - DXT: Was patented until 2017, according to Wikipedia there is at least one more patent, which has a 165 day extension.
+  → BMP, JPEG, PNG & TGA are already supported.

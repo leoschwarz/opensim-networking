@@ -1,0 +1,3 @@
+[submodule "generator/protocol"]
+	path = generator/protocol
+	url = https://github.com/leoschwarz/opensim-protocol.git
