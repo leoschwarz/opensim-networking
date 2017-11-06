@@ -3,7 +3,7 @@
 extern crate opensim_networking;
 
 use opensim_networking::packet::Packet;
-use opensim_networking::layer_data::LayerPatch;
+use opensim_networking::layer_data::Surface;
 use opensim_networking::messages::MessageInstance;
 
 fn main()
@@ -15,5 +15,5 @@ fn main()
         MessageInstance::LayerData(data) => data,
         _ => panic!("wrong message instance"),
     };
-    LayerPatch::extract_message(&msg).unwrap();
+    Surface::extract_message(&msg).unwrap();
 }

@@ -1,4 +1,4 @@
-use messages::{MessageInstance, read_message};
+use messages::MessageInstance;
 use types::SequenceNumber;
 
 use byteorder::{BigEndian, WriteBytesExt, ReadBytesExt};
@@ -95,7 +95,7 @@ impl Packet {
         if flags.contains(PacketFlags::ZEROCODED) {
             reader.zerocoding_enabled = true;
         }
-        let message = read_message(&mut reader, message_num)?;
+        let message = MessageInstance::read_message(&mut reader, message_num)?;
 
         // Read appended ACKs if there are supposed to be any.
         let mut acks = Vec::new();
