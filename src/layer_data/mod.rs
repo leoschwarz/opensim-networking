@@ -6,6 +6,19 @@ use messages::all::LayerData;
 
 const END_OF_PATCH: u8 = 97u8;
 
+#[derive(Debug, ErrorChain)]
+#[error_chain(error = "ExtractSurfaceError")]
+#[error_chain(result = "")]
+pub enum ExtractSurfaceErrorKind {
+    #[error_chain(foreign)]
+    BitReader(BitReaderError),
+
+    #[error_chain(custom)]
+    #[error_chain(description = r#"|_| "unknown layer type""#)]
+    #[error_chain(display = r#"|code| write!(f, "unknown layer type: {}", code)"#)]
+    UnknownLayerType(u8),
+}
+
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub enum LayerKind {
     Land,
@@ -34,7 +47,7 @@ pub struct Surface {
 }
 
 impl Surface {
-    pub fn extract_message(msg: &LayerData) -> Result<(), BitReaderError> {
+    pub fn extract_message(msg: &LayerData) -> Result<(), ExtractSurfaceError> {
         let kind = match msg.layer_id.type_ {
             b'L' => LayerKind::Land,
             b'7' => LayerKind::Wind,
@@ -44,18 +57,18 @@ impl Surface {
             b'X' => LayerKind::AuroraWind,
             b'9' => LayerKind::AuroraCloud,
             b':' => LayerKind::AuroraWater,
-            _ => unimplemented!(), // TODO error handling
+            code => return Err(ExtractSurfaceErrorKind::UnknownLayerType(code).into()),
         };
         println!("kind : {:?}", kind);
         Self::extract(&msg.layer_data.data[..], kind.is_large_patch())
     }
 
-    fn extract(data: &[u8], large_patch: bool) -> Result<(), BitReaderError> {
+    fn extract(data: &[u8], large_patch: bool) -> Result<(), ExtractSurfaceError> {
         let mut reader = BitReader::new(data);
 
         // Read patch_group_header
         let stride = reader.read_u16(16)?; // TODO byte order
-        let patch_size = reader.read_u8(8)?;
+        let patch_size = reader.read_u8(8)? as usize;
         let layer_type = reader.read_u8(8)?;
 
         println!("stride:     0x{:X}", stride);
@@ -92,7 +105,7 @@ impl Surface {
 
             // Read patches.
             let mut patch_data = Vec::<i16>::new();
-            for i in 0..patch_size * patch_size {
+            'patch_body: for i in 0..patch_size * patch_size {
                 let exists = reader.read_bool()?;
                 if exists {
                     let not_eob = reader.read_bool()?;
@@ -105,6 +118,7 @@ impl Surface {
                         for _ in i..patch_size * patch_size {
                             patch_data.push(0);
                         }
+                        break 'patch_body;
                     }
                 } else {
                     patch_data.push(0);
@@ -112,6 +126,9 @@ impl Surface {
             }
             println!("patch_data.len(): {}", patch_data.len());
         }
+
+        println!("bitreader position: {}", reader.position());
+        println!("buffer size: {}", data.len());
 
         Ok(())
     }
