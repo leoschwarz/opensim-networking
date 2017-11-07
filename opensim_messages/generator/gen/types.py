@@ -21,7 +21,7 @@ TYPE_CONVERSIONS = {
     "LLVector3": "Vector3<f32>", "LLVector3d": "Vector3<f64>", "LLVector4": "Vector4<f32>",
     "LLQuaternion": "Quaternion<f32>",
     "BOOL": "bool",
-    "Variable 1": "Vec<u8>", "Variable 2": "Vec<u8>",
+    "Variable": "Vec<u8>"
 }
 
 def find_string(path, identifier):
@@ -67,6 +67,8 @@ class Field:
     def __init__(self, xml_obj):
         self._name = xml_obj.name
         if xml_obj.type_.startswith("Fixed"):
+            self._type, self.count = xml_obj.type_.split()
+        elif xml_obj.type_.startswith("Variable"):
             self._type, self.count = xml_obj.type_.split()
         else:
             self._type = xml_obj.type_

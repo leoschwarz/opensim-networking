@@ -75,8 +75,14 @@ def generate_field_writer(field, source):
     elif r_type == "bool":
         return "buffer.write_u8(%s as u8)?;\n" % value
     elif r_type == "Vec<u8>":
-        # TODO: This is wrong! See the diference between Variable 1 and Variable 2
-        return "buffer.write(&%s[..])?;\n" % value
+        if field.count == "1":
+            out = "buffer.write_u8(%s.len() as u8)?;\n" % value
+        elif field.count == "2":
+            out = "buffer.write_u16::<LittleEndian>(%s.len() as u16)?;\n" % value
+        else:
+            raise RuntimeError("Invalid count for field: {}", field.__dict__)
+        out += "buffer.write(&%s[..])?;\n" % value
+        return out
     elif r_type[0:4] == "[u8;":
         return "buffer.write(&%s)?;\n" % value
     else:
@@ -113,8 +119,14 @@ def generate_field_reader(field):
     elif r_type == "bool":
         return "buffer.read_u8()? == 1"
     elif r_type == "Vec<u8>":
-        # TODO This is wrong! Check difference between Variable 1 and Variable 2!!!
-        return "{ let n = buffer.read_u8()? as usize; let mut raw = vec![0; n]; buffer.read_exact(&mut raw)?; raw }"
+        if field.count == "1":
+            out = "{\n\tlet n = buffer.read_u8()? as usize;\n"
+        elif field.count == "2":
+            out = "{\n\tlet n = buffer.read_u16::<LittleEndian>()? as usize;\n"
+        else:
+            raise RuntimeError("invalid quantity for field: %s" % field.__dict__)
+        out += "\tlet mut raw = vec![0; n]; buffer.read_exact(&mut raw)?; raw }"
+        return out
     elif r_type[0:4] == "[u8;":
         return "{ let mut raw = [0; %s]; buffer.read_exact(&mut raw)?; raw }" % field.count
     else:

@@ -20175,7 +20175,7 @@ impl AgentMovementComplete_SimData {
     {
         Ok(AgentMovementComplete_SimData {
             channel_version: {
-                let n = buffer.read_u8()? as usize;
+                let n = buffer.read_u16::<LittleEndian>()? as usize;
                 let mut raw = vec![0; n];
                 buffer.read_exact(&mut raw)?;
                 raw
@@ -20346,7 +20346,7 @@ impl AgentSetAppearance_ObjectData {
     {
         Ok(AgentSetAppearance_ObjectData {
             texture_entry: {
-                let n = buffer.read_u8()? as usize;
+                let n = buffer.read_u16::<LittleEndian>()? as usize;
                 let mut raw = vec![0; n];
                 buffer.read_exact(&mut raw)?;
                 raw
@@ -20616,7 +20616,7 @@ impl AssetUploadRequest_AssetBlock {
             tempfile: buffer.read_u8()? == 1,
             store_local: buffer.read_u8()? == 1,
             asset_data: {
-                let n = buffer.read_u8()? as usize;
+                let n = buffer.read_u16::<LittleEndian>()? as usize;
                 let mut raw = vec![0; n];
                 buffer.read_exact(&mut raw)?;
                 raw
@@ -20769,7 +20769,7 @@ impl AvatarAppearance_ObjectData {
     {
         Ok(AvatarAppearance_ObjectData {
             texture_entry: {
-                let n = buffer.read_u8()? as usize;
+                let n = buffer.read_u16::<LittleEndian>()? as usize;
                 let mut raw = vec![0; n];
                 buffer.read_exact(&mut raw)?;
                 raw
@@ -21022,7 +21022,7 @@ impl AvatarNotesReply_Data {
                 Uuid::from_bytes(&raw)?
             },
             notes: {
-                let n = buffer.read_u8()? as usize;
+                let n = buffer.read_u16::<LittleEndian>()? as usize;
                 let mut raw = vec![0; n];
                 buffer.read_exact(&mut raw)?;
                 raw
@@ -21063,7 +21063,7 @@ impl AvatarNotesUpdate_Data {
                 Uuid::from_bytes(&raw)?
             },
             notes: {
-                let n = buffer.read_u8()? as usize;
+                let n = buffer.read_u16::<LittleEndian>()? as usize;
                 let mut raw = vec![0; n];
                 buffer.read_exact(&mut raw)?;
                 raw
@@ -21285,7 +21285,7 @@ impl AvatarPropertiesReply_PropertiesData {
                 Uuid::from_bytes(&raw)?
             },
             about_text: {
-                let n = buffer.read_u8()? as usize;
+                let n = buffer.read_u16::<LittleEndian>()? as usize;
                 let mut raw = vec![0; n];
                 buffer.read_exact(&mut raw)?;
                 raw
@@ -21403,7 +21403,7 @@ impl AvatarPropertiesUpdate_PropertiesData {
                 Uuid::from_bytes(&raw)?
             },
             about_text: {
-                let n = buffer.read_u8()? as usize;
+                let n = buffer.read_u16::<LittleEndian>()? as usize;
                 let mut raw = vec![0; n];
                 buffer.read_exact(&mut raw)?;
                 raw
@@ -21816,7 +21816,7 @@ impl ChatFromSimulator_ChatData {
                 buffer.read_f32::<LittleEndian>()?,
             ),
             message: {
-                let n = buffer.read_u8()? as usize;
+                let n = buffer.read_u16::<LittleEndian>()? as usize;
                 let mut raw = vec![0; n];
                 buffer.read_exact(&mut raw)?;
                 raw
@@ -21852,7 +21852,7 @@ impl ChatFromViewer_ChatData {
     {
         Ok(ChatFromViewer_ChatData {
             message: {
-                let n = buffer.read_u8()? as usize;
+                let n = buffer.read_u16::<LittleEndian>()? as usize;
                 let mut raw = vec![0; n];
                 buffer.read_exact(&mut raw)?;
                 raw
@@ -21896,7 +21896,7 @@ impl ChatPass_ChatData {
             radius: buffer.read_f32::<LittleEndian>()?,
             sim_access: buffer.read_u8()?,
             message: {
-                let n = buffer.read_u8()? as usize;
+                let n = buffer.read_u16::<LittleEndian>()? as usize;
                 let mut raw = vec![0; n];
                 buffer.read_exact(&mut raw)?;
                 raw
@@ -22137,7 +22137,7 @@ impl ChildAgentUpdate_AgentData {
             },
             agent_access: buffer.read_u8()?,
             agent_textures: {
-                let n = buffer.read_u8()? as usize;
+                let n = buffer.read_u16::<LittleEndian>()? as usize;
                 let mut raw = vec![0; n];
                 buffer.read_exact(&mut raw)?;
                 raw
@@ -22210,7 +22210,7 @@ impl ChildAgentUpdate_NVPairData {
     {
         Ok(ChildAgentUpdate_NVPairData {
             nv_pairs: {
-                let n = buffer.read_u8()? as usize;
+                let n = buffer.read_u16::<LittleEndian>()? as usize;
                 let mut raw = vec![0; n];
                 buffer.read_exact(&mut raw)?;
                 raw
@@ -22369,7 +22369,7 @@ impl ClassifiedInfoReply_Data {
                 raw
             },
             desc: {
-                let n = buffer.read_u8()? as usize;
+                let n = buffer.read_u16::<LittleEndian>()? as usize;
                 let mut raw = vec![0; n];
                 buffer.read_exact(&mut raw)?;
                 raw
@@ -22482,7 +22482,7 @@ impl ClassifiedInfoUpdate_Data {
                 raw
             },
             desc: {
-                let n = buffer.read_u8()? as usize;
+                let n = buffer.read_u16::<LittleEndian>()? as usize;
                 let mut raw = vec![0; n];
                 buffer.read_exact(&mut raw)?;
                 raw
@@ -22839,7 +22839,7 @@ impl CreateGroupRequest_GroupData {
                 raw
             },
             charter: {
-                let n = buffer.read_u8()? as usize;
+                let n = buffer.read_u16::<LittleEndian>()? as usize;
                 let mut raw = vec![0; n];
                 buffer.read_exact(&mut raw)?;
                 raw
@@ -23123,7 +23123,7 @@ impl CrossedRegion_RegionData {
             sim_port: buffer.read_u16::<LittleEndian>()?,
             region_handle: buffer.read_u64::<LittleEndian>()?,
             seed_capability: {
-                let n = buffer.read_u8()? as usize;
+                let n = buffer.read_u16::<LittleEndian>()? as usize;
                 let mut raw = vec![0; n];
                 buffer.read_exact(&mut raw)?;
                 raw
@@ -24338,7 +24338,7 @@ impl EdgeDataPacket_EdgeData {
             layer_type: buffer.read_u8()?,
             direction: buffer.read_u8()?,
             layer_data: {
-                let n = buffer.read_u8()? as usize;
+                let n = buffer.read_u16::<LittleEndian>()? as usize;
                 let mut raw = vec![0; n];
                 buffer.read_exact(&mut raw)?;
                 raw
@@ -24500,7 +24500,7 @@ impl EmailMessageReply_DataBlock {
                 raw
             },
             data: {
-                let n = buffer.read_u8()? as usize;
+                let n = buffer.read_u16::<LittleEndian>()? as usize;
                 let mut raw = vec![0; n];
                 buffer.read_exact(&mut raw)?;
                 raw
@@ -24599,13 +24599,13 @@ impl Error_Data {
                 raw
             },
             message: {
-                let n = buffer.read_u8()? as usize;
+                let n = buffer.read_u16::<LittleEndian>()? as usize;
                 let mut raw = vec![0; n];
                 buffer.read_exact(&mut raw)?;
                 raw
             },
             data: {
-                let n = buffer.read_u8()? as usize;
+                let n = buffer.read_u16::<LittleEndian>()? as usize;
                 let mut raw = vec![0; n];
                 buffer.read_exact(&mut raw)?;
                 raw
@@ -24818,7 +24818,7 @@ impl EventInfoReply_EventData {
                 raw
             },
             desc: {
-                let n = buffer.read_u8()? as usize;
+                let n = buffer.read_u16::<LittleEndian>()? as usize;
                 let mut raw = vec![0; n];
                 buffer.read_exact(&mut raw)?;
                 raw
@@ -25433,7 +25433,7 @@ impl GodKickUser_UserInfo {
             },
             kick_flags: buffer.read_u32::<LittleEndian>()?,
             reason: {
-                let n = buffer.read_u8()? as usize;
+                let n = buffer.read_u16::<LittleEndian>()? as usize;
                 let mut raw = vec![0; n];
                 buffer.read_exact(&mut raw)?;
                 raw
@@ -26258,13 +26258,13 @@ impl GroupNoticeAdd_MessageBlock {
                 raw
             },
             message: {
-                let n = buffer.read_u8()? as usize;
+                let n = buffer.read_u16::<LittleEndian>()? as usize;
                 let mut raw = vec![0; n];
                 buffer.read_exact(&mut raw)?;
                 raw
             },
             binary_bucket: {
-                let n = buffer.read_u8()? as usize;
+                let n = buffer.read_u16::<LittleEndian>()? as usize;
                 let mut raw = vec![0; n];
                 buffer.read_exact(&mut raw)?;
                 raw
@@ -26341,13 +26341,13 @@ impl GroupNoticesListReply_Data {
             },
             timestamp: buffer.read_u32::<LittleEndian>()?,
             from_name: {
-                let n = buffer.read_u8()? as usize;
+                let n = buffer.read_u16::<LittleEndian>()? as usize;
                 let mut raw = vec![0; n];
                 buffer.read_exact(&mut raw)?;
                 raw
             },
             subject: {
-                let n = buffer.read_u8()? as usize;
+                let n = buffer.read_u16::<LittleEndian>()? as usize;
                 let mut raw = vec![0; n];
                 buffer.read_exact(&mut raw)?;
                 raw
@@ -26426,7 +26426,7 @@ impl GroupProfileReply_GroupData {
                 raw
             },
             charter: {
-                let n = buffer.read_u8()? as usize;
+                let n = buffer.read_u16::<LittleEndian>()? as usize;
                 let mut raw = vec![0; n];
                 buffer.read_exact(&mut raw)?;
                 raw
@@ -27041,7 +27041,7 @@ impl GroupVoteHistoryItemReply_HistoryItemData {
             majority: buffer.read_f32::<LittleEndian>()?,
             quorum: buffer.read_i32::<LittleEndian>()?,
             proposal_text: {
-                let n = buffer.read_u8()? as usize;
+                let n = buffer.read_u16::<LittleEndian>()? as usize;
                 let mut raw = vec![0; n];
                 buffer.read_exact(&mut raw)?;
                 raw
@@ -27158,7 +27158,7 @@ impl ImageData_ImageData {
     {
         Ok(ImageData_ImageData {
             data: {
-                let n = buffer.read_u8()? as usize;
+                let n = buffer.read_u16::<LittleEndian>()? as usize;
                 let mut raw = vec![0; n];
                 buffer.read_exact(&mut raw)?;
                 raw
@@ -27205,7 +27205,7 @@ impl ImagePacket_ImageData {
     {
         Ok(ImagePacket_ImageData {
             data: {
-                let n = buffer.read_u8()? as usize;
+                let n = buffer.read_u16::<LittleEndian>()? as usize;
                 let mut raw = vec![0; n];
                 buffer.read_exact(&mut raw)?;
                 raw
@@ -27272,13 +27272,13 @@ impl ImprovedInstantMessage_MessageBlock {
                 raw
             },
             message: {
-                let n = buffer.read_u8()? as usize;
+                let n = buffer.read_u16::<LittleEndian>()? as usize;
                 let mut raw = vec![0; n];
                 buffer.read_exact(&mut raw)?;
                 raw
             },
             binary_bucket: {
-                let n = buffer.read_u8()? as usize;
+                let n = buffer.read_u16::<LittleEndian>()? as usize;
                 let mut raw = vec![0; n];
                 buffer.read_exact(&mut raw)?;
                 raw
@@ -27312,7 +27312,7 @@ impl ImprovedTerseObjectUpdate_ObjectData {
                 raw
             },
             texture_entry: {
-                let n = buffer.read_u8()? as usize;
+                let n = buffer.read_u16::<LittleEndian>()? as usize;
                 let mut raw = vec![0; n];
                 buffer.read_exact(&mut raw)?;
                 raw
@@ -27382,7 +27382,7 @@ impl InternalScriptMail_DataBlock {
                 raw
             },
             body: {
-                let n = buffer.read_u8()? as usize;
+                let n = buffer.read_u16::<LittleEndian>()? as usize;
                 let mut raw = vec![0; n];
                 buffer.read_exact(&mut raw)?;
                 raw
@@ -27716,7 +27716,7 @@ impl KickUser_UserInfo {
                 Uuid::from_bytes(&raw)?
             },
             reason: {
-                let n = buffer.read_u8()? as usize;
+                let n = buffer.read_u16::<LittleEndian>()? as usize;
                 let mut raw = vec![0; n];
                 buffer.read_exact(&mut raw)?;
                 raw
@@ -27867,7 +27867,7 @@ impl LayerData_LayerData {
     {
         Ok(LayerData_LayerData {
             data: {
-                let n = buffer.read_u8()? as usize;
+                let n = buffer.read_u16::<LittleEndian>()? as usize;
                 let mut raw = vec![0; n];
                 buffer.read_exact(&mut raw)?;
                 raw
@@ -28229,7 +28229,7 @@ impl LogTextMessage_DataBlock {
             global_y: buffer.read_f64::<LittleEndian>()?,
             time: buffer.read_u32::<LittleEndian>()?,
             message: {
-                let n = buffer.read_u8()? as usize;
+                let n = buffer.read_u16::<LittleEndian>()? as usize;
                 let mut raw = vec![0; n];
                 buffer.read_exact(&mut raw)?;
                 raw
@@ -29101,7 +29101,7 @@ impl NameValuePair_NameValueData {
     {
         Ok(NameValuePair_NameValueData {
             nv_pair: {
-                let n = buffer.read_u8()? as usize;
+                let n = buffer.read_u16::<LittleEndian>()? as usize;
                 let mut raw = vec![0; n];
                 buffer.read_exact(&mut raw)?;
                 raw
@@ -30115,7 +30115,7 @@ impl ObjectImage_ObjectData {
                 raw
             },
             texture_entry: {
-                let n = buffer.read_u8()? as usize;
+                let n = buffer.read_u16::<LittleEndian>()? as usize;
                 let mut raw = vec![0; n];
                 buffer.read_exact(&mut raw)?;
                 raw
@@ -30897,7 +30897,7 @@ impl ObjectUpdate_ObjectData {
             profile_end: buffer.read_u16::<LittleEndian>()?,
             profile_hollow: buffer.read_u16::<LittleEndian>()?,
             texture_entry: {
-                let n = buffer.read_u8()? as usize;
+                let n = buffer.read_u16::<LittleEndian>()? as usize;
                 let mut raw = vec![0; n];
                 buffer.read_exact(&mut raw)?;
                 raw
@@ -30909,13 +30909,13 @@ impl ObjectUpdate_ObjectData {
                 raw
             },
             name_value: {
-                let n = buffer.read_u8()? as usize;
+                let n = buffer.read_u16::<LittleEndian>()? as usize;
                 let mut raw = vec![0; n];
                 buffer.read_exact(&mut raw)?;
                 raw
             },
             data: {
-                let n = buffer.read_u8()? as usize;
+                let n = buffer.read_u16::<LittleEndian>()? as usize;
                 let mut raw = vec![0; n];
                 buffer.read_exact(&mut raw)?;
                 raw
@@ -31022,7 +31022,7 @@ impl ObjectUpdateCompressed_ObjectData {
         Ok(ObjectUpdateCompressed_ObjectData {
             update_flags: buffer.read_u32::<LittleEndian>()?,
             data: {
-                let n = buffer.read_u8()? as usize;
+                let n = buffer.read_u16::<LittleEndian>()? as usize;
                 let mut raw = vec![0; n];
                 buffer.read_exact(&mut raw)?;
                 raw
@@ -31923,7 +31923,7 @@ impl ParcelOverlay_ParcelData {
         Ok(ParcelOverlay_ParcelData {
             sequence_id: buffer.read_i32::<LittleEndian>()?,
             data: {
-                let n = buffer.read_u8()? as usize;
+                let n = buffer.read_u16::<LittleEndian>()? as usize;
                 let mut raw = vec![0; n];
                 buffer.read_exact(&mut raw)?;
                 raw
@@ -31966,7 +31966,7 @@ impl ParcelProperties_ParcelData {
                 buffer.read_f32::<LittleEndian>()?,
             ),
             bitmap: {
-                let n = buffer.read_u8()? as usize;
+                let n = buffer.read_u16::<LittleEndian>()? as usize;
                 let mut raw = vec![0; n];
                 buffer.read_exact(&mut raw)?;
                 raw
@@ -32614,7 +32614,7 @@ impl PickInfoReply_Data {
                 raw
             },
             desc: {
-                let n = buffer.read_u8()? as usize;
+                let n = buffer.read_u16::<LittleEndian>()? as usize;
                 let mut raw = vec![0; n];
                 buffer.read_exact(&mut raw)?;
                 raw
@@ -32702,7 +32702,7 @@ impl PickInfoUpdate_Data {
                 raw
             },
             desc: {
-                let n = buffer.read_u8()? as usize;
+                let n = buffer.read_u16::<LittleEndian>()? as usize;
                 let mut raw = vec![0; n];
                 buffer.read_exact(&mut raw)?;
                 raw
@@ -33524,7 +33524,7 @@ impl RemoveNameValuePair_NameValueData {
     {
         Ok(RemoveNameValuePair_NameValueData {
             nv_pair: {
-                let n = buffer.read_u8()? as usize;
+                let n = buffer.read_u16::<LittleEndian>()? as usize;
                 let mut raw = vec![0; n];
                 buffer.read_exact(&mut raw)?;
                 raw
@@ -34683,7 +34683,7 @@ impl RpcScriptReplyInbound_DataBlock {
             },
             int_value: buffer.read_u32::<LittleEndian>()?,
             string_value: {
-                let n = buffer.read_u8()? as usize;
+                let n = buffer.read_u16::<LittleEndian>()? as usize;
                 let mut raw = vec![0; n];
                 buffer.read_exact(&mut raw)?;
                 raw
@@ -34727,7 +34727,7 @@ impl RpcScriptRequestInbound_DataBlock {
             },
             int_value: buffer.read_u32::<LittleEndian>()?,
             string_value: {
-                let n = buffer.read_u8()? as usize;
+                let n = buffer.read_u16::<LittleEndian>()? as usize;
                 let mut raw = vec![0; n];
                 buffer.read_exact(&mut raw)?;
                 raw
@@ -34765,7 +34765,7 @@ impl RpcScriptRequestInboundForward_DataBlock {
             },
             int_value: buffer.read_u32::<LittleEndian>()?,
             string_value: {
-                let n = buffer.read_u8()? as usize;
+                let n = buffer.read_u16::<LittleEndian>()? as usize;
                 let mut raw = vec![0; n];
                 buffer.read_exact(&mut raw)?;
                 raw
@@ -34871,7 +34871,7 @@ impl ScriptDataReply_DataBlock {
         Ok(ScriptDataReply_DataBlock {
             hash: buffer.read_u64::<LittleEndian>()?,
             reply: {
-                let n = buffer.read_u8()? as usize;
+                let n = buffer.read_u16::<LittleEndian>()? as usize;
                 let mut raw = vec![0; n];
                 buffer.read_exact(&mut raw)?;
                 raw
@@ -34889,7 +34889,7 @@ impl ScriptDataRequest_DataBlock {
             hash: buffer.read_u64::<LittleEndian>()?,
             request_type: buffer.read_i8()?,
             request: {
-                let n = buffer.read_u8()? as usize;
+                let n = buffer.read_u16::<LittleEndian>()? as usize;
                 let mut raw = vec![0; n];
                 buffer.read_exact(&mut raw)?;
                 raw
@@ -34928,7 +34928,7 @@ impl ScriptDialog_Data {
                 raw
             },
             message: {
-                let n = buffer.read_u8()? as usize;
+                let n = buffer.read_u16::<LittleEndian>()? as usize;
                 let mut raw = vec![0; n];
                 buffer.read_exact(&mut raw)?;
                 raw
@@ -35332,7 +35332,7 @@ impl SendPostcard_AgentData {
                 raw
             },
             msg: {
-                let n = buffer.read_u8()? as usize;
+                let n = buffer.read_u16::<LittleEndian>()? as usize;
                 let mut raw = vec![0; n];
                 buffer.read_exact(&mut raw)?;
                 raw
@@ -35362,7 +35362,7 @@ impl SendXferPacket_DataPacket {
     {
         Ok(SendXferPacket_DataPacket {
             data: {
-                let n = buffer.read_u8()? as usize;
+                let n = buffer.read_u16::<LittleEndian>()? as usize;
                 let mut raw = vec![0; n];
                 buffer.read_exact(&mut raw)?;
                 raw
@@ -36410,7 +36410,7 @@ impl TeleportFinish_Info {
             sim_port: buffer.read_u16::<LittleEndian>()?,
             region_handle: buffer.read_u64::<LittleEndian>()?,
             seed_capability: {
-                let n = buffer.read_u8()? as usize;
+                let n = buffer.read_u16::<LittleEndian>()? as usize;
                 let mut raw = vec![0; n];
                 buffer.read_exact(&mut raw)?;
                 raw
@@ -36767,7 +36767,7 @@ impl TransferInfo_TransferInfo {
             status: buffer.read_i32::<LittleEndian>()?,
             size: buffer.read_i32::<LittleEndian>()?,
             params: {
-                let n = buffer.read_u8()? as usize;
+                let n = buffer.read_u16::<LittleEndian>()? as usize;
                 let mut raw = vec![0; n];
                 buffer.read_exact(&mut raw)?;
                 raw
@@ -36852,7 +36852,7 @@ impl TransferPacket_TransferData {
             packet: buffer.read_i32::<LittleEndian>()?,
             status: buffer.read_i32::<LittleEndian>()?,
             data: {
-                let n = buffer.read_u8()? as usize;
+                let n = buffer.read_u16::<LittleEndian>()? as usize;
                 let mut raw = vec![0; n];
                 buffer.read_exact(&mut raw)?;
                 raw
@@ -36876,7 +36876,7 @@ impl TransferRequest_TransferInfo {
             source_type: buffer.read_i32::<LittleEndian>()?,
             priority: buffer.read_f32::<LittleEndian>()?,
             params: {
-                let n = buffer.read_u8()? as usize;
+                let n = buffer.read_u16::<LittleEndian>()? as usize;
                 let mut raw = vec![0; n];
                 buffer.read_exact(&mut raw)?;
                 raw
@@ -37250,7 +37250,7 @@ impl UpdateGroupInfo_GroupData {
                 Uuid::from_bytes(&raw)?
             },
             charter: {
-                let n = buffer.read_u8()? as usize;
+                let n = buffer.read_u16::<LittleEndian>()? as usize;
                 let mut raw = vec![0; n];
                 buffer.read_exact(&mut raw)?;
                 raw
@@ -37738,7 +37738,7 @@ impl UserInfoReply_UserData {
                 raw
             },
             e_mail: {
-                let n = buffer.read_u8()? as usize;
+                let n = buffer.read_u16::<LittleEndian>()? as usize;
                 let mut raw = vec![0; n];
                 buffer.read_exact(&mut raw)?;
                 raw
@@ -37834,7 +37834,7 @@ impl UserReport_ReportData {
                 raw
             },
             details: {
-                let n = buffer.read_u8()? as usize;
+                let n = buffer.read_u16::<LittleEndian>()? as usize;
                 let mut raw = vec![0; n];
                 buffer.read_exact(&mut raw)?;
                 raw
@@ -37925,7 +37925,7 @@ impl UserReportInternal_ReportData {
                 raw
             },
             details: {
-                let n = buffer.read_u8()? as usize;
+                let n = buffer.read_u16::<LittleEndian>()? as usize;
                 let mut raw = vec![0; n];
                 buffer.read_exact(&mut raw)?;
                 raw
@@ -38407,6 +38407,7 @@ impl Message for AgentAlertMessage {
         buffer.write(self.agent_data.agent_id.as_bytes())?;
         // Block AlertData
         buffer.write_u8(self.alert_data.modal as u8)?;
+        buffer.write_u8(self.alert_data.message.len() as u8)?;
         buffer.write(&self.alert_data.message[..])?;
         Ok(())
     }
@@ -38445,6 +38446,7 @@ impl Message for AgentAnimation {
         // Block PhysicalAvatarEventList
         buffer.write_u8(self.physical_avatar_event_list.len() as u8)?;
         for item in &self.physical_avatar_event_list {
+            buffer.write_u8(item.type_data.len() as u8)?;
             buffer.write(&item.type_data[..])?;
         }
         Ok(())
@@ -38531,6 +38533,7 @@ impl Message for AgentCachedTextureResponse {
         for item in &self.wearable_data {
             buffer.write(item.texture_id.as_bytes())?;
             buffer.write_u8(item.texture_index)?;
+            buffer.write_u8(item.host_name.len() as u8)?;
             buffer.write(&item.host_name[..])?;
         }
         Ok(())
@@ -38566,13 +38569,17 @@ impl Message for AgentDataUpdate {
         buffer.write(&[0xff, 0xff, 0x01, 0x83])?;
         // Block AgentData
         buffer.write(self.agent_data.agent_id.as_bytes())?;
+        buffer.write_u8(self.agent_data.first_name.len() as u8)?;
         buffer.write(&self.agent_data.first_name[..])?;
+        buffer.write_u8(self.agent_data.last_name.len() as u8)?;
         buffer.write(&self.agent_data.last_name[..])?;
+        buffer.write_u8(self.agent_data.group_title.len() as u8)?;
         buffer.write(&self.agent_data.group_title[..])?;
         buffer.write(self.agent_data.active_group_id.as_bytes())?;
         buffer.write_u64::<LittleEndian>(
             self.agent_data.group_powers,
         )?;
+        buffer.write_u8(self.agent_data.group_name.len() as u8)?;
         buffer.write(&self.agent_data.group_name[..])?;
         Ok(())
     }
@@ -38692,6 +38699,7 @@ impl Message for AgentGroupDataUpdate {
             buffer.write_u8(item.accept_notices as u8)?;
             buffer.write(item.group_insignia_id.as_bytes())?;
             buffer.write_i32::<LittleEndian>(item.contribution)?;
+            buffer.write_u8(item.group_name.len() as u8)?;
             buffer.write(&item.group_name[..])?;
         }
         Ok(())
@@ -38821,6 +38829,9 @@ impl Message for AgentMovementComplete {
         buffer.write_u64::<LittleEndian>(self.data.region_handle)?;
         buffer.write_u32::<LittleEndian>(self.data.timestamp)?;
         // Block SimData
+        buffer.write_u16::<LittleEndian>(
+            self.sim_data.channel_version.len() as u16,
+        )?;
         buffer.write(&self.sim_data.channel_version[..])?;
         Ok(())
     }
@@ -38993,6 +39004,9 @@ impl Message for AgentSetAppearance {
             buffer.write_u8(item.texture_index)?;
         }
         // Block ObjectData
+        buffer.write_u16::<LittleEndian>(
+            self.object_data.texture_entry.len() as u16,
+        )?;
         buffer.write(&self.object_data.texture_entry[..])?;
         // Block VisualParam
         buffer.write_u8(self.visual_param.len() as u8)?;
@@ -39071,6 +39085,7 @@ impl Message for AgentThrottle {
         )?;
         // Block Throttle
         buffer.write_u32::<LittleEndian>(self.throttle.gen_counter)?;
+        buffer.write_u8(self.throttle.throttles.len() as u8)?;
         buffer.write(&self.throttle.throttles[..])?;
         Ok(())
     }
@@ -39254,11 +39269,14 @@ impl Message for AlertMessage {
         // Write the message number.
         buffer.write(&[0xff, 0xff, 0x00, 0x86])?;
         // Block AlertData
+        buffer.write_u8(self.alert_data.message.len() as u8)?;
         buffer.write(&self.alert_data.message[..])?;
         // Block AlertInfo
         buffer.write_u8(self.alert_info.len() as u8)?;
         for item in &self.alert_info {
+            buffer.write_u8(item.message.len() as u8)?;
             buffer.write(&item.message[..])?;
+            buffer.write_u8(item.extra_params.len() as u8)?;
             buffer.write(&item.extra_params[..])?;
         }
         Ok(())
@@ -39321,6 +39339,9 @@ impl Message for AssetUploadRequest {
         buffer.write_i8(self.asset_block.type_)?;
         buffer.write_u8(self.asset_block.tempfile as u8)?;
         buffer.write_u8(self.asset_block.store_local as u8)?;
+        buffer.write_u16::<LittleEndian>(
+            self.asset_block.asset_data.len() as u16,
+        )?;
         buffer.write(&self.asset_block.asset_data[..])?;
         Ok(())
     }
@@ -39438,6 +39459,7 @@ impl Message for AvatarAnimation {
         // Block PhysicalAvatarEventList
         buffer.write_u8(self.physical_avatar_event_list.len() as u8)?;
         for item in &self.physical_avatar_event_list {
+            buffer.write_u8(item.type_data.len() as u8)?;
             buffer.write(&item.type_data[..])?;
         }
         Ok(())
@@ -39487,6 +39509,9 @@ impl Message for AvatarAppearance {
         buffer.write(self.sender.id.as_bytes())?;
         buffer.write_u8(self.sender.is_trial as u8)?;
         // Block ObjectData
+        buffer.write_u16::<LittleEndian>(
+            self.object_data.texture_entry.len() as u16,
+        )?;
         buffer.write(&self.object_data.texture_entry[..])?;
         // Block VisualParam
         buffer.write_u8(self.visual_param.len() as u8)?;
@@ -39532,6 +39557,7 @@ impl Message for AvatarClassifiedReply {
         buffer.write_u8(self.data.len() as u8)?;
         for item in &self.data {
             buffer.write(item.classified_id.as_bytes())?;
+            buffer.write_u8(item.name.len() as u8)?;
             buffer.write(&item.name[..])?;
         }
         Ok(())
@@ -39573,8 +39599,10 @@ impl Message for AvatarGroupsReply {
         for item in &self.group_data {
             buffer.write_u64::<LittleEndian>(item.group_powers)?;
             buffer.write_u8(item.accept_notices as u8)?;
+            buffer.write_u8(item.group_title.len() as u8)?;
             buffer.write(&item.group_title[..])?;
             buffer.write(item.group_id.as_bytes())?;
+            buffer.write_u8(item.group_name.len() as u8)?;
             buffer.write(&item.group_name[..])?;
             buffer.write(item.group_insignia_id.as_bytes())?;
         }
@@ -39619,11 +39647,20 @@ impl Message for AvatarInterestsReply {
         buffer.write_u32::<LittleEndian>(
             self.properties_data.want_to_mask,
         )?;
+        buffer.write_u8(
+            self.properties_data.want_to_text.len() as u8,
+        )?;
         buffer.write(&self.properties_data.want_to_text[..])?;
         buffer.write_u32::<LittleEndian>(
             self.properties_data.skills_mask,
         )?;
+        buffer.write_u8(
+            self.properties_data.skills_text.len() as u8,
+        )?;
         buffer.write(&self.properties_data.skills_text[..])?;
+        buffer.write_u8(
+            self.properties_data.languages_text.len() as u8,
+        )?;
         buffer.write(&self.properties_data.languages_text[..])?;
         Ok(())
     }
@@ -39659,11 +39696,20 @@ impl Message for AvatarInterestsUpdate {
         buffer.write_u32::<LittleEndian>(
             self.properties_data.want_to_mask,
         )?;
+        buffer.write_u8(
+            self.properties_data.want_to_text.len() as u8,
+        )?;
         buffer.write(&self.properties_data.want_to_text[..])?;
         buffer.write_u32::<LittleEndian>(
             self.properties_data.skills_mask,
         )?;
+        buffer.write_u8(
+            self.properties_data.skills_text.len() as u8,
+        )?;
         buffer.write(&self.properties_data.skills_text[..])?;
+        buffer.write_u8(
+            self.properties_data.languages_text.len() as u8,
+        )?;
         buffer.write(&self.properties_data.languages_text[..])?;
         Ok(())
     }
@@ -39696,6 +39742,9 @@ impl Message for AvatarNotesReply {
         buffer.write(self.agent_data.agent_id.as_bytes())?;
         // Block Data
         buffer.write(self.data.target_id.as_bytes())?;
+        buffer.write_u16::<LittleEndian>(
+            self.data.notes.len() as u16,
+        )?;
         buffer.write(&self.data.notes[..])?;
         Ok(())
     }
@@ -39727,6 +39776,9 @@ impl Message for AvatarNotesUpdate {
         buffer.write(self.agent_data.session_id.as_bytes())?;
         // Block Data
         buffer.write(self.data.target_id.as_bytes())?;
+        buffer.write_u16::<LittleEndian>(
+            self.data.notes.len() as u16,
+        )?;
         buffer.write(&self.data.notes[..])?;
         Ok(())
     }
@@ -39760,7 +39812,9 @@ impl Message for AvatarPickerReply {
         buffer.write_u8(self.data.len() as u8)?;
         for item in &self.data {
             buffer.write(item.avatar_id.as_bytes())?;
+            buffer.write_u8(item.first_name.len() as u8)?;
             buffer.write(&item.first_name[..])?;
+            buffer.write_u8(item.last_name.len() as u8)?;
             buffer.write(&item.last_name[..])?;
         }
         Ok(())
@@ -39797,6 +39851,7 @@ impl Message for AvatarPickerRequest {
         buffer.write(self.agent_data.session_id.as_bytes())?;
         buffer.write(self.agent_data.query_id.as_bytes())?;
         // Block Data
+        buffer.write_u8(self.data.name.len() as u8)?;
         buffer.write(&self.data.name[..])?;
         Ok(())
     }
@@ -39829,6 +39884,7 @@ impl Message for AvatarPickerRequestBackend {
         buffer.write(self.agent_data.query_id.as_bytes())?;
         buffer.write_u8(self.agent_data.god_level)?;
         // Block Data
+        buffer.write_u8(self.data.name.len() as u8)?;
         buffer.write(&self.data.name[..])?;
         Ok(())
     }
@@ -39864,6 +39920,7 @@ impl Message for AvatarPicksReply {
         buffer.write_u8(self.data.len() as u8)?;
         for item in &self.data {
             buffer.write(item.pick_id.as_bytes())?;
+            buffer.write_u8(item.pick_name.len() as u8)?;
             buffer.write(&item.pick_name[..])?;
         }
         Ok(())
@@ -39902,10 +39959,23 @@ impl Message for AvatarPropertiesReply {
         buffer.write(self.properties_data.image_id.as_bytes())?;
         buffer.write(self.properties_data.fl_image_id.as_bytes())?;
         buffer.write(self.properties_data.partner_id.as_bytes())?;
+        buffer.write_u16::<LittleEndian>(
+            self.properties_data.about_text.len() as u16,
+        )?;
         buffer.write(&self.properties_data.about_text[..])?;
+        buffer.write_u8(
+            self.properties_data.fl_about_text.len() as u8,
+        )?;
         buffer.write(&self.properties_data.fl_about_text[..])?;
+        buffer.write_u8(self.properties_data.born_on.len() as u8)?;
         buffer.write(&self.properties_data.born_on[..])?;
+        buffer.write_u8(
+            self.properties_data.profile_url.len() as u8,
+        )?;
         buffer.write(&self.properties_data.profile_url[..])?;
+        buffer.write_u8(
+            self.properties_data.charter_member.len() as u8,
+        )?;
         buffer.write(&self.properties_data.charter_member[..])?;
         buffer.write_u32::<LittleEndian>(self.properties_data.flags)?;
         Ok(())
@@ -39994,10 +40064,19 @@ impl Message for AvatarPropertiesUpdate {
         // Block PropertiesData
         buffer.write(self.properties_data.image_id.as_bytes())?;
         buffer.write(self.properties_data.fl_image_id.as_bytes())?;
+        buffer.write_u16::<LittleEndian>(
+            self.properties_data.about_text.len() as u16,
+        )?;
         buffer.write(&self.properties_data.about_text[..])?;
+        buffer.write_u8(
+            self.properties_data.fl_about_text.len() as u8,
+        )?;
         buffer.write(&self.properties_data.fl_about_text[..])?;
         buffer.write_u8(self.properties_data.allow_publish as u8)?;
         buffer.write_u8(self.properties_data.mature_publish as u8)?;
+        buffer.write_u8(
+            self.properties_data.profile_url.len() as u8,
+        )?;
         buffer.write(&self.properties_data.profile_url[..])?;
         Ok(())
     }
@@ -40104,6 +40183,7 @@ impl Message for AvatarTextureUpdate {
         for item in &self.wearable_data {
             buffer.write(item.cache_id.as_bytes())?;
             buffer.write_u8(item.texture_index)?;
+            buffer.write_u8(item.host_name.len() as u8)?;
             buffer.write(&item.host_name[..])?;
         }
         // Block TextureData
@@ -40156,6 +40236,7 @@ impl Message for BulkUpdateInventory {
             buffer.write(item.folder_id.as_bytes())?;
             buffer.write(item.parent_id.as_bytes())?;
             buffer.write_i8(item.type_)?;
+            buffer.write_u8(item.name.len() as u8)?;
             buffer.write(&item.name[..])?;
         }
         // Block ItemData
@@ -40179,7 +40260,9 @@ impl Message for BulkUpdateInventory {
             buffer.write_u32::<LittleEndian>(item.flags)?;
             buffer.write_u8(item.sale_type)?;
             buffer.write_i32::<LittleEndian>(item.sale_price)?;
+            buffer.write_u8(item.name.len() as u8)?;
             buffer.write(&item.name[..])?;
+            buffer.write_u8(item.description.len() as u8)?;
             buffer.write(&item.description[..])?;
             buffer.write_i32::<LittleEndian>(item.creation_date)?;
             buffer.write_u32::<LittleEndian>(item.crc)?;
@@ -40399,6 +40482,7 @@ impl Message for ChatFromSimulator {
         // Write the message number.
         buffer.write(&[0xff, 0xff, 0x00, 0x8b])?;
         // Block ChatData
+        buffer.write_u8(self.chat_data.from_name.len() as u8)?;
         buffer.write(&self.chat_data.from_name[..])?;
         buffer.write(self.chat_data.source_id.as_bytes())?;
         buffer.write(self.chat_data.owner_id.as_bytes())?;
@@ -40410,6 +40494,9 @@ impl Message for ChatFromSimulator {
         buffer.write_f32::<LittleEndian>(self.chat_data.position.y)?;
 
         buffer.write_f32::<LittleEndian>(self.chat_data.position.z)?;
+        buffer.write_u16::<LittleEndian>(
+            self.chat_data.message.len() as u16,
+        )?;
         buffer.write(&self.chat_data.message[..])?;
         Ok(())
     }
@@ -40437,6 +40524,9 @@ impl Message for ChatFromViewer {
         buffer.write(self.agent_data.agent_id.as_bytes())?;
         buffer.write(self.agent_data.session_id.as_bytes())?;
         // Block ChatData
+        buffer.write_u16::<LittleEndian>(
+            self.chat_data.message.len() as u16,
+        )?;
         buffer.write(&self.chat_data.message[..])?;
         buffer.write_u8(self.chat_data.type_)?;
         buffer.write_i32::<LittleEndian>(self.chat_data.channel)?;
@@ -40474,11 +40564,15 @@ impl Message for ChatPass {
         buffer.write_f32::<LittleEndian>(self.chat_data.position.z)?;
         buffer.write(self.chat_data.id.as_bytes())?;
         buffer.write(self.chat_data.owner_id.as_bytes())?;
+        buffer.write_u8(self.chat_data.name.len() as u8)?;
         buffer.write(&self.chat_data.name[..])?;
         buffer.write_u8(self.chat_data.source_type)?;
         buffer.write_u8(self.chat_data.type_)?;
         buffer.write_f32::<LittleEndian>(self.chat_data.radius)?;
         buffer.write_u8(self.chat_data.sim_access)?;
+        buffer.write_u16::<LittleEndian>(
+            self.chat_data.message.len() as u16,
+        )?;
         buffer.write(&self.chat_data.message[..])?;
         Ok(())
     }
@@ -40793,6 +40887,7 @@ impl Message for ChildAgentUpdate {
         buffer.write_u8(self.agent_data.changed_grid as u8)?;
         buffer.write_f32::<LittleEndian>(self.agent_data.far)?;
         buffer.write_f32::<LittleEndian>(self.agent_data.aspect)?;
+        buffer.write_u8(self.agent_data.throttles.len() as u8)?;
         buffer.write(&self.agent_data.throttles[..])?;
         buffer.write_u32::<LittleEndian>(
             self.agent_data.locomotion_state,
@@ -40821,6 +40916,9 @@ impl Message for ChildAgentUpdate {
         buffer.write_u8(self.agent_data.always_run as u8)?;
         buffer.write(self.agent_data.prey_agent.as_bytes())?;
         buffer.write_u8(self.agent_data.agent_access)?;
+        buffer.write_u16::<LittleEndian>(
+            self.agent_data.agent_textures.len() as u16,
+        )?;
         buffer.write(&self.agent_data.agent_textures[..])?;
         buffer.write(self.agent_data.active_group_id.as_bytes())?;
         // Block GroupData
@@ -40844,6 +40942,7 @@ impl Message for ChildAgentUpdate {
         // Block NVPairData
         buffer.write_u8(self.nv_pair_data.len() as u8)?;
         for item in &self.nv_pair_data {
+            buffer.write_u16::<LittleEndian>(item.nv_pairs.len() as u16)?;
             buffer.write(&item.nv_pairs[..])?;
         }
         // Block VisualParam
@@ -41002,17 +41101,23 @@ impl Message for ClassifiedInfoReply {
         buffer.write_u32::<LittleEndian>(self.data.creation_date)?;
         buffer.write_u32::<LittleEndian>(self.data.expiration_date)?;
         buffer.write_u32::<LittleEndian>(self.data.category)?;
+        buffer.write_u8(self.data.name.len() as u8)?;
         buffer.write(&self.data.name[..])?;
+        buffer.write_u16::<LittleEndian>(
+            self.data.desc.len() as u16,
+        )?;
         buffer.write(&self.data.desc[..])?;
         buffer.write(self.data.parcel_id.as_bytes())?;
         buffer.write_u32::<LittleEndian>(self.data.parent_estate)?;
         buffer.write(self.data.snapshot_id.as_bytes())?;
+        buffer.write_u8(self.data.sim_name.len() as u8)?;
         buffer.write(&self.data.sim_name[..])?;
         buffer.write_f64::<LittleEndian>(self.data.pos_global.x)?;
 
         buffer.write_f64::<LittleEndian>(self.data.pos_global.y)?;
 
         buffer.write_f64::<LittleEndian>(self.data.pos_global.z)?;
+        buffer.write_u8(self.data.parcel_name.len() as u8)?;
         buffer.write(&self.data.parcel_name[..])?;
         buffer.write_u8(self.data.classified_flags)?;
         buffer.write_i32::<LittleEndian>(
@@ -41081,7 +41186,11 @@ impl Message for ClassifiedInfoUpdate {
         // Block Data
         buffer.write(self.data.classified_id.as_bytes())?;
         buffer.write_u32::<LittleEndian>(self.data.category)?;
+        buffer.write_u8(self.data.name.len() as u8)?;
         buffer.write(&self.data.name[..])?;
+        buffer.write_u16::<LittleEndian>(
+            self.data.desc.len() as u16,
+        )?;
         buffer.write(&self.data.desc[..])?;
         buffer.write(self.data.parcel_id.as_bytes())?;
         buffer.write_u32::<LittleEndian>(self.data.parent_estate)?;
@@ -41433,6 +41542,7 @@ impl Message for CopyInventoryItem {
             buffer.write(item.old_agent_id.as_bytes())?;
             buffer.write(item.old_item_id.as_bytes())?;
             buffer.write(item.new_folder_id.as_bytes())?;
+            buffer.write_u8(item.new_name.len() as u8)?;
             buffer.write(&item.new_name[..])?;
         }
         Ok(())
@@ -41469,6 +41579,7 @@ impl Message for CreateGroupReply {
         // Block ReplyData
         buffer.write(self.reply_data.group_id.as_bytes())?;
         buffer.write_u8(self.reply_data.success as u8)?;
+        buffer.write_u8(self.reply_data.message.len() as u8)?;
         buffer.write(&self.reply_data.message[..])?;
         Ok(())
     }
@@ -41499,7 +41610,11 @@ impl Message for CreateGroupRequest {
         buffer.write(self.agent_data.agent_id.as_bytes())?;
         buffer.write(self.agent_data.session_id.as_bytes())?;
         // Block GroupData
+        buffer.write_u8(self.group_data.name.len() as u8)?;
         buffer.write(&self.group_data.name[..])?;
+        buffer.write_u16::<LittleEndian>(
+            self.group_data.charter.len() as u16,
+        )?;
         buffer.write(&self.group_data.charter[..])?;
         buffer.write_u8(self.group_data.show_in_list as u8)?;
         buffer.write(self.group_data.insignia_id.as_bytes())?;
@@ -41541,6 +41656,7 @@ impl Message for CreateInventoryFolder {
         buffer.write(self.folder_data.folder_id.as_bytes())?;
         buffer.write(self.folder_data.parent_id.as_bytes())?;
         buffer.write_i8(self.folder_data.type_)?;
+        buffer.write_u8(self.folder_data.name.len() as u8)?;
         buffer.write(&self.folder_data.name[..])?;
         Ok(())
     }
@@ -41584,7 +41700,11 @@ impl Message for CreateInventoryItem {
         buffer.write_i8(self.inventory_block.type_)?;
         buffer.write_i8(self.inventory_block.inv_type)?;
         buffer.write_u8(self.inventory_block.wearable_type)?;
+        buffer.write_u8(self.inventory_block.name.len() as u8)?;
         buffer.write(&self.inventory_block.name[..])?;
+        buffer.write_u8(
+            self.inventory_block.description.len() as u8,
+        )?;
         buffer.write(&self.inventory_block.description[..])?;
         Ok(())
     }
@@ -41618,6 +41738,7 @@ impl Message for CreateLandmarkForEvent {
         buffer.write_u32::<LittleEndian>(self.event_data.event_id)?;
         // Block InventoryBlock
         buffer.write(self.inventory_block.folder_id.as_bytes())?;
+        buffer.write_u8(self.inventory_block.name.len() as u8)?;
         buffer.write(&self.inventory_block.name[..])?;
         Ok(())
     }
@@ -41727,6 +41848,9 @@ impl Message for CrossedRegion {
         buffer.write_u16::<LittleEndian>(self.region_data.sim_port)?;
         buffer.write_u64::<LittleEndian>(
             self.region_data.region_handle,
+        )?;
+        buffer.write_u16::<LittleEndian>(
+            self.region_data.seed_capability.len() as u16,
         )?;
         buffer.write(&self.region_data.seed_capability[..])?;
         // Block Info
@@ -42122,6 +42246,7 @@ impl Message for DirClassifiedQuery {
         buffer.write(self.agent_data.session_id.as_bytes())?;
         // Block QueryData
         buffer.write(self.query_data.query_id.as_bytes())?;
+        buffer.write_u8(self.query_data.query_text.len() as u8)?;
         buffer.write(&self.query_data.query_text[..])?;
         buffer.write_u32::<LittleEndian>(
             self.query_data.query_flags,
@@ -42159,6 +42284,7 @@ impl Message for DirClassifiedQueryBackend {
         buffer.write(self.agent_data.agent_id.as_bytes())?;
         // Block QueryData
         buffer.write(self.query_data.query_id.as_bytes())?;
+        buffer.write_u8(self.query_data.query_text.len() as u8)?;
         buffer.write(&self.query_data.query_text[..])?;
         buffer.write_u32::<LittleEndian>(
             self.query_data.query_flags,
@@ -42204,6 +42330,7 @@ impl Message for DirClassifiedReply {
         buffer.write_u8(self.query_replies.len() as u8)?;
         for item in &self.query_replies {
             buffer.write(item.classified_id.as_bytes())?;
+            buffer.write_u8(item.name.len() as u8)?;
             buffer.write(&item.name[..])?;
             buffer.write_u8(item.classified_flags)?;
             buffer.write_u32::<LittleEndian>(item.creation_date)?;
@@ -42262,8 +42389,10 @@ impl Message for DirEventsReply {
         buffer.write_u8(self.query_replies.len() as u8)?;
         for item in &self.query_replies {
             buffer.write(item.owner_id.as_bytes())?;
+            buffer.write_u8(item.name.len() as u8)?;
             buffer.write(&item.name[..])?;
             buffer.write_u32::<LittleEndian>(item.event_id)?;
+            buffer.write_u8(item.date.len() as u8)?;
             buffer.write(&item.date[..])?;
             buffer.write_u32::<LittleEndian>(item.unix_time)?;
             buffer.write_u32::<LittleEndian>(item.event_flags)?;
@@ -42317,6 +42446,7 @@ impl Message for DirFindQuery {
         buffer.write(self.agent_data.session_id.as_bytes())?;
         // Block QueryData
         buffer.write(self.query_data.query_id.as_bytes())?;
+        buffer.write_u8(self.query_data.query_text.len() as u8)?;
         buffer.write(&self.query_data.query_text[..])?;
         buffer.write_u32::<LittleEndian>(
             self.query_data.query_flags,
@@ -42353,6 +42483,7 @@ impl Message for DirFindQueryBackend {
         buffer.write(self.agent_data.agent_id.as_bytes())?;
         // Block QueryData
         buffer.write(self.query_data.query_id.as_bytes())?;
+        buffer.write_u8(self.query_data.query_text.len() as u8)?;
         buffer.write(&self.query_data.query_text[..])?;
         buffer.write_u32::<LittleEndian>(
             self.query_data.query_flags,
@@ -42395,6 +42526,7 @@ impl Message for DirGroupsReply {
         buffer.write_u8(self.query_replies.len() as u8)?;
         for item in &self.query_replies {
             buffer.write(item.group_id.as_bytes())?;
+            buffer.write_u8(item.group_name.len() as u8)?;
             buffer.write(&item.group_name[..])?;
             buffer.write_i32::<LittleEndian>(item.members)?;
             buffer.write_f32::<LittleEndian>(item.search_order)?;
@@ -42522,6 +42654,7 @@ impl Message for DirLandReply {
         buffer.write_u8(self.query_replies.len() as u8)?;
         for item in &self.query_replies {
             buffer.write(item.parcel_id.as_bytes())?;
+            buffer.write_u8(item.name.len() as u8)?;
             buffer.write(&item.name[..])?;
             buffer.write_u8(item.auction as u8)?;
             buffer.write_u8(item.for_sale as u8)?;
@@ -42568,8 +42701,11 @@ impl Message for DirPeopleReply {
         buffer.write_u8(self.query_replies.len() as u8)?;
         for item in &self.query_replies {
             buffer.write(item.agent_id.as_bytes())?;
+            buffer.write_u8(item.first_name.len() as u8)?;
             buffer.write(&item.first_name[..])?;
+            buffer.write_u8(item.last_name.len() as u8)?;
             buffer.write(&item.last_name[..])?;
+            buffer.write_u8(item.group.len() as u8)?;
             buffer.write(&item.group[..])?;
             buffer.write_u8(item.online as u8)?;
             buffer.write_i32::<LittleEndian>(item.reputation)?;
@@ -42611,11 +42747,13 @@ impl Message for DirPlacesQuery {
         buffer.write(self.agent_data.session_id.as_bytes())?;
         // Block QueryData
         buffer.write(self.query_data.query_id.as_bytes())?;
+        buffer.write_u8(self.query_data.query_text.len() as u8)?;
         buffer.write(&self.query_data.query_text[..])?;
         buffer.write_u32::<LittleEndian>(
             self.query_data.query_flags,
         )?;
         buffer.write_i8(self.query_data.category)?;
+        buffer.write_u8(self.query_data.sim_name.len() as u8)?;
         buffer.write(&self.query_data.sim_name[..])?;
         buffer.write_i32::<LittleEndian>(
             self.query_data.query_start,
@@ -42649,11 +42787,13 @@ impl Message for DirPlacesQueryBackend {
         buffer.write(self.agent_data.agent_id.as_bytes())?;
         // Block QueryData
         buffer.write(self.query_data.query_id.as_bytes())?;
+        buffer.write_u8(self.query_data.query_text.len() as u8)?;
         buffer.write(&self.query_data.query_text[..])?;
         buffer.write_u32::<LittleEndian>(
             self.query_data.query_flags,
         )?;
         buffer.write_i8(self.query_data.category)?;
+        buffer.write_u8(self.query_data.sim_name.len() as u8)?;
         buffer.write(&self.query_data.sim_name[..])?;
         buffer.write_u32::<LittleEndian>(self.query_data.estate_id)?;
         buffer.write_u8(self.query_data.godlike as u8)?;
@@ -42698,6 +42838,7 @@ impl Message for DirPlacesReply {
         buffer.write_u8(self.query_replies.len() as u8)?;
         for item in &self.query_replies {
             buffer.write(item.parcel_id.as_bytes())?;
+            buffer.write_u8(item.name.len() as u8)?;
             buffer.write(&item.name[..])?;
             buffer.write_u8(item.for_sale as u8)?;
             buffer.write_u8(item.auction as u8)?;
@@ -42828,6 +42969,7 @@ impl Message for DirPopularReply {
         buffer.write_u8(self.query_replies.len() as u8)?;
         for item in &self.query_replies {
             buffer.write(item.parcel_id.as_bytes())?;
+            buffer.write_u8(item.name.len() as u8)?;
             buffer.write(&item.name[..])?;
             buffer.write_f32::<LittleEndian>(item.dwell)?;
         }
@@ -42966,6 +43108,9 @@ impl Message for EdgeDataPacket {
         // Block EdgeData
         buffer.write_u8(self.edge_data.layer_type)?;
         buffer.write_u8(self.edge_data.direction)?;
+        buffer.write_u16::<LittleEndian>(
+            self.edge_data.layer_data.len() as u16,
+        )?;
         buffer.write(&self.edge_data.layer_data[..])?;
         Ok(())
     }
@@ -43104,9 +43249,15 @@ impl Message for EmailMessageReply {
         buffer.write(self.data_block.object_id.as_bytes())?;
         buffer.write_u32::<LittleEndian>(self.data_block.more)?;
         buffer.write_u32::<LittleEndian>(self.data_block.time)?;
+        buffer.write_u8(self.data_block.from_address.len() as u8)?;
         buffer.write(&self.data_block.from_address[..])?;
+        buffer.write_u8(self.data_block.subject.len() as u8)?;
         buffer.write(&self.data_block.subject[..])?;
+        buffer.write_u16::<LittleEndian>(
+            self.data_block.data.len() as u16,
+        )?;
         buffer.write(&self.data_block.data[..])?;
+        buffer.write_u8(self.data_block.mail_filter.len() as u8)?;
         buffer.write(&self.data_block.mail_filter[..])?;
         Ok(())
     }
@@ -43132,7 +43283,9 @@ impl Message for EmailMessageRequest {
         buffer.write(&[0xff, 0xff, 0x01, 0x4f])?;
         // Block DataBlock
         buffer.write(self.data_block.object_id.as_bytes())?;
+        buffer.write_u8(self.data_block.from_address.len() as u8)?;
         buffer.write(&self.data_block.from_address[..])?;
+        buffer.write_u8(self.data_block.subject.len() as u8)?;
         buffer.write(&self.data_block.subject[..])?;
         Ok(())
     }
@@ -43186,10 +43339,18 @@ impl Message for Error {
         buffer.write(self.agent_data.agent_id.as_bytes())?;
         // Block Data
         buffer.write_i32::<LittleEndian>(self.data.code)?;
+        buffer.write_u8(self.data.token.len() as u8)?;
         buffer.write(&self.data.token[..])?;
         buffer.write(self.data.id.as_bytes())?;
+        buffer.write_u8(self.data.system.len() as u8)?;
         buffer.write(&self.data.system[..])?;
+        buffer.write_u16::<LittleEndian>(
+            self.data.message.len() as u16,
+        )?;
         buffer.write(&self.data.message[..])?;
+        buffer.write_u16::<LittleEndian>(
+            self.data.data.len() as u16,
+        )?;
         buffer.write(&self.data.data[..])?;
         Ok(())
     }
@@ -43221,6 +43382,7 @@ impl Message for EstateCovenantReply {
         buffer.write_u32::<LittleEndian>(
             self.data.covenant_timestamp,
         )?;
+        buffer.write_u8(self.data.estate_name.len() as u8)?;
         buffer.write(&self.data.estate_name[..])?;
         buffer.write(self.data.estate_owner_id.as_bytes())?;
         Ok(())
@@ -43275,11 +43437,13 @@ impl Message for EstateOwnerMessage {
         buffer.write(self.agent_data.session_id.as_bytes())?;
         buffer.write(self.agent_data.transaction_id.as_bytes())?;
         // Block MethodData
+        buffer.write_u8(self.method_data.method.len() as u8)?;
         buffer.write(&self.method_data.method[..])?;
         buffer.write(self.method_data.invoice.as_bytes())?;
         // Block ParamList
         buffer.write_u8(self.param_list.len() as u8)?;
         for item in &self.param_list {
+            buffer.write_u8(item.parameter.len() as u8)?;
             buffer.write(&item.parameter[..])?;
         }
         Ok(())
@@ -43321,6 +43485,7 @@ impl Message for EventGodDelete {
         buffer.write_u32::<LittleEndian>(self.event_data.event_id)?;
         // Block QueryData
         buffer.write(self.query_data.query_id.as_bytes())?;
+        buffer.write_u8(self.query_data.query_text.len() as u8)?;
         buffer.write(&self.query_data.query_text[..])?;
         buffer.write_u32::<LittleEndian>(
             self.query_data.query_flags,
@@ -43360,15 +43525,23 @@ impl Message for EventInfoReply {
         buffer.write(self.agent_data.agent_id.as_bytes())?;
         // Block EventData
         buffer.write_u32::<LittleEndian>(self.event_data.event_id)?;
+        buffer.write_u8(self.event_data.creator.len() as u8)?;
         buffer.write(&self.event_data.creator[..])?;
+        buffer.write_u8(self.event_data.name.len() as u8)?;
         buffer.write(&self.event_data.name[..])?;
+        buffer.write_u8(self.event_data.category.len() as u8)?;
         buffer.write(&self.event_data.category[..])?;
+        buffer.write_u16::<LittleEndian>(
+            self.event_data.desc.len() as u16,
+        )?;
         buffer.write(&self.event_data.desc[..])?;
+        buffer.write_u8(self.event_data.date.len() as u8)?;
         buffer.write(&self.event_data.date[..])?;
         buffer.write_u32::<LittleEndian>(self.event_data.date_utc)?;
         buffer.write_u32::<LittleEndian>(self.event_data.duration)?;
         buffer.write_u32::<LittleEndian>(self.event_data.cover)?;
         buffer.write_u32::<LittleEndian>(self.event_data.amount)?;
+        buffer.write_u8(self.event_data.sim_name.len() as u8)?;
         buffer.write(&self.event_data.sim_name[..])?;
         buffer.write_f64::<LittleEndian>(
             self.event_data.global_pos.x,
@@ -43576,6 +43749,7 @@ impl Message for FeatureDisabled {
         // Write the message number.
         buffer.write(&[0xff, 0xff, 0x00, 0x13])?;
         // Block FailureInfo
+        buffer.write_u8(self.failure_info.error_message.len() as u8)?;
         buffer.write(&self.failure_info.error_message[..])?;
         buffer.write(self.failure_info.agent_id.as_bytes())?;
         buffer.write(self.failure_info.transaction_id.as_bytes())?;
@@ -43699,7 +43873,9 @@ impl Message for FetchInventoryReply {
             buffer.write_u32::<LittleEndian>(item.flags)?;
             buffer.write_u8(item.sale_type)?;
             buffer.write_i32::<LittleEndian>(item.sale_price)?;
+            buffer.write_u8(item.name.len() as u8)?;
             buffer.write(&item.name[..])?;
+            buffer.write_u8(item.description.len() as u8)?;
             buffer.write(&item.description[..])?;
             buffer.write_i32::<LittleEndian>(item.creation_date)?;
             buffer.write_u32::<LittleEndian>(item.crc)?;
@@ -43894,11 +44070,13 @@ impl Message for GenericMessage {
         buffer.write(self.agent_data.session_id.as_bytes())?;
         buffer.write(self.agent_data.transaction_id.as_bytes())?;
         // Block MethodData
+        buffer.write_u8(self.method_data.method.len() as u8)?;
         buffer.write(&self.method_data.method[..])?;
         buffer.write(self.method_data.invoice.as_bytes())?;
         // Block ParamList
         buffer.write_u8(self.param_list.len() as u8)?;
         for item in &self.param_list {
+            buffer.write_u8(item.parameter.len() as u8)?;
             buffer.write(&item.parameter[..])?;
         }
         Ok(())
@@ -43963,6 +44141,9 @@ impl Message for GodKickUser {
         buffer.write(self.user_info.god_session_id.as_bytes())?;
         buffer.write(self.user_info.agent_id.as_bytes())?;
         buffer.write_u32::<LittleEndian>(self.user_info.kick_flags)?;
+        buffer.write_u16::<LittleEndian>(
+            self.user_info.reason.len() as u16,
+        )?;
         buffer.write(&self.user_info.reason[..])?;
         Ok(())
     }
@@ -43990,6 +44171,7 @@ impl Message for GodUpdateRegionInfo {
         buffer.write(self.agent_data.agent_id.as_bytes())?;
         buffer.write(self.agent_data.session_id.as_bytes())?;
         // Block RegionInfo
+        buffer.write_u8(self.region_info.sim_name.len() as u8)?;
         buffer.write(&self.region_info.sim_name[..])?;
         buffer.write_u32::<LittleEndian>(self.region_info.estate_id)?;
         buffer.write_u32::<LittleEndian>(
@@ -44040,11 +44222,13 @@ impl Message for GodlikeMessage {
         buffer.write(self.agent_data.session_id.as_bytes())?;
         buffer.write(self.agent_data.transaction_id.as_bytes())?;
         // Block MethodData
+        buffer.write_u8(self.method_data.method.len() as u8)?;
         buffer.write(&self.method_data.method[..])?;
         buffer.write(self.method_data.invoice.as_bytes())?;
         // Block ParamList
         buffer.write_u8(self.param_list.len() as u8)?;
         for item in &self.param_list {
+            buffer.write_u8(item.parameter.len() as u8)?;
             buffer.write(&item.parameter[..])?;
         }
         Ok(())
@@ -44159,10 +44343,12 @@ impl Message for GroupAccountDetailsReply {
         buffer.write_i32::<LittleEndian>(
             self.money_data.current_interval,
         )?;
+        buffer.write_u8(self.money_data.start_date.len() as u8)?;
         buffer.write(&self.money_data.start_date[..])?;
         // Block HistoryData
         buffer.write_u8(self.history_data.len() as u8)?;
         for item in &self.history_data {
+            buffer.write_u8(item.description.len() as u8)?;
             buffer.write(&item.description[..])?;
             buffer.write_i32::<LittleEndian>(item.amount)?;
         }
@@ -44250,6 +44436,7 @@ impl Message for GroupAccountSummaryReply {
         buffer.write_i32::<LittleEndian>(
             self.money_data.current_interval,
         )?;
+        buffer.write_u8(self.money_data.start_date.len() as u8)?;
         buffer.write(&self.money_data.start_date[..])?;
         buffer.write_i32::<LittleEndian>(self.money_data.balance)?;
         buffer.write_i32::<LittleEndian>(
@@ -44291,7 +44478,9 @@ impl Message for GroupAccountSummaryReply {
         buffer.write_i32::<LittleEndian>(
             self.money_data.non_exempt_members,
         )?;
+        buffer.write_u8(self.money_data.last_tax_date.len() as u8)?;
         buffer.write(&self.money_data.last_tax_date[..])?;
+        buffer.write_u8(self.money_data.tax_date.len() as u8)?;
         buffer.write(&self.money_data.tax_date[..])?;
         Ok(())
     }
@@ -44370,13 +44559,17 @@ impl Message for GroupAccountTransactionsReply {
         buffer.write_i32::<LittleEndian>(
             self.money_data.current_interval,
         )?;
+        buffer.write_u8(self.money_data.start_date.len() as u8)?;
         buffer.write(&self.money_data.start_date[..])?;
         // Block HistoryData
         buffer.write_u8(self.history_data.len() as u8)?;
         for item in &self.history_data {
+            buffer.write_u8(item.time.len() as u8)?;
             buffer.write(&item.time[..])?;
+            buffer.write_u8(item.user.len() as u8)?;
             buffer.write(&item.user[..])?;
             buffer.write_i32::<LittleEndian>(item.type_)?;
+            buffer.write_u8(item.item.len() as u8)?;
             buffer.write(&item.item[..])?;
             buffer.write_i32::<LittleEndian>(item.amount)?;
         }
@@ -44470,13 +44663,18 @@ impl Message for GroupActiveProposalItemReply {
         for item in &self.proposal_data {
             buffer.write(item.vote_id.as_bytes())?;
             buffer.write(item.vote_initiator.as_bytes())?;
+            buffer.write_u8(item.terse_date_id.len() as u8)?;
             buffer.write(&item.terse_date_id[..])?;
+            buffer.write_u8(item.start_date_time.len() as u8)?;
             buffer.write(&item.start_date_time[..])?;
+            buffer.write_u8(item.end_date_time.len() as u8)?;
             buffer.write(&item.end_date_time[..])?;
             buffer.write_u8(item.already_voted as u8)?;
+            buffer.write_u8(item.vote_cast.len() as u8)?;
             buffer.write(&item.vote_cast[..])?;
             buffer.write_f32::<LittleEndian>(item.majority)?;
             buffer.write_i32::<LittleEndian>(item.quorum)?;
+            buffer.write_u8(item.proposal_text.len() as u8)?;
             buffer.write(&item.proposal_text[..])?;
         }
         Ok(())
@@ -44560,6 +44758,7 @@ impl Message for GroupDataUpdate {
             buffer.write(item.agent_id.as_bytes())?;
             buffer.write(item.group_id.as_bytes())?;
             buffer.write_u64::<LittleEndian>(item.agent_powers)?;
+            buffer.write_u8(item.group_title.len() as u8)?;
             buffer.write(&item.group_title[..])?;
         }
         Ok(())
@@ -44601,8 +44800,10 @@ impl Message for GroupMembersReply {
         for item in &self.member_data {
             buffer.write(item.agent_id.as_bytes())?;
             buffer.write_i32::<LittleEndian>(item.contribution)?;
+            buffer.write_u8(item.online_status.len() as u8)?;
             buffer.write(&item.online_status[..])?;
             buffer.write_u64::<LittleEndian>(item.agent_powers)?;
+            buffer.write_u8(item.title.len() as u8)?;
             buffer.write(&item.title[..])?;
             buffer.write_u8(item.is_owner as u8)?;
         }
@@ -44675,8 +44876,17 @@ impl Message for GroupNoticeAdd {
         buffer.write(self.message_block.to_group_id.as_bytes())?;
         buffer.write(self.message_block.id.as_bytes())?;
         buffer.write_u8(self.message_block.dialog)?;
+        buffer.write_u8(
+            self.message_block.from_agent_name.len() as u8,
+        )?;
         buffer.write(&self.message_block.from_agent_name[..])?;
+        buffer.write_u16::<LittleEndian>(
+            self.message_block.message.len() as u16,
+        )?;
         buffer.write(&self.message_block.message[..])?;
+        buffer.write_u16::<LittleEndian>(
+            self.message_block.binary_bucket.len() as u16,
+        )?;
         buffer.write(&self.message_block.binary_bucket[..])?;
         Ok(())
     }
@@ -44741,7 +44951,11 @@ impl Message for GroupNoticesListReply {
         for item in &self.data {
             buffer.write(item.notice_id.as_bytes())?;
             buffer.write_u32::<LittleEndian>(item.timestamp)?;
+            buffer.write_u16::<LittleEndian>(
+                item.from_name.len() as u16,
+            )?;
             buffer.write(&item.from_name[..])?;
+            buffer.write_u16::<LittleEndian>(item.subject.len() as u16)?;
             buffer.write(&item.subject[..])?;
             buffer.write_u8(item.has_attachment as u8)?;
             buffer.write_u8(item.asset_type)?;
@@ -44813,9 +45027,14 @@ impl Message for GroupProfileReply {
         buffer.write(self.agent_data.agent_id.as_bytes())?;
         // Block GroupData
         buffer.write(self.group_data.group_id.as_bytes())?;
+        buffer.write_u8(self.group_data.name.len() as u8)?;
         buffer.write(&self.group_data.name[..])?;
+        buffer.write_u16::<LittleEndian>(
+            self.group_data.charter.len() as u16,
+        )?;
         buffer.write(&self.group_data.charter[..])?;
         buffer.write_u8(self.group_data.show_in_list as u8)?;
+        buffer.write_u8(self.group_data.member_title.len() as u8)?;
         buffer.write(&self.group_data.member_title[..])?;
         buffer.write_u64::<LittleEndian>(
             self.group_data.powers_mask,
@@ -44897,6 +45116,7 @@ impl Message for GroupProposalBallot {
         // Block ProposalData
         buffer.write(self.proposal_data.proposal_id.as_bytes())?;
         buffer.write(self.proposal_data.group_id.as_bytes())?;
+        buffer.write_u8(self.proposal_data.vote_cast.len() as u8)?;
         buffer.write(&self.proposal_data.vote_cast[..])?;
         Ok(())
     }
@@ -44973,8 +45193,11 @@ impl Message for GroupRoleDataReply {
         buffer.write_u8(self.role_data.len() as u8)?;
         for item in &self.role_data {
             buffer.write(item.role_id.as_bytes())?;
+            buffer.write_u8(item.name.len() as u8)?;
             buffer.write(&item.name[..])?;
+            buffer.write_u8(item.title.len() as u8)?;
             buffer.write(&item.title[..])?;
+            buffer.write_u8(item.description.len() as u8)?;
             buffer.write(&item.description[..])?;
             buffer.write_u64::<LittleEndian>(item.powers)?;
             buffer.write_u32::<LittleEndian>(item.members)?;
@@ -45129,8 +45352,11 @@ impl Message for GroupRoleUpdate {
         buffer.write_u8(self.role_data.len() as u8)?;
         for item in &self.role_data {
             buffer.write(item.role_id.as_bytes())?;
+            buffer.write_u8(item.name.len() as u8)?;
             buffer.write(&item.name[..])?;
+            buffer.write_u8(item.description.len() as u8)?;
             buffer.write(&item.description[..])?;
+            buffer.write_u8(item.title.len() as u8)?;
             buffer.write(&item.title[..])?;
             buffer.write_u64::<LittleEndian>(item.powers)?;
             buffer.write_u8(item.update_type)?;
@@ -45198,6 +45424,7 @@ impl Message for GroupTitlesReply {
         // Block GroupData
         buffer.write_u8(self.group_data.len() as u8)?;
         for item in &self.group_data {
+            buffer.write_u8(item.title.len() as u8)?;
             buffer.write(&item.title[..])?;
             buffer.write(item.role_id.as_bytes())?;
             buffer.write_u8(item.selected as u8)?;
@@ -45270,13 +45497,28 @@ impl Message for GroupVoteHistoryItemReply {
         )?;
         // Block HistoryItemData
         buffer.write(self.history_item_data.vote_id.as_bytes())?;
+        buffer.write_u8(
+            self.history_item_data.terse_date_id.len() as u8,
+        )?;
         buffer.write(&self.history_item_data.terse_date_id[..])?;
+        buffer.write_u8(
+            self.history_item_data.start_date_time.len() as u8,
+        )?;
         buffer.write(&self.history_item_data.start_date_time[..])?;
+        buffer.write_u8(
+            self.history_item_data.end_date_time.len() as u8,
+        )?;
         buffer.write(&self.history_item_data.end_date_time[..])?;
         buffer.write(
             self.history_item_data.vote_initiator.as_bytes(),
         )?;
+        buffer.write_u8(
+            self.history_item_data.vote_type.len() as u8,
+        )?;
         buffer.write(&self.history_item_data.vote_type[..])?;
+        buffer.write_u8(
+            self.history_item_data.vote_result.len() as u8,
+        )?;
         buffer.write(&self.history_item_data.vote_result[..])?;
         buffer.write_f32::<LittleEndian>(
             self.history_item_data.majority,
@@ -45284,11 +45526,15 @@ impl Message for GroupVoteHistoryItemReply {
         buffer.write_i32::<LittleEndian>(
             self.history_item_data.quorum,
         )?;
+        buffer.write_u16::<LittleEndian>(
+            self.history_item_data.proposal_text.len() as u16,
+        )?;
         buffer.write(&self.history_item_data.proposal_text[..])?;
         // Block VoteItem
         buffer.write_u8(self.vote_item.len() as u8)?;
         for item in &self.vote_item {
             buffer.write(item.candidate_id.as_bytes())?;
+            buffer.write_u8(item.vote_cast.len() as u8)?;
             buffer.write(&item.vote_cast[..])?;
             buffer.write_i32::<LittleEndian>(item.num_votes)?;
         }
@@ -45398,6 +45644,9 @@ impl Message for ImageData {
         buffer.write_u32::<LittleEndian>(self.image_id.size)?;
         buffer.write_u16::<LittleEndian>(self.image_id.packets)?;
         // Block ImageData
+        buffer.write_u16::<LittleEndian>(
+            self.image_data.data.len() as u16,
+        )?;
         buffer.write(&self.image_data.data[..])?;
         Ok(())
     }
@@ -45452,6 +45701,9 @@ impl Message for ImagePacket {
         buffer.write(self.image_id.id.as_bytes())?;
         buffer.write_u16::<LittleEndian>(self.image_id.packet)?;
         // Block ImageData
+        buffer.write_u16::<LittleEndian>(
+            self.image_data.data.len() as u16,
+        )?;
         buffer.write(&self.image_data.data[..])?;
         Ok(())
     }
@@ -45505,8 +45757,17 @@ impl Message for ImprovedInstantMessage {
         buffer.write_u32::<LittleEndian>(
             self.message_block.timestamp,
         )?;
+        buffer.write_u8(
+            self.message_block.from_agent_name.len() as u8,
+        )?;
         buffer.write(&self.message_block.from_agent_name[..])?;
+        buffer.write_u16::<LittleEndian>(
+            self.message_block.message.len() as u16,
+        )?;
         buffer.write(&self.message_block.message[..])?;
+        buffer.write_u16::<LittleEndian>(
+            self.message_block.binary_bucket.len() as u16,
+        )?;
         buffer.write(&self.message_block.binary_bucket[..])?;
         Ok(())
     }
@@ -45545,7 +45806,11 @@ impl Message for ImprovedTerseObjectUpdate {
         // Block ObjectData
         buffer.write_u8(self.object_data.len() as u8)?;
         for item in &self.object_data {
+            buffer.write_u8(item.data.len() as u8)?;
             buffer.write(&item.data[..])?;
+            buffer.write_u16::<LittleEndian>(
+                item.texture_entry.len() as u16,
+            )?;
             buffer.write(&item.texture_entry[..])?;
         }
         Ok(())
@@ -45582,7 +45847,9 @@ impl Message for InitiateDownload {
         // Block AgentData
         buffer.write(self.agent_data.agent_id.as_bytes())?;
         // Block FileData
+        buffer.write_u8(self.file_data.sim_filename.len() as u8)?;
         buffer.write(&self.file_data.sim_filename[..])?;
+        buffer.write_u8(self.file_data.viewer_filename.len() as u8)?;
         buffer.write(&self.file_data.viewer_filename[..])?;
         Ok(())
     }
@@ -45610,9 +45877,14 @@ impl Message for InternalScriptMail {
         // Write the message number.
         buffer.write(&[0xff, 0x10])?;
         // Block DataBlock
+        buffer.write_u8(self.data_block.from.len() as u8)?;
         buffer.write(&self.data_block.from[..])?;
         buffer.write(self.data_block.to.as_bytes())?;
+        buffer.write_u8(self.data_block.subject.len() as u8)?;
         buffer.write(&self.data_block.subject[..])?;
+        buffer.write_u16::<LittleEndian>(
+            self.data_block.body.len() as u16,
+        )?;
         buffer.write(&self.data_block.body[..])?;
         Ok(())
     }
@@ -45676,6 +45948,7 @@ impl Message for InventoryDescendents {
             buffer.write(item.folder_id.as_bytes())?;
             buffer.write(item.parent_id.as_bytes())?;
             buffer.write_i8(item.type_)?;
+            buffer.write_u8(item.name.len() as u8)?;
             buffer.write(&item.name[..])?;
         }
         // Block ItemData
@@ -45698,7 +45971,9 @@ impl Message for InventoryDescendents {
             buffer.write_u32::<LittleEndian>(item.flags)?;
             buffer.write_u8(item.sale_type)?;
             buffer.write_i32::<LittleEndian>(item.sale_price)?;
+            buffer.write_u8(item.name.len() as u8)?;
             buffer.write(&item.name[..])?;
+            buffer.write_u8(item.description.len() as u8)?;
             buffer.write(&item.description[..])?;
             buffer.write_i32::<LittleEndian>(item.creation_date)?;
             buffer.write_u32::<LittleEndian>(item.crc)?;
@@ -45882,6 +46157,9 @@ impl Message for KickUser {
         // Block UserInfo
         buffer.write(self.user_info.agent_id.as_bytes())?;
         buffer.write(self.user_info.session_id.as_bytes())?;
+        buffer.write_u16::<LittleEndian>(
+            self.user_info.reason.len() as u16,
+        )?;
         buffer.write(&self.user_info.reason[..])?;
         Ok(())
     }
@@ -46007,7 +46285,9 @@ impl Message for LandStatReply {
             buffer.write_f32::<LittleEndian>(item.location_y)?;
             buffer.write_f32::<LittleEndian>(item.location_z)?;
             buffer.write_f32::<LittleEndian>(item.score)?;
+            buffer.write_u8(item.task_name.len() as u8)?;
             buffer.write(&item.task_name[..])?;
+            buffer.write_u8(item.owner_name.len() as u8)?;
             buffer.write(&item.owner_name[..])?;
         }
         Ok(())
@@ -46049,6 +46329,7 @@ impl Message for LandStatRequest {
         buffer.write_u32::<LittleEndian>(
             self.request_data.request_flags,
         )?;
+        buffer.write_u8(self.request_data.filter.len() as u8)?;
         buffer.write(&self.request_data.filter[..])?;
         buffer.write_i32::<LittleEndian>(
             self.request_data.parcel_local_id,
@@ -46081,6 +46362,9 @@ impl Message for LayerData {
         // Block LayerID
         buffer.write_u8(self.layer_id.type_)?;
         // Block LayerData
+        buffer.write_u16::<LittleEndian>(
+            self.layer_data.data.len() as u16,
+        )?;
         buffer.write(&self.layer_data.data[..])?;
         Ok(())
     }
@@ -46179,7 +46463,11 @@ impl Message for LinkInventoryItem {
         buffer.write(self.inventory_block.old_item_id.as_bytes())?;
         buffer.write_i8(self.inventory_block.type_)?;
         buffer.write_i8(self.inventory_block.inv_type)?;
+        buffer.write_u8(self.inventory_block.name.len() as u8)?;
         buffer.write(&self.inventory_block.name[..])?;
+        buffer.write_u8(
+            self.inventory_block.description.len() as u8,
+        )?;
         buffer.write(&self.inventory_block.description[..])?;
         Ok(())
     }
@@ -46209,6 +46497,7 @@ impl Message for LiveHelpGroupReply {
         // Block ReplyData
         buffer.write(self.reply_data.request_id.as_bytes())?;
         buffer.write(self.reply_data.group_id.as_bytes())?;
+        buffer.write_u8(self.reply_data.selection.len() as u8)?;
         buffer.write(&self.reply_data.selection[..])?;
         Ok(())
     }
@@ -46258,11 +46547,14 @@ impl Message for LoadURL {
         // Write the message number.
         buffer.write(&[0xff, 0xff, 0x00, 0xc2])?;
         // Block Data
+        buffer.write_u8(self.data.object_name.len() as u8)?;
         buffer.write(&self.data.object_name[..])?;
         buffer.write(self.data.object_id.as_bytes())?;
         buffer.write(self.data.owner_id.as_bytes())?;
         buffer.write_u8(self.data.owner_is_group as u8)?;
+        buffer.write_u8(self.data.message.len() as u8)?;
         buffer.write(&self.data.message[..])?;
+        buffer.write_u8(self.data.url.len() as u8)?;
         buffer.write(&self.data.url[..])?;
         Ok(())
     }
@@ -46288,6 +46580,7 @@ impl Message for LogDwellTime {
         buffer.write(self.dwell_info.agent_id.as_bytes())?;
         buffer.write(self.dwell_info.session_id.as_bytes())?;
         buffer.write_f32::<LittleEndian>(self.dwell_info.duration)?;
+        buffer.write_u8(self.dwell_info.sim_name.len() as u8)?;
         buffer.write(&self.dwell_info.sim_name[..])?;
         buffer.write_u32::<LittleEndian>(self.dwell_info.region_x)?;
         buffer.write_u32::<LittleEndian>(self.dwell_info.region_y)?;
@@ -46419,6 +46712,7 @@ impl Message for LogTextMessage {
             buffer.write_f64::<LittleEndian>(item.global_x)?;
             buffer.write_f64::<LittleEndian>(item.global_y)?;
             buffer.write_u32::<LittleEndian>(item.time)?;
+            buffer.write_u16::<LittleEndian>(item.message.len() as u16)?;
             buffer.write(&item.message[..])?;
         }
         Ok(())
@@ -46517,6 +46811,7 @@ impl Message for MapBlockReply {
         for item in &self.data {
             buffer.write_u16::<LittleEndian>(item.x)?;
             buffer.write_u16::<LittleEndian>(item.y)?;
+            buffer.write_u8(item.name.len() as u8)?;
             buffer.write(&item.name[..])?;
             buffer.write_u8(item.access)?;
             buffer.write_u32::<LittleEndian>(item.region_flags)?;
@@ -46604,6 +46899,7 @@ impl Message for MapItemReply {
             buffer.write(item.id.as_bytes())?;
             buffer.write_i32::<LittleEndian>(item.extra)?;
             buffer.write_i32::<LittleEndian>(item.extra2)?;
+            buffer.write_u8(item.name.len() as u8)?;
             buffer.write(&item.name[..])?;
         }
         Ok(())
@@ -46752,6 +47048,7 @@ impl Message for MapNameRequest {
         buffer.write_u32::<LittleEndian>(self.agent_data.estate_id)?;
         buffer.write_u8(self.agent_data.godlike as u8)?;
         // Block NameData
+        buffer.write_u8(self.name_data.name.len() as u8)?;
         buffer.write(&self.name_data.name[..])?;
         Ok(())
     }
@@ -46923,6 +47220,7 @@ impl Message for MoneyBalanceReply {
         buffer.write_i32::<LittleEndian>(
             self.money_data.square_meters_committed,
         )?;
+        buffer.write_u8(self.money_data.description.len() as u8)?;
         buffer.write(&self.money_data.description[..])?;
         // Block TransactionInfo
         buffer.write_i32::<LittleEndian>(
@@ -46934,6 +47232,9 @@ impl Message for MoneyBalanceReply {
         buffer.write_u8(self.transaction_info.is_dest_group as u8)?;
         buffer.write_i32::<LittleEndian>(
             self.transaction_info.amount,
+        )?;
+        buffer.write_u8(
+            self.transaction_info.item_description.len() as u8,
         )?;
         buffer.write(&self.transaction_info.item_description[..])?;
         Ok(())
@@ -47008,6 +47309,7 @@ impl Message for MoneyTransferBackend {
         buffer.write(self.money_data.region_id.as_bytes())?;
         buffer.write_u32::<LittleEndian>(self.money_data.grid_x)?;
         buffer.write_u32::<LittleEndian>(self.money_data.grid_y)?;
+        buffer.write_u8(self.money_data.description.len() as u8)?;
         buffer.write(&self.money_data.description[..])?;
         Ok(())
     }
@@ -47044,6 +47346,7 @@ impl Message for MoneyTransferRequest {
         buffer.write_i32::<LittleEndian>(
             self.money_data.transaction_type,
         )?;
+        buffer.write_u8(self.money_data.description.len() as u8)?;
         buffer.write(&self.money_data.description[..])?;
         Ok(())
     }
@@ -47120,6 +47423,7 @@ impl Message for MoveInventoryItem {
         for item in &self.inventory_data {
             buffer.write(item.item_id.as_bytes())?;
             buffer.write(item.folder_id.as_bytes())?;
+            buffer.write_u8(item.new_name.len() as u8)?;
             buffer.write(&item.new_name[..])?;
         }
         Ok(())
@@ -47193,6 +47497,7 @@ impl Message for MultipleObjectUpdate {
         for item in &self.object_data {
             buffer.write_u32::<LittleEndian>(item.object_local_id)?;
             buffer.write_u8(item.type_)?;
+            buffer.write_u8(item.data.len() as u8)?;
             buffer.write(&item.data[..])?;
         }
         Ok(())
@@ -47258,6 +47563,7 @@ impl Message for MuteListUpdate {
         buffer.write(&[0xff, 0xff, 0x01, 0x3e])?;
         // Block MuteData
         buffer.write(self.mute_data.agent_id.as_bytes())?;
+        buffer.write_u8(self.mute_data.filename.len() as u8)?;
         buffer.write(&self.mute_data.filename[..])?;
         Ok(())
     }
@@ -47286,6 +47592,7 @@ impl Message for NameValuePair {
         // Block NameValueData
         buffer.write_u8(self.name_value_data.len() as u8)?;
         for item in &self.name_value_data {
+            buffer.write_u16::<LittleEndian>(item.nv_pair.len() as u16)?;
             buffer.write(&item.nv_pair[..])?;
         }
         Ok(())
@@ -47410,6 +47717,7 @@ impl Message for NeighborList {
                 self.neighbor_block[i].public_port,
             )?;
             buffer.write(self.neighbor_block[i].region_id.as_bytes())?;
+            buffer.write_u8(self.neighbor_block[i].name.len() as u8)?;
             buffer.write(&self.neighbor_block[i].name[..])?;
             buffer.write_u8(self.neighbor_block[i].sim_access)?;
         }
@@ -47866,6 +48174,7 @@ impl Message for ObjectDescription {
         buffer.write_u8(self.object_data.len() as u8)?;
         for item in &self.object_data {
             buffer.write_u32::<LittleEndian>(item.local_id)?;
+            buffer.write_u8(item.description.len() as u8)?;
             buffer.write(&item.description[..])?;
         }
         Ok(())
@@ -48176,6 +48485,7 @@ impl Message for ObjectExtraParams {
             buffer.write_u16::<LittleEndian>(item.param_type)?;
             buffer.write_u8(item.param_in_use as u8)?;
             buffer.write_u32::<LittleEndian>(item.param_size)?;
+            buffer.write_u8(item.param_data.len() as u8)?;
             buffer.write(&item.param_data[..])?;
         }
         Ok(())
@@ -48454,7 +48764,11 @@ impl Message for ObjectImage {
         buffer.write_u8(self.object_data.len() as u8)?;
         for item in &self.object_data {
             buffer.write_u32::<LittleEndian>(item.object_local_id)?;
+            buffer.write_u8(item.media_url.len() as u8)?;
             buffer.write(&item.media_url[..])?;
+            buffer.write_u16::<LittleEndian>(
+                item.texture_entry.len() as u16,
+            )?;
             buffer.write(&item.texture_entry[..])?;
         }
         Ok(())
@@ -48608,6 +48922,7 @@ impl Message for ObjectName {
         buffer.write_u8(self.object_data.len() as u8)?;
         for item in &self.object_data {
             buffer.write_u32::<LittleEndian>(item.local_id)?;
+            buffer.write_u8(item.name.len() as u8)?;
             buffer.write(&item.name[..])?;
         }
         Ok(())
@@ -48795,10 +49110,15 @@ impl Message for ObjectProperties {
             buffer.write(item.folder_id.as_bytes())?;
             buffer.write(item.from_task_id.as_bytes())?;
             buffer.write(item.last_owner_id.as_bytes())?;
+            buffer.write_u8(item.name.len() as u8)?;
             buffer.write(&item.name[..])?;
+            buffer.write_u8(item.description.len() as u8)?;
             buffer.write(&item.description[..])?;
+            buffer.write_u8(item.touch_name.len() as u8)?;
             buffer.write(&item.touch_name[..])?;
+            buffer.write_u8(item.sit_name.len() as u8)?;
             buffer.write(&item.sit_name[..])?;
+            buffer.write_u8(item.texture_id.len() as u8)?;
             buffer.write(&item.texture_id[..])?;
         }
         Ok(())
@@ -48856,7 +49176,9 @@ impl Message for ObjectPropertiesFamily {
         )?;
         buffer.write_u32::<LittleEndian>(self.object_data.category)?;
         buffer.write(self.object_data.last_owner_id.as_bytes())?;
+        buffer.write_u8(self.object_data.name.len() as u8)?;
         buffer.write(&self.object_data.name[..])?;
+        buffer.write_u8(self.object_data.description.len() as u8)?;
         buffer.write(&self.object_data.description[..])?;
         Ok(())
     }
@@ -49216,6 +49538,7 @@ impl Message for ObjectUpdate {
             buffer.write_f32::<LittleEndian>(item.scale.y)?;
 
             buffer.write_f32::<LittleEndian>(item.scale.z)?;
+            buffer.write_u8(item.object_data.len() as u8)?;
             buffer.write(&item.object_data[..])?;
             buffer.write_u32::<LittleEndian>(item.parent_id)?;
             buffer.write_u32::<LittleEndian>(item.update_flags)?;
@@ -49237,14 +49560,26 @@ impl Message for ObjectUpdate {
             buffer.write_u16::<LittleEndian>(item.profile_begin)?;
             buffer.write_u16::<LittleEndian>(item.profile_end)?;
             buffer.write_u16::<LittleEndian>(item.profile_hollow)?;
+            buffer.write_u16::<LittleEndian>(
+                item.texture_entry.len() as u16,
+            )?;
             buffer.write(&item.texture_entry[..])?;
+            buffer.write_u8(item.texture_anim.len() as u8)?;
             buffer.write(&item.texture_anim[..])?;
+            buffer.write_u16::<LittleEndian>(
+                item.name_value.len() as u16,
+            )?;
             buffer.write(&item.name_value[..])?;
+            buffer.write_u16::<LittleEndian>(item.data.len() as u16)?;
             buffer.write(&item.data[..])?;
+            buffer.write_u8(item.text.len() as u8)?;
             buffer.write(&item.text[..])?;
             buffer.write(&item.text_color)?;
+            buffer.write_u8(item.media_url.len() as u8)?;
             buffer.write(&item.media_url[..])?;
+            buffer.write_u8(item.ps_block.len() as u8)?;
             buffer.write(&item.ps_block[..])?;
+            buffer.write_u8(item.extra_params.len() as u8)?;
             buffer.write(&item.extra_params[..])?;
             buffer.write(item.sound.as_bytes())?;
             buffer.write(item.owner_id.as_bytes())?;
@@ -49352,6 +49687,7 @@ impl Message for ObjectUpdateCompressed {
         buffer.write_u8(self.object_data.len() as u8)?;
         for item in &self.object_data {
             buffer.write_u32::<LittleEndian>(item.update_flags)?;
+            buffer.write_u16::<LittleEndian>(item.data.len() as u16)?;
             buffer.write(&item.data[..])?;
         }
         Ok(())
@@ -50061,7 +50397,9 @@ impl Message for ParcelInfoReply {
         // Block Data
         buffer.write(self.data.parcel_id.as_bytes())?;
         buffer.write(self.data.owner_id.as_bytes())?;
+        buffer.write_u8(self.data.name.len() as u8)?;
         buffer.write(&self.data.name[..])?;
+        buffer.write_u8(self.data.desc.len() as u8)?;
         buffer.write(&self.data.desc[..])?;
         buffer.write_i32::<LittleEndian>(self.data.actual_area)?;
         buffer.write_i32::<LittleEndian>(self.data.billable_area)?;
@@ -50069,6 +50407,7 @@ impl Message for ParcelInfoReply {
         buffer.write_f32::<LittleEndian>(self.data.global_x)?;
         buffer.write_f32::<LittleEndian>(self.data.global_y)?;
         buffer.write_f32::<LittleEndian>(self.data.global_z)?;
+        buffer.write_u8(self.data.sim_name.len() as u8)?;
         buffer.write(&self.data.sim_name[..])?;
         buffer.write(self.data.snapshot_id.as_bytes())?;
         buffer.write_f32::<LittleEndian>(self.data.dwell)?;
@@ -50189,11 +50528,18 @@ impl Message for ParcelMediaUpdate {
         // Write the message number.
         buffer.write(&[0xff, 0xff, 0x01, 0xa4])?;
         // Block DataBlock
+        buffer.write_u8(self.data_block.media_url.len() as u8)?;
         buffer.write(&self.data_block.media_url[..])?;
         buffer.write(self.data_block.media_id.as_bytes())?;
         buffer.write_u8(self.data_block.media_auto_scale)?;
         // Block DataBlockExtended
+        buffer.write_u8(
+            self.data_block_extended.media_type.len() as u8,
+        )?;
         buffer.write(&self.data_block_extended.media_type[..])?;
+        buffer.write_u8(
+            self.data_block_extended.media_desc.len() as u8,
+        )?;
         buffer.write(&self.data_block_extended.media_desc[..])?;
         buffer.write_i32::<LittleEndian>(
             self.data_block_extended.media_width,
@@ -50297,6 +50643,9 @@ impl Message for ParcelOverlay {
         buffer.write_i32::<LittleEndian>(
             self.parcel_data.sequence_id,
         )?;
+        buffer.write_u16::<LittleEndian>(
+            self.parcel_data.data.len() as u16,
+        )?;
         buffer.write(&self.parcel_data.data[..])?;
         Ok(())
     }
@@ -50374,6 +50723,9 @@ impl Message for ParcelProperties {
         buffer.write_f32::<LittleEndian>(
             self.parcel_data.aabb_max.z,
         )?;
+        buffer.write_u16::<LittleEndian>(
+            self.parcel_data.bitmap.len() as u16,
+        )?;
         buffer.write(&self.parcel_data.bitmap[..])?;
         buffer.write_i32::<LittleEndian>(self.parcel_data.area)?;
         buffer.write_u8(self.parcel_data.status)?;
@@ -50411,9 +50763,13 @@ impl Message for ParcelProperties {
         buffer.write_i32::<LittleEndian>(
             self.parcel_data.sale_price,
         )?;
+        buffer.write_u8(self.parcel_data.name.len() as u8)?;
         buffer.write(&self.parcel_data.name[..])?;
+        buffer.write_u8(self.parcel_data.desc.len() as u8)?;
         buffer.write(&self.parcel_data.desc[..])?;
+        buffer.write_u8(self.parcel_data.music_url.len() as u8)?;
         buffer.write(&self.parcel_data.music_url[..])?;
+        buffer.write_u8(self.parcel_data.media_url.len() as u8)?;
         buffer.write(&self.parcel_data.media_url[..])?;
         buffer.write(self.parcel_data.media_id.as_bytes())?;
         buffer.write_u8(self.parcel_data.media_auto_scale)?;
@@ -50576,9 +50932,13 @@ impl Message for ParcelPropertiesUpdate {
         buffer.write_i32::<LittleEndian>(
             self.parcel_data.sale_price,
         )?;
+        buffer.write_u8(self.parcel_data.name.len() as u8)?;
         buffer.write(&self.parcel_data.name[..])?;
+        buffer.write_u8(self.parcel_data.desc.len() as u8)?;
         buffer.write(&self.parcel_data.desc[..])?;
+        buffer.write_u8(self.parcel_data.music_url.len() as u8)?;
         buffer.write(&self.parcel_data.music_url[..])?;
+        buffer.write_u8(self.parcel_data.media_url.len() as u8)?;
         buffer.write(&self.parcel_data.media_url[..])?;
         buffer.write(self.parcel_data.media_id.as_bytes())?;
         buffer.write_u8(self.parcel_data.media_auto_scale)?;
@@ -50706,6 +51066,7 @@ impl Message for ParcelRename {
         buffer.write_u8(self.parcel_data.len() as u8)?;
         for item in &self.parcel_data {
             buffer.write(item.parcel_id.as_bytes())?;
+            buffer.write_u8(item.new_name.len() as u8)?;
             buffer.write(&item.new_name[..])?;
         }
         Ok(())
@@ -51010,11 +51371,18 @@ impl Message for PickInfoReply {
         buffer.write(self.data.creator_id.as_bytes())?;
         buffer.write_u8(self.data.top_pick as u8)?;
         buffer.write(self.data.parcel_id.as_bytes())?;
+        buffer.write_u8(self.data.name.len() as u8)?;
         buffer.write(&self.data.name[..])?;
+        buffer.write_u16::<LittleEndian>(
+            self.data.desc.len() as u16,
+        )?;
         buffer.write(&self.data.desc[..])?;
         buffer.write(self.data.snapshot_id.as_bytes())?;
+        buffer.write_u8(self.data.user.len() as u8)?;
         buffer.write(&self.data.user[..])?;
+        buffer.write_u8(self.data.original_name.len() as u8)?;
         buffer.write(&self.data.original_name[..])?;
+        buffer.write_u8(self.data.sim_name.len() as u8)?;
         buffer.write(&self.data.sim_name[..])?;
         buffer.write_f64::<LittleEndian>(self.data.pos_global.x)?;
 
@@ -51056,7 +51424,11 @@ impl Message for PickInfoUpdate {
         buffer.write(self.data.creator_id.as_bytes())?;
         buffer.write_u8(self.data.top_pick as u8)?;
         buffer.write(self.data.parcel_id.as_bytes())?;
+        buffer.write_u8(self.data.name.len() as u8)?;
         buffer.write(&self.data.name[..])?;
+        buffer.write_u16::<LittleEndian>(
+            self.data.desc.len() as u16,
+        )?;
         buffer.write(&self.data.desc[..])?;
         buffer.write(self.data.snapshot_id.as_bytes())?;
         buffer.write_f64::<LittleEndian>(self.data.pos_global.x)?;
@@ -51100,11 +51472,13 @@ impl Message for PlacesQuery {
             self.transaction_data.transaction_id.as_bytes(),
         )?;
         // Block QueryData
+        buffer.write_u8(self.query_data.query_text.len() as u8)?;
         buffer.write(&self.query_data.query_text[..])?;
         buffer.write_u32::<LittleEndian>(
             self.query_data.query_flags,
         )?;
         buffer.write_i8(self.query_data.category)?;
+        buffer.write_u8(self.query_data.sim_name.len() as u8)?;
         buffer.write(&self.query_data.sim_name[..])?;
         Ok(())
     }
@@ -51145,7 +51519,9 @@ impl Message for PlacesReply {
         buffer.write_u8(self.query_data.len() as u8)?;
         for item in &self.query_data {
             buffer.write(item.owner_id.as_bytes())?;
+            buffer.write_u8(item.name.len() as u8)?;
             buffer.write(&item.name[..])?;
+            buffer.write_u8(item.desc.len() as u8)?;
             buffer.write(&item.desc[..])?;
             buffer.write_i32::<LittleEndian>(item.actual_area)?;
             buffer.write_i32::<LittleEndian>(item.billable_area)?;
@@ -51153,6 +51529,7 @@ impl Message for PlacesReply {
             buffer.write_f32::<LittleEndian>(item.global_x)?;
             buffer.write_f32::<LittleEndian>(item.global_y)?;
             buffer.write_f32::<LittleEndian>(item.global_z)?;
+            buffer.write_u8(item.sim_name.len() as u8)?;
             buffer.write(&item.sim_name[..])?;
             buffer.write(item.snapshot_id.as_bytes())?;
             buffer.write_f32::<LittleEndian>(item.dwell)?;
@@ -51346,6 +51723,7 @@ impl Message for RegionHandshake {
             self.region_info.region_flags,
         )?;
         buffer.write_u8(self.region_info.sim_access)?;
+        buffer.write_u8(self.region_info.sim_name.len() as u8)?;
         buffer.write(&self.region_info.sim_name[..])?;
         buffer.write(self.region_info.sim_owner.as_bytes())?;
         buffer.write_u8(self.region_info.is_estate_manager as u8)?;
@@ -51397,8 +51775,11 @@ impl Message for RegionHandshake {
         buffer.write_i32::<LittleEndian>(
             self.region_info3.cpu_ratio,
         )?;
+        buffer.write_u8(self.region_info3.colo_name.len() as u8)?;
         buffer.write(&self.region_info3.colo_name[..])?;
+        buffer.write_u8(self.region_info3.product_sku.len() as u8)?;
         buffer.write(&self.region_info3.product_sku[..])?;
+        buffer.write_u8(self.region_info3.product_name.len() as u8)?;
         buffer.write(&self.region_info3.product_name[..])?;
         Ok(())
     }
@@ -51491,6 +51872,7 @@ impl Message for RegionInfo {
         buffer.write(self.agent_data.agent_id.as_bytes())?;
         buffer.write(self.agent_data.session_id.as_bytes())?;
         // Block RegionInfo
+        buffer.write_u8(self.region_info.sim_name.len() as u8)?;
         buffer.write(&self.region_info.sim_name[..])?;
         buffer.write_u32::<LittleEndian>(self.region_info.estate_id)?;
         buffer.write_u32::<LittleEndian>(
@@ -51528,7 +51910,9 @@ impl Message for RegionInfo {
         buffer.write_u8(self.region_info.use_estate_sun as u8)?;
         buffer.write_f32::<LittleEndian>(self.region_info.sun_hour)?;
         // Block RegionInfo2
+        buffer.write_u8(self.region_info2.product_sku.len() as u8)?;
         buffer.write(&self.region_info2.product_sku[..])?;
+        buffer.write_u8(self.region_info2.product_name.len() as u8)?;
         buffer.write(&self.region_info2.product_name[..])?;
         buffer.write_u32::<LittleEndian>(
             self.region_info2.max_agents32,
@@ -51640,6 +52024,7 @@ impl Message for RegionPresenceResponse {
             buffer.write(&item.external_region_ip.octets())?;
             buffer.write_u16::<LittleEndian>(item.region_port)?;
             buffer.write_f64::<LittleEndian>(item.valid_until)?;
+            buffer.write_u8(item.message.len() as u8)?;
             buffer.write(&item.message[..])?;
         }
         Ok(())
@@ -51831,6 +52216,7 @@ impl Message for RemoveMuteListEntry {
         buffer.write(self.agent_data.session_id.as_bytes())?;
         // Block MuteData
         buffer.write(self.mute_data.mute_id.as_bytes())?;
+        buffer.write_u8(self.mute_data.mute_name.len() as u8)?;
         buffer.write(&self.mute_data.mute_name[..])?;
         Ok(())
     }
@@ -51862,6 +52248,7 @@ impl Message for RemoveNameValuePair {
         // Block NameValueData
         buffer.write_u8(self.name_value_data.len() as u8)?;
         for item in &self.name_value_data {
+            buffer.write_u16::<LittleEndian>(item.nv_pair.len() as u16)?;
             buffer.write(&item.nv_pair[..])?;
         }
         Ok(())
@@ -51960,6 +52347,7 @@ impl Message for ReplyTaskInventory {
         // Block InventoryData
         buffer.write(self.inventory_data.task_id.as_bytes())?;
         buffer.write_i16::<LittleEndian>(self.inventory_data.serial)?;
+        buffer.write_u8(self.inventory_data.filename.len() as u8)?;
         buffer.write(&self.inventory_data.filename[..])?;
         Ok(())
     }
@@ -52332,6 +52720,7 @@ impl Message for RequestXfer {
         buffer.write(&[0xff, 0xff, 0x00, 0x9c])?;
         // Block XferID
         buffer.write_u64::<LittleEndian>(self.xfer_id.id)?;
+        buffer.write_u8(self.xfer_id.filename.len() as u8)?;
         buffer.write(&self.xfer_id.filename[..])?;
         buffer.write_u8(self.xfer_id.file_path)?;
         buffer.write_u8(self.xfer_id.delete_on_completion as u8)?;
@@ -52435,7 +52824,9 @@ impl Message for RezMultipleAttachmentsFromInv {
             buffer.write_u32::<LittleEndian>(item.group_mask)?;
             buffer.write_u32::<LittleEndian>(item.everyone_mask)?;
             buffer.write_u32::<LittleEndian>(item.next_owner_mask)?;
+            buffer.write_u8(item.name.len() as u8)?;
             buffer.write(&item.name[..])?;
+            buffer.write_u8(item.description.len() as u8)?;
             buffer.write(&item.description[..])?;
         }
         Ok(())
@@ -52531,7 +52922,9 @@ impl Message for RezObject {
         buffer.write_i32::<LittleEndian>(
             self.inventory_data.sale_price,
         )?;
+        buffer.write_u8(self.inventory_data.name.len() as u8)?;
         buffer.write(&self.inventory_data.name[..])?;
+        buffer.write_u8(self.inventory_data.description.len() as u8)?;
         buffer.write(&self.inventory_data.description[..])?;
         buffer.write_i32::<LittleEndian>(
             self.inventory_data.creation_date,
@@ -52672,7 +53065,9 @@ impl Message for RezRestoreToWorld {
         buffer.write_i32::<LittleEndian>(
             self.inventory_data.sale_price,
         )?;
+        buffer.write_u8(self.inventory_data.name.len() as u8)?;
         buffer.write(&self.inventory_data.name[..])?;
+        buffer.write_u8(self.inventory_data.description.len() as u8)?;
         buffer.write(&self.inventory_data.description[..])?;
         buffer.write_i32::<LittleEndian>(
             self.inventory_data.creation_date,
@@ -52742,7 +53137,11 @@ impl Message for RezScript {
         buffer.write_i32::<LittleEndian>(
             self.inventory_block.sale_price,
         )?;
+        buffer.write_u8(self.inventory_block.name.len() as u8)?;
         buffer.write(&self.inventory_block.name[..])?;
+        buffer.write_u8(
+            self.inventory_block.description.len() as u8,
+        )?;
         buffer.write(&self.inventory_block.description[..])?;
         buffer.write_i32::<LittleEndian>(
             self.inventory_block.creation_date,
@@ -52795,7 +53194,9 @@ impl Message for RezSingleAttachmentFromInv {
         buffer.write_u32::<LittleEndian>(
             self.object_data.next_owner_mask,
         )?;
+        buffer.write_u8(self.object_data.name.len() as u8)?;
         buffer.write(&self.object_data.name[..])?;
+        buffer.write_u8(self.object_data.description.len() as u8)?;
         buffer.write(&self.object_data.description[..])?;
         Ok(())
     }
@@ -52842,6 +53243,7 @@ impl Message for RoutedMoneyBalanceReply {
         buffer.write_i32::<LittleEndian>(
             self.money_data.square_meters_committed,
         )?;
+        buffer.write_u8(self.money_data.description.len() as u8)?;
         buffer.write(&self.money_data.description[..])?;
         // Block TransactionInfo
         buffer.write_i32::<LittleEndian>(
@@ -52853,6 +53255,9 @@ impl Message for RoutedMoneyBalanceReply {
         buffer.write_u8(self.transaction_info.is_dest_group as u8)?;
         buffer.write_i32::<LittleEndian>(
             self.transaction_info.amount,
+        )?;
+        buffer.write_u8(
+            self.transaction_info.item_description.len() as u8,
         )?;
         buffer.write(&self.transaction_info.item_description[..])?;
         Ok(())
@@ -52943,6 +53348,9 @@ impl Message for RpcScriptReplyInbound {
         buffer.write(self.data_block.item_id.as_bytes())?;
         buffer.write(self.data_block.channel_id.as_bytes())?;
         buffer.write_u32::<LittleEndian>(self.data_block.int_value)?;
+        buffer.write_u16::<LittleEndian>(
+            self.data_block.string_value.len() as u16,
+        )?;
         buffer.write(&self.data_block.string_value[..])?;
         Ok(())
     }
@@ -52974,6 +53382,9 @@ impl Message for RpcScriptRequestInbound {
         buffer.write(self.data_block.item_id.as_bytes())?;
         buffer.write(self.data_block.channel_id.as_bytes())?;
         buffer.write_u32::<LittleEndian>(self.data_block.int_value)?;
+        buffer.write_u16::<LittleEndian>(
+            self.data_block.string_value.len() as u16,
+        )?;
         buffer.write(&self.data_block.string_value[..])?;
         Ok(())
     }
@@ -53011,6 +53422,9 @@ impl Message for RpcScriptRequestInboundForward {
         buffer.write(self.data_block.item_id.as_bytes())?;
         buffer.write(self.data_block.channel_id.as_bytes())?;
         buffer.write_u32::<LittleEndian>(self.data_block.int_value)?;
+        buffer.write_u16::<LittleEndian>(
+            self.data_block.string_value.len() as u16,
+        )?;
         buffer.write(&self.data_block.string_value[..])?;
         Ok(())
     }
@@ -53135,6 +53549,7 @@ impl Message for ScriptDataReply {
         buffer.write_u8(self.data_block.len() as u8)?;
         for item in &self.data_block {
             buffer.write_u64::<LittleEndian>(item.hash)?;
+            buffer.write_u16::<LittleEndian>(item.reply.len() as u16)?;
             buffer.write(&item.reply[..])?;
         }
         Ok(())
@@ -53168,6 +53583,7 @@ impl Message for ScriptDataRequest {
         for item in &self.data_block {
             buffer.write_u64::<LittleEndian>(item.hash)?;
             buffer.write_i8(item.request_type)?;
+            buffer.write_u16::<LittleEndian>(item.request.len() as u16)?;
             buffer.write(&item.request[..])?;
         }
         Ok(())
@@ -53198,15 +53614,22 @@ impl Message for ScriptDialog {
         buffer.write(&[0xff, 0xff, 0x00, 0xbe])?;
         // Block Data
         buffer.write(self.data.object_id.as_bytes())?;
+        buffer.write_u8(self.data.first_name.len() as u8)?;
         buffer.write(&self.data.first_name[..])?;
+        buffer.write_u8(self.data.last_name.len() as u8)?;
         buffer.write(&self.data.last_name[..])?;
+        buffer.write_u8(self.data.object_name.len() as u8)?;
         buffer.write(&self.data.object_name[..])?;
+        buffer.write_u16::<LittleEndian>(
+            self.data.message.len() as u16,
+        )?;
         buffer.write(&self.data.message[..])?;
         buffer.write_i32::<LittleEndian>(self.data.chat_channel)?;
         buffer.write(self.data.image_id.as_bytes())?;
         // Block Buttons
         buffer.write_u8(self.buttons.len() as u8)?;
         for item in &self.buttons {
+            buffer.write_u8(item.button_label.len() as u8)?;
             buffer.write(&item.button_label[..])?;
         }
         // Block OwnerData
@@ -53257,6 +53680,7 @@ impl Message for ScriptDialogReply {
         buffer.write(self.data.object_id.as_bytes())?;
         buffer.write_i32::<LittleEndian>(self.data.chat_channel)?;
         buffer.write_i32::<LittleEndian>(self.data.button_index)?;
+        buffer.write_u8(self.data.button_label.len() as u8)?;
         buffer.write(&self.data.button_label[..])?;
         Ok(())
     }
@@ -53284,6 +53708,7 @@ impl Message for ScriptMailRegistration {
         // Write the message number.
         buffer.write(&[0xff, 0xff, 0x01, 0xa2])?;
         // Block DataBlock
+        buffer.write_u8(self.data_block.target_ip.len() as u8)?;
         buffer.write(&self.data_block.target_ip[..])?;
         buffer.write_u16::<LittleEndian>(
             self.data_block.target_port,
@@ -53315,7 +53740,9 @@ impl Message for ScriptQuestion {
         // Block Data
         buffer.write(self.data.task_id.as_bytes())?;
         buffer.write(self.data.item_id.as_bytes())?;
+        buffer.write_u8(self.data.object_name.len() as u8)?;
         buffer.write(&self.data.object_name[..])?;
+        buffer.write_u8(self.data.object_owner.len() as u8)?;
         buffer.write(&self.data.object_owner[..])?;
         buffer.write_i32::<LittleEndian>(self.data.questions)?;
         Ok(())
@@ -53422,6 +53849,7 @@ impl Message for ScriptSensorReply {
             buffer.write_f32::<LittleEndian>(normed_rotation.j)?;
 
             buffer.write_f32::<LittleEndian>(normed_rotation.k)?;
+            buffer.write_u8(item.name.len() as u8)?;
             buffer.write(&item.name[..])?;
             buffer.write_i32::<LittleEndian>(item.type_)?;
             buffer.write_f32::<LittleEndian>(item.range)?;
@@ -53477,6 +53905,7 @@ impl Message for ScriptSensorRequest {
         buffer.write_f32::<LittleEndian>(normed_search_dir.j)?;
 
         buffer.write_f32::<LittleEndian>(normed_search_dir.k)?;
+        buffer.write_u8(self.requester.search_name.len() as u8)?;
         buffer.write(&self.requester.search_name[..])?;
         buffer.write_i32::<LittleEndian>(self.requester.type_)?;
         buffer.write_f32::<LittleEndian>(self.requester.range)?;
@@ -53508,7 +53937,9 @@ impl Message for ScriptTeleportRequest {
         // Write the message number.
         buffer.write(&[0xff, 0xff, 0x00, 0xc3])?;
         // Block Data
+        buffer.write_u8(self.data.object_name.len() as u8)?;
         buffer.write(&self.data.object_name[..])?;
+        buffer.write_u8(self.data.sim_name.len() as u8)?;
         buffer.write(&self.data.sim_name[..])?;
         buffer.write_f32::<LittleEndian>(self.data.sim_position.x)?;
 
@@ -53557,10 +53988,17 @@ impl Message for SendPostcard {
         buffer.write_f64::<LittleEndian>(
             self.agent_data.pos_global.z,
         )?;
+        buffer.write_u8(self.agent_data.to.len() as u8)?;
         buffer.write(&self.agent_data.to[..])?;
+        buffer.write_u8(self.agent_data.from.len() as u8)?;
         buffer.write(&self.agent_data.from[..])?;
+        buffer.write_u8(self.agent_data.name.len() as u8)?;
         buffer.write(&self.agent_data.name[..])?;
+        buffer.write_u8(self.agent_data.subject.len() as u8)?;
         buffer.write(&self.agent_data.subject[..])?;
+        buffer.write_u16::<LittleEndian>(
+            self.agent_data.msg.len() as u16,
+        )?;
         buffer.write(&self.agent_data.msg[..])?;
         buffer.write_u8(self.agent_data.allow_publish as u8)?;
         buffer.write_u8(self.agent_data.mature_publish as u8)?;
@@ -53590,6 +54028,9 @@ impl Message for SendXferPacket {
         buffer.write_u64::<LittleEndian>(self.xfer_id.id)?;
         buffer.write_u32::<LittleEndian>(self.xfer_id.packet)?;
         // Block DataPacket
+        buffer.write_u16::<LittleEndian>(
+            self.data_packet.data.len() as u16,
+        )?;
         buffer.write(&self.data_packet.data[..])?;
         Ok(())
     }
@@ -53808,12 +54249,14 @@ impl Message for SetSimPresenceInDatabase {
         buffer.write(&[0xff, 0xff, 0x00, 0x17])?;
         // Block SimData
         buffer.write(self.sim_data.region_id.as_bytes())?;
+        buffer.write_u8(self.sim_data.host_name.len() as u8)?;
         buffer.write(&self.sim_data.host_name[..])?;
         buffer.write_u32::<LittleEndian>(self.sim_data.grid_x)?;
         buffer.write_u32::<LittleEndian>(self.sim_data.grid_y)?;
         buffer.write_i32::<LittleEndian>(self.sim_data.pid)?;
         buffer.write_i32::<LittleEndian>(self.sim_data.agent_count)?;
         buffer.write_i32::<LittleEndian>(self.sim_data.time_to_live)?;
+        buffer.write_u8(self.sim_data.status.len() as u8)?;
         buffer.write(&self.sim_data.status[..])?;
         Ok(())
     }
@@ -53839,12 +54282,14 @@ impl Message for SetSimStatusInDatabase {
         buffer.write(&[0xff, 0xff, 0x00, 0x16])?;
         // Block Data
         buffer.write(self.data.region_id.as_bytes())?;
+        buffer.write_u8(self.data.host_name.len() as u8)?;
         buffer.write(&self.data.host_name[..])?;
         buffer.write_i32::<LittleEndian>(self.data.x)?;
         buffer.write_i32::<LittleEndian>(self.data.y)?;
         buffer.write_i32::<LittleEndian>(self.data.pid)?;
         buffer.write_i32::<LittleEndian>(self.data.agent_count)?;
         buffer.write_i32::<LittleEndian>(self.data.time_to_live)?;
+        buffer.write_u8(self.data.status.len() as u8)?;
         buffer.write(&self.data.status[..])?;
         Ok(())
     }
@@ -53925,6 +54370,9 @@ impl Message for SetStartLocationRequest {
         buffer.write(self.agent_data.agent_id.as_bytes())?;
         buffer.write(self.agent_data.session_id.as_bytes())?;
         // Block StartLocationData
+        buffer.write_u8(
+            self.start_location_data.sim_name.len() as u8,
+        )?;
         buffer.write(&self.start_location_data.sim_name[..])?;
         buffer.write_u32::<LittleEndian>(
             self.start_location_data.location_id,
@@ -54207,6 +54655,7 @@ impl Message for SimulatorPresentAtLocation {
             )?;
         }
         // Block SimulatorBlock
+        buffer.write_u8(self.simulator_block.sim_name.len() as u8)?;
         buffer.write(&self.simulator_block.sim_name[..])?;
         buffer.write_u8(self.simulator_block.sim_access)?;
         buffer.write_u32::<LittleEndian>(
@@ -54275,6 +54724,7 @@ impl Message for SimulatorReady {
         // Write the message number.
         buffer.write(&[0xff, 0xff, 0x00, 0x09])?;
         // Block SimulatorBlock
+        buffer.write_u8(self.simulator_block.sim_name.len() as u8)?;
         buffer.write(&self.simulator_block.sim_name[..])?;
         buffer.write_u8(self.simulator_block.sim_access)?;
         buffer.write_u32::<LittleEndian>(
@@ -54465,6 +54915,7 @@ impl Message for StartAuction {
         // Block ParcelData
         buffer.write(self.parcel_data.parcel_id.as_bytes())?;
         buffer.write(self.parcel_data.snapshot_id.as_bytes())?;
+        buffer.write_u8(self.parcel_data.name.len() as u8)?;
         buffer.write(&self.parcel_data.name[..])?;
         Ok(())
     }
@@ -54503,6 +54954,9 @@ impl Message for StartGroupProposal {
         buffer.write_i32::<LittleEndian>(
             self.proposal_data.duration,
         )?;
+        buffer.write_u8(
+            self.proposal_data.proposal_text.len() as u8,
+        )?;
         buffer.write(&self.proposal_data.proposal_text[..])?;
         Ok(())
     }
@@ -54534,6 +54988,7 @@ impl Message for StartLure {
         buffer.write(self.agent_data.session_id.as_bytes())?;
         // Block Info
         buffer.write_u8(self.info.lure_type)?;
+        buffer.write_u8(self.info.message.len() as u8)?;
         buffer.write(&self.info.message[..])?;
         // Block TargetData
         buffer.write_u8(self.target_data.len() as u8)?;
@@ -54603,6 +55058,7 @@ impl Message for StateSave {
         buffer.write(self.agent_data.agent_id.as_bytes())?;
         buffer.write(self.agent_data.session_id.as_bytes())?;
         // Block DataBlock
+        buffer.write_u8(self.data_block.filename.len() as u8)?;
         buffer.write(&self.data_block.filename[..])?;
         Ok(())
     }
@@ -54679,12 +55135,14 @@ impl Message for SystemMessage {
         // Write the message number.
         buffer.write(&[0xff, 0xff, 0x01, 0x94])?;
         // Block MethodData
+        buffer.write_u8(self.method_data.method.len() as u8)?;
         buffer.write(&self.method_data.method[..])?;
         buffer.write(self.method_data.invoice.as_bytes())?;
         buffer.write(&self.method_data.digest)?;
         // Block ParamList
         buffer.write_u8(self.param_list.len() as u8)?;
         for item in &self.param_list {
+            buffer.write_u8(item.parameter.len() as u8)?;
             buffer.write(&item.parameter[..])?;
         }
         Ok(())
@@ -54736,6 +55194,7 @@ impl Message for TelehubInfo {
         buffer.write(&[0xff, 0xff, 0x00, 0x0a])?;
         // Block TelehubBlock
         buffer.write(self.telehub_block.object_id.as_bytes())?;
+        buffer.write_u8(self.telehub_block.object_name.len() as u8)?;
         buffer.write(&self.telehub_block.object_name[..])?;
         buffer.write_f32::<LittleEndian>(
             self.telehub_block.telehub_pos.x,
@@ -54820,11 +55279,14 @@ impl Message for TeleportFailed {
         buffer.write(&[0xff, 0xff, 0x00, 0x4a])?;
         // Block Info
         buffer.write(self.info.agent_id.as_bytes())?;
+        buffer.write_u8(self.info.reason.len() as u8)?;
         buffer.write(&self.info.reason[..])?;
         // Block AlertInfo
         buffer.write_u8(self.alert_info.len() as u8)?;
         for item in &self.alert_info {
+            buffer.write_u8(item.message.len() as u8)?;
             buffer.write(&item.message[..])?;
+            buffer.write_u8(item.extra_params.len() as u8)?;
             buffer.write(&item.extra_params[..])?;
         }
         Ok(())
@@ -54862,6 +55324,9 @@ impl Message for TeleportFinish {
         buffer.write(&self.info.sim_ip.octets())?;
         buffer.write_u16::<LittleEndian>(self.info.sim_port)?;
         buffer.write_u64::<LittleEndian>(self.info.region_handle)?;
+        buffer.write_u16::<LittleEndian>(
+            self.info.seed_capability.len() as u16,
+        )?;
         buffer.write(&self.info.seed_capability[..])?;
         buffer.write_u8(self.info.sim_access)?;
         buffer.write_u32::<LittleEndian>(self.info.teleport_flags)?;
@@ -55048,6 +55513,7 @@ impl Message for TeleportProgress {
         buffer.write(self.agent_data.agent_id.as_bytes())?;
         // Block Info
         buffer.write_u32::<LittleEndian>(self.info.teleport_flags)?;
+        buffer.write_u8(self.info.message.len() as u8)?;
         buffer.write(&self.info.message[..])?;
         Ok(())
     }
@@ -55279,6 +55745,9 @@ impl Message for TransferInfo {
         )?;
         buffer.write_i32::<LittleEndian>(self.transfer_info.status)?;
         buffer.write_i32::<LittleEndian>(self.transfer_info.size)?;
+        buffer.write_u16::<LittleEndian>(
+            self.transfer_info.params.len() as u16,
+        )?;
         buffer.write(&self.transfer_info.params[..])?;
         Ok(())
     }
@@ -55373,6 +55842,9 @@ impl Message for TransferPacket {
         )?;
         buffer.write_i32::<LittleEndian>(self.transfer_data.packet)?;
         buffer.write_i32::<LittleEndian>(self.transfer_data.status)?;
+        buffer.write_u16::<LittleEndian>(
+            self.transfer_data.data.len() as u16,
+        )?;
         buffer.write(&self.transfer_data.data[..])?;
         Ok(())
     }
@@ -55407,6 +55879,9 @@ impl Message for TransferRequest {
         buffer.write_f32::<LittleEndian>(
             self.transfer_info.priority,
         )?;
+        buffer.write_u16::<LittleEndian>(
+            self.transfer_info.params.len() as u16,
+        )?;
         buffer.write(&self.transfer_info.params[..])?;
         Ok(())
     }
@@ -55434,6 +55909,7 @@ impl Message for UUIDGroupNameReply {
         buffer.write_u8(self.uuid_name_block.len() as u8)?;
         for item in &self.uuid_name_block {
             buffer.write(item.id.as_bytes())?;
+            buffer.write_u8(item.group_name.len() as u8)?;
             buffer.write(&item.group_name[..])?;
         }
         Ok(())
@@ -55497,7 +55973,9 @@ impl Message for UUIDNameReply {
         buffer.write_u8(self.uuid_name_block.len() as u8)?;
         for item in &self.uuid_name_block {
             buffer.write(item.id.as_bytes())?;
+            buffer.write_u8(item.first_name.len() as u8)?;
             buffer.write(&item.first_name[..])?;
+            buffer.write_u8(item.last_name.len() as u8)?;
             buffer.write(&item.last_name[..])?;
         }
         Ok(())
@@ -55678,7 +56156,9 @@ impl Message for UpdateAttachment {
         buffer.write_i32::<LittleEndian>(
             self.inventory_data.sale_price,
         )?;
+        buffer.write_u8(self.inventory_data.name.len() as u8)?;
         buffer.write(&self.inventory_data.name[..])?;
+        buffer.write_u8(self.inventory_data.description.len() as u8)?;
         buffer.write(&self.inventory_data.description[..])?;
         buffer.write_i32::<LittleEndian>(
             self.inventory_data.creation_date,
@@ -55740,7 +56220,9 @@ impl Message for UpdateCreateInventoryItem {
             buffer.write_u32::<LittleEndian>(item.flags)?;
             buffer.write_u8(item.sale_type)?;
             buffer.write_i32::<LittleEndian>(item.sale_price)?;
+            buffer.write_u8(item.name.len() as u8)?;
             buffer.write(&item.name[..])?;
+            buffer.write_u8(item.description.len() as u8)?;
             buffer.write(&item.description[..])?;
             buffer.write_i32::<LittleEndian>(item.creation_date)?;
             buffer.write_u32::<LittleEndian>(item.crc)?;
@@ -55781,6 +56263,9 @@ impl Message for UpdateGroupInfo {
         buffer.write(self.agent_data.session_id.as_bytes())?;
         // Block GroupData
         buffer.write(self.group_data.group_id.as_bytes())?;
+        buffer.write_u16::<LittleEndian>(
+            self.group_data.charter.len() as u16,
+        )?;
         buffer.write(&self.group_data.charter[..])?;
         buffer.write_u8(self.group_data.show_in_list as u8)?;
         buffer.write(self.group_data.insignia_id.as_bytes())?;
@@ -55824,6 +56309,7 @@ impl Message for UpdateInventoryFolder {
             buffer.write(item.folder_id.as_bytes())?;
             buffer.write(item.parent_id.as_bytes())?;
             buffer.write_i8(item.type_)?;
+            buffer.write_u8(item.name.len() as u8)?;
             buffer.write(&item.name[..])?;
         }
         Ok(())
@@ -55882,7 +56368,9 @@ impl Message for UpdateInventoryItem {
             buffer.write_u32::<LittleEndian>(item.flags)?;
             buffer.write_u8(item.sale_type)?;
             buffer.write_i32::<LittleEndian>(item.sale_price)?;
+            buffer.write_u8(item.name.len() as u8)?;
             buffer.write(&item.name[..])?;
+            buffer.write_u8(item.description.len() as u8)?;
             buffer.write(&item.description[..])?;
             buffer.write_i32::<LittleEndian>(item.creation_date)?;
             buffer.write_u32::<LittleEndian>(item.crc)?;
@@ -55921,6 +56409,7 @@ impl Message for UpdateMuteListEntry {
         buffer.write(self.agent_data.session_id.as_bytes())?;
         // Block MuteData
         buffer.write(self.mute_data.mute_id.as_bytes())?;
+        buffer.write_u8(self.mute_data.mute_name.len() as u8)?;
         buffer.write(&self.mute_data.mute_name[..])?;
         buffer.write_i32::<LittleEndian>(self.mute_data.mute_type)?;
         buffer.write_u32::<LittleEndian>(self.mute_data.mute_flags)?;
@@ -55957,8 +56446,11 @@ impl Message for UpdateParcel {
         buffer.write(self.parcel_data.owner_id.as_bytes())?;
         buffer.write_u8(self.parcel_data.group_owned as u8)?;
         buffer.write_u8(self.parcel_data.status)?;
+        buffer.write_u8(self.parcel_data.name.len() as u8)?;
         buffer.write(&self.parcel_data.name[..])?;
+        buffer.write_u8(self.parcel_data.description.len() as u8)?;
         buffer.write(&self.parcel_data.description[..])?;
+        buffer.write_u8(self.parcel_data.music_url.len() as u8)?;
         buffer.write(&self.parcel_data.music_url[..])?;
         buffer.write_f32::<LittleEndian>(self.parcel_data.region_x)?;
         buffer.write_f32::<LittleEndian>(self.parcel_data.region_y)?;
@@ -56015,6 +56507,7 @@ impl Message for UpdateSimulator {
         buffer.write(&[0xff, 0xff, 0x00, 0x11])?;
         // Block SimulatorInfo
         buffer.write(self.simulator_info.region_id.as_bytes())?;
+        buffer.write_u8(self.simulator_info.sim_name.len() as u8)?;
         buffer.write(&self.simulator_info.sim_name[..])?;
         buffer.write_u32::<LittleEndian>(
             self.simulator_info.estate_id,
@@ -56078,7 +56571,9 @@ impl Message for UpdateTaskInventory {
         buffer.write_i32::<LittleEndian>(
             self.inventory_data.sale_price,
         )?;
+        buffer.write_u8(self.inventory_data.name.len() as u8)?;
         buffer.write(&self.inventory_data.name[..])?;
+        buffer.write_u8(self.inventory_data.description.len() as u8)?;
         buffer.write(&self.inventory_data.description[..])?;
         buffer.write_i32::<LittleEndian>(
             self.inventory_data.creation_date,
@@ -56117,6 +56612,9 @@ impl Message for UpdateUserInfo {
         buffer.write(self.agent_data.session_id.as_bytes())?;
         // Block UserData
         buffer.write_u8(self.user_data.im_via_e_mail as u8)?;
+        buffer.write_u8(
+            self.user_data.directory_visibility.len() as u8,
+        )?;
         buffer.write(&self.user_data.directory_visibility[..])?;
         Ok(())
     }
@@ -56197,7 +56695,13 @@ impl Message for UserInfoReply {
         buffer.write(self.agent_data.agent_id.as_bytes())?;
         // Block UserData
         buffer.write_u8(self.user_data.im_via_e_mail as u8)?;
+        buffer.write_u8(
+            self.user_data.directory_visibility.len() as u8,
+        )?;
         buffer.write(&self.user_data.directory_visibility[..])?;
+        buffer.write_u16::<LittleEndian>(
+            self.user_data.e_mail.len() as u16,
+        )?;
         buffer.write(&self.user_data.e_mail[..])?;
         Ok(())
     }
@@ -56270,10 +56774,18 @@ impl Message for UserReport {
         buffer.write(self.report_data.screenshot_id.as_bytes())?;
         buffer.write(self.report_data.object_id.as_bytes())?;
         buffer.write(self.report_data.abuser_id.as_bytes())?;
+        buffer.write_u8(
+            self.report_data.abuse_region_name.len() as u8,
+        )?;
         buffer.write(&self.report_data.abuse_region_name[..])?;
         buffer.write(self.report_data.abuse_region_id.as_bytes())?;
+        buffer.write_u8(self.report_data.summary.len() as u8)?;
         buffer.write(&self.report_data.summary[..])?;
+        buffer.write_u16::<LittleEndian>(
+            self.report_data.details.len() as u16,
+        )?;
         buffer.write(&self.report_data.details[..])?;
+        buffer.write_u8(self.report_data.version_string.len() as u8)?;
         buffer.write(&self.report_data.version_string[..])?;
         Ok(())
     }
@@ -56333,10 +56845,18 @@ impl Message for UserReportInternal {
         buffer.write(self.report_data.creator_id.as_bytes())?;
         buffer.write(self.report_data.region_id.as_bytes())?;
         buffer.write(self.report_data.abuser_id.as_bytes())?;
+        buffer.write_u8(
+            self.report_data.abuse_region_name.len() as u8,
+        )?;
         buffer.write(&self.report_data.abuse_region_name[..])?;
         buffer.write(self.report_data.abuse_region_id.as_bytes())?;
+        buffer.write_u8(self.report_data.summary.len() as u8)?;
         buffer.write(&self.report_data.summary[..])?;
+        buffer.write_u16::<LittleEndian>(
+            self.report_data.details.len() as u16,
+        )?;
         buffer.write(&self.report_data.details[..])?;
+        buffer.write_u8(self.report_data.version_string.len() as u8)?;
         buffer.write(&self.report_data.version_string[..])?;
         Ok(())
     }
@@ -56421,6 +56941,7 @@ impl Message for ViewerEffect {
             buffer.write_u8(item.type_)?;
             buffer.write_f32::<LittleEndian>(item.duration)?;
             buffer.write(&item.color)?;
+            buffer.write_u8(item.type_data.len() as u8)?;
             buffer.write(&item.type_data[..])?;
         }
         Ok(())
@@ -56524,8 +57045,11 @@ impl Message for ViewerStats {
             self.agent_data.regions_visited,
         )?;
         buffer.write_u32::<LittleEndian>(self.agent_data.sys_ram)?;
+        buffer.write_u8(self.agent_data.sys_os.len() as u8)?;
         buffer.write(&self.agent_data.sys_os[..])?;
+        buffer.write_u8(self.agent_data.sys_cpu.len() as u8)?;
         buffer.write(&self.agent_data.sys_cpu[..])?;
+        buffer.write_u8(self.agent_data.sys_gpu.len() as u8)?;
         buffer.write(&self.agent_data.sys_gpu[..])?;
         // Block DownloadTotals
         buffer.write_u32::<LittleEndian>(self.download_totals.world)?;
