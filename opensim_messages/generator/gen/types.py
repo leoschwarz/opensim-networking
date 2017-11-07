@@ -3,6 +3,13 @@
 ####################################################################
 from inflector import Inflector
 import textwrap
+import os
+
+# TODO: Only do this once instead of here and in generate.py
+import sys
+sys.path.append("protocol/messages-util")
+import message_xml
+import strings_xml
 
 # Conversion from the types as used in the XML specs to Rust types.
 TYPE_CONVERSIONS = {
@@ -17,21 +24,53 @@ TYPE_CONVERSIONS = {
     "Variable 1": "Vec<u8>", "Variable 2": "Vec<u8>",
 }
 
+def find_string(path, identifier):
+    full_path = os.path.join(os.path.dirname(__file__), "..", "protocol", "messages", path)
+    with open(full_path, "r") as f:
+        strings = strings_xml.parse(f, silence=True)
+    for string in strings.string:
+        if string.id == identifier:
+            return string.valueOf_
+    print("Error: string with path=%s and identifier=%s was not found" % (path, identifier))
+    return "{{DOC GEN ERROR}}"
+
 def to_rust_doc(raw_doc):
     """ Convert XML raw doc element to Rust doc. """
+    doc_body = ""
+
+    for item in raw_doc.content_:
+        value = item.getValue()
+        if type(value) == str:
+            doc_body += textwrap.dedent(value) + " "
+        elif type(value) == message_xml.docRefType:
+            # TODO: Think about differentiating between doc-link and doc-ref more rigorously.
+            if value.hasContent_():
+                # TODO: Generate link to the relevant entity.
+                content = value.valueOf_
+                doc_body += content + " "
+            else:
+                target = value.target
+                item = value.item
+                # Fetch the specified strings file entry.
+                doc_body += find_string(target, item) + " "
+        else:
+            raise RuntimeError("Invalid doc value type: %s", type(value))
+
+    return "\n".join(["/// " + line for line in doc_body.splitlines()])
+
     # TODO handle docs with multiple children (e.g. with refs etc)
+    print(raw_doc.content_[0].getValue())
     dedented = textwrap.dedent(raw_doc.content_[0].getValue())
     return "\n".join(["/// " + line for line in dedented.splitlines()])
 
 class Field:
     def __init__(self, xml_obj):
         self._name = xml_obj.name
-        self._type = xml_obj.type_
-
         if xml_obj.type_.startswith("Fixed"):
             self._type, self.count = xml_obj.type_.split()
         else:
             self._type = xml_obj.type_
+        self.doc = to_rust_doc(xml_obj.doc)
 
     @property
     def r_name(self):

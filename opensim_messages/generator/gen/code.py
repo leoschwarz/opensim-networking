@@ -5,6 +5,7 @@ def generate_struct(message):
         code += "#[derive(Clone, Debug)]\n"
         code += "pub struct %s {\n" % block.r_name
         for field in block.fields:
+            code += "\t%s\n" % field.doc
             code += "\tpub %s: %s,\n" % (field.r_name, field.r_type)
         code += "}\n\n"
 

@@ -14,13 +14,16 @@ use byteorder::{LittleEndian, ReadBytesExt, WriteBytesExt};
 use std::io::{Read, Write};
 #[derive(Clone, Debug)]
 pub struct AbortXfer_XferID {
+    /// TODO
     pub id: u64,
+    /// TODO
     pub result: i32,
 }
 
 ///
 /// TODO:
 /// /// AbortXfer
+///
 #[derive(Clone, Debug)]
 pub struct AbortXfer {
     pub xfer_id: AbortXfer_XferID,
@@ -29,22 +32,27 @@ pub struct AbortXfer {
 
 #[derive(Clone, Debug)]
 pub struct AcceptCallingCard_AgentData {
+    /// TODO
     pub agent_id: Uuid,
+    /// TODO
     pub session_id: Uuid,
 }
 
 #[derive(Clone, Debug)]
 pub struct AcceptCallingCard_TransactionBlock {
+    /// TODO
     pub transaction_id: Uuid,
 }
 
 #[derive(Clone, Debug)]
 pub struct AcceptCallingCard_FolderData {
+    /// TODO
     pub folder_id: Uuid,
 }
 
 ///
 /// TODO:
+///
 ///
 #[derive(Clone, Debug)]
 pub struct AcceptCallingCard {
@@ -56,22 +64,27 @@ pub struct AcceptCallingCard {
 
 #[derive(Clone, Debug)]
 pub struct AcceptFriendship_AgentData {
+    /// TODO
     pub agent_id: Uuid,
+    /// TODO
     pub session_id: Uuid,
 }
 
 #[derive(Clone, Debug)]
 pub struct AcceptFriendship_TransactionBlock {
+    /// TODO
     pub transaction_id: Uuid,
 }
 
 #[derive(Clone, Debug)]
 pub struct AcceptFriendship_FolderData {
+    /// TODO
     pub folder_id: Uuid,
 }
 
 ///
 /// TODO:
+///
 ///
 #[derive(Clone, Debug)]
 pub struct AcceptFriendship {
@@ -83,15 +96,21 @@ pub struct AcceptFriendship {
 
 #[derive(Clone, Debug)]
 pub struct ActivateGestures_AgentData {
+    /// TODO
     pub agent_id: Uuid,
+    /// TODO
     pub session_id: Uuid,
+    /// TODO
     pub flags: u32,
 }
 
 #[derive(Clone, Debug)]
 pub struct ActivateGestures_Data {
+    /// TODO
     pub item_id: Uuid,
+    /// TODO
     pub asset_id: Uuid,
+    /// TODO
     pub gesture_flags: u32,
 }
 
@@ -99,6 +118,7 @@ pub struct ActivateGestures_Data {
 /// 		TODO:
 /// 		/// Tell the database that some gestures are now active
 /// /// viewer -> sim -> data
+///
 #[derive(Clone, Debug)]
 pub struct ActivateGestures {
     pub agent_data: ActivateGestures_AgentData,
@@ -108,8 +128,11 @@ pub struct ActivateGestures {
 
 #[derive(Clone, Debug)]
 pub struct ActivateGroup_AgentData {
+    /// TODO
     pub agent_id: Uuid,
+    /// TODO
     pub session_id: Uuid,
+    /// TODO
     pub group_id: Uuid,
 }
 
@@ -117,6 +140,7 @@ pub struct ActivateGroup_AgentData {
 /// 		TODO:
 /// 		/// used to switch an agent's currently active group.
 /// /// viewer -> simulator -> dataserver -> AgentDataUpdate...
+///
 #[derive(Clone, Debug)]
 pub struct ActivateGroup {
     pub agent_data: ActivateGroup_AgentData,
@@ -125,8 +149,11 @@ pub struct ActivateGroup {
 
 #[derive(Clone, Debug)]
 pub struct AddCircuitCode_CircuitCode {
+    /// TODO
     pub code: u32,
+    /// TODO
     pub session_id: Uuid,
+    /// TODO
     pub agent_id: Uuid,
 }
 
@@ -136,6 +163,7 @@ pub struct AddCircuitCode_CircuitCode {
 /// /// sim->sim
 /// /// AddCircuitCode - Tells the recipient's messaging system that this code
 /// /// is for a legal circuit
+///
 #[derive(Clone, Debug)]
 pub struct AddCircuitCode {
     pub circuit_code: AddCircuitCode_CircuitCode,
@@ -144,12 +172,15 @@ pub struct AddCircuitCode {
 
 #[derive(Clone, Debug)]
 pub struct AgentAlertMessage_AgentData {
+    /// TODO
     pub agent_id: Uuid,
 }
 
 #[derive(Clone, Debug)]
 pub struct AgentAlertMessage_AlertData {
+    /// TODO
     pub modal: bool,
+    /// TODO
     pub message: Vec<u8>,
 }
 
@@ -157,6 +188,7 @@ pub struct AgentAlertMessage_AlertData {
 /// 		TODO:
 /// 		/// Send an AlertMessage to the named agent.
 /// /// usually dataserver->simulator
+///
 #[derive(Clone, Debug)]
 pub struct AgentAlertMessage {
     pub agent_data: AgentAlertMessage_AgentData,
@@ -166,18 +198,23 @@ pub struct AgentAlertMessage {
 
 #[derive(Clone, Debug)]
 pub struct AgentAnimation_AgentData {
+    /// TODO
     pub agent_id: Uuid,
+    /// TODO
     pub session_id: Uuid,
 }
 
 #[derive(Clone, Debug)]
 pub struct AgentAnimation_AnimationList {
+    /// TODO
     pub anim_id: Uuid,
+    /// TODO
     pub start_anim: bool,
 }
 
 #[derive(Clone, Debug)]
 pub struct AgentAnimation_PhysicalAvatarEventList {
+    /// TODO
     pub type_data: Vec<u8>,
 }
 
@@ -185,6 +222,7 @@ pub struct AgentAnimation_PhysicalAvatarEventList {
 /// 		TODO:
 /// 		/// AgentAnimation - Update animation state
 /// /// viewer --> simulator
+///
 #[derive(Clone, Debug)]
 pub struct AgentAnimation {
     pub agent_data: AgentAnimation_AgentData,
@@ -195,14 +233,19 @@ pub struct AgentAnimation {
 
 #[derive(Clone, Debug)]
 pub struct AgentCachedTexture_AgentData {
+    /// TODO
     pub agent_id: Uuid,
+    /// TODO
     pub session_id: Uuid,
+    /// TODO
     pub serial_num: i32,
 }
 
 #[derive(Clone, Debug)]
 pub struct AgentCachedTexture_WearableData {
+    /// TODO
     pub id: Uuid,
+    /// TODO
     pub texture_index: u8,
 }
 
@@ -212,6 +255,7 @@ pub struct AgentCachedTexture_WearableData {
 /// /// viewer queries for cached textures on dataserver (via simulator)
 /// /// viewer -> simulator -> dataserver
 /// /// reliable
+///
 #[derive(Clone, Debug)]
 pub struct AgentCachedTexture {
     pub agent_data: AgentCachedTexture_AgentData,
@@ -221,15 +265,21 @@ pub struct AgentCachedTexture {
 
 #[derive(Clone, Debug)]
 pub struct AgentCachedTextureResponse_AgentData {
+    /// TODO
     pub agent_id: Uuid,
+    /// TODO
     pub session_id: Uuid,
+    /// TODO
     pub serial_num: i32,
 }
 
 #[derive(Clone, Debug)]
 pub struct AgentCachedTextureResponse_WearableData {
+    /// TODO
     pub texture_id: Uuid,
+    /// TODO
     pub texture_index: u8,
+    /// TODO
     pub host_name: Vec<u8>,
 }
 
@@ -239,6 +289,7 @@ pub struct AgentCachedTextureResponse_WearableData {
 /// /// response to viewer queries for cached textures on dataserver (via simulator)
 /// /// dataserver -> simulator -> viewer
 /// /// reliable
+///
 #[derive(Clone, Debug)]
 pub struct AgentCachedTextureResponse {
     pub agent_data: AgentCachedTextureResponse_AgentData,
@@ -248,12 +299,19 @@ pub struct AgentCachedTextureResponse {
 
 #[derive(Clone, Debug)]
 pub struct AgentDataUpdate_AgentData {
+    /// TODO
     pub agent_id: Uuid,
+    /// TODO
     pub first_name: Vec<u8>,
+    /// TODO
     pub last_name: Vec<u8>,
+    /// TODO
     pub group_title: Vec<u8>,
+    /// TODO
     pub active_group_id: Uuid,
+    /// TODO
     pub group_powers: u64,
+    /// TODO
     pub group_name: Vec<u8>,
 }
 
@@ -264,6 +322,7 @@ pub struct AgentDataUpdate_AgentData {
 /// /// Used, for example, when an agent's group changes.
 /// /// dataserver -> simulator -> viewer
 /// /// reliable
+///
 #[derive(Clone, Debug)]
 pub struct AgentDataUpdate {
     pub agent_data: AgentDataUpdate_AgentData,
@@ -272,13 +331,16 @@ pub struct AgentDataUpdate {
 
 #[derive(Clone, Debug)]
 pub struct AgentDataUpdateRequest_AgentData {
+    /// TODO
     pub agent_id: Uuid,
+    /// TODO
     pub session_id: Uuid,
 }
 
 ///
 /// TODO:
 /// /// Request an AgentDataUpdate without changing any agent data.
+///
 #[derive(Clone, Debug)]
 pub struct AgentDataUpdateRequest {
     pub agent_data: AgentDataUpdateRequest_AgentData,
@@ -287,7 +349,9 @@ pub struct AgentDataUpdateRequest {
 
 #[derive(Clone, Debug)]
 pub struct AgentDropGroup_AgentData {
+    /// TODO
     pub agent_id: Uuid,
+    /// TODO
     pub group_id: Uuid,
 }
 
@@ -298,6 +362,7 @@ pub struct AgentDropGroup_AgentData {
 /// /// dataserver -> simulator -> viewer
 /// /// dataserver -> userserver
 /// /// reliable
+///
 #[derive(Clone, Debug)]
 pub struct AgentDropGroup {
     pub agent_data: AgentDropGroup_AgentData,
@@ -306,20 +371,26 @@ pub struct AgentDropGroup {
 
 #[derive(Clone, Debug)]
 pub struct AgentFOV_AgentData {
+    /// TODO
     pub agent_id: Uuid,
+    /// TODO
     pub session_id: Uuid,
+    /// TODO
     pub circuit_code: u32,
 }
 
 #[derive(Clone, Debug)]
 pub struct AgentFOV_FOVBlock {
+    /// TODO
     pub gen_counter: u32,
+    /// TODO
     pub vertical_angle: f32,
 }
 
 ///
 /// TODO:
 /// /// AgentFOV - Update to agent's field of view, angle is vertical, single F32 float in radians
+///
 #[derive(Clone, Debug)]
 pub struct AgentFOV {
     pub agent_data: AgentFOV_AgentData,
@@ -329,16 +400,23 @@ pub struct AgentFOV {
 
 #[derive(Clone, Debug)]
 pub struct AgentGroupDataUpdate_AgentData {
+    /// TODO
     pub agent_id: Uuid,
 }
 
 #[derive(Clone, Debug)]
 pub struct AgentGroupDataUpdate_GroupData {
+    /// TODO
     pub group_id: Uuid,
+    /// TODO
     pub group_powers: u64,
+    /// TODO
     pub accept_notices: bool,
+    /// TODO
     pub group_insignia_id: Uuid,
+    /// TODO
     pub contribution: i32,
+    /// TODO
     pub group_name: Vec<u8>,
 }
 
@@ -348,6 +426,7 @@ pub struct AgentGroupDataUpdate_GroupData {
 /// /// Updates a viewer or simulator's impression of the groups an agent is in.
 /// /// dataserver -> simulator -> viewer
 /// /// reliable
+///
 #[derive(Clone, Debug)]
 pub struct AgentGroupDataUpdate {
     pub agent_data: AgentGroupDataUpdate_AgentData,
@@ -357,15 +436,21 @@ pub struct AgentGroupDataUpdate {
 
 #[derive(Clone, Debug)]
 pub struct AgentHeightWidth_AgentData {
+    /// TODO
     pub agent_id: Uuid,
+    /// TODO
     pub session_id: Uuid,
+    /// TODO
     pub circuit_code: u32,
 }
 
 #[derive(Clone, Debug)]
 pub struct AgentHeightWidth_HeightWidthBlock {
+    /// TODO
     pub gen_counter: u32,
+    /// TODO
     pub height: u16,
+    /// TODO
     pub width: u16,
 }
 
@@ -373,6 +458,7 @@ pub struct AgentHeightWidth_HeightWidthBlock {
 /// 		TODO:
 /// 		/// AgentHeightWidth - Update to height and aspect, sent as height/width to save space
 /// /// Usually sent when window resized or created
+///
 #[derive(Clone, Debug)]
 pub struct AgentHeightWidth {
     pub agent_data: AgentHeightWidth_AgentData,
@@ -382,13 +468,17 @@ pub struct AgentHeightWidth {
 
 #[derive(Clone, Debug)]
 pub struct AgentIsNowWearing_AgentData {
+    /// TODO
     pub agent_id: Uuid,
+    /// TODO
     pub session_id: Uuid,
 }
 
 #[derive(Clone, Debug)]
 pub struct AgentIsNowWearing_WearableData {
+    /// TODO
     pub item_id: Uuid,
+    /// TODO
     pub wearable_type: u8,
 }
 
@@ -399,6 +489,7 @@ pub struct AgentIsNowWearing_WearableData {
 /// /// (a.k.a. "Here's what I'm wearing now.")
 /// /// viewer->sim->dataserver
 /// /// reliable
+///
 #[derive(Clone, Debug)]
 pub struct AgentIsNowWearing {
     pub agent_data: AgentIsNowWearing_AgentData,
@@ -408,26 +499,34 @@ pub struct AgentIsNowWearing {
 
 #[derive(Clone, Debug)]
 pub struct AgentMovementComplete_AgentData {
+    /// TODO
     pub agent_id: Uuid,
+    /// TODO
     pub session_id: Uuid,
 }
 
 #[derive(Clone, Debug)]
 pub struct AgentMovementComplete_Data {
+    /// TODO
     pub position: Vector3<f32>,
+    /// TODO
     pub look_at: Vector3<f32>,
+    /// TODO
     pub region_handle: u64,
+    /// TODO
     pub timestamp: u32,
 }
 
 #[derive(Clone, Debug)]
 pub struct AgentMovementComplete_SimData {
+    /// TODO
     pub channel_version: Vec<u8>,
 }
 
 ///
 /// TODO:
 /// /// sim -> viewer
+///
 #[derive(Clone, Debug)]
 pub struct AgentMovementComplete {
     pub agent_data: AgentMovementComplete_AgentData,
@@ -438,14 +537,18 @@ pub struct AgentMovementComplete {
 
 #[derive(Clone, Debug)]
 pub struct AgentPause_AgentData {
+    /// TODO
     pub agent_id: Uuid,
+    /// TODO
     pub session_id: Uuid,
+    /// TODO
     pub serial_num: u32,
 }
 
 ///
 /// TODO:
 /// /// AgentPause - viewer occasionally will block, inform simulator of this fact
+///
 #[derive(Clone, Debug)]
 pub struct AgentPause {
     pub agent_data: AgentPause_AgentData,
@@ -454,18 +557,22 @@ pub struct AgentPause {
 
 #[derive(Clone, Debug)]
 pub struct AgentQuitCopy_AgentData {
+    /// TODO
     pub agent_id: Uuid,
+    /// TODO
     pub session_id: Uuid,
 }
 
 #[derive(Clone, Debug)]
 pub struct AgentQuitCopy_FuseBlock {
+    /// TODO
     pub viewer_circuit_code: u32,
 }
 
 ///
 /// TODO:
 /// /// quit message sent between simulators
+///
 #[derive(Clone, Debug)]
 pub struct AgentQuitCopy {
     pub agent_data: AgentQuitCopy_AgentData,
@@ -475,19 +582,24 @@ pub struct AgentQuitCopy {
 
 #[derive(Clone, Debug)]
 pub struct AgentRequestSit_AgentData {
+    /// TODO
     pub agent_id: Uuid,
+    /// TODO
     pub session_id: Uuid,
 }
 
 #[derive(Clone, Debug)]
 pub struct AgentRequestSit_TargetObject {
+    /// TODO
     pub target_id: Uuid,
+    /// TODO
     pub offset: Vector3<f32>,
 }
 
 ///
 /// TODO:
 /// /// AgentRequestSit - Try to sit on an object
+///
 #[derive(Clone, Debug)]
 pub struct AgentRequestSit {
     pub agent_data: AgentRequestSit_AgentData,
@@ -497,14 +609,18 @@ pub struct AgentRequestSit {
 
 #[derive(Clone, Debug)]
 pub struct AgentResume_AgentData {
+    /// TODO
     pub agent_id: Uuid,
+    /// TODO
     pub session_id: Uuid,
+    /// TODO
     pub serial_num: u32,
 }
 
 ///
 /// TODO:
 /// /// AgentResume - unblock the agent
+///
 #[derive(Clone, Debug)]
 pub struct AgentResume {
     pub agent_data: AgentResume_AgentData,
@@ -513,31 +629,40 @@ pub struct AgentResume {
 
 #[derive(Clone, Debug)]
 pub struct AgentSetAppearance_AgentData {
+    /// TODO
     pub agent_id: Uuid,
+    /// TODO
     pub session_id: Uuid,
+    /// TODO
     pub serial_num: u32,
+    /// TODO
     pub size: Vector3<f32>,
 }
 
 #[derive(Clone, Debug)]
 pub struct AgentSetAppearance_WearableData {
+    /// TODO
     pub cache_id: Uuid,
+    /// TODO
     pub texture_index: u8,
 }
 
 #[derive(Clone, Debug)]
 pub struct AgentSetAppearance_ObjectData {
+    /// TODO
     pub texture_entry: Vec<u8>,
 }
 
 #[derive(Clone, Debug)]
 pub struct AgentSetAppearance_VisualParam {
+    /// TODO
     pub param_value: u8,
 }
 
 ///
 /// TODO:
 /// /// AgentSetAppearance - Update to agent appearance
+///
 #[derive(Clone, Debug)]
 pub struct AgentSetAppearance {
     pub agent_data: AgentSetAppearance_AgentData,
@@ -549,13 +674,16 @@ pub struct AgentSetAppearance {
 
 #[derive(Clone, Debug)]
 pub struct AgentSit_AgentData {
+    /// TODO
     pub agent_id: Uuid,
+    /// TODO
     pub session_id: Uuid,
 }
 
 ///
 /// TODO:
 /// /// AgentSit - Actually sit on object
+///
 #[derive(Clone, Debug)]
 pub struct AgentSit {
     pub agent_data: AgentSit_AgentData,
@@ -564,19 +692,35 @@ pub struct AgentSit {
 
 #[derive(Clone, Debug)]
 pub struct AgentThrottle_AgentData {
+    /// Agent id of the client.
     pub agent_id: Uuid,
+    /// Temporary id assigned to this session by the simulator on login, used to verify our identity in packets.
     pub session_id: Uuid,
+    /// The circuit code as provided in the login response. It serves as a proof of authentication and identfies the client.
     pub circuit_code: u32,
 }
 
 #[derive(Clone, Debug)]
 pub struct AgentThrottle_Throttle {
+    /// Clients can set this value to 0.
     pub gen_counter: u32,
+    ///
+    /// Throttle values describe the maximum bits per second to be spent for various aspects of the circuit. They are provided in the form of the following sequence of 32 bit floats of little endian ordering:
+    ///
+    /// Resend:  traffic resending unacknowledged packets
+    /// Land:    traffic for LayerData terrain
+    /// Wind:    traffic for LayerData wind data
+    /// Cloud:   traffic for LayerData clouds
+    /// Task:    unknown
+    /// Texture: traffic for textures
+    /// Asset:   traffic for assets
+    ///
     pub throttles: Vec<u8>,
 }
 
 ///
 /// Request peer to throttle specific aspects of networking.
+///
 #[derive(Clone, Debug)]
 pub struct AgentThrottle {
     pub agent_data: AgentThrottle_AgentData,
@@ -586,17 +730,87 @@ pub struct AgentThrottle {
 
 #[derive(Clone, Debug)]
 pub struct AgentUpdate_AgentData {
+    /// Agent id of the sender.
     pub agent_id: Uuid,
+    /// Temporary id assigned to this session by the simulator on login, used to verify our identity in packets.
     pub session_id: Uuid,
+    /// TODO
     pub body_rotation: Quaternion<f32>,
+    /// TODO
     pub head_rotation: Quaternion<f32>,
+    ///
+    /// Indicates current behavior state:
+    ///
+    /// 0: walking
+    /// 1: mouselook
+    /// 2: typing
+    ///
     pub state: u8,
+    /// Region local center coordinates of the camera.
     pub camera_center: Vector3<f32>,
+    /// Camera coordinate axis in looking _at_ direction (forward).
+    ///                 TODO: Check how these are provided? Most likely unit distance from camera center into the direction of the coordinate axis?
+    ///
     pub camera_at_axis: Vector3<f32>,
+    /// Camera coordinate axis, left direction.
     pub camera_left_axis: Vector3<f32>,
+    /// Camera coordinate axis, up direction.
     pub camera_up_axis: Vector3<f32>,
+    /// TODO
     pub far: f32,
+    ///
+    /// On/off bits for movement keys which the server then feeds into the physics engine
+    /// to compute actual movement of the client. The server then sends updates back to the
+    /// clients (TODO: which packet?).
+    ///
+    /// TODO:
+    ///  - If we send a flag and then stop what happens with the agent? According to what I saw
+    ///    so far the agent derenders but maybe this is also due to bugs in my code.
+    ///
+    /// The official viewer rapidly polls for currently pressed keys, sets the flags and sends the packet, then resets the flags until the next polling interval.
+    ///
+    /// Flags (encoded as 32 bit integer, in the encoding column the bit number from least significant to most significant bit is listed for each flag):
+    ///
+    /// | Encoding | Flag            | Description                                                   | SL keybinding         |
+    /// |----------|-----------------|---------------------------------------------------------------|-----------------------|
+    /// | 0x0      | EMPTY           | TODO                                                          |                       |
+    /// | 1        | MOVE_FWD_POS    | Move forward                                                  | W/Up arrow            |
+    /// | 2        | MOVE_FWD_NEG    | Move backward                                                 | s/down arrow          |
+    /// | 3        | MOVE_LEFT_POS   | Move left                                                     | shift-(a/left arrow)  |
+    /// | 4        | MOVE_LEFT_NEG   | Move right                                                    | shift-(d/right arrow) |
+    /// | 5        | MOVE_UP_POS     | not flying: jump; flying: move up                             | e                     |
+    /// | 6        | MOVE_UP_NEG     | not flying: croutch; flying: move down                        | c                     |
+    /// | 7        |                 | unused                                                        |                       |
+    /// | 8        |                 | unused                                                        |                       |
+    /// | 9        |                 | unused                                                        |                       |
+    /// | 10       |                 | unused                                                        |                       |
+    /// | 11       | FAST_FWD        | OR-ed with agent_control_fwd_* if the keyboard is being used  | todo                  |
+    /// | 12       | FAST_LEFT       | OR-ed with agent_control_left_* if the keyboard is being used | todo                  |
+    /// | 13       | FAST_UP         | OR-ed with agent_control_up_* if the keyboard is being used   | todo                  |
+    /// | 14       | FLY             | Fly                                                           |                       |
+    /// | 15       | STOP            | TODO                                                          |                       |
+    /// | 16       | FINISH_ANIM     | Finish the current animation                                  |                       |
+    /// | 17       | STAND_UP        | Stand up from the ground or a prim seat                       |                       |
+    /// | 18       | SIT_ON_GROUND   | Sit on the ground at the current location                     |                       |
+    /// | 19       | MOUSELOOK       |                                                               |                       |
+    /// | 20       |                 | legacy                                                        |                       |
+    /// | 21       |                 | legacy                                                        |                       |
+    /// | 22       |                 | legacy                                                        |                       |
+    /// | 23       |                 | legacy                                                        |                       |
+    /// | 24       |                 | legacy                                                        |                       |
+    /// | 25       |                 | legacy                                                        |                       |
+    /// | 26       | TURN_LEFT       |                                                               |                       |
+    /// | 27       | TURN_RIGHT      |                                                               |                       |
+    /// | 28       | AWAY            | Set when the avatar is idled or set to away. Note that the away animation is activated separately from setting this flag. |  |
+    /// | 29       | LBUTTON_DOWN    |                                                               |                       |
+    /// | 30       | LBUTTON_UP      |                                                               |                       |
+    /// | 31       | ML_LBUTTON_DOWN |                                                               |                       |
+    /// | 32       | ML_LBUTTON_UP   |                                                               |                       |
+    ///
     pub control_flags: u32,
+    ///
+    /// TODO: what are these?
+    ///
     pub flags: u8,
 }
 
@@ -608,6 +822,7 @@ pub struct AgentUpdate_AgentData {
 /// /// or, more simply, two axes and compute cross product
 /// /// Center is region local (JNC 8.16.2001)
 /// /// Camera center is region local (JNC 8.29.2001)
+///
 #[derive(Clone, Debug)]
 pub struct AgentUpdate {
     pub agent_data: AgentUpdate_AgentData,
@@ -616,7 +831,9 @@ pub struct AgentUpdate {
 
 #[derive(Clone, Debug)]
 pub struct AgentWearablesRequest_AgentData {
+    /// TODO
     pub agent_id: Uuid,
+    /// TODO
     pub session_id: Uuid,
 }
 
@@ -626,6 +843,7 @@ pub struct AgentWearablesRequest_AgentData {
 /// /// (a.k.a. "Tell me what the avatar is wearing.")
 /// /// viewer -> simulator -> dataserver
 /// /// reliable
+///
 #[derive(Clone, Debug)]
 pub struct AgentWearablesRequest {
     pub agent_data: AgentWearablesRequest_AgentData,
@@ -634,15 +852,21 @@ pub struct AgentWearablesRequest {
 
 #[derive(Clone, Debug)]
 pub struct AgentWearablesUpdate_AgentData {
+    /// TODO
     pub agent_id: Uuid,
+    /// TODO
     pub session_id: Uuid,
+    /// TODO
     pub serial_num: u32,
 }
 
 #[derive(Clone, Debug)]
 pub struct AgentWearablesUpdate_WearableData {
+    /// TODO
     pub item_id: Uuid,
+    /// TODO
     pub asset_id: Uuid,
+    /// TODO
     pub wearable_type: u8,
 }
 
@@ -653,6 +877,7 @@ pub struct AgentWearablesUpdate_WearableData {
 /// /// dataserver -> userserver -> viewer
 /// /// reliable
 /// /// NEVER from viewer to sim
+///
 #[derive(Clone, Debug)]
 pub struct AgentWearablesUpdate {
     pub agent_data: AgentWearablesUpdate_AgentData,
@@ -662,12 +887,15 @@ pub struct AgentWearablesUpdate {
 
 #[derive(Clone, Debug)]
 pub struct AlertMessage_AlertData {
+    /// TODO
     pub message: Vec<u8>,
 }
 
 #[derive(Clone, Debug)]
 pub struct AlertMessage_AlertInfo {
+    /// TODO
     pub message: Vec<u8>,
+    /// TODO
     pub extra_params: Vec<u8>,
 }
 
@@ -675,6 +903,7 @@ pub struct AlertMessage_AlertInfo {
 /// 		TODO:
 /// 		/// AlertMessage
 /// /// Specifies the text to be posted in an alert dialog
+///
 #[derive(Clone, Debug)]
 pub struct AlertMessage {
     pub alert_data: AlertMessage_AlertData,
@@ -684,13 +913,17 @@ pub struct AlertMessage {
 
 #[derive(Clone, Debug)]
 pub struct AssetUploadComplete_AssetBlock {
+    /// TODO
     pub uuid: Uuid,
+    /// TODO
     pub type_: i8,
+    /// TODO
     pub success: bool,
 }
 
 ///
 /// TODO:
+///
 ///
 #[derive(Clone, Debug)]
 pub struct AssetUploadComplete {
@@ -700,16 +933,22 @@ pub struct AssetUploadComplete {
 
 #[derive(Clone, Debug)]
 pub struct AssetUploadRequest_AssetBlock {
+    /// TODO
     pub transaction_id: Uuid,
+    /// TODO
     pub type_: i8,
+    /// TODO
     pub tempfile: bool,
+    /// TODO
     pub store_local: bool,
+    /// TODO
     pub asset_data: Vec<u8>,
 }
 
 ///
 /// TODO:
 /// /// current assumes an existing UUID, need to enhance for new assets
+///
 #[derive(Clone, Debug)]
 pub struct AssetUploadRequest {
     pub asset_block: AssetUploadRequest_AssetBlock,
@@ -718,13 +957,16 @@ pub struct AssetUploadRequest {
 
 #[derive(Clone, Debug)]
 pub struct AtomicPassObject_TaskData {
+    /// TODO
     pub task_id: Uuid,
+    /// TODO
     pub attachment_needs_save: bool,
 }
 
 ///
 /// TODO:
 /// /// This message is sent how objects get passed between regions.
+///
 #[derive(Clone, Debug)]
 pub struct AtomicPassObject {
     pub task_data: AtomicPassObject_TaskData,
@@ -733,16 +975,22 @@ pub struct AtomicPassObject {
 
 #[derive(Clone, Debug)]
 pub struct AttachedSound_DataBlock {
+    /// TODO
     pub sound_id: Uuid,
+    /// TODO
     pub object_id: Uuid,
+    /// TODO
     pub owner_id: Uuid,
+    /// TODO
     pub gain: f32,
+    /// TODO
     pub flags: u8,
 }
 
 ///
 /// TODO:
 /// /// AttachedSound - Sent by simulator to viewer to play sound attached with an object
+///
 #[derive(Clone, Debug)]
 pub struct AttachedSound {
     pub data_block: AttachedSound_DataBlock,
@@ -751,12 +999,15 @@ pub struct AttachedSound {
 
 #[derive(Clone, Debug)]
 pub struct AttachedSoundGainChange_DataBlock {
+    /// TODO
     pub object_id: Uuid,
+    /// TODO
     pub gain: f32,
 }
 
 ///
 /// TODO:
+///
 ///
 #[derive(Clone, Debug)]
 pub struct AttachedSoundGainChange {
@@ -766,27 +1017,33 @@ pub struct AttachedSoundGainChange {
 
 #[derive(Clone, Debug)]
 pub struct AvatarAnimation_Sender {
+    /// TODO
     pub id: Uuid,
 }
 
 #[derive(Clone, Debug)]
 pub struct AvatarAnimation_AnimationList {
+    /// TODO
     pub anim_id: Uuid,
+    /// TODO
     pub anim_sequence_id: i32,
 }
 
 #[derive(Clone, Debug)]
 pub struct AvatarAnimation_AnimationSourceList {
+    /// TODO
     pub object_id: Uuid,
 }
 
 #[derive(Clone, Debug)]
 pub struct AvatarAnimation_PhysicalAvatarEventList {
+    /// TODO
     pub type_data: Vec<u8>,
 }
 
 ///
 /// TODO:
+///
 ///
 #[derive(Clone, Debug)]
 pub struct AvatarAnimation {
@@ -799,23 +1056,28 @@ pub struct AvatarAnimation {
 
 #[derive(Clone, Debug)]
 pub struct AvatarAppearance_Sender {
+    /// TODO
     pub id: Uuid,
+    /// TODO
     pub is_trial: bool,
 }
 
 #[derive(Clone, Debug)]
 pub struct AvatarAppearance_ObjectData {
+    /// TODO
     pub texture_entry: Vec<u8>,
 }
 
 #[derive(Clone, Debug)]
 pub struct AvatarAppearance_VisualParam {
+    /// TODO
     pub param_value: u8,
 }
 
 ///
 /// TODO:
 /// /// AvatarAppearance - Update visual params
+///
 #[derive(Clone, Debug)]
 pub struct AvatarAppearance {
     pub sender: AvatarAppearance_Sender,
@@ -826,13 +1088,17 @@ pub struct AvatarAppearance {
 
 #[derive(Clone, Debug)]
 pub struct AvatarClassifiedReply_AgentData {
+    /// TODO
     pub agent_id: Uuid,
+    /// TODO
     pub target_id: Uuid,
 }
 
 #[derive(Clone, Debug)]
 pub struct AvatarClassifiedReply_Data {
+    /// TODO
     pub classified_id: Uuid,
+    /// TODO
     pub name: Vec<u8>,
 }
 
@@ -843,6 +1109,7 @@ pub struct AvatarClassifiedReply_Data {
 /// /// Send the header information for this avatar's classifieds
 /// /// This fills in the tabs of the Classifieds panel.
 /// /// reliable
+///
 #[derive(Clone, Debug)]
 pub struct AvatarClassifiedReply {
     pub agent_data: AvatarClassifiedReply_AgentData,
@@ -852,22 +1119,31 @@ pub struct AvatarClassifiedReply {
 
 #[derive(Clone, Debug)]
 pub struct AvatarGroupsReply_AgentData {
+    /// TODO
     pub agent_id: Uuid,
+    /// TODO
     pub avatar_id: Uuid,
 }
 
 #[derive(Clone, Debug)]
 pub struct AvatarGroupsReply_GroupData {
+    /// TODO
     pub group_powers: u64,
+    /// TODO
     pub accept_notices: bool,
+    /// TODO
     pub group_title: Vec<u8>,
+    /// TODO
     pub group_id: Uuid,
+    /// TODO
     pub group_name: Vec<u8>,
+    /// TODO
     pub group_insignia_id: Uuid,
 }
 
 #[derive(Clone, Debug)]
 pub struct AvatarGroupsReply_NewGroupData {
+    /// TODO
     pub list_in_profile: bool,
 }
 
@@ -877,6 +1153,7 @@ pub struct AvatarGroupsReply_NewGroupData {
 /// /// dataserver -> simulator
 /// /// simulator -> viewer
 /// /// reliable
+///
 #[derive(Clone, Debug)]
 pub struct AvatarGroupsReply {
     pub agent_data: AvatarGroupsReply_AgentData,
@@ -887,21 +1164,29 @@ pub struct AvatarGroupsReply {
 
 #[derive(Clone, Debug)]
 pub struct AvatarInterestsReply_AgentData {
+    /// TODO
     pub agent_id: Uuid,
+    /// TODO
     pub avatar_id: Uuid,
 }
 
 #[derive(Clone, Debug)]
 pub struct AvatarInterestsReply_PropertiesData {
+    /// TODO
     pub want_to_mask: u32,
+    /// TODO
     pub want_to_text: Vec<u8>,
+    /// TODO
     pub skills_mask: u32,
+    /// TODO
     pub skills_text: Vec<u8>,
+    /// TODO
     pub languages_text: Vec<u8>,
 }
 
 ///
 /// TODO:
+///
 ///
 #[derive(Clone, Debug)]
 pub struct AvatarInterestsReply {
@@ -912,16 +1197,23 @@ pub struct AvatarInterestsReply {
 
 #[derive(Clone, Debug)]
 pub struct AvatarInterestsUpdate_AgentData {
+    /// TODO
     pub agent_id: Uuid,
+    /// TODO
     pub session_id: Uuid,
 }
 
 #[derive(Clone, Debug)]
 pub struct AvatarInterestsUpdate_PropertiesData {
+    /// TODO
     pub want_to_mask: u32,
+    /// TODO
     pub want_to_text: Vec<u8>,
+    /// TODO
     pub skills_mask: u32,
+    /// TODO
     pub skills_text: Vec<u8>,
+    /// TODO
     pub languages_text: Vec<u8>,
 }
 
@@ -930,6 +1222,7 @@ pub struct AvatarInterestsUpdate_PropertiesData {
 /// 		/// AvatarInterestsUpdate
 /// /// viewer -> simulator
 /// /// reliable
+///
 #[derive(Clone, Debug)]
 pub struct AvatarInterestsUpdate {
     pub agent_data: AvatarInterestsUpdate_AgentData,
@@ -939,12 +1232,15 @@ pub struct AvatarInterestsUpdate {
 
 #[derive(Clone, Debug)]
 pub struct AvatarNotesReply_AgentData {
+    /// TODO
     pub agent_id: Uuid,
 }
 
 #[derive(Clone, Debug)]
 pub struct AvatarNotesReply_Data {
+    /// TODO
     pub target_id: Uuid,
+    /// TODO
     pub notes: Vec<u8>,
 }
 
@@ -954,6 +1250,7 @@ pub struct AvatarNotesReply_Data {
 /// /// dataserver -> simulator
 /// /// simulator -> viewer
 /// /// reliable
+///
 #[derive(Clone, Debug)]
 pub struct AvatarNotesReply {
     pub agent_data: AvatarNotesReply_AgentData,
@@ -963,13 +1260,17 @@ pub struct AvatarNotesReply {
 
 #[derive(Clone, Debug)]
 pub struct AvatarNotesUpdate_AgentData {
+    /// TODO
     pub agent_id: Uuid,
+    /// TODO
     pub session_id: Uuid,
 }
 
 #[derive(Clone, Debug)]
 pub struct AvatarNotesUpdate_Data {
+    /// TODO
     pub target_id: Uuid,
+    /// TODO
     pub notes: Vec<u8>,
 }
 
@@ -978,6 +1279,7 @@ pub struct AvatarNotesUpdate_Data {
 /// 		/// AvatarNotesUpdate
 /// /// viewer -> simulator -> dataserver
 /// /// reliable
+///
 #[derive(Clone, Debug)]
 pub struct AvatarNotesUpdate {
     pub agent_data: AvatarNotesUpdate_AgentData,
@@ -987,14 +1289,19 @@ pub struct AvatarNotesUpdate {
 
 #[derive(Clone, Debug)]
 pub struct AvatarPickerReply_AgentData {
+    /// TODO
     pub agent_id: Uuid,
+    /// TODO
     pub query_id: Uuid,
 }
 
 #[derive(Clone, Debug)]
 pub struct AvatarPickerReply_Data {
+    /// TODO
     pub avatar_id: Uuid,
+    /// TODO
     pub first_name: Vec<u8>,
+    /// TODO
     pub last_name: Vec<u8>,
 }
 
@@ -1003,6 +1310,7 @@ pub struct AvatarPickerReply_Data {
 /// 		/// AvatarPickerReply
 /// /// List of names to select a person
 /// /// reliable
+///
 #[derive(Clone, Debug)]
 pub struct AvatarPickerReply {
     pub agent_data: AvatarPickerReply_AgentData,
@@ -1012,13 +1320,17 @@ pub struct AvatarPickerReply {
 
 #[derive(Clone, Debug)]
 pub struct AvatarPickerRequest_AgentData {
+    /// TODO
     pub agent_id: Uuid,
+    /// TODO
     pub session_id: Uuid,
+    /// TODO
     pub query_id: Uuid,
 }
 
 #[derive(Clone, Debug)]
 pub struct AvatarPickerRequest_Data {
+    /// TODO
     pub name: Vec<u8>,
 }
 
@@ -1028,6 +1340,7 @@ pub struct AvatarPickerRequest_Data {
 /// /// Get a list of names to select a person
 /// /// viewer -> sim -> data
 /// /// reliable
+///
 #[derive(Clone, Debug)]
 pub struct AvatarPickerRequest {
     pub agent_data: AvatarPickerRequest_AgentData,
@@ -1037,20 +1350,26 @@ pub struct AvatarPickerRequest {
 
 #[derive(Clone, Debug)]
 pub struct AvatarPickerRequestBackend_AgentData {
+    /// TODO
     pub agent_id: Uuid,
+    /// TODO
     pub session_id: Uuid,
+    /// TODO
     pub query_id: Uuid,
+    /// TODO
     pub god_level: u8,
 }
 
 #[derive(Clone, Debug)]
 pub struct AvatarPickerRequestBackend_Data {
+    /// TODO
     pub name: Vec<u8>,
 }
 
 ///
 /// TODO:
 /// /// backend implementation which tracks if the user is a god.
+///
 #[derive(Clone, Debug)]
 pub struct AvatarPickerRequestBackend {
     pub agent_data: AvatarPickerRequestBackend_AgentData,
@@ -1060,13 +1379,17 @@ pub struct AvatarPickerRequestBackend {
 
 #[derive(Clone, Debug)]
 pub struct AvatarPicksReply_AgentData {
+    /// TODO
     pub agent_id: Uuid,
+    /// TODO
     pub target_id: Uuid,
 }
 
 #[derive(Clone, Debug)]
 pub struct AvatarPicksReply_Data {
+    /// TODO
     pub pick_id: Uuid,
+    /// TODO
     pub pick_name: Vec<u8>,
 }
 
@@ -1077,6 +1400,7 @@ pub struct AvatarPicksReply_Data {
 /// /// Send the header information for this avatar's picks
 /// /// This fills in the tabs of the Picks panel.
 /// /// reliable
+///
 #[derive(Clone, Debug)]
 pub struct AvatarPicksReply {
     pub agent_data: AvatarPicksReply_AgentData,
@@ -1086,20 +1410,31 @@ pub struct AvatarPicksReply {
 
 #[derive(Clone, Debug)]
 pub struct AvatarPropertiesReply_AgentData {
+    /// TODO
     pub agent_id: Uuid,
+    /// TODO
     pub avatar_id: Uuid,
 }
 
 #[derive(Clone, Debug)]
 pub struct AvatarPropertiesReply_PropertiesData {
+    /// TODO
     pub image_id: Uuid,
+    /// TODO
     pub fl_image_id: Uuid,
+    /// TODO
     pub partner_id: Uuid,
+    /// TODO
     pub about_text: Vec<u8>,
+    /// TODO
     pub fl_about_text: Vec<u8>,
+    /// TODO
     pub born_on: Vec<u8>,
+    /// TODO
     pub profile_url: Vec<u8>,
+    /// TODO
     pub charter_member: Vec<u8>,
+    /// TODO
     pub flags: u32,
 }
 
@@ -1109,6 +1444,7 @@ pub struct AvatarPropertiesReply_PropertiesData {
 /// /// dataserver -> simulator
 /// /// simulator -> viewer
 /// /// reliable
+///
 #[derive(Clone, Debug)]
 pub struct AvatarPropertiesReply {
     pub agent_data: AvatarPropertiesReply_AgentData,
@@ -1118,8 +1454,11 @@ pub struct AvatarPropertiesReply {
 
 #[derive(Clone, Debug)]
 pub struct AvatarPropertiesRequest_AgentData {
+    /// TODO
     pub agent_id: Uuid,
+    /// TODO
     pub session_id: Uuid,
+    /// TODO
     pub avatar_id: Uuid,
 }
 
@@ -1128,6 +1467,7 @@ pub struct AvatarPropertiesRequest_AgentData {
 /// 		/// AvatarPropertiesRequest
 /// /// viewer -> simulator
 /// /// reliable
+///
 #[derive(Clone, Debug)]
 pub struct AvatarPropertiesRequest {
     pub agent_data: AvatarPropertiesRequest_AgentData,
@@ -1136,9 +1476,13 @@ pub struct AvatarPropertiesRequest {
 
 #[derive(Clone, Debug)]
 pub struct AvatarPropertiesRequestBackend_AgentData {
+    /// TODO
     pub agent_id: Uuid,
+    /// TODO
     pub avatar_id: Uuid,
+    /// TODO
     pub god_level: u8,
+    /// TODO
     pub web_profiles_disabled: bool,
 }
 
@@ -1147,6 +1491,7 @@ pub struct AvatarPropertiesRequestBackend_AgentData {
 /// 		/// AvatarPropertiesRequestBackend
 /// /// simulator -> dataserver
 /// /// reliable
+///
 #[derive(Clone, Debug)]
 pub struct AvatarPropertiesRequestBackend {
     pub agent_data: AvatarPropertiesRequestBackend_AgentData,
@@ -1155,18 +1500,27 @@ pub struct AvatarPropertiesRequestBackend {
 
 #[derive(Clone, Debug)]
 pub struct AvatarPropertiesUpdate_AgentData {
+    /// TODO
     pub agent_id: Uuid,
+    /// TODO
     pub session_id: Uuid,
 }
 
 #[derive(Clone, Debug)]
 pub struct AvatarPropertiesUpdate_PropertiesData {
+    /// TODO
     pub image_id: Uuid,
+    /// TODO
     pub fl_image_id: Uuid,
+    /// TODO
     pub about_text: Vec<u8>,
+    /// TODO
     pub fl_about_text: Vec<u8>,
+    /// TODO
     pub allow_publish: bool,
+    /// TODO
     pub mature_publish: bool,
+    /// TODO
     pub profile_url: Vec<u8>,
 }
 
@@ -1175,6 +1529,7 @@ pub struct AvatarPropertiesUpdate_PropertiesData {
 /// 		/// AvatarPropertiesUpdate
 /// /// viewer -> simulator
 /// /// reliable
+///
 #[derive(Clone, Debug)]
 pub struct AvatarPropertiesUpdate {
     pub agent_data: AvatarPropertiesUpdate_AgentData,
@@ -1184,22 +1539,30 @@ pub struct AvatarPropertiesUpdate {
 
 #[derive(Clone, Debug)]
 pub struct AvatarSitResponse_SitObject {
+    /// TODO
     pub id: Uuid,
 }
 
 #[derive(Clone, Debug)]
 pub struct AvatarSitResponse_SitTransform {
+    /// TODO
     pub auto_pilot: bool,
+    /// TODO
     pub sit_position: Vector3<f32>,
+    /// TODO
     pub sit_rotation: Quaternion<f32>,
+    /// TODO
     pub camera_eye_offset: Vector3<f32>,
+    /// TODO
     pub camera_at_offset: Vector3<f32>,
+    /// TODO
     pub force_mouselook: bool,
 }
 
 ///
 /// TODO:
 /// /// AvatarSitResponse - response to a request to sit on an object
+///
 #[derive(Clone, Debug)]
 pub struct AvatarSitResponse {
     pub sit_object: AvatarSitResponse_SitObject,
@@ -1209,19 +1572,25 @@ pub struct AvatarSitResponse {
 
 #[derive(Clone, Debug)]
 pub struct AvatarTextureUpdate_AgentData {
+    /// TODO
     pub agent_id: Uuid,
+    /// TODO
     pub textures_changed: bool,
 }
 
 #[derive(Clone, Debug)]
 pub struct AvatarTextureUpdate_WearableData {
+    /// TODO
     pub cache_id: Uuid,
+    /// TODO
     pub texture_index: u8,
+    /// TODO
     pub host_name: Vec<u8>,
 }
 
 #[derive(Clone, Debug)]
 pub struct AvatarTextureUpdate_TextureData {
+    /// TODO
     pub texture_id: Uuid,
 }
 
@@ -1230,6 +1599,7 @@ pub struct AvatarTextureUpdate_TextureData {
 /// 		/// AvatarTextureUpdate
 /// /// simulator -> dataserver
 /// /// reliable
+///
 #[derive(Clone, Debug)]
 pub struct AvatarTextureUpdate {
     pub agent_data: AvatarTextureUpdate_AgentData,
@@ -1240,41 +1610,69 @@ pub struct AvatarTextureUpdate {
 
 #[derive(Clone, Debug)]
 pub struct BulkUpdateInventory_AgentData {
+    /// TODO
     pub agent_id: Uuid,
+    /// TODO
     pub transaction_id: Uuid,
 }
 
 #[derive(Clone, Debug)]
 pub struct BulkUpdateInventory_FolderData {
+    /// TODO
     pub folder_id: Uuid,
+    /// TODO
     pub parent_id: Uuid,
+    /// TODO
     pub type_: i8,
+    /// TODO
     pub name: Vec<u8>,
 }
 
 #[derive(Clone, Debug)]
 pub struct BulkUpdateInventory_ItemData {
+    /// TODO
     pub item_id: Uuid,
+    /// TODO
     pub callback_id: u32,
+    /// TODO
     pub folder_id: Uuid,
+    /// TODO
     pub creator_id: Uuid,
+    /// TODO
     pub owner_id: Uuid,
+    /// TODO
     pub group_id: Uuid,
+    /// TODO
     pub base_mask: u32,
+    /// TODO
     pub owner_mask: u32,
+    /// TODO
     pub group_mask: u32,
+    /// TODO
     pub everyone_mask: u32,
+    /// TODO
     pub next_owner_mask: u32,
+    /// TODO
     pub group_owned: bool,
+    /// TODO
     pub asset_id: Uuid,
+    /// TODO
     pub type_: i8,
+    /// TODO
     pub inv_type: i8,
+    /// TODO
     pub flags: u32,
+    /// TODO
     pub sale_type: u8,
+    /// TODO
     pub sale_price: i32,
+    /// TODO
     pub name: Vec<u8>,
+    /// TODO
     pub description: Vec<u8>,
+    /// TODO
     pub creation_date: i32,
+    /// TODO
     pub crc: u32,
 }
 
@@ -1283,6 +1681,7 @@ pub struct BulkUpdateInventory_ItemData {
 /// 		/// Can only fit around 7 items per packet - that's the way it goes. At
 /// /// least many bulk updates can be packed.
 /// /// Only from dataserver->sim->viewer
+///
 #[derive(Clone, Debug)]
 pub struct BulkUpdateInventory {
     pub agent_data: BulkUpdateInventory_AgentData,
@@ -1293,14 +1692,19 @@ pub struct BulkUpdateInventory {
 
 #[derive(Clone, Debug)]
 pub struct BuyObjectInventory_AgentData {
+    /// TODO
     pub agent_id: Uuid,
+    /// TODO
     pub session_id: Uuid,
 }
 
 #[derive(Clone, Debug)]
 pub struct BuyObjectInventory_Data {
+    /// TODO
     pub object_id: Uuid,
+    /// TODO
     pub item_id: Uuid,
+    /// TODO
     pub folder_id: Uuid,
 }
 
@@ -1308,6 +1712,7 @@ pub struct BuyObjectInventory_Data {
 /// 		TODO:
 /// 		/// buy object inventory. If the transaction succeeds, it will add
 /// /// inventory to the agent, and potentially remove the original.
+///
 #[derive(Clone, Debug)]
 pub struct BuyObjectInventory {
     pub agent_data: BuyObjectInventory_AgentData,
@@ -1317,12 +1722,14 @@ pub struct BuyObjectInventory {
 
 #[derive(Clone, Debug)]
 pub struct CameraConstraint_CameraCollidePlane {
+    /// TODO
     pub plane: Vector4<f32>,
 }
 
 ///
 /// TODO:
 /// /// CameraConstraint - new camera distance limit (based on collision with objects)
+///
 #[derive(Clone, Debug)]
 pub struct CameraConstraint {
     pub camera_collide_plane: CameraConstraint_CameraCollidePlane,
@@ -1331,12 +1738,14 @@ pub struct CameraConstraint {
 
 #[derive(Clone, Debug)]
 pub struct CancelAuction_ParcelData {
+    /// TODO
     pub parcel_id: Uuid,
 }
 
 ///
 /// TODO:
 /// /// Tell the dataserver that an auction has been canceled.
+///
 #[derive(Clone, Debug)]
 pub struct CancelAuction {
     pub parcel_data: Vec<CancelAuction_ParcelData>,
@@ -1345,18 +1754,23 @@ pub struct CancelAuction {
 
 #[derive(Clone, Debug)]
 pub struct ChangeInventoryItemFlags_AgentData {
+    /// TODO
     pub agent_id: Uuid,
+    /// TODO
     pub session_id: Uuid,
 }
 
 #[derive(Clone, Debug)]
 pub struct ChangeInventoryItemFlags_InventoryData {
+    /// TODO
     pub item_id: Uuid,
+    /// TODO
     pub flags: u32,
 }
 
 ///
 /// TODO:
+///
 ///
 #[derive(Clone, Debug)]
 pub struct ChangeInventoryItemFlags {
@@ -1367,12 +1781,15 @@ pub struct ChangeInventoryItemFlags {
 
 #[derive(Clone, Debug)]
 pub struct ChangeUserRights_AgentData {
+    /// TODO
     pub agent_id: Uuid,
 }
 
 #[derive(Clone, Debug)]
 pub struct ChangeUserRights_Rights {
+    /// TODO
     pub agent_related: Uuid,
+    /// TODO
     pub related_rights: i32,
 }
 
@@ -1383,6 +1800,7 @@ pub struct ChangeUserRights_Rights {
 /// /// request and the target agent if it is a modify or map
 /// /// right. Adding/removing online status rights will show up as an
 /// /// online/offline notification.
+///
 #[derive(Clone, Debug)]
 pub struct ChangeUserRights {
     pub agent_data: ChangeUserRights_AgentData,
@@ -1392,13 +1810,21 @@ pub struct ChangeUserRights {
 
 #[derive(Clone, Debug)]
 pub struct ChatFromSimulator_ChatData {
+    /// TODO
     pub from_name: Vec<u8>,
+    /// TODO
     pub source_id: Uuid,
+    /// TODO
     pub owner_id: Uuid,
+    /// TODO
     pub source_type: u8,
+    /// TODO
     pub chat_type: u8,
+    /// TODO
     pub audible: u8,
+    /// TODO
     pub position: Vector3<f32>,
+    /// TODO
     pub message: Vec<u8>,
 }
 
@@ -1409,6 +1835,7 @@ pub struct ChatFromSimulator_ChatData {
 /// /// Position is region local.
 /// /// Viewer can optionally use position to animate
 /// /// If audible is CHAT_NOT_AUDIBLE, message will not be valid
+///
 #[derive(Clone, Debug)]
 pub struct ChatFromSimulator {
     pub chat_data: ChatFromSimulator_ChatData,
@@ -1417,14 +1844,19 @@ pub struct ChatFromSimulator {
 
 #[derive(Clone, Debug)]
 pub struct ChatFromViewer_AgentData {
+    /// TODO
     pub agent_id: Uuid,
+    /// TODO
     pub session_id: Uuid,
 }
 
 #[derive(Clone, Debug)]
 pub struct ChatFromViewer_ChatData {
+    /// TODO
     pub message: Vec<u8>,
+    /// TODO
     pub type_: u8,
+    /// TODO
     pub channel: i32,
 }
 
@@ -1434,6 +1866,7 @@ pub struct ChatFromViewer_ChatData {
 /// /// Specifies the text to be said and the "type",
 /// /// normal speech, shout, whisper.
 /// /// with the specified radius
+///
 #[derive(Clone, Debug)]
 pub struct ChatFromViewer {
     pub agent_data: ChatFromViewer_AgentData,
@@ -1443,15 +1876,25 @@ pub struct ChatFromViewer {
 
 #[derive(Clone, Debug)]
 pub struct ChatPass_ChatData {
+    /// TODO
     pub channel: i32,
+    /// TODO
     pub position: Vector3<f32>,
+    /// TODO
     pub id: Uuid,
+    /// TODO
     pub owner_id: Uuid,
+    /// TODO
     pub name: Vec<u8>,
+    /// TODO
     pub source_type: u8,
+    /// TODO
     pub type_: u8,
+    /// TODO
     pub radius: f32,
+    /// TODO
     pub sim_access: u8,
+    /// TODO
     pub message: Vec<u8>,
 }
 
@@ -1461,6 +1904,7 @@ pub struct ChatPass_ChatData {
 /// /// Chat message transmission to neighbors
 /// /// Chat is region local to receiving simulator.
 /// /// Type is one of CHAT_TYPE_NORMAL, _WHISPER, _SHOUT
+///
 #[derive(Clone, Debug)]
 pub struct ChatPass {
     pub chat_data: ChatPass_ChatData,
@@ -1469,12 +1913,14 @@ pub struct ChatPass {
 
 #[derive(Clone, Debug)]
 pub struct CheckParcelAuctions_RegionData {
+    /// TODO
     pub region_handle: u64,
 }
 
 ///
 /// TODO:
 /// /// sim -> dataserver
+///
 #[derive(Clone, Debug)]
 pub struct CheckParcelAuctions {
     pub region_data: Vec<CheckParcelAuctions_RegionData>,
@@ -1483,12 +1929,14 @@ pub struct CheckParcelAuctions {
 
 #[derive(Clone, Debug)]
 pub struct CheckParcelSales_RegionData {
+    /// TODO
     pub region_handle: u64,
 }
 
 ///
 /// TODO:
 /// /// sim -> dataserver
+///
 #[derive(Clone, Debug)]
 pub struct CheckParcelSales {
     pub region_data: Vec<CheckParcelSales_RegionData>,
@@ -1497,9 +1945,13 @@ pub struct CheckParcelSales {
 
 #[derive(Clone, Debug)]
 pub struct ChildAgentAlive_AgentData {
+    /// TODO
     pub region_handle: u64,
+    /// TODO
     pub viewer_circuit_code: u32,
+    /// TODO
     pub agent_id: Uuid,
+    /// TODO
     pub session_id: Uuid,
 }
 
@@ -1507,6 +1959,7 @@ pub struct ChildAgentAlive_AgentData {
 /// 		TODO:
 /// 		/// ChildAgentAlive
 /// /// sent to child agents just to keep them alive
+///
 #[derive(Clone, Debug)]
 pub struct ChildAgentAlive {
     pub agent_data: ChildAgentAlive_AgentData,
@@ -1515,7 +1968,9 @@ pub struct ChildAgentAlive {
 
 #[derive(Clone, Debug)]
 pub struct ChildAgentDying_AgentData {
+    /// TODO
     pub agent_id: Uuid,
+    /// TODO
     pub session_id: Uuid,
 }
 
@@ -1523,6 +1978,7 @@ pub struct ChildAgentDying_AgentData {
 /// 		TODO:
 /// 		/// Obituary for child agents - make sure the parent know the child is dead
 /// /// This way, children can be reliably restarted
+///
 #[derive(Clone, Debug)]
 pub struct ChildAgentDying {
     pub agent_data: ChildAgentDying_AgentData,
@@ -1531,22 +1987,35 @@ pub struct ChildAgentDying {
 
 #[derive(Clone, Debug)]
 pub struct ChildAgentPositionUpdate_AgentData {
+    /// TODO
     pub region_handle: u64,
+    /// TODO
     pub viewer_circuit_code: u32,
+    /// TODO
     pub agent_id: Uuid,
+    /// TODO
     pub session_id: Uuid,
+    /// TODO
     pub agent_pos: Vector3<f32>,
+    /// TODO
     pub agent_vel: Vector3<f32>,
+    /// TODO
     pub center: Vector3<f32>,
+    /// TODO
     pub size: Vector3<f32>,
+    /// TODO
     pub at_axis: Vector3<f32>,
+    /// TODO
     pub left_axis: Vector3<f32>,
+    /// TODO
     pub up_axis: Vector3<f32>,
+    /// TODO
     pub changed_grid: bool,
 }
 
 ///
 /// TODO:
+///
 ///
 #[derive(Clone, Debug)]
 pub struct ChildAgentPositionUpdate {
@@ -1556,13 +2025,16 @@ pub struct ChildAgentPositionUpdate {
 
 #[derive(Clone, Debug)]
 pub struct ChildAgentUnknown_AgentData {
+    /// TODO
     pub agent_id: Uuid,
+    /// TODO
     pub session_id: Uuid,
 }
 
 ///
 /// TODO:
 /// /// This is sent if a full child agent hasn't been accepted yet
+///
 #[derive(Clone, Debug)]
 pub struct ChildAgentUnknown {
     pub agent_data: ChildAgentUnknown_AgentData,
@@ -1571,75 +2043,113 @@ pub struct ChildAgentUnknown {
 
 #[derive(Clone, Debug)]
 pub struct ChildAgentUpdate_AgentData {
+    /// TODO
     pub region_handle: u64,
+    /// TODO
     pub viewer_circuit_code: u32,
+    /// TODO
     pub agent_id: Uuid,
+    /// TODO
     pub session_id: Uuid,
+    /// TODO
     pub agent_pos: Vector3<f32>,
+    /// TODO
     pub agent_vel: Vector3<f32>,
+    /// TODO
     pub center: Vector3<f32>,
+    /// TODO
     pub size: Vector3<f32>,
+    /// TODO
     pub at_axis: Vector3<f32>,
+    /// TODO
     pub left_axis: Vector3<f32>,
+    /// TODO
     pub up_axis: Vector3<f32>,
+    /// TODO
     pub changed_grid: bool,
+    /// TODO
     pub far: f32,
+    /// TODO
     pub aspect: f32,
+    /// TODO
     pub throttles: Vec<u8>,
+    /// TODO
     pub locomotion_state: u32,
+    /// TODO
     pub head_rotation: Quaternion<f32>,
+    /// TODO
     pub body_rotation: Quaternion<f32>,
+    /// TODO
     pub control_flags: u32,
+    /// TODO
     pub energy_level: f32,
+    /// TODO
     pub god_level: u8,
+    /// TODO
     pub always_run: bool,
+    /// TODO
     pub prey_agent: Uuid,
+    /// TODO
     pub agent_access: u8,
+    /// TODO
     pub agent_textures: Vec<u8>,
+    /// TODO
     pub active_group_id: Uuid,
 }
 
 #[derive(Clone, Debug)]
 pub struct ChildAgentUpdate_GroupData {
+    /// TODO
     pub group_id: Uuid,
+    /// TODO
     pub group_powers: u64,
+    /// TODO
     pub accept_notices: bool,
 }
 
 #[derive(Clone, Debug)]
 pub struct ChildAgentUpdate_AnimationData {
+    /// TODO
     pub animation: Uuid,
+    /// TODO
     pub object_id: Uuid,
 }
 
 #[derive(Clone, Debug)]
 pub struct ChildAgentUpdate_GranterBlock {
+    /// TODO
     pub granter_id: Uuid,
 }
 
 #[derive(Clone, Debug)]
 pub struct ChildAgentUpdate_NVPairData {
+    /// TODO
     pub nv_pairs: Vec<u8>,
 }
 
 #[derive(Clone, Debug)]
 pub struct ChildAgentUpdate_VisualParam {
+    /// TODO
     pub param_value: u8,
 }
 
 #[derive(Clone, Debug)]
 pub struct ChildAgentUpdate_AgentAccess {
+    /// TODO
     pub agent_legacy_access: u8,
+    /// TODO
     pub agent_max_access: u8,
 }
 
 #[derive(Clone, Debug)]
 pub struct ChildAgentUpdate_AgentInfo {
+    /// TODO
     pub flags: u32,
 }
 
 ///
 /// TODO:
+///
 ///
 #[derive(Clone, Debug)]
 pub struct ChildAgentUpdate {
@@ -1656,12 +2166,15 @@ pub struct ChildAgentUpdate {
 
 #[derive(Clone, Debug)]
 pub struct ClassifiedDelete_AgentData {
+    /// TODO
     pub agent_id: Uuid,
+    /// TODO
     pub session_id: Uuid,
 }
 
 #[derive(Clone, Debug)]
 pub struct ClassifiedDelete_Data {
+    /// TODO
     pub classified_id: Uuid,
 }
 
@@ -1671,6 +2184,7 @@ pub struct ClassifiedDelete_Data {
 /// /// Delete a classified from the database.
 /// /// viewer -> simulator -> dataserver
 /// /// reliable
+///
 #[derive(Clone, Debug)]
 pub struct ClassifiedDelete {
     pub agent_data: ClassifiedDelete_AgentData,
@@ -1680,13 +2194,17 @@ pub struct ClassifiedDelete {
 
 #[derive(Clone, Debug)]
 pub struct ClassifiedGodDelete_AgentData {
+    /// TODO
     pub agent_id: Uuid,
+    /// TODO
     pub session_id: Uuid,
 }
 
 #[derive(Clone, Debug)]
 pub struct ClassifiedGodDelete_Data {
+    /// TODO
     pub classified_id: Uuid,
+    /// TODO
     pub query_id: Uuid,
 }
 
@@ -1698,6 +2216,7 @@ pub struct ClassifiedGodDelete_Data {
 /// /// classified.
 /// /// viewer -> simulator -> dataserver
 /// /// reliable
+///
 #[derive(Clone, Debug)]
 pub struct ClassifiedGodDelete {
     pub agent_data: ClassifiedGodDelete_AgentData,
@@ -1707,25 +2226,41 @@ pub struct ClassifiedGodDelete {
 
 #[derive(Clone, Debug)]
 pub struct ClassifiedInfoReply_AgentData {
+    /// TODO
     pub agent_id: Uuid,
 }
 
 #[derive(Clone, Debug)]
 pub struct ClassifiedInfoReply_Data {
+    /// TODO
     pub classified_id: Uuid,
+    /// TODO
     pub creator_id: Uuid,
+    /// TODO
     pub creation_date: u32,
+    /// TODO
     pub expiration_date: u32,
+    /// TODO
     pub category: u32,
+    /// TODO
     pub name: Vec<u8>,
+    /// TODO
     pub desc: Vec<u8>,
+    /// TODO
     pub parcel_id: Uuid,
+    /// TODO
     pub parent_estate: u32,
+    /// TODO
     pub snapshot_id: Uuid,
+    /// TODO
     pub sim_name: Vec<u8>,
+    /// TODO
     pub pos_global: Vector3<f64>,
+    /// TODO
     pub parcel_name: Vec<u8>,
+    /// TODO
     pub classified_flags: u8,
+    /// TODO
     pub price_for_listing: i32,
 }
 
@@ -1735,6 +2270,7 @@ pub struct ClassifiedInfoReply_Data {
 /// /// dataserver -> simulator
 /// /// simulator -> viewer
 /// /// reliable
+///
 #[derive(Clone, Debug)]
 pub struct ClassifiedInfoReply {
     pub agent_data: ClassifiedInfoReply_AgentData,
@@ -1744,12 +2280,15 @@ pub struct ClassifiedInfoReply {
 
 #[derive(Clone, Debug)]
 pub struct ClassifiedInfoRequest_AgentData {
+    /// TODO
     pub agent_id: Uuid,
+    /// TODO
     pub session_id: Uuid,
 }
 
 #[derive(Clone, Debug)]
 pub struct ClassifiedInfoRequest_Data {
+    /// TODO
     pub classified_id: Uuid,
 }
 
@@ -1759,6 +2298,7 @@ pub struct ClassifiedInfoRequest_Data {
 /// /// viewer -> simulator
 /// /// simulator -> dataserver
 /// /// reliable
+///
 #[derive(Clone, Debug)]
 pub struct ClassifiedInfoRequest {
     pub agent_data: ClassifiedInfoRequest_AgentData,
@@ -1768,21 +2308,33 @@ pub struct ClassifiedInfoRequest {
 
 #[derive(Clone, Debug)]
 pub struct ClassifiedInfoUpdate_AgentData {
+    /// TODO
     pub agent_id: Uuid,
+    /// TODO
     pub session_id: Uuid,
 }
 
 #[derive(Clone, Debug)]
 pub struct ClassifiedInfoUpdate_Data {
+    /// TODO
     pub classified_id: Uuid,
+    /// TODO
     pub category: u32,
+    /// TODO
     pub name: Vec<u8>,
+    /// TODO
     pub desc: Vec<u8>,
+    /// TODO
     pub parcel_id: Uuid,
+    /// TODO
     pub parent_estate: u32,
+    /// TODO
     pub snapshot_id: Uuid,
+    /// TODO
     pub pos_global: Vector3<f64>,
+    /// TODO
     pub classified_flags: u8,
+    /// TODO
     pub price_for_listing: i32,
 }
 
@@ -1793,6 +2345,7 @@ pub struct ClassifiedInfoUpdate_Data {
 /// /// on the simulator as the message passes through.
 /// /// viewer -> simulator -> dataserver
 /// /// reliable
+///
 #[derive(Clone, Debug)]
 pub struct ClassifiedInfoUpdate {
     pub agent_data: ClassifiedInfoUpdate_AgentData,
@@ -1802,12 +2355,14 @@ pub struct ClassifiedInfoUpdate {
 
 #[derive(Clone, Debug)]
 pub struct ClearFollowCamProperties_ObjectData {
+    /// TODO
     pub object_id: Uuid,
 }
 
 ///
 /// TODO:
 /// /// ClearFollowCamProperties
+///
 #[derive(Clone, Debug)]
 pub struct ClearFollowCamProperties {
     pub object_data: ClearFollowCamProperties_ObjectData,
@@ -1817,25 +2372,32 @@ pub struct ClearFollowCamProperties {
 ///
 /// TODO:
 /// /// CloseCircuit - Tells the recipient's messaging system to close the descibed circuit
+///
 #[derive(Clone, Debug)]
 pub struct CloseCircuit {}
 
 
 #[derive(Clone, Debug)]
 pub struct CoarseLocationUpdate_Location {
+    /// TODO
     pub x: u8,
+    /// TODO
     pub y: u8,
+    /// TODO
     pub z: u8,
 }
 
 #[derive(Clone, Debug)]
 pub struct CoarseLocationUpdate_Index {
+    /// TODO
     pub you: i16,
+    /// TODO
     pub prey: i16,
 }
 
 #[derive(Clone, Debug)]
 pub struct CoarseLocationUpdate_AgentData {
+    /// TODO
     pub agent_id: Uuid,
 }
 
@@ -1846,6 +2408,7 @@ pub struct CoarseLocationUpdate_AgentData {
 /// /// sufficient for this. The index block is used to show where you are,
 /// /// and where someone you are tracking is located. They are -1 if not
 /// /// applicable.
+///
 #[derive(Clone, Debug)]
 pub struct CoarseLocationUpdate {
     pub location: Vec<CoarseLocationUpdate_Location>,
@@ -1856,14 +2419,18 @@ pub struct CoarseLocationUpdate {
 
 #[derive(Clone, Debug)]
 pub struct CompleteAgentMovement_AgentData {
+    /// Agent id of the sender.
     pub agent_id: Uuid,
+    /// Temporary id assigned to this session by the simulator on login, used to verify our identity in packets.
     pub session_id: Uuid,
+    /// The circuit code as provided in the login response. It serves as a proof of authentication and identfies the client.
     pub circuit_code: u32,
 }
 
 ///
 /// Move an agent into the simulator.
 /// This is the last packet needed to complete the transition into a new simulator.
+///
 #[derive(Clone, Debug)]
 pub struct CompleteAgentMovement {
     pub agent_data: CompleteAgentMovement_AgentData,
@@ -1872,6 +2439,7 @@ pub struct CompleteAgentMovement {
 
 #[derive(Clone, Debug)]
 pub struct CompleteAuction_ParcelData {
+    /// TODO
     pub parcel_id: Uuid,
 }
 
@@ -1879,6 +2447,7 @@ pub struct CompleteAuction_ParcelData {
 /// 		TODO:
 /// 		/// sim -> dataserver
 /// /// Tell the dataserver that an auction has completed.
+///
 #[derive(Clone, Debug)]
 pub struct CompleteAuction {
     pub parcel_data: Vec<CompleteAuction_ParcelData>,
@@ -1887,11 +2456,13 @@ pub struct CompleteAuction {
 
 #[derive(Clone, Debug)]
 pub struct CompletePingCheck_PingID {
+    /// TODO
     pub ping_id: u8,
 }
 
 ///
 /// TODO:
+///
 ///
 #[derive(Clone, Debug)]
 pub struct CompletePingCheck {
@@ -1901,13 +2472,16 @@ pub struct CompletePingCheck {
 
 #[derive(Clone, Debug)]
 pub struct ConfirmAuctionStart_AuctionData {
+    /// TODO
     pub parcel_id: Uuid,
+    /// TODO
     pub auction_id: u32,
 }
 
 ///
 /// TODO:
 /// /// dataserver -> sim
+///
 #[derive(Clone, Debug)]
 pub struct ConfirmAuctionStart {
     pub auction_data: ConfirmAuctionStart_AuctionData,
@@ -1916,12 +2490,15 @@ pub struct ConfirmAuctionStart {
 
 #[derive(Clone, Debug)]
 pub struct ConfirmEnableSimulator_AgentData {
+    /// TODO
     pub agent_id: Uuid,
+    /// TODO
     pub session_id: Uuid,
 }
 
 ///
 /// TODO:
+///
 ///
 #[derive(Clone, Debug)]
 pub struct ConfirmEnableSimulator {
@@ -1931,13 +2508,16 @@ pub struct ConfirmEnableSimulator {
 
 #[derive(Clone, Debug)]
 pub struct ConfirmXferPacket_XferID {
+    /// TODO
     pub id: u64,
+    /// TODO
     pub packet: u32,
 }
 
 ///
 /// TODO:
 /// /// ConfirmXferPacket
+///
 #[derive(Clone, Debug)]
 pub struct ConfirmXferPacket {
     pub xfer_id: ConfirmXferPacket_XferID,
@@ -1946,24 +2526,31 @@ pub struct ConfirmXferPacket {
 
 #[derive(Clone, Debug)]
 pub struct CopyInventoryFromNotecard_AgentData {
+    /// TODO
     pub agent_id: Uuid,
+    /// TODO
     pub session_id: Uuid,
 }
 
 #[derive(Clone, Debug)]
 pub struct CopyInventoryFromNotecard_NotecardData {
+    /// TODO
     pub notecard_item_id: Uuid,
+    /// TODO
     pub object_id: Uuid,
 }
 
 #[derive(Clone, Debug)]
 pub struct CopyInventoryFromNotecard_InventoryData {
+    /// TODO
     pub item_id: Uuid,
+    /// TODO
     pub folder_id: Uuid,
 }
 
 ///
 /// TODO:
+///
 ///
 #[derive(Clone, Debug)]
 pub struct CopyInventoryFromNotecard {
@@ -1975,16 +2562,23 @@ pub struct CopyInventoryFromNotecard {
 
 #[derive(Clone, Debug)]
 pub struct CopyInventoryItem_AgentData {
+    /// TODO
     pub agent_id: Uuid,
+    /// TODO
     pub session_id: Uuid,
 }
 
 #[derive(Clone, Debug)]
 pub struct CopyInventoryItem_InventoryData {
+    /// TODO
     pub callback_id: u32,
+    /// TODO
     pub old_agent_id: Uuid,
+    /// TODO
     pub old_item_id: Uuid,
+    /// TODO
     pub new_folder_id: Uuid,
+    /// TODO
     pub new_name: Vec<u8>,
 }
 
@@ -1996,6 +2590,7 @@ pub struct CopyInventoryItem_InventoryData {
 /// /// Inventory items are only unique for {agent, inv_id} pairs;
 /// /// the OldItemID needs to be paired with the OldAgentID to
 /// /// produce a unique inventory item.
+///
 #[derive(Clone, Debug)]
 pub struct CopyInventoryItem {
     pub agent_data: CopyInventoryItem_AgentData,
@@ -2005,13 +2600,17 @@ pub struct CopyInventoryItem {
 
 #[derive(Clone, Debug)]
 pub struct CreateGroupReply_AgentData {
+    /// TODO
     pub agent_id: Uuid,
 }
 
 #[derive(Clone, Debug)]
 pub struct CreateGroupReply_ReplyData {
+    /// TODO
     pub group_id: Uuid,
+    /// TODO
     pub success: bool,
+    /// TODO
     pub message: Vec<u8>,
 }
 
@@ -2021,6 +2620,7 @@ pub struct CreateGroupReply_ReplyData {
 /// /// dataserver -> simulator
 /// /// simulator -> viewer
 /// /// reliable
+///
 #[derive(Clone, Debug)]
 pub struct CreateGroupReply {
     pub agent_data: CreateGroupReply_AgentData,
@@ -2030,19 +2630,29 @@ pub struct CreateGroupReply {
 
 #[derive(Clone, Debug)]
 pub struct CreateGroupRequest_AgentData {
+    /// TODO
     pub agent_id: Uuid,
+    /// TODO
     pub session_id: Uuid,
 }
 
 #[derive(Clone, Debug)]
 pub struct CreateGroupRequest_GroupData {
+    /// TODO
     pub name: Vec<u8>,
+    /// TODO
     pub charter: Vec<u8>,
+    /// TODO
     pub show_in_list: bool,
+    /// TODO
     pub insignia_id: Uuid,
+    /// TODO
     pub membership_fee: i32,
+    /// TODO
     pub open_enrollment: bool,
+    /// TODO
     pub allow_publish: bool,
+    /// TODO
     pub mature_publish: bool,
 }
 
@@ -2052,6 +2662,7 @@ pub struct CreateGroupRequest_GroupData {
 /// /// viewer -> simulator
 /// /// simulator -> dataserver
 /// /// reliable
+///
 #[derive(Clone, Debug)]
 pub struct CreateGroupRequest {
     pub agent_data: CreateGroupRequest_AgentData,
@@ -2061,20 +2672,27 @@ pub struct CreateGroupRequest {
 
 #[derive(Clone, Debug)]
 pub struct CreateInventoryFolder_AgentData {
+    /// TODO
     pub agent_id: Uuid,
+    /// TODO
     pub session_id: Uuid,
 }
 
 #[derive(Clone, Debug)]
 pub struct CreateInventoryFolder_FolderData {
+    /// TODO
     pub folder_id: Uuid,
+    /// TODO
     pub parent_id: Uuid,
+    /// TODO
     pub type_: i8,
+    /// TODO
     pub name: Vec<u8>,
 }
 
 ///
 /// TODO:
+///
 ///
 #[derive(Clone, Debug)]
 pub struct CreateInventoryFolder {
@@ -2085,26 +2703,38 @@ pub struct CreateInventoryFolder {
 
 #[derive(Clone, Debug)]
 pub struct CreateInventoryItem_AgentData {
+    /// TODO
     pub agent_id: Uuid,
+    /// TODO
     pub session_id: Uuid,
 }
 
 #[derive(Clone, Debug)]
 pub struct CreateInventoryItem_InventoryBlock {
+    /// TODO
     pub callback_id: u32,
+    /// TODO
     pub folder_id: Uuid,
+    /// TODO
     pub transaction_id: Uuid,
+    /// TODO
     pub next_owner_mask: u32,
+    /// TODO
     pub type_: i8,
+    /// TODO
     pub inv_type: i8,
+    /// TODO
     pub wearable_type: u8,
+    /// TODO
     pub name: Vec<u8>,
+    /// TODO
     pub description: Vec<u8>,
 }
 
 ///
 /// TODO:
 /// /// Create inventory
+///
 #[derive(Clone, Debug)]
 pub struct CreateInventoryItem {
     pub agent_data: CreateInventoryItem_AgentData,
@@ -2114,24 +2744,30 @@ pub struct CreateInventoryItem {
 
 #[derive(Clone, Debug)]
 pub struct CreateLandmarkForEvent_AgentData {
+    /// TODO
     pub agent_id: Uuid,
+    /// TODO
     pub session_id: Uuid,
 }
 
 #[derive(Clone, Debug)]
 pub struct CreateLandmarkForEvent_EventData {
+    /// TODO
     pub event_id: u32,
 }
 
 #[derive(Clone, Debug)]
 pub struct CreateLandmarkForEvent_InventoryBlock {
+    /// TODO
     pub folder_id: Uuid,
+    /// TODO
     pub name: Vec<u8>,
 }
 
 ///
 /// TODO:
 /// /// give agent a landmark for an event.
+///
 #[derive(Clone, Debug)]
 pub struct CreateLandmarkForEvent {
     pub agent_data: CreateLandmarkForEvent_AgentData,
@@ -2142,18 +2778,23 @@ pub struct CreateLandmarkForEvent {
 
 #[derive(Clone, Debug)]
 pub struct CreateNewOutfitAttachments_AgentData {
+    /// TODO
     pub agent_id: Uuid,
+    /// TODO
     pub session_id: Uuid,
 }
 
 #[derive(Clone, Debug)]
 pub struct CreateNewOutfitAttachments_HeaderData {
+    /// TODO
     pub new_folder_id: Uuid,
 }
 
 #[derive(Clone, Debug)]
 pub struct CreateNewOutfitAttachments_ObjectData {
+    /// TODO
     pub old_item_id: Uuid,
+    /// TODO
     pub old_folder_id: Uuid,
 }
 
@@ -2161,6 +2802,7 @@ pub struct CreateNewOutfitAttachments_ObjectData {
 /// 		TODO:
 /// 		/// Viewer -> Sim
 /// /// Used in "Make New Outfit"
+///
 #[derive(Clone, Debug)]
 pub struct CreateNewOutfitAttachments {
     pub agent_data: CreateNewOutfitAttachments_AgentData,
@@ -2171,7 +2813,9 @@ pub struct CreateNewOutfitAttachments {
 
 #[derive(Clone, Debug)]
 pub struct CreateTrustedCircuit_DataBlock {
+    /// TODO
     pub end_point_id: Uuid,
+    /// TODO
     pub digest: [u8; 32],
 }
 
@@ -2180,6 +2824,7 @@ pub struct CreateTrustedCircuit_DataBlock {
 /// 		/// CreateTrustedCircuit
 /// /// Sent to establish a trust relationship between two components.
 /// /// Only sent in response to a DenyTrustedCircuit message.
+///
 #[derive(Clone, Debug)]
 pub struct CreateTrustedCircuit {
     pub data_block: CreateTrustedCircuit_DataBlock,
@@ -2188,21 +2833,29 @@ pub struct CreateTrustedCircuit {
 
 #[derive(Clone, Debug)]
 pub struct CrossedRegion_AgentData {
+    /// TODO
     pub agent_id: Uuid,
+    /// TODO
     pub session_id: Uuid,
 }
 
 #[derive(Clone, Debug)]
 pub struct CrossedRegion_RegionData {
+    /// TODO
     pub sim_ip: Ip4Addr,
+    /// TODO
     pub sim_port: IpPort,
+    /// TODO
     pub region_handle: u64,
+    /// TODO
     pub seed_capability: Vec<u8>,
 }
 
 #[derive(Clone, Debug)]
 pub struct CrossedRegion_Info {
+    /// TODO
     pub position: Vector3<f32>,
+    /// TODO
     pub look_at: Vector3<f32>,
 }
 
@@ -2210,6 +2863,7 @@ pub struct CrossedRegion_Info {
 /// 		TODO:
 /// 		/// CrossedRegion - new way to tell a viewer it has gone across a region
 /// /// boundary
+///
 #[derive(Clone, Debug)]
 pub struct CrossedRegion {
     pub agent_data: CrossedRegion_AgentData,
@@ -2220,9 +2874,13 @@ pub struct CrossedRegion {
 
 #[derive(Clone, Debug)]
 pub struct DataHomeLocationReply_Info {
+    /// TODO
     pub agent_id: Uuid,
+    /// TODO
     pub region_handle: u64,
+    /// TODO
     pub position: Vector3<f32>,
+    /// TODO
     pub look_at: Vector3<f32>,
 }
 
@@ -2230,6 +2888,7 @@ pub struct DataHomeLocationReply_Info {
 /// 		TODO:
 /// 		/// DataHomeLocationReply data->sim
 /// /// response is the location of agent home.
+///
 #[derive(Clone, Debug)]
 pub struct DataHomeLocationReply {
     pub info: DataHomeLocationReply_Info,
@@ -2238,12 +2897,15 @@ pub struct DataHomeLocationReply {
 
 #[derive(Clone, Debug)]
 pub struct DataHomeLocationRequest_Info {
+    /// TODO
     pub agent_id: Uuid,
+    /// TODO
     pub kicked_from_estate_id: u32,
 }
 
 #[derive(Clone, Debug)]
 pub struct DataHomeLocationRequest_AgentInfo {
+    /// TODO
     pub agent_effective_maturity: u32,
 }
 
@@ -2251,6 +2913,7 @@ pub struct DataHomeLocationRequest_AgentInfo {
 /// 		TODO:
 /// 		/// DataHomeLocationRequest sim->data
 /// /// Request
+///
 #[derive(Clone, Debug)]
 pub struct DataHomeLocationRequest {
     pub info: DataHomeLocationRequest_Info,
@@ -2260,15 +2923,20 @@ pub struct DataHomeLocationRequest {
 
 #[derive(Clone, Debug)]
 pub struct DataServerLogout_UserData {
+    /// TODO
     pub agent_id: Uuid,
+    /// TODO
     pub viewer_ip: Ip4Addr,
+    /// TODO
     pub disconnect: bool,
+    /// TODO
     pub session_id: Uuid,
 }
 
 ///
 /// TODO:
 /// /// userserver -> dataserver
+///
 #[derive(Clone, Debug)]
 pub struct DataServerLogout {
     pub user_data: DataServerLogout_UserData,
@@ -2277,7 +2945,9 @@ pub struct DataServerLogout {
 
 #[derive(Clone, Debug)]
 pub struct DeRezAck_TransactionData {
+    /// TODO
     pub transaction_id: Uuid,
+    /// TODO
     pub success: bool,
 }
 
@@ -2286,6 +2956,7 @@ pub struct DeRezAck_TransactionData {
 /// 		/// This message is sent when a derez succeeds, but there's no way to
 /// /// know, since no inventory is created on the viewer. For example, when
 /// /// saving into task inventory.
+///
 #[derive(Clone, Debug)]
 pub struct DeRezAck {
     pub transaction_data: DeRezAck_TransactionData,
@@ -2294,22 +2965,31 @@ pub struct DeRezAck {
 
 #[derive(Clone, Debug)]
 pub struct DeRezObject_AgentData {
+    /// TODO
     pub agent_id: Uuid,
+    /// TODO
     pub session_id: Uuid,
 }
 
 #[derive(Clone, Debug)]
 pub struct DeRezObject_AgentBlock {
+    /// TODO
     pub group_id: Uuid,
+    /// TODO
     pub destination: u8,
+    /// TODO
     pub destination_id: Uuid,
+    /// TODO
     pub transaction_id: Uuid,
+    /// TODO
     pub packet_count: u8,
+    /// TODO
     pub packet_number: u8,
 }
 
 #[derive(Clone, Debug)]
 pub struct DeRezObject_ObjectData {
+    /// TODO
     pub object_local_id: u32,
 }
 
@@ -2328,6 +3008,7 @@ pub struct DeRezObject_ObjectData {
 /// /// the packets are counted and numbered. The rest of the information is
 /// /// just duplicated (it's not that much, and derezzes that span multiple
 /// /// packets will be rare.)
+///
 #[derive(Clone, Debug)]
 pub struct DeRezObject {
     pub agent_data: DeRezObject_AgentData,
@@ -2338,14 +3019,19 @@ pub struct DeRezObject {
 
 #[derive(Clone, Debug)]
 pub struct DeactivateGestures_AgentData {
+    /// TODO
     pub agent_id: Uuid,
+    /// TODO
     pub session_id: Uuid,
+    /// TODO
     pub flags: u32,
 }
 
 #[derive(Clone, Debug)]
 pub struct DeactivateGestures_Data {
+    /// TODO
     pub item_id: Uuid,
+    /// TODO
     pub gesture_flags: u32,
 }
 
@@ -2353,6 +3039,7 @@ pub struct DeactivateGestures_Data {
 /// 		TODO:
 /// 		/// Tell the database some gestures are no longer active
 /// /// viewer -> sim -> data
+///
 #[derive(Clone, Debug)]
 pub struct DeactivateGestures {
     pub agent_data: DeactivateGestures_AgentData,
@@ -2362,17 +3049,21 @@ pub struct DeactivateGestures {
 
 #[derive(Clone, Debug)]
 pub struct DeclineCallingCard_AgentData {
+    /// TODO
     pub agent_id: Uuid,
+    /// TODO
     pub session_id: Uuid,
 }
 
 #[derive(Clone, Debug)]
 pub struct DeclineCallingCard_TransactionBlock {
+    /// TODO
     pub transaction_id: Uuid,
 }
 
 ///
 /// TODO:
+///
 ///
 #[derive(Clone, Debug)]
 pub struct DeclineCallingCard {
@@ -2383,17 +3074,21 @@ pub struct DeclineCallingCard {
 
 #[derive(Clone, Debug)]
 pub struct DeclineFriendship_AgentData {
+    /// TODO
     pub agent_id: Uuid,
+    /// TODO
     pub session_id: Uuid,
 }
 
 #[derive(Clone, Debug)]
 pub struct DeclineFriendship_TransactionBlock {
+    /// TODO
     pub transaction_id: Uuid,
 }
 
 ///
 /// TODO:
+///
 ///
 #[derive(Clone, Debug)]
 pub struct DeclineFriendship {
@@ -2404,6 +3099,7 @@ pub struct DeclineFriendship {
 
 #[derive(Clone, Debug)]
 pub struct DenyTrustedCircuit_DataBlock {
+    /// TODO
     pub end_point_id: Uuid,
 }
 
@@ -2415,6 +3111,7 @@ pub struct DenyTrustedCircuit_DataBlock {
 /// /// - to force the remote end-point to try to establish a trusted circuit
 /// /// - the reception of a trusted message on a non-trusted circuit
 /// /// This allows us to re-auth a circuit if it gets closed due to timeouts or network failures.
+///
 #[derive(Clone, Debug)]
 pub struct DenyTrustedCircuit {
     pub data_block: DenyTrustedCircuit_DataBlock,
@@ -2423,7 +3120,9 @@ pub struct DenyTrustedCircuit {
 
 #[derive(Clone, Debug)]
 pub struct DerezContainer_Data {
+    /// TODO
     pub object_id: Uuid,
+    /// TODO
     pub delete: bool,
 }
 
@@ -2431,6 +3130,7 @@ pub struct DerezContainer_Data {
 /// 		TODO:
 /// 		/// sim -> viewer
 /// /// Used to propperly handle buying asset containers
+///
 #[derive(Clone, Debug)]
 pub struct DerezContainer {
     pub data: DerezContainer_Data,
@@ -2439,12 +3139,15 @@ pub struct DerezContainer {
 
 #[derive(Clone, Debug)]
 pub struct DetachAttachmentIntoInv_ObjectData {
+    /// TODO
     pub agent_id: Uuid,
+    /// TODO
     pub item_id: Uuid,
 }
 
 ///
 /// TODO:
+///
 ///
 #[derive(Clone, Debug)]
 pub struct DetachAttachmentIntoInv {
@@ -2454,16 +3157,23 @@ pub struct DetachAttachmentIntoInv {
 
 #[derive(Clone, Debug)]
 pub struct DirClassifiedQuery_AgentData {
+    /// TODO
     pub agent_id: Uuid,
+    /// TODO
     pub session_id: Uuid,
 }
 
 #[derive(Clone, Debug)]
 pub struct DirClassifiedQuery_QueryData {
+    /// TODO
     pub query_id: Uuid,
+    /// TODO
     pub query_text: Vec<u8>,
+    /// TODO
     pub query_flags: u32,
+    /// TODO
     pub category: u32,
+    /// TODO
     pub query_start: i32,
 }
 
@@ -2471,6 +3181,7 @@ pub struct DirClassifiedQuery_QueryData {
 /// 		TODO:
 /// 		/// DirClassifiedQuery viewer->sim
 /// /// reliable
+///
 #[derive(Clone, Debug)]
 pub struct DirClassifiedQuery {
     pub agent_data: DirClassifiedQuery_AgentData,
@@ -2480,17 +3191,25 @@ pub struct DirClassifiedQuery {
 
 #[derive(Clone, Debug)]
 pub struct DirClassifiedQueryBackend_AgentData {
+    /// TODO
     pub agent_id: Uuid,
 }
 
 #[derive(Clone, Debug)]
 pub struct DirClassifiedQueryBackend_QueryData {
+    /// TODO
     pub query_id: Uuid,
+    /// TODO
     pub query_text: Vec<u8>,
+    /// TODO
     pub query_flags: u32,
+    /// TODO
     pub category: u32,
+    /// TODO
     pub estate_id: u32,
+    /// TODO
     pub godlike: bool,
+    /// TODO
     pub query_start: i32,
 }
 
@@ -2498,6 +3217,7 @@ pub struct DirClassifiedQueryBackend_QueryData {
 /// 		TODO:
 /// 		/// DirClassifiedQueryBackend sim->dataserver
 /// /// reliable
+///
 #[derive(Clone, Debug)]
 pub struct DirClassifiedQueryBackend {
     pub agent_data: DirClassifiedQueryBackend_AgentData,
@@ -2507,26 +3227,35 @@ pub struct DirClassifiedQueryBackend {
 
 #[derive(Clone, Debug)]
 pub struct DirClassifiedReply_AgentData {
+    /// TODO
     pub agent_id: Uuid,
 }
 
 #[derive(Clone, Debug)]
 pub struct DirClassifiedReply_QueryData {
+    /// TODO
     pub query_id: Uuid,
 }
 
 #[derive(Clone, Debug)]
 pub struct DirClassifiedReply_QueryReplies {
+    /// TODO
     pub classified_id: Uuid,
+    /// TODO
     pub name: Vec<u8>,
+    /// TODO
     pub classified_flags: u8,
+    /// TODO
     pub creation_date: u32,
+    /// TODO
     pub expiration_date: u32,
+    /// TODO
     pub price_for_listing: i32,
 }
 
 #[derive(Clone, Debug)]
 pub struct DirClassifiedReply_StatusData {
+    /// TODO
     pub status: u32,
 }
 
@@ -2534,6 +3263,7 @@ pub struct DirClassifiedReply_StatusData {
 /// 		TODO:
 /// 		/// DirClassifiedReply dataserver->sim->viewer
 /// /// reliable
+///
 #[derive(Clone, Debug)]
 pub struct DirClassifiedReply {
     pub agent_data: DirClassifiedReply_AgentData,
@@ -2545,32 +3275,42 @@ pub struct DirClassifiedReply {
 
 #[derive(Clone, Debug)]
 pub struct DirEventsReply_AgentData {
+    /// TODO
     pub agent_id: Uuid,
 }
 
 #[derive(Clone, Debug)]
 pub struct DirEventsReply_QueryData {
+    /// TODO
     pub query_id: Uuid,
 }
 
 #[derive(Clone, Debug)]
 pub struct DirEventsReply_QueryReplies {
+    /// TODO
     pub owner_id: Uuid,
+    /// TODO
     pub name: Vec<u8>,
+    /// TODO
     pub event_id: u32,
+    /// TODO
     pub date: Vec<u8>,
+    /// TODO
     pub unix_time: u32,
+    /// TODO
     pub event_flags: u32,
 }
 
 #[derive(Clone, Debug)]
 pub struct DirEventsReply_StatusData {
+    /// TODO
     pub status: u32,
 }
 
 ///
 /// TODO:
 /// /// DirEventsReply
+///
 #[derive(Clone, Debug)]
 pub struct DirEventsReply {
     pub agent_data: DirEventsReply_AgentData,
@@ -2582,15 +3322,21 @@ pub struct DirEventsReply {
 
 #[derive(Clone, Debug)]
 pub struct DirFindQuery_AgentData {
+    /// TODO
     pub agent_id: Uuid,
+    /// TODO
     pub session_id: Uuid,
 }
 
 #[derive(Clone, Debug)]
 pub struct DirFindQuery_QueryData {
+    /// TODO
     pub query_id: Uuid,
+    /// TODO
     pub query_text: Vec<u8>,
+    /// TODO
     pub query_flags: u32,
+    /// TODO
     pub query_start: i32,
 }
 
@@ -2598,6 +3344,7 @@ pub struct DirFindQuery_QueryData {
 /// 		TODO:
 /// 		/// DirFindQuery viewer->sim
 /// /// Message to start asking questions for the directory
+///
 #[derive(Clone, Debug)]
 pub struct DirFindQuery {
     pub agent_data: DirFindQuery_AgentData,
@@ -2607,16 +3354,23 @@ pub struct DirFindQuery {
 
 #[derive(Clone, Debug)]
 pub struct DirFindQueryBackend_AgentData {
+    /// TODO
     pub agent_id: Uuid,
 }
 
 #[derive(Clone, Debug)]
 pub struct DirFindQueryBackend_QueryData {
+    /// TODO
     pub query_id: Uuid,
+    /// TODO
     pub query_text: Vec<u8>,
+    /// TODO
     pub query_flags: u32,
+    /// TODO
     pub query_start: i32,
+    /// TODO
     pub estate_id: u32,
+    /// TODO
     pub godlike: bool,
 }
 
@@ -2624,6 +3378,7 @@ pub struct DirFindQueryBackend_QueryData {
 /// 		TODO:
 /// 		/// DirFindQueryBackend sim->data
 /// /// Trusted message generated by receipt of DirFindQuery to sim.
+///
 #[derive(Clone, Debug)]
 pub struct DirFindQueryBackend {
     pub agent_data: DirFindQueryBackend_AgentData,
@@ -2633,19 +3388,25 @@ pub struct DirFindQueryBackend {
 
 #[derive(Clone, Debug)]
 pub struct DirGroupsReply_AgentData {
+    /// TODO
     pub agent_id: Uuid,
 }
 
 #[derive(Clone, Debug)]
 pub struct DirGroupsReply_QueryData {
+    /// TODO
     pub query_id: Uuid,
 }
 
 #[derive(Clone, Debug)]
 pub struct DirGroupsReply_QueryReplies {
+    /// TODO
     pub group_id: Uuid,
+    /// TODO
     pub group_name: Vec<u8>,
+    /// TODO
     pub members: i32,
+    /// TODO
     pub search_order: f32,
 }
 
@@ -2654,6 +3415,7 @@ pub struct DirGroupsReply_QueryReplies {
 /// 		/// DirGroupsReply
 /// /// dataserver -> userserver -> viewer
 /// /// reliable
+///
 #[derive(Clone, Debug)]
 pub struct DirGroupsReply {
     pub agent_data: DirGroupsReply_AgentData,
@@ -2664,17 +3426,25 @@ pub struct DirGroupsReply {
 
 #[derive(Clone, Debug)]
 pub struct DirLandQuery_AgentData {
+    /// TODO
     pub agent_id: Uuid,
+    /// TODO
     pub session_id: Uuid,
 }
 
 #[derive(Clone, Debug)]
 pub struct DirLandQuery_QueryData {
+    /// TODO
     pub query_id: Uuid,
+    /// TODO
     pub query_flags: u32,
+    /// TODO
     pub search_type: u32,
+    /// TODO
     pub price: i32,
+    /// TODO
     pub area: i32,
+    /// TODO
     pub query_start: i32,
 }
 
@@ -2683,6 +3453,7 @@ pub struct DirLandQuery_QueryData {
 /// 		/// DirLandQuery viewer->sim
 /// /// Special query for the land for sale/auction panel.
 /// /// reliable
+///
 #[derive(Clone, Debug)]
 pub struct DirLandQuery {
     pub agent_data: DirLandQuery_AgentData,
@@ -2692,18 +3463,27 @@ pub struct DirLandQuery {
 
 #[derive(Clone, Debug)]
 pub struct DirLandQueryBackend_AgentData {
+    /// TODO
     pub agent_id: Uuid,
 }
 
 #[derive(Clone, Debug)]
 pub struct DirLandQueryBackend_QueryData {
+    /// TODO
     pub query_id: Uuid,
+    /// TODO
     pub query_flags: u32,
+    /// TODO
     pub search_type: u32,
+    /// TODO
     pub price: i32,
+    /// TODO
     pub area: i32,
+    /// TODO
     pub query_start: i32,
+    /// TODO
     pub estate_id: u32,
+    /// TODO
     pub godlike: bool,
 }
 
@@ -2711,6 +3491,7 @@ pub struct DirLandQueryBackend_QueryData {
 /// 		TODO:
 /// 		/// DirLandQueryBackend sim->dataserver
 /// /// Special query for the land for sale/auction panel.
+///
 #[derive(Clone, Debug)]
 pub struct DirLandQueryBackend {
     pub agent_data: DirLandQueryBackend_AgentData,
@@ -2720,21 +3501,29 @@ pub struct DirLandQueryBackend {
 
 #[derive(Clone, Debug)]
 pub struct DirLandReply_AgentData {
+    /// TODO
     pub agent_id: Uuid,
 }
 
 #[derive(Clone, Debug)]
 pub struct DirLandReply_QueryData {
+    /// TODO
     pub query_id: Uuid,
 }
 
 #[derive(Clone, Debug)]
 pub struct DirLandReply_QueryReplies {
+    /// TODO
     pub parcel_id: Uuid,
+    /// TODO
     pub name: Vec<u8>,
+    /// TODO
     pub auction: bool,
+    /// TODO
     pub for_sale: bool,
+    /// TODO
     pub sale_price: i32,
+    /// TODO
     pub actual_area: i32,
 }
 
@@ -2744,6 +3533,7 @@ pub struct DirLandReply_QueryReplies {
 /// /// dataserver -> simulator -> viewer
 /// /// reliable
 /// ///{	ProductSKU		Variable 1	}
+///
 #[derive(Clone, Debug)]
 pub struct DirLandReply {
     pub agent_data: DirLandReply_AgentData,
@@ -2754,27 +3544,36 @@ pub struct DirLandReply {
 
 #[derive(Clone, Debug)]
 pub struct DirPeopleReply_AgentData {
+    /// TODO
     pub agent_id: Uuid,
 }
 
 #[derive(Clone, Debug)]
 pub struct DirPeopleReply_QueryData {
+    /// TODO
     pub query_id: Uuid,
 }
 
 #[derive(Clone, Debug)]
 pub struct DirPeopleReply_QueryReplies {
+    /// TODO
     pub agent_id: Uuid,
+    /// TODO
     pub first_name: Vec<u8>,
+    /// TODO
     pub last_name: Vec<u8>,
+    /// TODO
     pub group: Vec<u8>,
+    /// TODO
     pub online: bool,
+    /// TODO
     pub reputation: i32,
 }
 
 ///
 /// TODO:
 /// /// DirPeopleReply
+///
 #[derive(Clone, Debug)]
 pub struct DirPeopleReply {
     pub agent_data: DirPeopleReply_AgentData,
@@ -2785,17 +3584,25 @@ pub struct DirPeopleReply {
 
 #[derive(Clone, Debug)]
 pub struct DirPlacesQuery_AgentData {
+    /// TODO
     pub agent_id: Uuid,
+    /// TODO
     pub session_id: Uuid,
 }
 
 #[derive(Clone, Debug)]
 pub struct DirPlacesQuery_QueryData {
+    /// TODO
     pub query_id: Uuid,
+    /// TODO
     pub query_text: Vec<u8>,
+    /// TODO
     pub query_flags: u32,
+    /// TODO
     pub category: i8,
+    /// TODO
     pub sim_name: Vec<u8>,
+    /// TODO
     pub query_start: i32,
 }
 
@@ -2803,6 +3610,7 @@ pub struct DirPlacesQuery_QueryData {
 /// 		TODO:
 /// 		/// DirPlacesQuery viewer->sim
 /// /// Used for the Find directory of places
+///
 #[derive(Clone, Debug)]
 pub struct DirPlacesQuery {
     pub agent_data: DirPlacesQuery_AgentData,
@@ -2812,18 +3620,27 @@ pub struct DirPlacesQuery {
 
 #[derive(Clone, Debug)]
 pub struct DirPlacesQueryBackend_AgentData {
+    /// TODO
     pub agent_id: Uuid,
 }
 
 #[derive(Clone, Debug)]
 pub struct DirPlacesQueryBackend_QueryData {
+    /// TODO
     pub query_id: Uuid,
+    /// TODO
     pub query_text: Vec<u8>,
+    /// TODO
     pub query_flags: u32,
+    /// TODO
     pub category: i8,
+    /// TODO
     pub sim_name: Vec<u8>,
+    /// TODO
     pub estate_id: u32,
+    /// TODO
     pub godlike: bool,
+    /// TODO
     pub query_start: i32,
 }
 
@@ -2831,6 +3648,7 @@ pub struct DirPlacesQueryBackend_QueryData {
 /// 		TODO:
 /// 		/// DirPlacesQueryBackend sim->dataserver
 /// /// Used for the Find directory of places.
+///
 #[derive(Clone, Debug)]
 pub struct DirPlacesQueryBackend {
     pub agent_data: DirPlacesQueryBackend_AgentData,
@@ -2840,25 +3658,33 @@ pub struct DirPlacesQueryBackend {
 
 #[derive(Clone, Debug)]
 pub struct DirPlacesReply_AgentData {
+    /// TODO
     pub agent_id: Uuid,
 }
 
 #[derive(Clone, Debug)]
 pub struct DirPlacesReply_QueryData {
+    /// TODO
     pub query_id: Uuid,
 }
 
 #[derive(Clone, Debug)]
 pub struct DirPlacesReply_QueryReplies {
+    /// TODO
     pub parcel_id: Uuid,
+    /// TODO
     pub name: Vec<u8>,
+    /// TODO
     pub for_sale: bool,
+    /// TODO
     pub auction: bool,
+    /// TODO
     pub dwell: f32,
 }
 
 #[derive(Clone, Debug)]
 pub struct DirPlacesReply_StatusData {
+    /// TODO
     pub status: u32,
 }
 
@@ -2868,6 +3694,7 @@ pub struct DirPlacesReply_StatusData {
 /// /// If the user has specified a location, use that to compute
 /// /// global x,y,z.  Otherwise, use center of the AABB.
 /// /// reliable
+///
 #[derive(Clone, Debug)]
 pub struct DirPlacesReply {
     pub agent_data: DirPlacesReply_AgentData,
@@ -2879,13 +3706,17 @@ pub struct DirPlacesReply {
 
 #[derive(Clone, Debug)]
 pub struct DirPopularQuery_AgentData {
+    /// TODO
     pub agent_id: Uuid,
+    /// TODO
     pub session_id: Uuid,
 }
 
 #[derive(Clone, Debug)]
 pub struct DirPopularQuery_QueryData {
+    /// TODO
     pub query_id: Uuid,
+    /// TODO
     pub query_flags: u32,
 }
 
@@ -2894,6 +3725,7 @@ pub struct DirPopularQuery_QueryData {
 /// 		/// DEPRECATED: DirPopularQuery viewer->sim
 /// /// Special query for the land for sale/auction panel.
 /// /// reliable
+///
 #[derive(Clone, Debug)]
 pub struct DirPopularQuery {
     pub agent_data: DirPopularQuery_AgentData,
@@ -2903,14 +3735,19 @@ pub struct DirPopularQuery {
 
 #[derive(Clone, Debug)]
 pub struct DirPopularQueryBackend_AgentData {
+    /// TODO
     pub agent_id: Uuid,
 }
 
 #[derive(Clone, Debug)]
 pub struct DirPopularQueryBackend_QueryData {
+    /// TODO
     pub query_id: Uuid,
+    /// TODO
     pub query_flags: u32,
+    /// TODO
     pub estate_id: u32,
+    /// TODO
     pub godlike: bool,
 }
 
@@ -2919,6 +3756,7 @@ pub struct DirPopularQueryBackend_QueryData {
 /// 		/// DEPRECATED: DirPopularQueryBackend sim->dataserver
 /// /// Special query for the land for sale/auction panel.
 /// /// reliable
+///
 #[derive(Clone, Debug)]
 pub struct DirPopularQueryBackend {
     pub agent_data: DirPopularQueryBackend_AgentData,
@@ -2928,18 +3766,23 @@ pub struct DirPopularQueryBackend {
 
 #[derive(Clone, Debug)]
 pub struct DirPopularReply_AgentData {
+    /// TODO
     pub agent_id: Uuid,
 }
 
 #[derive(Clone, Debug)]
 pub struct DirPopularReply_QueryData {
+    /// TODO
     pub query_id: Uuid,
 }
 
 #[derive(Clone, Debug)]
 pub struct DirPopularReply_QueryReplies {
+    /// TODO
     pub parcel_id: Uuid,
+    /// TODO
     pub name: Vec<u8>,
+    /// TODO
     pub dwell: f32,
 }
 
@@ -2948,6 +3791,7 @@ pub struct DirPopularReply_QueryReplies {
 /// 		/// DEPRECATED: DirPopularReply
 /// /// dataserver -> simulator -> viewer
 /// /// reliable
+///
 #[derive(Clone, Debug)]
 pub struct DirPopularReply {
     pub agent_data: DirPopularReply_AgentData,
@@ -2959,34 +3803,53 @@ pub struct DirPopularReply {
 ///
 /// TODO:
 ///
+///
 #[derive(Clone, Debug)]
 pub struct DisableSimulator {}
 
 
 #[derive(Clone, Debug)]
 pub struct EconomyData_Info {
+    /// TODO
     pub object_capacity: i32,
+    /// TODO
     pub object_count: i32,
+    /// TODO
     pub price_energy_unit: i32,
+    /// TODO
     pub price_object_claim: i32,
+    /// TODO
     pub price_public_object_decay: i32,
+    /// TODO
     pub price_public_object_delete: i32,
+    /// TODO
     pub price_parcel_claim: i32,
+    /// TODO
     pub price_parcel_claim_factor: f32,
+    /// TODO
     pub price_upload: i32,
+    /// TODO
     pub price_rent_light: i32,
+    /// TODO
     pub teleport_min_price: i32,
+    /// TODO
     pub teleport_price_exponent: f32,
+    /// TODO
     pub energy_efficiency: f32,
+    /// TODO
     pub price_object_rent: f32,
+    /// TODO
     pub price_object_scale_factor: f32,
+    /// TODO
     pub price_parcel_rent: i32,
+    /// TODO
     pub price_group_create: i32,
 }
 
 ///
 /// TODO:
 /// /// dataserver to sim, response w/ econ data
+///
 #[derive(Clone, Debug)]
 pub struct EconomyData {
     pub info: EconomyData_Info,
@@ -2996,19 +3859,24 @@ pub struct EconomyData {
 ///
 /// TODO:
 /// /// once we use local stats, this will include a region handle
+///
 #[derive(Clone, Debug)]
 pub struct EconomyDataRequest {}
 
 
 #[derive(Clone, Debug)]
 pub struct EdgeDataPacket_EdgeData {
+    /// TODO
     pub layer_type: u8,
+    /// TODO
     pub direction: u8,
+    /// TODO
     pub layer_data: Vec<u8>,
 }
 
 ///
 /// TODO:
+///
 ///
 #[derive(Clone, Debug)]
 pub struct EdgeDataPacket {
@@ -3018,16 +3886,19 @@ pub struct EdgeDataPacket {
 
 #[derive(Clone, Debug)]
 pub struct EjectGroupMemberReply_AgentData {
+    /// TODO
     pub agent_id: Uuid,
 }
 
 #[derive(Clone, Debug)]
 pub struct EjectGroupMemberReply_GroupData {
+    /// TODO
     pub group_id: Uuid,
 }
 
 #[derive(Clone, Debug)]
 pub struct EjectGroupMemberReply_EjectData {
+    /// TODO
     pub success: bool,
 }
 
@@ -3036,6 +3907,7 @@ pub struct EjectGroupMemberReply_EjectData {
 /// 		/// EjectGroupMemberReply
 /// /// dataserver -> simulator -> viewer
 /// /// reliable
+///
 #[derive(Clone, Debug)]
 pub struct EjectGroupMemberReply {
     pub agent_data: EjectGroupMemberReply_AgentData,
@@ -3046,17 +3918,21 @@ pub struct EjectGroupMemberReply {
 
 #[derive(Clone, Debug)]
 pub struct EjectGroupMemberRequest_AgentData {
+    /// TODO
     pub agent_id: Uuid,
+    /// TODO
     pub session_id: Uuid,
 }
 
 #[derive(Clone, Debug)]
 pub struct EjectGroupMemberRequest_GroupData {
+    /// TODO
     pub group_id: Uuid,
 }
 
 #[derive(Clone, Debug)]
 pub struct EjectGroupMemberRequest_EjectData {
+    /// TODO
     pub ejectee_id: Uuid,
 }
 
@@ -3065,6 +3941,7 @@ pub struct EjectGroupMemberRequest_EjectData {
 /// 		/// EjectGroupMemberRequest
 /// /// viewer -> simulator -> dataserver
 /// /// reliable
+///
 #[derive(Clone, Debug)]
 pub struct EjectGroupMemberRequest {
     pub agent_data: EjectGroupMemberRequest_AgentData,
@@ -3075,13 +3952,17 @@ pub struct EjectGroupMemberRequest {
 
 #[derive(Clone, Debug)]
 pub struct EjectUser_AgentData {
+    /// TODO
     pub agent_id: Uuid,
+    /// TODO
     pub session_id: Uuid,
 }
 
 #[derive(Clone, Debug)]
 pub struct EjectUser_Data {
+    /// TODO
     pub target_id: Uuid,
+    /// TODO
     pub flags: u32,
 }
 
@@ -3090,6 +3971,7 @@ pub struct EjectUser_Data {
 /// 		/// EjectUser
 /// /// viewer -> sim
 /// /// reliable
+///
 #[derive(Clone, Debug)]
 pub struct EjectUser {
     pub agent_data: EjectUser_AgentData,
@@ -3099,12 +3981,19 @@ pub struct EjectUser {
 
 #[derive(Clone, Debug)]
 pub struct EmailMessageReply_DataBlock {
+    /// TODO
     pub object_id: Uuid,
+    /// TODO
     pub more: u32,
+    /// TODO
     pub time: u32,
+    /// TODO
     pub from_address: Vec<u8>,
+    /// TODO
     pub subject: Vec<u8>,
+    /// TODO
     pub data: Vec<u8>,
+    /// TODO
     pub mail_filter: Vec<u8>,
 }
 
@@ -3112,6 +4001,7 @@ pub struct EmailMessageReply_DataBlock {
 /// 		TODO:
 /// 		/// Dataserver gives simulator the oldest email message in the queue, along with
 /// /// how many messages are left in the queue.  And passes back the filter used to request emails.
+///
 #[derive(Clone, Debug)]
 pub struct EmailMessageReply {
     pub data_block: EmailMessageReply_DataBlock,
@@ -3120,8 +4010,11 @@ pub struct EmailMessageReply {
 
 #[derive(Clone, Debug)]
 pub struct EmailMessageRequest_DataBlock {
+    /// TODO
     pub object_id: Uuid,
+    /// TODO
     pub from_address: Vec<u8>,
+    /// TODO
     pub subject: Vec<u8>,
 }
 
@@ -3129,6 +4022,7 @@ pub struct EmailMessageRequest_DataBlock {
 /// 		TODO:
 /// 		/// Script on simulator asks dataserver if there are any email messages
 /// /// waiting.
+///
 #[derive(Clone, Debug)]
 pub struct EmailMessageRequest {
     pub data_block: EmailMessageRequest_DataBlock,
@@ -3137,13 +4031,17 @@ pub struct EmailMessageRequest {
 
 #[derive(Clone, Debug)]
 pub struct EnableSimulator_SimulatorInfo {
+    /// TODO
     pub handle: u64,
+    /// TODO
     pub ip: Ip4Addr,
+    /// TODO
     pub port: IpPort,
 }
 
 ///
 /// TODO:
+///
 ///
 #[derive(Clone, Debug)]
 pub struct EnableSimulator {
@@ -3153,16 +4051,31 @@ pub struct EnableSimulator {
 
 #[derive(Clone, Debug)]
 pub struct Error_AgentData {
+    /// Agent id of the sender.
+    ///
+    ///                TODO: What is the value of this field in the case of sim → agent: is it the receiver?
+    ///                      And what is the value in the case of sim → sim?
+    ///
     pub agent_id: Uuid,
 }
 
 #[derive(Clone, Debug)]
 pub struct Error_Data {
+    ///
+    /// Code number of the error.
+    ///
+    /// TODO: Tabularize at least the most important error codes.
+    ///
     pub code: i32,
+    /// TODO
     pub token: Vec<u8>,
+    /// TODO
     pub id: Uuid,
+    /// TODO
     pub system: Vec<u8>,
+    /// The full error message.
     pub message: Vec<u8>,
+    /// TODO
     pub data: Vec<u8>,
 }
 
@@ -3170,6 +4083,7 @@ pub struct Error_Data {
 /// Any error message to be sent to the UDP recipient.
 ///
 /// Receivers are supposed to at least log the message, or detect a specific error and for example display a relevant UI widget.
+///
 #[derive(Clone, Debug)]
 pub struct Error {
     pub agent_data: Error_AgentData,
@@ -3179,9 +4093,13 @@ pub struct Error {
 
 #[derive(Clone, Debug)]
 pub struct EstateCovenantReply_Data {
+    /// TODO
     pub covenant_id: Uuid,
+    /// TODO
     pub covenant_timestamp: u32,
+    /// TODO
     pub estate_name: Vec<u8>,
+    /// TODO
     pub estate_owner_id: Uuid,
 }
 
@@ -3190,6 +4108,7 @@ pub struct EstateCovenantReply_Data {
 /// 		/// EstateCovenantReply
 /// /// sim -> viewer
 /// /// reliable
+///
 #[derive(Clone, Debug)]
 pub struct EstateCovenantReply {
     pub data: EstateCovenantReply_Data,
@@ -3198,7 +4117,9 @@ pub struct EstateCovenantReply {
 
 #[derive(Clone, Debug)]
 pub struct EstateCovenantRequest_AgentData {
+    /// TODO
     pub agent_id: Uuid,
+    /// TODO
     pub session_id: Uuid,
 }
 
@@ -3207,6 +4128,7 @@ pub struct EstateCovenantRequest_AgentData {
 /// 		/// EstateCovenantRequest
 /// /// viewer -> sim
 /// /// reliable
+///
 #[derive(Clone, Debug)]
 pub struct EstateCovenantRequest {
     pub agent_data: EstateCovenantRequest_AgentData,
@@ -3215,19 +4137,25 @@ pub struct EstateCovenantRequest {
 
 #[derive(Clone, Debug)]
 pub struct EstateOwnerMessage_AgentData {
+    /// TODO
     pub agent_id: Uuid,
+    /// TODO
     pub session_id: Uuid,
+    /// TODO
     pub transaction_id: Uuid,
 }
 
 #[derive(Clone, Debug)]
 pub struct EstateOwnerMessage_MethodData {
+    /// TODO
     pub method: Vec<u8>,
+    /// TODO
     pub invoice: Uuid,
 }
 
 #[derive(Clone, Debug)]
 pub struct EstateOwnerMessage_ParamList {
+    /// TODO
     pub parameter: Vec<u8>,
 }
 
@@ -3235,6 +4163,7 @@ pub struct EstateOwnerMessage_ParamList {
 /// 		TODO:
 /// 		/// EstateOwnerMessage
 /// /// format must be identical to above
+///
 #[derive(Clone, Debug)]
 pub struct EstateOwnerMessage {
     pub agent_data: EstateOwnerMessage_AgentData,
@@ -3245,20 +4174,27 @@ pub struct EstateOwnerMessage {
 
 #[derive(Clone, Debug)]
 pub struct EventGodDelete_AgentData {
+    /// TODO
     pub agent_id: Uuid,
+    /// TODO
     pub session_id: Uuid,
 }
 
 #[derive(Clone, Debug)]
 pub struct EventGodDelete_EventData {
+    /// TODO
     pub event_id: u32,
 }
 
 #[derive(Clone, Debug)]
 pub struct EventGodDelete_QueryData {
+    /// TODO
     pub query_id: Uuid,
+    /// TODO
     pub query_text: Vec<u8>,
+    /// TODO
     pub query_flags: u32,
+    /// TODO
     pub query_start: i32,
 }
 
@@ -3269,6 +4205,7 @@ pub struct EventGodDelete_QueryData {
 /// /// simulator -> dataserver
 /// /// QueryData is used to resend a search result after the deletion
 /// /// reliable
+///
 #[derive(Clone, Debug)]
 pub struct EventGodDelete {
     pub agent_data: EventGodDelete_AgentData,
@@ -3279,23 +4216,37 @@ pub struct EventGodDelete {
 
 #[derive(Clone, Debug)]
 pub struct EventInfoReply_AgentData {
+    /// TODO
     pub agent_id: Uuid,
 }
 
 #[derive(Clone, Debug)]
 pub struct EventInfoReply_EventData {
+    /// TODO
     pub event_id: u32,
+    /// TODO
     pub creator: Vec<u8>,
+    /// TODO
     pub name: Vec<u8>,
+    /// TODO
     pub category: Vec<u8>,
+    /// TODO
     pub desc: Vec<u8>,
+    /// TODO
     pub date: Vec<u8>,
+    /// TODO
     pub date_utc: u32,
+    /// TODO
     pub duration: u32,
+    /// TODO
     pub cover: u32,
+    /// TODO
     pub amount: u32,
+    /// TODO
     pub sim_name: Vec<u8>,
+    /// TODO
     pub global_pos: Vector3<f64>,
+    /// TODO
     pub event_flags: u32,
 }
 
@@ -3305,6 +4256,7 @@ pub struct EventInfoReply_EventData {
 /// /// dataserver -> simulator
 /// /// simulator -> viewer
 /// /// reliable
+///
 #[derive(Clone, Debug)]
 pub struct EventInfoReply {
     pub agent_data: EventInfoReply_AgentData,
@@ -3314,12 +4266,15 @@ pub struct EventInfoReply {
 
 #[derive(Clone, Debug)]
 pub struct EventInfoRequest_AgentData {
+    /// TODO
     pub agent_id: Uuid,
+    /// TODO
     pub session_id: Uuid,
 }
 
 #[derive(Clone, Debug)]
 pub struct EventInfoRequest_EventData {
+    /// TODO
     pub event_id: u32,
 }
 
@@ -3329,6 +4284,7 @@ pub struct EventInfoRequest_EventData {
 /// /// viewer -> simulator
 /// /// simulator -> dataserver
 /// /// reliable
+///
 #[derive(Clone, Debug)]
 pub struct EventInfoRequest {
     pub agent_data: EventInfoRequest_AgentData,
@@ -3338,18 +4294,23 @@ pub struct EventInfoRequest {
 
 #[derive(Clone, Debug)]
 pub struct EventLocationReply_QueryData {
+    /// TODO
     pub query_id: Uuid,
 }
 
 #[derive(Clone, Debug)]
 pub struct EventLocationReply_EventData {
+    /// TODO
     pub success: bool,
+    /// TODO
     pub region_id: Uuid,
+    /// TODO
     pub region_pos: Vector3<f32>,
 }
 
 ///
 /// TODO:
+///
 ///
 #[derive(Clone, Debug)]
 pub struct EventLocationReply {
@@ -3360,16 +4321,19 @@ pub struct EventLocationReply {
 
 #[derive(Clone, Debug)]
 pub struct EventLocationRequest_QueryData {
+    /// TODO
     pub query_id: Uuid,
 }
 
 #[derive(Clone, Debug)]
 pub struct EventLocationRequest_EventData {
+    /// TODO
     pub event_id: u32,
 }
 
 ///
 /// TODO:
+///
 ///
 #[derive(Clone, Debug)]
 pub struct EventLocationRequest {
@@ -3380,12 +4344,15 @@ pub struct EventLocationRequest {
 
 #[derive(Clone, Debug)]
 pub struct EventNotificationAddRequest_AgentData {
+    /// TODO
     pub agent_id: Uuid,
+    /// TODO
     pub session_id: Uuid,
 }
 
 #[derive(Clone, Debug)]
 pub struct EventNotificationAddRequest_EventData {
+    /// TODO
     pub event_id: u32,
 }
 
@@ -3395,6 +4362,7 @@ pub struct EventNotificationAddRequest_EventData {
 /// /// viewer -> simulator
 /// /// simulator -> dataserver
 /// /// reliable
+///
 #[derive(Clone, Debug)]
 pub struct EventNotificationAddRequest {
     pub agent_data: EventNotificationAddRequest_AgentData,
@@ -3404,12 +4372,15 @@ pub struct EventNotificationAddRequest {
 
 #[derive(Clone, Debug)]
 pub struct EventNotificationRemoveRequest_AgentData {
+    /// TODO
     pub agent_id: Uuid,
+    /// TODO
     pub session_id: Uuid,
 }
 
 #[derive(Clone, Debug)]
 pub struct EventNotificationRemoveRequest_EventData {
+    /// TODO
     pub event_id: u32,
 }
 
@@ -3419,6 +4390,7 @@ pub struct EventNotificationRemoveRequest_EventData {
 /// /// viewer -> simulator
 /// /// simulator -> dataserver
 /// /// reliable
+///
 #[derive(Clone, Debug)]
 pub struct EventNotificationRemoveRequest {
     pub agent_data: EventNotificationRemoveRequest_AgentData,
@@ -3428,14 +4400,18 @@ pub struct EventNotificationRemoveRequest {
 
 #[derive(Clone, Debug)]
 pub struct FeatureDisabled_FailureInfo {
+    /// TODO
     pub error_message: Vec<u8>,
+    /// TODO
     pub agent_id: Uuid,
+    /// TODO
     pub transaction_id: Uuid,
 }
 
 ///
 /// TODO:
 /// /// Disabled feature response message
+///
 #[derive(Clone, Debug)]
 pub struct FeatureDisabled {
     pub failure_info: FeatureDisabled_FailureInfo,
@@ -3444,19 +4420,24 @@ pub struct FeatureDisabled {
 
 #[derive(Clone, Debug)]
 pub struct FetchInventory_AgentData {
+    /// TODO
     pub agent_id: Uuid,
+    /// TODO
     pub session_id: Uuid,
 }
 
 #[derive(Clone, Debug)]
 pub struct FetchInventory_InventoryData {
+    /// TODO
     pub owner_id: Uuid,
+    /// TODO
     pub item_id: Uuid,
 }
 
 ///
 /// TODO:
 /// /// Get inventory item(s) - response comes through FetchInventoryReply
+///
 #[derive(Clone, Debug)]
 pub struct FetchInventory {
     pub agent_data: FetchInventory_AgentData,
@@ -3466,22 +4447,30 @@ pub struct FetchInventory {
 
 #[derive(Clone, Debug)]
 pub struct FetchInventoryDescendents_AgentData {
+    /// TODO
     pub agent_id: Uuid,
+    /// TODO
     pub session_id: Uuid,
 }
 
 #[derive(Clone, Debug)]
 pub struct FetchInventoryDescendents_InventoryData {
+    /// TODO
     pub folder_id: Uuid,
+    /// TODO
     pub owner_id: Uuid,
+    /// TODO
     pub sort_order: i32,
+    /// TODO
     pub fetch_folders: bool,
+    /// TODO
     pub fetch_items: bool,
 }
 
 ///
 /// TODO:
 /// /// Get inventory segment.
+///
 #[derive(Clone, Debug)]
 pub struct FetchInventoryDescendents {
     pub agent_data: FetchInventoryDescendents_AgentData,
@@ -3491,36 +4480,59 @@ pub struct FetchInventoryDescendents {
 
 #[derive(Clone, Debug)]
 pub struct FetchInventoryReply_AgentData {
+    /// TODO
     pub agent_id: Uuid,
 }
 
 #[derive(Clone, Debug)]
 pub struct FetchInventoryReply_InventoryData {
+    /// TODO
     pub item_id: Uuid,
+    /// TODO
     pub folder_id: Uuid,
+    /// TODO
     pub creator_id: Uuid,
+    /// TODO
     pub owner_id: Uuid,
+    /// TODO
     pub group_id: Uuid,
+    /// TODO
     pub base_mask: u32,
+    /// TODO
     pub owner_mask: u32,
+    /// TODO
     pub group_mask: u32,
+    /// TODO
     pub everyone_mask: u32,
+    /// TODO
     pub next_owner_mask: u32,
+    /// TODO
     pub group_owned: bool,
+    /// TODO
     pub asset_id: Uuid,
+    /// TODO
     pub type_: i8,
+    /// TODO
     pub inv_type: i8,
+    /// TODO
     pub flags: u32,
+    /// TODO
     pub sale_type: u8,
+    /// TODO
     pub sale_price: i32,
+    /// TODO
     pub name: Vec<u8>,
+    /// TODO
     pub description: Vec<u8>,
+    /// TODO
     pub creation_date: i32,
+    /// TODO
     pub crc: u32,
 }
 
 ///
 /// TODO:
+///
 ///
 #[derive(Clone, Debug)]
 pub struct FetchInventoryReply {
@@ -3531,14 +4543,19 @@ pub struct FetchInventoryReply {
 
 #[derive(Clone, Debug)]
 pub struct FindAgent_AgentBlock {
+    /// TODO
     pub hunter: Uuid,
+    /// TODO
     pub prey: Uuid,
+    /// TODO
     pub space_ip: Ip4Addr,
 }
 
 #[derive(Clone, Debug)]
 pub struct FindAgent_LocationBlock {
+    /// TODO
     pub global_x: f64,
+    /// TODO
     pub global_y: f64,
 }
 
@@ -3547,6 +4564,7 @@ pub struct FindAgent_LocationBlock {
 /// 		/// FindAgent - used to find an agent's global position. I used a
 /// /// variable sized LocationBlock so that the message can be recycled with
 /// /// minimum new messages and handlers.
+///
 #[derive(Clone, Debug)]
 pub struct FindAgent {
     pub agent_block: FindAgent_AgentBlock,
@@ -3556,11 +4574,13 @@ pub struct FindAgent {
 
 #[derive(Clone, Debug)]
 pub struct ForceObjectSelect_Header {
+    /// TODO
     pub reset_list: bool,
 }
 
 #[derive(Clone, Debug)]
 pub struct ForceObjectSelect_Data {
+    /// TODO
     pub local_id: u32,
 }
 
@@ -3569,6 +4589,7 @@ pub struct ForceObjectSelect_Data {
 /// 		/// ForceObjectSelect
 /// /// sim -> viewer
 /// /// reliable
+///
 #[derive(Clone, Debug)]
 pub struct ForceObjectSelect {
     pub header: ForceObjectSelect_Header,
@@ -3578,7 +4599,9 @@ pub struct ForceObjectSelect {
 
 #[derive(Clone, Debug)]
 pub struct ForceScriptControlRelease_AgentData {
+    /// TODO
     pub agent_id: Uuid,
+    /// TODO
     pub session_id: Uuid,
 }
 
@@ -3586,6 +4609,7 @@ pub struct ForceScriptControlRelease_AgentData {
 /// 		TODO:
 /// 		/// ForceScriptControlRelease
 /// /// reliable
+///
 #[derive(Clone, Debug)]
 pub struct ForceScriptControlRelease {
     pub agent_data: ForceScriptControlRelease_AgentData,
@@ -3594,12 +4618,15 @@ pub struct ForceScriptControlRelease {
 
 #[derive(Clone, Debug)]
 pub struct FormFriendship_AgentBlock {
+    /// TODO
     pub source_id: Uuid,
+    /// TODO
     pub dest_id: Uuid,
 }
 
 ///
 /// TODO:
+///
 ///
 #[derive(Clone, Debug)]
 pub struct FormFriendship {
@@ -3609,13 +4636,17 @@ pub struct FormFriendship {
 
 #[derive(Clone, Debug)]
 pub struct FreezeUser_AgentData {
+    /// TODO
     pub agent_id: Uuid,
+    /// TODO
     pub session_id: Uuid,
 }
 
 #[derive(Clone, Debug)]
 pub struct FreezeUser_Data {
+    /// TODO
     pub target_id: Uuid,
+    /// TODO
     pub flags: u32,
 }
 
@@ -3625,6 +4656,7 @@ pub struct FreezeUser_Data {
 /// /// Freeze someone who is on my land.
 /// /// viewer -> sim
 /// /// reliable
+///
 #[derive(Clone, Debug)]
 pub struct FreezeUser {
     pub agent_data: FreezeUser_AgentData,
@@ -3634,19 +4666,25 @@ pub struct FreezeUser {
 
 #[derive(Clone, Debug)]
 pub struct GenericMessage_AgentData {
+    /// TODO
     pub agent_id: Uuid,
+    /// TODO
     pub session_id: Uuid,
+    /// TODO
     pub transaction_id: Uuid,
 }
 
 #[derive(Clone, Debug)]
 pub struct GenericMessage_MethodData {
+    /// TODO
     pub method: Vec<u8>,
+    /// TODO
     pub invoice: Uuid,
 }
 
 #[derive(Clone, Debug)]
 pub struct GenericMessage_ParamList {
+    /// TODO
     pub parameter: Vec<u8>,
 }
 
@@ -3655,6 +4693,7 @@ pub struct GenericMessage_ParamList {
 /// 		/// GenericMessage
 /// /// format must be identical to above
 /// /// As above, but don't have to be god or estate owner to send.
+///
 #[derive(Clone, Debug)]
 pub struct GenericMessage {
     pub agent_data: GenericMessage_AgentData,
@@ -3665,7 +4704,9 @@ pub struct GenericMessage {
 
 #[derive(Clone, Debug)]
 pub struct GetScriptRunning_Script {
+    /// TODO
     pub object_id: Uuid,
+    /// TODO
     pub item_id: Uuid,
 }
 
@@ -3673,6 +4714,7 @@ pub struct GetScriptRunning_Script {
 /// 		TODO:
 /// 		/// GetScriptRunning - asks if a script is running or not. the simulator
 /// /// responds with ScriptRunningReply
+///
 #[derive(Clone, Debug)]
 pub struct GetScriptRunning {
     pub script: GetScriptRunning_Script,
@@ -3681,10 +4723,15 @@ pub struct GetScriptRunning {
 
 #[derive(Clone, Debug)]
 pub struct GodKickUser_UserInfo {
+    /// TODO
     pub god_id: Uuid,
+    /// TODO
     pub god_session_id: Uuid,
+    /// TODO
     pub agent_id: Uuid,
+    /// TODO
     pub kick_flags: u32,
+    /// TODO
     pub reason: Vec<u8>,
 }
 
@@ -3694,6 +4741,7 @@ pub struct GodKickUser_UserInfo {
 /// /// When a god wants someone kicked
 /// /// viewer -> sim
 /// /// reliable
+///
 #[derive(Clone, Debug)]
 pub struct GodKickUser {
     pub user_info: GodKickUser_UserInfo,
@@ -3702,19 +4750,29 @@ pub struct GodKickUser {
 
 #[derive(Clone, Debug)]
 pub struct GodUpdateRegionInfo_AgentData {
+    /// TODO
     pub agent_id: Uuid,
+    /// TODO
     pub session_id: Uuid,
 }
 
 #[derive(Clone, Debug)]
 pub struct GodUpdateRegionInfo_RegionInfo {
+    /// TODO
     pub sim_name: Vec<u8>,
+    /// TODO
     pub estate_id: u32,
+    /// TODO
     pub parent_estate_id: u32,
+    /// TODO
     pub region_flags: u32,
+    /// TODO
     pub billable_factor: f32,
+    /// TODO
     pub price_per_meter: i32,
+    /// TODO
     pub redirect_grid_x: i32,
+    /// TODO
     pub redirect_grid_y: i32,
 }
 
@@ -3725,6 +4783,7 @@ pub struct GodUpdateRegionInfo_RegionInfo {
 /// /// of the parameters in the god tools floater
 /// /// viewer -> sim
 /// /// reliable
+///
 #[derive(Clone, Debug)]
 pub struct GodUpdateRegionInfo {
     pub agent_data: GodUpdateRegionInfo_AgentData,
@@ -3734,19 +4793,25 @@ pub struct GodUpdateRegionInfo {
 
 #[derive(Clone, Debug)]
 pub struct GodlikeMessage_AgentData {
+    /// TODO
     pub agent_id: Uuid,
+    /// TODO
     pub session_id: Uuid,
+    /// TODO
     pub transaction_id: Uuid,
 }
 
 #[derive(Clone, Debug)]
 pub struct GodlikeMessage_MethodData {
+    /// TODO
     pub method: Vec<u8>,
+    /// TODO
     pub invoice: Uuid,
 }
 
 #[derive(Clone, Debug)]
 pub struct GodlikeMessage_ParamList {
+    /// TODO
     pub parameter: Vec<u8>,
 }
 
@@ -3754,6 +4819,7 @@ pub struct GodlikeMessage_ParamList {
 /// 		TODO:
 /// 		/// GodlikeMessage - generalized construct for Gods to send messages
 /// /// around the system. Each Request has it's own internal protocol.
+///
 #[derive(Clone, Debug)]
 pub struct GodlikeMessage {
     pub agent_data: GodlikeMessage_AgentData,
@@ -3764,13 +4830,17 @@ pub struct GodlikeMessage {
 
 #[derive(Clone, Debug)]
 pub struct GrantGodlikePowers_AgentData {
+    /// TODO
     pub agent_id: Uuid,
+    /// TODO
     pub session_id: Uuid,
 }
 
 #[derive(Clone, Debug)]
 pub struct GrantGodlikePowers_GrantData {
+    /// TODO
     pub god_level: u8,
+    /// TODO
     pub token: Uuid,
 }
 
@@ -3780,6 +4850,7 @@ pub struct GrantGodlikePowers_GrantData {
 /// /// At the viewer, show the god menu.
 /// /// dataserver -> simulator -> viewer
 /// /// reliable
+///
 #[derive(Clone, Debug)]
 pub struct GrantGodlikePowers {
     pub agent_data: GrantGodlikePowers_AgentData,
@@ -3789,13 +4860,17 @@ pub struct GrantGodlikePowers {
 
 #[derive(Clone, Debug)]
 pub struct GrantUserRights_AgentData {
+    /// TODO
     pub agent_id: Uuid,
+    /// TODO
     pub session_id: Uuid,
 }
 
 #[derive(Clone, Debug)]
 pub struct GrantUserRights_Rights {
+    /// TODO
     pub agent_related: Uuid,
+    /// TODO
     pub related_rights: i32,
 }
 
@@ -3807,6 +4882,7 @@ pub struct GrantUserRights_Rights {
 /// /// viewer, and a presence lookup will be performed to find
 /// /// agent-related and the same PUT will be issued to the sim host if
 /// /// they are online.
+///
 #[derive(Clone, Debug)]
 pub struct GrantUserRights {
     pub agent_data: GrantUserRights_AgentData,
@@ -3816,27 +4892,36 @@ pub struct GrantUserRights {
 
 #[derive(Clone, Debug)]
 pub struct GroupAccountDetailsReply_AgentData {
+    /// TODO
     pub agent_id: Uuid,
+    /// TODO
     pub group_id: Uuid,
 }
 
 #[derive(Clone, Debug)]
 pub struct GroupAccountDetailsReply_MoneyData {
+    /// TODO
     pub request_id: Uuid,
+    /// TODO
     pub interval_days: i32,
+    /// TODO
     pub current_interval: i32,
+    /// TODO
     pub start_date: Vec<u8>,
 }
 
 #[derive(Clone, Debug)]
 pub struct GroupAccountDetailsReply_HistoryData {
+    /// TODO
     pub description: Vec<u8>,
+    /// TODO
     pub amount: i32,
 }
 
 ///
 /// TODO:
 /// /// Reliable
+///
 #[derive(Clone, Debug)]
 pub struct GroupAccountDetailsReply {
     pub agent_data: GroupAccountDetailsReply_AgentData,
@@ -3847,21 +4932,28 @@ pub struct GroupAccountDetailsReply {
 
 #[derive(Clone, Debug)]
 pub struct GroupAccountDetailsRequest_AgentData {
+    /// TODO
     pub agent_id: Uuid,
+    /// TODO
     pub session_id: Uuid,
+    /// TODO
     pub group_id: Uuid,
 }
 
 #[derive(Clone, Debug)]
 pub struct GroupAccountDetailsRequest_MoneyData {
+    /// TODO
     pub request_id: Uuid,
+    /// TODO
     pub interval_days: i32,
+    /// TODO
     pub current_interval: i32,
 }
 
 ///
 /// TODO:
 /// /// Reliable
+///
 #[derive(Clone, Debug)]
 pub struct GroupAccountDetailsRequest {
     pub agent_data: GroupAccountDetailsRequest_AgentData,
@@ -3871,31 +4963,53 @@ pub struct GroupAccountDetailsRequest {
 
 #[derive(Clone, Debug)]
 pub struct GroupAccountSummaryReply_AgentData {
+    /// TODO
     pub agent_id: Uuid,
+    /// TODO
     pub group_id: Uuid,
 }
 
 #[derive(Clone, Debug)]
 pub struct GroupAccountSummaryReply_MoneyData {
+    /// TODO
     pub request_id: Uuid,
+    /// TODO
     pub interval_days: i32,
+    /// TODO
     pub current_interval: i32,
+    /// TODO
     pub start_date: Vec<u8>,
+    /// TODO
     pub balance: i32,
+    /// TODO
     pub total_credits: i32,
+    /// TODO
     pub total_debits: i32,
+    /// TODO
     pub object_tax_current: i32,
+    /// TODO
     pub light_tax_current: i32,
+    /// TODO
     pub land_tax_current: i32,
+    /// TODO
     pub group_tax_current: i32,
+    /// TODO
     pub parcel_dir_fee_current: i32,
+    /// TODO
     pub object_tax_estimate: i32,
+    /// TODO
     pub light_tax_estimate: i32,
+    /// TODO
     pub land_tax_estimate: i32,
+    /// TODO
     pub group_tax_estimate: i32,
+    /// TODO
     pub parcel_dir_fee_estimate: i32,
+    /// TODO
     pub non_exempt_members: i32,
+    /// TODO
     pub last_tax_date: Vec<u8>,
+    /// TODO
     pub tax_date: Vec<u8>,
 }
 
@@ -3903,6 +5017,7 @@ pub struct GroupAccountSummaryReply_MoneyData {
 /// 		TODO:
 /// 		/// dataserver -> simulator -> viewer
 /// /// Reliable
+///
 #[derive(Clone, Debug)]
 pub struct GroupAccountSummaryReply {
     pub agent_data: GroupAccountSummaryReply_AgentData,
@@ -3912,15 +5027,21 @@ pub struct GroupAccountSummaryReply {
 
 #[derive(Clone, Debug)]
 pub struct GroupAccountSummaryRequest_AgentData {
+    /// TODO
     pub agent_id: Uuid,
+    /// TODO
     pub session_id: Uuid,
+    /// TODO
     pub group_id: Uuid,
 }
 
 #[derive(Clone, Debug)]
 pub struct GroupAccountSummaryRequest_MoneyData {
+    /// TODO
     pub request_id: Uuid,
+    /// TODO
     pub interval_days: i32,
+    /// TODO
     pub current_interval: i32,
 }
 
@@ -3930,6 +5051,7 @@ pub struct GroupAccountSummaryRequest_MoneyData {
 /// /// CurrentInterval = 1  =>  last period
 /// /// viewer -> simulator -> dataserver
 /// /// reliable
+///
 #[derive(Clone, Debug)]
 pub struct GroupAccountSummaryRequest {
     pub agent_data: GroupAccountSummaryRequest_AgentData,
@@ -3939,30 +5061,42 @@ pub struct GroupAccountSummaryRequest {
 
 #[derive(Clone, Debug)]
 pub struct GroupAccountTransactionsReply_AgentData {
+    /// TODO
     pub agent_id: Uuid,
+    /// TODO
     pub group_id: Uuid,
 }
 
 #[derive(Clone, Debug)]
 pub struct GroupAccountTransactionsReply_MoneyData {
+    /// TODO
     pub request_id: Uuid,
+    /// TODO
     pub interval_days: i32,
+    /// TODO
     pub current_interval: i32,
+    /// TODO
     pub start_date: Vec<u8>,
 }
 
 #[derive(Clone, Debug)]
 pub struct GroupAccountTransactionsReply_HistoryData {
+    /// TODO
     pub time: Vec<u8>,
+    /// TODO
     pub user: Vec<u8>,
+    /// TODO
     pub type_: i32,
+    /// TODO
     pub item: Vec<u8>,
+    /// TODO
     pub amount: i32,
 }
 
 ///
 /// TODO:
 /// /// Reliable
+///
 #[derive(Clone, Debug)]
 pub struct GroupAccountTransactionsReply {
     pub agent_data: GroupAccountTransactionsReply_AgentData,
@@ -3973,21 +5107,28 @@ pub struct GroupAccountTransactionsReply {
 
 #[derive(Clone, Debug)]
 pub struct GroupAccountTransactionsRequest_AgentData {
+    /// TODO
     pub agent_id: Uuid,
+    /// TODO
     pub session_id: Uuid,
+    /// TODO
     pub group_id: Uuid,
 }
 
 #[derive(Clone, Debug)]
 pub struct GroupAccountTransactionsRequest_MoneyData {
+    /// TODO
     pub request_id: Uuid,
+    /// TODO
     pub interval_days: i32,
+    /// TODO
     pub current_interval: i32,
 }
 
 ///
 /// TODO:
 /// /// Reliable
+///
 #[derive(Clone, Debug)]
 pub struct GroupAccountTransactionsRequest {
     pub agent_data: GroupAccountTransactionsRequest_AgentData,
@@ -3997,27 +5138,41 @@ pub struct GroupAccountTransactionsRequest {
 
 #[derive(Clone, Debug)]
 pub struct GroupActiveProposalItemReply_AgentData {
+    /// TODO
     pub agent_id: Uuid,
+    /// TODO
     pub group_id: Uuid,
 }
 
 #[derive(Clone, Debug)]
 pub struct GroupActiveProposalItemReply_TransactionData {
+    /// TODO
     pub transaction_id: Uuid,
+    /// TODO
     pub total_num_items: u32,
 }
 
 #[derive(Clone, Debug)]
 pub struct GroupActiveProposalItemReply_ProposalData {
+    /// TODO
     pub vote_id: Uuid,
+    /// TODO
     pub vote_initiator: Uuid,
+    /// TODO
     pub terse_date_id: Vec<u8>,
+    /// TODO
     pub start_date_time: Vec<u8>,
+    /// TODO
     pub end_date_time: Vec<u8>,
+    /// TODO
     pub already_voted: bool,
+    /// TODO
     pub vote_cast: Vec<u8>,
+    /// TODO
     pub majority: f32,
+    /// TODO
     pub quorum: i32,
+    /// TODO
     pub proposal_text: Vec<u8>,
 }
 
@@ -4026,6 +5181,7 @@ pub struct GroupActiveProposalItemReply_ProposalData {
 /// 		/// GroupActiveProposalItemReply
 /// /// dataserver -> simulator -> viewer
 /// /// reliable
+///
 #[derive(Clone, Debug)]
 pub struct GroupActiveProposalItemReply {
     pub agent_data: GroupActiveProposalItemReply_AgentData,
@@ -4036,17 +5192,21 @@ pub struct GroupActiveProposalItemReply {
 
 #[derive(Clone, Debug)]
 pub struct GroupActiveProposalsRequest_AgentData {
+    /// TODO
     pub agent_id: Uuid,
+    /// TODO
     pub session_id: Uuid,
 }
 
 #[derive(Clone, Debug)]
 pub struct GroupActiveProposalsRequest_GroupData {
+    /// TODO
     pub group_id: Uuid,
 }
 
 #[derive(Clone, Debug)]
 pub struct GroupActiveProposalsRequest_TransactionData {
+    /// TODO
     pub transaction_id: Uuid,
 }
 
@@ -4055,6 +5215,7 @@ pub struct GroupActiveProposalsRequest_TransactionData {
 /// 		/// GroupActiveProposalsRequest
 /// /// viewer -> simulator -> dataserver
 /// ///reliable
+///
 #[derive(Clone, Debug)]
 pub struct GroupActiveProposalsRequest {
     pub agent_data: GroupActiveProposalsRequest_AgentData,
@@ -4065,9 +5226,13 @@ pub struct GroupActiveProposalsRequest {
 
 #[derive(Clone, Debug)]
 pub struct GroupDataUpdate_AgentGroupData {
+    /// TODO
     pub agent_id: Uuid,
+    /// TODO
     pub group_id: Uuid,
+    /// TODO
     pub agent_powers: u64,
+    /// TODO
     pub group_title: Vec<u8>,
 }
 
@@ -4076,6 +5241,7 @@ pub struct GroupDataUpdate_AgentGroupData {
 /// 		/// GroupDataUpdate
 /// /// This is a bunch of group data that needs to be appropriatly routed based on presence info.
 /// /// dataserver -> simulator
+///
 #[derive(Clone, Debug)]
 pub struct GroupDataUpdate {
     pub agent_group_data: Vec<GroupDataUpdate_AgentGroupData>,
@@ -4084,23 +5250,33 @@ pub struct GroupDataUpdate {
 
 #[derive(Clone, Debug)]
 pub struct GroupMembersReply_AgentData {
+    /// TODO
     pub agent_id: Uuid,
 }
 
 #[derive(Clone, Debug)]
 pub struct GroupMembersReply_GroupData {
+    /// TODO
     pub group_id: Uuid,
+    /// TODO
     pub request_id: Uuid,
+    /// TODO
     pub member_count: i32,
 }
 
 #[derive(Clone, Debug)]
 pub struct GroupMembersReply_MemberData {
+    /// TODO
     pub agent_id: Uuid,
+    /// TODO
     pub contribution: i32,
+    /// TODO
     pub online_status: Vec<u8>,
+    /// TODO
     pub agent_powers: u64,
+    /// TODO
     pub title: Vec<u8>,
+    /// TODO
     pub is_owner: bool,
 }
 
@@ -4110,6 +5286,7 @@ pub struct GroupMembersReply_MemberData {
 /// /// list of uuids for the group members
 /// /// dataserver -> simulator
 /// /// reliable
+///
 #[derive(Clone, Debug)]
 pub struct GroupMembersReply {
     pub agent_data: GroupMembersReply_AgentData,
@@ -4120,13 +5297,17 @@ pub struct GroupMembersReply {
 
 #[derive(Clone, Debug)]
 pub struct GroupMembersRequest_AgentData {
+    /// TODO
     pub agent_id: Uuid,
+    /// TODO
     pub session_id: Uuid,
 }
 
 #[derive(Clone, Debug)]
 pub struct GroupMembersRequest_GroupData {
+    /// TODO
     pub group_id: Uuid,
+    /// TODO
     pub request_id: Uuid,
 }
 
@@ -4136,6 +5317,7 @@ pub struct GroupMembersRequest_GroupData {
 /// /// get the group members
 /// /// simulator -> dataserver
 /// /// reliable
+///
 #[derive(Clone, Debug)]
 pub struct GroupMembersRequest {
     pub agent_data: GroupMembersRequest_AgentData,
@@ -4145,16 +5327,23 @@ pub struct GroupMembersRequest {
 
 #[derive(Clone, Debug)]
 pub struct GroupNoticeAdd_AgentData {
+    /// TODO
     pub agent_id: Uuid,
 }
 
 #[derive(Clone, Debug)]
 pub struct GroupNoticeAdd_MessageBlock {
+    /// TODO
     pub to_group_id: Uuid,
+    /// TODO
     pub id: Uuid,
+    /// TODO
     pub dialog: u8,
+    /// TODO
     pub from_agent_name: Vec<u8>,
+    /// TODO
     pub message: Vec<u8>,
+    /// TODO
     pub binary_bucket: Vec<u8>,
 }
 
@@ -4164,6 +5353,7 @@ pub struct GroupNoticeAdd_MessageBlock {
 /// /// Add a group notice.
 /// /// simulator -> dataserver
 /// /// reliable
+///
 #[derive(Clone, Debug)]
 pub struct GroupNoticeAdd {
     pub agent_data: GroupNoticeAdd_AgentData,
@@ -4173,12 +5363,15 @@ pub struct GroupNoticeAdd {
 
 #[derive(Clone, Debug)]
 pub struct GroupNoticeRequest_AgentData {
+    /// TODO
     pub agent_id: Uuid,
+    /// TODO
     pub session_id: Uuid,
 }
 
 #[derive(Clone, Debug)]
 pub struct GroupNoticeRequest_Data {
+    /// TODO
     pub group_notice_id: Uuid,
 }
 
@@ -4188,6 +5381,7 @@ pub struct GroupNoticeRequest_Data {
 /// /// viewer -> simulator
 /// /// simulator -> dataserver
 /// /// reliable
+///
 #[derive(Clone, Debug)]
 pub struct GroupNoticeRequest {
     pub agent_data: GroupNoticeRequest_AgentData,
@@ -4197,17 +5391,25 @@ pub struct GroupNoticeRequest {
 
 #[derive(Clone, Debug)]
 pub struct GroupNoticesListReply_AgentData {
+    /// TODO
     pub agent_id: Uuid,
+    /// TODO
     pub group_id: Uuid,
 }
 
 #[derive(Clone, Debug)]
 pub struct GroupNoticesListReply_Data {
+    /// TODO
     pub notice_id: Uuid,
+    /// TODO
     pub timestamp: u32,
+    /// TODO
     pub from_name: Vec<u8>,
+    /// TODO
     pub subject: Vec<u8>,
+    /// TODO
     pub has_attachment: bool,
+    /// TODO
     pub asset_type: u8,
 }
 
@@ -4216,6 +5418,7 @@ pub struct GroupNoticesListReply_Data {
 /// 		/// GroupNoticesListReply
 /// /// dataserver -> simulator -> viewer
 /// /// reliable
+///
 #[derive(Clone, Debug)]
 pub struct GroupNoticesListReply {
     pub agent_data: GroupNoticesListReply_AgentData,
@@ -4225,12 +5428,15 @@ pub struct GroupNoticesListReply {
 
 #[derive(Clone, Debug)]
 pub struct GroupNoticesListRequest_AgentData {
+    /// TODO
     pub agent_id: Uuid,
+    /// TODO
     pub session_id: Uuid,
 }
 
 #[derive(Clone, Debug)]
 pub struct GroupNoticesListRequest_Data {
+    /// TODO
     pub group_id: Uuid,
 }
 
@@ -4239,6 +5445,7 @@ pub struct GroupNoticesListRequest_Data {
 /// 		/// GroupNoticeListRequest
 /// /// viewer -> simulator -> dataserver
 /// /// reliable
+///
 #[derive(Clone, Debug)]
 pub struct GroupNoticesListRequest {
     pub agent_data: GroupNoticesListRequest_AgentData,
@@ -4248,26 +5455,43 @@ pub struct GroupNoticesListRequest {
 
 #[derive(Clone, Debug)]
 pub struct GroupProfileReply_AgentData {
+    /// TODO
     pub agent_id: Uuid,
 }
 
 #[derive(Clone, Debug)]
 pub struct GroupProfileReply_GroupData {
+    /// TODO
     pub group_id: Uuid,
+    /// TODO
     pub name: Vec<u8>,
+    /// TODO
     pub charter: Vec<u8>,
+    /// TODO
     pub show_in_list: bool,
+    /// TODO
     pub member_title: Vec<u8>,
+    /// TODO
     pub powers_mask: u64,
+    /// TODO
     pub insignia_id: Uuid,
+    /// TODO
     pub founder_id: Uuid,
+    /// TODO
     pub membership_fee: i32,
+    /// TODO
     pub open_enrollment: bool,
+    /// TODO
     pub money: i32,
+    /// TODO
     pub group_membership_count: i32,
+    /// TODO
     pub group_roles_count: i32,
+    /// TODO
     pub allow_publish: bool,
+    /// TODO
     pub mature_publish: bool,
+    /// TODO
     pub owner_role: Uuid,
 }
 
@@ -4276,6 +5500,7 @@ pub struct GroupProfileReply_GroupData {
 /// 		/// GroupProfileReply
 /// /// dataserver -> simulator -> viewer
 /// /// reliable
+///
 #[derive(Clone, Debug)]
 pub struct GroupProfileReply {
     pub agent_data: GroupProfileReply_AgentData,
@@ -4285,12 +5510,15 @@ pub struct GroupProfileReply {
 
 #[derive(Clone, Debug)]
 pub struct GroupProfileRequest_AgentData {
+    /// TODO
     pub agent_id: Uuid,
+    /// TODO
     pub session_id: Uuid,
 }
 
 #[derive(Clone, Debug)]
 pub struct GroupProfileRequest_GroupData {
+    /// TODO
     pub group_id: Uuid,
 }
 
@@ -4299,6 +5527,7 @@ pub struct GroupProfileRequest_GroupData {
 /// 		/// GroupProfileRequest
 /// /// viewer-> simulator -> dataserver
 /// /// reliable
+///
 #[derive(Clone, Debug)]
 pub struct GroupProfileRequest {
     pub agent_data: GroupProfileRequest_AgentData,
@@ -4308,14 +5537,19 @@ pub struct GroupProfileRequest {
 
 #[derive(Clone, Debug)]
 pub struct GroupProposalBallot_AgentData {
+    /// TODO
     pub agent_id: Uuid,
+    /// TODO
     pub session_id: Uuid,
 }
 
 #[derive(Clone, Debug)]
 pub struct GroupProposalBallot_ProposalData {
+    /// TODO
     pub proposal_id: Uuid,
+    /// TODO
     pub group_id: Uuid,
+    /// TODO
     pub vote_cast: Vec<u8>,
 }
 
@@ -4324,6 +5558,7 @@ pub struct GroupProposalBallot_ProposalData {
 /// 		/// GroupProposalBallot
 /// /// viewer -> simulator -> dataserver
 /// /// reliable
+///
 #[derive(Clone, Debug)]
 pub struct GroupProposalBallot {
     pub agent_data: GroupProposalBallot_AgentData,
@@ -4333,15 +5568,21 @@ pub struct GroupProposalBallot {
 
 #[derive(Clone, Debug)]
 pub struct GroupRoleChanges_AgentData {
+    /// TODO
     pub agent_id: Uuid,
+    /// TODO
     pub session_id: Uuid,
+    /// TODO
     pub group_id: Uuid,
 }
 
 #[derive(Clone, Debug)]
 pub struct GroupRoleChanges_RoleChange {
+    /// TODO
     pub role_id: Uuid,
+    /// TODO
     pub member_id: Uuid,
+    /// TODO
     pub change: u32,
 }
 
@@ -4350,6 +5591,7 @@ pub struct GroupRoleChanges_RoleChange {
 /// 		/// GroupRoleChanges
 /// /// viewer -> simulator -> dataserver
 /// /// reliable
+///
 #[derive(Clone, Debug)]
 pub struct GroupRoleChanges {
     pub agent_data: GroupRoleChanges_AgentData,
@@ -4359,23 +5601,33 @@ pub struct GroupRoleChanges {
 
 #[derive(Clone, Debug)]
 pub struct GroupRoleDataReply_AgentData {
+    /// TODO
     pub agent_id: Uuid,
 }
 
 #[derive(Clone, Debug)]
 pub struct GroupRoleDataReply_GroupData {
+    /// TODO
     pub group_id: Uuid,
+    /// TODO
     pub request_id: Uuid,
+    /// TODO
     pub role_count: i32,
 }
 
 #[derive(Clone, Debug)]
 pub struct GroupRoleDataReply_RoleData {
+    /// TODO
     pub role_id: Uuid,
+    /// TODO
     pub name: Vec<u8>,
+    /// TODO
     pub title: Vec<u8>,
+    /// TODO
     pub description: Vec<u8>,
+    /// TODO
     pub powers: u64,
+    /// TODO
     pub members: u32,
 }
 
@@ -4384,6 +5636,7 @@ pub struct GroupRoleDataReply_RoleData {
 /// 		/// GroupRoleDataReply
 /// /// All role data for this group
 /// /// dataserver -> simulator -> agent
+///
 #[derive(Clone, Debug)]
 pub struct GroupRoleDataReply {
     pub agent_data: GroupRoleDataReply_AgentData,
@@ -4394,13 +5647,17 @@ pub struct GroupRoleDataReply {
 
 #[derive(Clone, Debug)]
 pub struct GroupRoleDataRequest_AgentData {
+    /// TODO
     pub agent_id: Uuid,
+    /// TODO
     pub session_id: Uuid,
 }
 
 #[derive(Clone, Debug)]
 pub struct GroupRoleDataRequest_GroupData {
+    /// TODO
     pub group_id: Uuid,
+    /// TODO
     pub request_id: Uuid,
 }
 
@@ -4408,6 +5665,7 @@ pub struct GroupRoleDataRequest_GroupData {
 /// 		TODO:
 /// 		/// GroupRoleDataRequest
 /// /// viewer -> simulator -> dataserver
+///
 #[derive(Clone, Debug)]
 pub struct GroupRoleDataRequest {
     pub agent_data: GroupRoleDataRequest_AgentData,
@@ -4417,15 +5675,21 @@ pub struct GroupRoleDataRequest {
 
 #[derive(Clone, Debug)]
 pub struct GroupRoleMembersReply_AgentData {
+    /// TODO
     pub agent_id: Uuid,
+    /// TODO
     pub group_id: Uuid,
+    /// TODO
     pub request_id: Uuid,
+    /// TODO
     pub total_pairs: u32,
 }
 
 #[derive(Clone, Debug)]
 pub struct GroupRoleMembersReply_MemberData {
+    /// TODO
     pub role_id: Uuid,
+    /// TODO
     pub member_id: Uuid,
 }
 
@@ -4434,6 +5698,7 @@ pub struct GroupRoleMembersReply_MemberData {
 /// 		/// GroupRoleMembersReply
 /// /// All role::member pairs for this group.
 /// /// dataserver -> simulator -> agent
+///
 #[derive(Clone, Debug)]
 pub struct GroupRoleMembersReply {
     pub agent_data: GroupRoleMembersReply_AgentData,
@@ -4443,13 +5708,17 @@ pub struct GroupRoleMembersReply {
 
 #[derive(Clone, Debug)]
 pub struct GroupRoleMembersRequest_AgentData {
+    /// TODO
     pub agent_id: Uuid,
+    /// TODO
     pub session_id: Uuid,
 }
 
 #[derive(Clone, Debug)]
 pub struct GroupRoleMembersRequest_GroupData {
+    /// TODO
     pub group_id: Uuid,
+    /// TODO
     pub request_id: Uuid,
 }
 
@@ -4457,6 +5726,7 @@ pub struct GroupRoleMembersRequest_GroupData {
 /// 		TODO:
 /// 		/// GroupRoleMembersRequest
 /// /// viewer -> simulator -> dataserver
+///
 #[derive(Clone, Debug)]
 pub struct GroupRoleMembersRequest {
     pub agent_data: GroupRoleMembersRequest_AgentData,
@@ -4466,18 +5736,27 @@ pub struct GroupRoleMembersRequest {
 
 #[derive(Clone, Debug)]
 pub struct GroupRoleUpdate_AgentData {
+    /// TODO
     pub agent_id: Uuid,
+    /// TODO
     pub session_id: Uuid,
+    /// TODO
     pub group_id: Uuid,
 }
 
 #[derive(Clone, Debug)]
 pub struct GroupRoleUpdate_RoleData {
+    /// TODO
     pub role_id: Uuid,
+    /// TODO
     pub name: Vec<u8>,
+    /// TODO
     pub description: Vec<u8>,
+    /// TODO
     pub title: Vec<u8>,
+    /// TODO
     pub powers: u64,
+    /// TODO
     pub update_type: u8,
 }
 
@@ -4485,6 +5764,7 @@ pub struct GroupRoleUpdate_RoleData {
 /// 		TODO:
 /// 		/// GroupRoleUpdate
 /// /// viewer -> simulator -> dataserver
+///
 #[derive(Clone, Debug)]
 pub struct GroupRoleUpdate {
     pub agent_data: GroupRoleUpdate_AgentData,
@@ -4494,9 +5774,13 @@ pub struct GroupRoleUpdate {
 
 #[derive(Clone, Debug)]
 pub struct GroupTitleUpdate_AgentData {
+    /// TODO
     pub agent_id: Uuid,
+    /// TODO
     pub session_id: Uuid,
+    /// TODO
     pub group_id: Uuid,
+    /// TODO
     pub title_role_id: Uuid,
 }
 
@@ -4504,6 +5788,7 @@ pub struct GroupTitleUpdate_AgentData {
 /// 		TODO:
 /// 		/// GroupTitleUpdate
 /// /// viewer -> simulator -> dataserver
+///
 #[derive(Clone, Debug)]
 pub struct GroupTitleUpdate {
     pub agent_data: GroupTitleUpdate_AgentData,
@@ -4512,15 +5797,21 @@ pub struct GroupTitleUpdate {
 
 #[derive(Clone, Debug)]
 pub struct GroupTitlesReply_AgentData {
+    /// TODO
     pub agent_id: Uuid,
+    /// TODO
     pub group_id: Uuid,
+    /// TODO
     pub request_id: Uuid,
 }
 
 #[derive(Clone, Debug)]
 pub struct GroupTitlesReply_GroupData {
+    /// TODO
     pub title: Vec<u8>,
+    /// TODO
     pub role_id: Uuid,
+    /// TODO
     pub selected: bool,
 }
 
@@ -4528,6 +5819,7 @@ pub struct GroupTitlesReply_GroupData {
 /// 		TODO:
 /// 		/// GroupTitlesReply
 /// /// dataserver -> simulator -> viewer
+///
 #[derive(Clone, Debug)]
 pub struct GroupTitlesReply {
     pub agent_data: GroupTitlesReply_AgentData,
@@ -4537,9 +5829,13 @@ pub struct GroupTitlesReply {
 
 #[derive(Clone, Debug)]
 pub struct GroupTitlesRequest_AgentData {
+    /// TODO
     pub agent_id: Uuid,
+    /// TODO
     pub session_id: Uuid,
+    /// TODO
     pub group_id: Uuid,
+    /// TODO
     pub request_id: Uuid,
 }
 
@@ -4547,6 +5843,7 @@ pub struct GroupTitlesRequest_AgentData {
 /// 		TODO:
 /// 		/// GroupTitlesRequest
 /// /// viewer -> simulator -> dataserver
+///
 #[derive(Clone, Debug)]
 pub struct GroupTitlesRequest {
     pub agent_data: GroupTitlesRequest_AgentData,
@@ -4555,34 +5852,51 @@ pub struct GroupTitlesRequest {
 
 #[derive(Clone, Debug)]
 pub struct GroupVoteHistoryItemReply_AgentData {
+    /// TODO
     pub agent_id: Uuid,
+    /// TODO
     pub group_id: Uuid,
 }
 
 #[derive(Clone, Debug)]
 pub struct GroupVoteHistoryItemReply_TransactionData {
+    /// TODO
     pub transaction_id: Uuid,
+    /// TODO
     pub total_num_items: u32,
 }
 
 #[derive(Clone, Debug)]
 pub struct GroupVoteHistoryItemReply_HistoryItemData {
+    /// TODO
     pub vote_id: Uuid,
+    /// TODO
     pub terse_date_id: Vec<u8>,
+    /// TODO
     pub start_date_time: Vec<u8>,
+    /// TODO
     pub end_date_time: Vec<u8>,
+    /// TODO
     pub vote_initiator: Uuid,
+    /// TODO
     pub vote_type: Vec<u8>,
+    /// TODO
     pub vote_result: Vec<u8>,
+    /// TODO
     pub majority: f32,
+    /// TODO
     pub quorum: i32,
+    /// TODO
     pub proposal_text: Vec<u8>,
 }
 
 #[derive(Clone, Debug)]
 pub struct GroupVoteHistoryItemReply_VoteItem {
+    /// TODO
     pub candidate_id: Uuid,
+    /// TODO
     pub vote_cast: Vec<u8>,
+    /// TODO
     pub num_votes: i32,
 }
 
@@ -4591,6 +5905,7 @@ pub struct GroupVoteHistoryItemReply_VoteItem {
 /// 		/// GroupVoteHistoryItemReply
 /// /// dataserver -> simulator -> viewer
 /// /// reliable
+///
 #[derive(Clone, Debug)]
 pub struct GroupVoteHistoryItemReply {
     pub agent_data: GroupVoteHistoryItemReply_AgentData,
@@ -4602,17 +5917,21 @@ pub struct GroupVoteHistoryItemReply {
 
 #[derive(Clone, Debug)]
 pub struct GroupVoteHistoryRequest_AgentData {
+    /// TODO
     pub agent_id: Uuid,
+    /// TODO
     pub session_id: Uuid,
 }
 
 #[derive(Clone, Debug)]
 pub struct GroupVoteHistoryRequest_GroupData {
+    /// TODO
     pub group_id: Uuid,
 }
 
 #[derive(Clone, Debug)]
 pub struct GroupVoteHistoryRequest_TransactionData {
+    /// TODO
     pub transaction_id: Uuid,
 }
 
@@ -4621,6 +5940,7 @@ pub struct GroupVoteHistoryRequest_TransactionData {
 /// 		/// GroupVoteHistoryRequest
 /// /// viewer -> simulator -> dataserver
 /// ///reliable
+///
 #[derive(Clone, Debug)]
 pub struct GroupVoteHistoryRequest {
     pub agent_data: GroupVoteHistoryRequest_AgentData,
@@ -4631,6 +5951,7 @@ pub struct GroupVoteHistoryRequest {
 
 #[derive(Clone, Debug)]
 pub struct HealthMessage_HealthData {
+    /// TODO
     pub health: f32,
 }
 
@@ -4638,6 +5959,7 @@ pub struct HealthMessage_HealthData {
 /// 		TODO:
 /// 		/// Health Message
 /// /// Tells viewer what agent health is
+///
 #[derive(Clone, Debug)]
 pub struct HealthMessage {
     pub health_data: HealthMessage_HealthData,
@@ -4646,20 +5968,26 @@ pub struct HealthMessage {
 
 #[derive(Clone, Debug)]
 pub struct ImageData_ImageID {
+    /// TODO
     pub id: Uuid,
+    /// TODO
     pub codec: u8,
+    /// TODO
     pub size: u32,
+    /// TODO
     pub packets: u16,
 }
 
 #[derive(Clone, Debug)]
 pub struct ImageData_ImageData {
+    /// TODO
     pub data: Vec<u8>,
 }
 
 ///
 /// TODO:
 /// /// ImageData - sent to viewer to transmit information about an image
+///
 #[derive(Clone, Debug)]
 pub struct ImageData {
     pub image_id: ImageData_ImageID,
@@ -4669,6 +5997,7 @@ pub struct ImageData {
 
 #[derive(Clone, Debug)]
 pub struct ImageNotInDatabase_ImageID {
+    /// TODO
     pub id: Uuid,
 }
 
@@ -4676,6 +6005,7 @@ pub struct ImageNotInDatabase_ImageID {
 /// 		TODO:
 /// 		/// ImageNotInDatabase
 /// /// Simulator informs viewer that a requsted image definitely does not exist in the asset database
+///
 #[derive(Clone, Debug)]
 pub struct ImageNotInDatabase {
     pub image_id: ImageNotInDatabase_ImageID,
@@ -4684,17 +6014,23 @@ pub struct ImageNotInDatabase {
 
 #[derive(Clone, Debug)]
 pub struct ImagePacket_ImageID {
+    /// UUID of the texture.
     pub id: Uuid,
+    ///
+    /// The "packet number" indicates the number of the chunk which was sent.
+    ///
     pub packet: u16,
 }
 
 #[derive(Clone, Debug)]
 pub struct ImagePacket_ImageData {
+    /// Binary data of the image.
     pub data: Vec<u8>,
 }
 
 ///
 /// Response to a RequestImage message having >1 packet of data.
+///
 #[derive(Clone, Debug)]
 pub struct ImagePacket {
     pub image_id: ImagePacket_ImageID,
@@ -4704,23 +6040,37 @@ pub struct ImagePacket {
 
 #[derive(Clone, Debug)]
 pub struct ImprovedInstantMessage_AgentData {
+    /// TODO
     pub agent_id: Uuid,
+    /// TODO
     pub session_id: Uuid,
 }
 
 #[derive(Clone, Debug)]
 pub struct ImprovedInstantMessage_MessageBlock {
+    /// TODO
     pub from_group: bool,
+    /// TODO
     pub to_agent_id: Uuid,
+    /// TODO
     pub parent_estate_id: u32,
+    /// TODO
     pub region_id: Uuid,
+    /// TODO
     pub position: Vector3<f32>,
+    /// TODO
     pub offline: u8,
+    /// TODO
     pub dialog: u8,
+    /// TODO
     pub id: Uuid,
+    /// TODO
     pub timestamp: u32,
+    /// TODO
     pub from_agent_name: Vec<u8>,
+    /// TODO
     pub message: Vec<u8>,
+    /// TODO
     pub binary_bucket: Vec<u8>,
 }
 
@@ -4735,6 +6085,7 @@ pub struct ImprovedInstantMessage_MessageBlock {
 /// /// ID		May be used by dialog. Interpretation depends on context.
 /// /// BinaryBucket May be used by some dialog types
 /// /// reliable
+///
 #[derive(Clone, Debug)]
 pub struct ImprovedInstantMessage {
     pub agent_data: ImprovedInstantMessage_AgentData,
@@ -4744,19 +6095,24 @@ pub struct ImprovedInstantMessage {
 
 #[derive(Clone, Debug)]
 pub struct ImprovedTerseObjectUpdate_RegionData {
+    /// TODO
     pub region_handle: u64,
+    /// TODO
     pub time_dilation: u16,
 }
 
 #[derive(Clone, Debug)]
 pub struct ImprovedTerseObjectUpdate_ObjectData {
+    /// TODO
     pub data: Vec<u8>,
+    /// TODO
     pub texture_entry: Vec<u8>,
 }
 
 ///
 /// TODO:
 /// /// packed terse object update format
+///
 #[derive(Clone, Debug)]
 pub struct ImprovedTerseObjectUpdate {
     pub region_data: ImprovedTerseObjectUpdate_RegionData,
@@ -4766,12 +6122,15 @@ pub struct ImprovedTerseObjectUpdate {
 
 #[derive(Clone, Debug)]
 pub struct InitiateDownload_AgentData {
+    /// TODO
     pub agent_id: Uuid,
 }
 
 #[derive(Clone, Debug)]
 pub struct InitiateDownload_FileData {
+    /// TODO
     pub sim_filename: Vec<u8>,
+    /// TODO
     pub viewer_filename: Vec<u8>,
 }
 
@@ -4779,6 +6138,7 @@ pub struct InitiateDownload_FileData {
 /// 		TODO:
 /// 		/// sim -> viewer
 /// /// initiate upload. primarily used for uploading raw files.
+///
 #[derive(Clone, Debug)]
 pub struct InitiateDownload {
     pub agent_data: InitiateDownload_AgentData,
@@ -4788,15 +6148,20 @@ pub struct InitiateDownload {
 
 #[derive(Clone, Debug)]
 pub struct InternalScriptMail_DataBlock {
+    /// TODO
     pub from: Vec<u8>,
+    /// TODO
     pub to: Uuid,
+    /// TODO
     pub subject: Vec<u8>,
+    /// TODO
     pub body: Vec<u8>,
 }
 
 ///
 /// TODO:
 /// /// Script on simulator sends mail to another script
+///
 #[derive(Clone, Debug)]
 pub struct InternalScriptMail {
     pub data_block: InternalScriptMail_DataBlock,
@@ -4805,8 +6170,11 @@ pub struct InternalScriptMail {
 
 #[derive(Clone, Debug)]
 pub struct InventoryAssetResponse_QueryData {
+    /// TODO
     pub query_id: Uuid,
+    /// TODO
     pub asset_id: Uuid,
+    /// TODO
     pub is_readable: bool,
 }
 
@@ -4814,6 +6182,7 @@ pub struct InventoryAssetResponse_QueryData {
 /// 		TODO:
 /// 		/// response to RequestInventoryAsset
 /// /// lluuid will be null if agentid in the request above cannot read asset
+///
 #[derive(Clone, Debug)]
 pub struct InventoryAssetResponse {
     pub query_data: InventoryAssetResponse_QueryData,
@@ -4822,43 +6191,73 @@ pub struct InventoryAssetResponse {
 
 #[derive(Clone, Debug)]
 pub struct InventoryDescendents_AgentData {
+    /// TODO
     pub agent_id: Uuid,
+    /// TODO
     pub folder_id: Uuid,
+    /// TODO
     pub owner_id: Uuid,
+    /// TODO
     pub version: i32,
+    /// TODO
     pub descendents: i32,
 }
 
 #[derive(Clone, Debug)]
 pub struct InventoryDescendents_FolderData {
+    /// TODO
     pub folder_id: Uuid,
+    /// TODO
     pub parent_id: Uuid,
+    /// TODO
     pub type_: i8,
+    /// TODO
     pub name: Vec<u8>,
 }
 
 #[derive(Clone, Debug)]
 pub struct InventoryDescendents_ItemData {
+    /// TODO
     pub item_id: Uuid,
+    /// TODO
     pub folder_id: Uuid,
+    /// TODO
     pub creator_id: Uuid,
+    /// TODO
     pub owner_id: Uuid,
+    /// TODO
     pub group_id: Uuid,
+    /// TODO
     pub base_mask: u32,
+    /// TODO
     pub owner_mask: u32,
+    /// TODO
     pub group_mask: u32,
+    /// TODO
     pub everyone_mask: u32,
+    /// TODO
     pub next_owner_mask: u32,
+    /// TODO
     pub group_owned: bool,
+    /// TODO
     pub asset_id: Uuid,
+    /// TODO
     pub type_: i8,
+    /// TODO
     pub inv_type: i8,
+    /// TODO
     pub flags: u32,
+    /// TODO
     pub sale_type: u8,
+    /// TODO
     pub sale_price: i32,
+    /// TODO
     pub name: Vec<u8>,
+    /// TODO
     pub description: Vec<u8>,
+    /// TODO
     pub creation_date: i32,
+    /// TODO
     pub crc: u32,
 }
 
@@ -4868,6 +6267,7 @@ pub struct InventoryDescendents_ItemData {
 /// /// *NOTE: This could be compressed more since we already know the
 /// /// parent_id for folders and the folder_id for items, but this is
 /// /// reasonable until we heve server side inventory.
+///
 #[derive(Clone, Debug)]
 pub struct InventoryDescendents {
     pub agent_data: InventoryDescendents_AgentData,
@@ -4878,18 +6278,23 @@ pub struct InventoryDescendents {
 
 #[derive(Clone, Debug)]
 pub struct InviteGroupRequest_AgentData {
+    /// TODO
     pub agent_id: Uuid,
+    /// TODO
     pub session_id: Uuid,
 }
 
 #[derive(Clone, Debug)]
 pub struct InviteGroupRequest_GroupData {
+    /// TODO
     pub group_id: Uuid,
 }
 
 #[derive(Clone, Debug)]
 pub struct InviteGroupRequest_InviteData {
+    /// TODO
     pub invitee_id: Uuid,
+    /// TODO
     pub role_id: Uuid,
 }
 
@@ -4898,6 +6303,7 @@ pub struct InviteGroupRequest_InviteData {
 /// 		/// InviteGroupRequest
 /// /// viewer -> simulator -> dataserver
 /// /// reliable
+///
 #[derive(Clone, Debug)]
 pub struct InviteGroupRequest {
     pub agent_data: InviteGroupRequest_AgentData,
@@ -4908,10 +6314,15 @@ pub struct InviteGroupRequest {
 
 #[derive(Clone, Debug)]
 pub struct InviteGroupResponse_InviteData {
+    /// TODO
     pub agent_id: Uuid,
+    /// TODO
     pub invitee_id: Uuid,
+    /// TODO
     pub group_id: Uuid,
+    /// TODO
     pub role_id: Uuid,
+    /// TODO
     pub membership_fee: i32,
 }
 
@@ -4920,6 +6331,7 @@ pub struct InviteGroupResponse_InviteData {
 /// 		/// InviteGroupResponse
 /// /// simulator -> dataserver
 /// /// reliable
+///
 #[derive(Clone, Debug)]
 pub struct InviteGroupResponse {
     pub invite_data: InviteGroupResponse_InviteData,
@@ -4928,12 +6340,15 @@ pub struct InviteGroupResponse {
 
 #[derive(Clone, Debug)]
 pub struct JoinGroupReply_AgentData {
+    /// TODO
     pub agent_id: Uuid,
 }
 
 #[derive(Clone, Debug)]
 pub struct JoinGroupReply_GroupData {
+    /// TODO
     pub group_id: Uuid,
+    /// TODO
     pub success: bool,
 }
 
@@ -4941,6 +6356,7 @@ pub struct JoinGroupReply_GroupData {
 /// 		TODO:
 /// 		/// JoinGroupReply
 /// /// dataserver -> simulator -> viewer
+///
 #[derive(Clone, Debug)]
 pub struct JoinGroupReply {
     pub agent_data: JoinGroupReply_AgentData,
@@ -4950,12 +6366,15 @@ pub struct JoinGroupReply {
 
 #[derive(Clone, Debug)]
 pub struct JoinGroupRequest_AgentData {
+    /// TODO
     pub agent_id: Uuid,
+    /// TODO
     pub session_id: Uuid,
 }
 
 #[derive(Clone, Debug)]
 pub struct JoinGroupRequest_GroupData {
+    /// TODO
     pub group_id: Uuid,
 }
 
@@ -4964,6 +6383,7 @@ pub struct JoinGroupRequest_GroupData {
 /// 		/// JoinGroupRequest
 /// /// viewer -> simulator -> dataserver
 /// /// reliable
+///
 #[derive(Clone, Debug)]
 pub struct JoinGroupRequest {
     pub agent_data: JoinGroupRequest_AgentData,
@@ -4973,14 +6393,19 @@ pub struct JoinGroupRequest {
 
 #[derive(Clone, Debug)]
 pub struct KickUser_TargetBlock {
+    /// TODO
     pub target_ip: Ip4Addr,
+    /// TODO
     pub target_port: IpPort,
 }
 
 #[derive(Clone, Debug)]
 pub struct KickUser_UserInfo {
+    /// TODO
     pub agent_id: Uuid,
+    /// TODO
     pub session_id: Uuid,
+    /// TODO
     pub reason: Vec<u8>,
 }
 
@@ -4992,6 +6417,7 @@ pub struct KickUser_UserInfo {
 /// /// same account name.
 /// /// ROUTED dataserver -> userserver -> spaceserver -> simulator -> viewer
 /// /// reliable, but that may not matter if a system component is quitting
+///
 #[derive(Clone, Debug)]
 pub struct KickUser {
     pub target_block: KickUser_TargetBlock,
@@ -5001,7 +6427,9 @@ pub struct KickUser {
 
 #[derive(Clone, Debug)]
 pub struct KickUserAck_UserInfo {
+    /// TODO
     pub session_id: Uuid,
+    /// TODO
     pub flags: u32,
 }
 
@@ -5009,6 +6437,7 @@ pub struct KickUserAck_UserInfo {
 /// 		TODO:
 /// 		/// ack sent from the simulator up to the main database so that login
 /// /// can continue.
+///
 #[derive(Clone, Debug)]
 pub struct KickUserAck {
     pub user_info: KickUserAck_UserInfo,
@@ -5017,12 +6446,14 @@ pub struct KickUserAck {
 
 #[derive(Clone, Debug)]
 pub struct KillChildAgents_IDBlock {
+    /// TODO
     pub agent_id: Uuid,
 }
 
 ///
 /// TODO:
 /// /// KillChildAgents - A new agent has connected to the simulator . . . make sure that any old child cameras are blitzed
+///
 #[derive(Clone, Debug)]
 pub struct KillChildAgents {
     pub id_block: KillChildAgents_IDBlock,
@@ -5031,11 +6462,13 @@ pub struct KillChildAgents {
 
 #[derive(Clone, Debug)]
 pub struct KillObject_ObjectData {
+    /// TODO
     pub id: u32,
 }
 
 ///
 /// TODO:
+///
 ///
 #[derive(Clone, Debug)]
 pub struct KillObject {
@@ -5045,20 +6478,31 @@ pub struct KillObject {
 
 #[derive(Clone, Debug)]
 pub struct LandStatReply_RequestData {
+    /// TODO
     pub report_type: u32,
+    /// TODO
     pub request_flags: u32,
+    /// TODO
     pub total_object_count: u32,
 }
 
 #[derive(Clone, Debug)]
 pub struct LandStatReply_ReportData {
+    /// TODO
     pub task_local_id: u32,
+    /// TODO
     pub task_id: Uuid,
+    /// TODO
     pub location_x: f32,
+    /// TODO
     pub location_y: f32,
+    /// TODO
     pub location_z: f32,
+    /// TODO
     pub score: f32,
+    /// TODO
     pub task_name: Vec<u8>,
+    /// TODO
     pub owner_name: Vec<u8>,
 }
 
@@ -5066,6 +6510,7 @@ pub struct LandStatReply_ReportData {
 /// 		TODO:
 /// 		/// LandStatReply
 /// /// Sent by the simulator in response to LandStatRequest
+///
 #[derive(Clone, Debug)]
 pub struct LandStatReply {
     pub request_data: LandStatReply_RequestData,
@@ -5075,15 +6520,21 @@ pub struct LandStatReply {
 
 #[derive(Clone, Debug)]
 pub struct LandStatRequest_AgentData {
+    /// TODO
     pub agent_id: Uuid,
+    /// TODO
     pub session_id: Uuid,
 }
 
 #[derive(Clone, Debug)]
 pub struct LandStatRequest_RequestData {
+    /// TODO
     pub report_type: u32,
+    /// TODO
     pub request_flags: u32,
+    /// TODO
     pub filter: Vec<u8>,
+    /// TODO
     pub parcel_local_id: i32,
 }
 
@@ -5091,6 +6542,7 @@ pub struct LandStatRequest_RequestData {
 /// 		TODO:
 /// 		/// LandStatRequest
 /// /// Sent by the viewer to request collider/script information for a parcel
+///
 #[derive(Clone, Debug)]
 pub struct LandStatRequest {
     pub agent_data: LandStatRequest_AgentData,
@@ -5100,11 +6552,32 @@ pub struct LandStatRequest {
 
 #[derive(Clone, Debug)]
 pub struct LayerData_LayerID {
+    ///
+    /// Describes what kind of layer this is.
+    ///
+    /// LAND: 'L'
+    /// WIND: '7'
+    /// CLOUD: '8'
+    /// WATER: 'W'
+    /// AURORA_LAND: 'M'
+    /// AURORA_WATER: 'X'
+    /// AURORA_WIND: '9'
+    /// AURORA_CLOUD: ':'
+    ///
     pub type_: u8,
 }
 
 #[derive(Clone, Debug)]
 pub struct LayerData_LayerData {
+    ///
+    /// Not all layers seem to be encoded in the same way.
+    ///
+    /// Land layer:
+    /// getLand().decompressDCTPatch
+    ///
+    /// TODO: Figure out the encoding of this.
+    ///
+    ///
     pub data: Vec<u8>,
 }
 
@@ -5112,6 +6585,7 @@ pub struct LayerData_LayerData {
 /// With this packet the simulator sends information about the region to be rendered.
 ///
 /// TODO:
+///
 #[derive(Clone, Debug)]
 pub struct LayerData {
     pub layer_id: LayerData_LayerID,
@@ -5121,12 +6595,15 @@ pub struct LayerData {
 
 #[derive(Clone, Debug)]
 pub struct LeaveGroupReply_AgentData {
+    /// TODO
     pub agent_id: Uuid,
 }
 
 #[derive(Clone, Debug)]
 pub struct LeaveGroupReply_GroupData {
+    /// TODO
     pub group_id: Uuid,
+    /// TODO
     pub success: bool,
 }
 
@@ -5134,6 +6611,7 @@ pub struct LeaveGroupReply_GroupData {
 /// 		TODO:
 /// 		/// LeaveGroupReply
 /// /// dataserver -> simulator -> viewer
+///
 #[derive(Clone, Debug)]
 pub struct LeaveGroupReply {
     pub agent_data: LeaveGroupReply_AgentData,
@@ -5143,12 +6621,15 @@ pub struct LeaveGroupReply {
 
 #[derive(Clone, Debug)]
 pub struct LeaveGroupRequest_AgentData {
+    /// TODO
     pub agent_id: Uuid,
+    /// TODO
     pub session_id: Uuid,
 }
 
 #[derive(Clone, Debug)]
 pub struct LeaveGroupRequest_GroupData {
+    /// TODO
     pub group_id: Uuid,
 }
 
@@ -5157,6 +6638,7 @@ pub struct LeaveGroupRequest_GroupData {
 /// 		/// LeaveGroupRequest
 /// /// viewer -> simulator -> dataserver
 /// /// reliable
+///
 #[derive(Clone, Debug)]
 pub struct LeaveGroupRequest {
     pub agent_data: LeaveGroupRequest_AgentData,
@@ -5166,24 +6648,35 @@ pub struct LeaveGroupRequest {
 
 #[derive(Clone, Debug)]
 pub struct LinkInventoryItem_AgentData {
+    /// TODO
     pub agent_id: Uuid,
+    /// TODO
     pub session_id: Uuid,
 }
 
 #[derive(Clone, Debug)]
 pub struct LinkInventoryItem_InventoryBlock {
+    /// TODO
     pub callback_id: u32,
+    /// TODO
     pub folder_id: Uuid,
+    /// TODO
     pub transaction_id: Uuid,
+    /// TODO
     pub old_item_id: Uuid,
+    /// TODO
     pub type_: i8,
+    /// TODO
     pub inv_type: i8,
+    /// TODO
     pub name: Vec<u8>,
+    /// TODO
     pub description: Vec<u8>,
 }
 
 ///
 /// TODO:
+///
 ///
 #[derive(Clone, Debug)]
 pub struct LinkInventoryItem {
@@ -5194,8 +6687,11 @@ pub struct LinkInventoryItem {
 
 #[derive(Clone, Debug)]
 pub struct LiveHelpGroupReply_ReplyData {
+    /// TODO
     pub request_id: Uuid,
+    /// TODO
     pub group_id: Uuid,
+    /// TODO
     pub selection: Vec<u8>,
 }
 
@@ -5203,6 +6699,7 @@ pub struct LiveHelpGroupReply_ReplyData {
 /// 		TODO:
 /// 		/// Send down the group
 /// /// dataserver -> userserver
+///
 #[derive(Clone, Debug)]
 pub struct LiveHelpGroupReply {
     pub reply_data: LiveHelpGroupReply_ReplyData,
@@ -5211,7 +6708,9 @@ pub struct LiveHelpGroupReply {
 
 #[derive(Clone, Debug)]
 pub struct LiveHelpGroupRequest_RequestData {
+    /// TODO
     pub request_id: Uuid,
+    /// TODO
     pub agent_id: Uuid,
 }
 
@@ -5219,6 +6718,7 @@ pub struct LiveHelpGroupRequest_RequestData {
 /// 		TODO:
 /// 		/// Request the members of the live help group needed for requesting agent.
 /// /// userserver -> dataserver
+///
 #[derive(Clone, Debug)]
 pub struct LiveHelpGroupRequest {
     pub request_data: LiveHelpGroupRequest_RequestData,
@@ -5227,11 +6727,17 @@ pub struct LiveHelpGroupRequest {
 
 #[derive(Clone, Debug)]
 pub struct LoadURL_Data {
+    /// TODO
     pub object_name: Vec<u8>,
+    /// TODO
     pub object_id: Uuid,
+    /// TODO
     pub owner_id: Uuid,
+    /// TODO
     pub owner_is_group: bool,
+    /// TODO
     pub message: Vec<u8>,
+    /// TODO
     pub url: Vec<u8>,
 }
 
@@ -5241,6 +6747,7 @@ pub struct LoadURL_Data {
 /// /// sim -> viewer
 /// /// Ask the user if they would like to load a URL
 /// /// reliable
+///
 #[derive(Clone, Debug)]
 pub struct LoadURL {
     pub data: LoadURL_Data,
@@ -5249,19 +6756,28 @@ pub struct LoadURL {
 
 #[derive(Clone, Debug)]
 pub struct LogDwellTime_DwellInfo {
+    /// TODO
     pub agent_id: Uuid,
+    /// TODO
     pub session_id: Uuid,
+    /// TODO
     pub duration: f32,
+    /// TODO
     pub sim_name: Vec<u8>,
+    /// TODO
     pub region_x: u32,
+    /// TODO
     pub region_y: u32,
+    /// TODO
     pub avg_agents_in_view: u8,
+    /// TODO
     pub avg_viewer_fps: u8,
 }
 
 ///
 /// TODO:
 /// /// record dwell time.
+///
 #[derive(Clone, Debug)]
 pub struct LogDwellTime {
     pub dwell_info: LogDwellTime_DwellInfo,
@@ -5270,16 +6786,27 @@ pub struct LogDwellTime {
 
 #[derive(Clone, Debug)]
 pub struct LogFailedMoneyTransaction_TransactionData {
+    /// TODO
     pub transaction_id: Uuid,
+    /// TODO
     pub transaction_time: u32,
+    /// TODO
     pub transaction_type: i32,
+    /// TODO
     pub source_id: Uuid,
+    /// TODO
     pub dest_id: Uuid,
+    /// TODO
     pub flags: u8,
+    /// TODO
     pub amount: i32,
+    /// TODO
     pub simulator_ip: Ip4Addr,
+    /// TODO
     pub grid_x: u32,
+    /// TODO
     pub grid_y: u32,
+    /// TODO
     pub failure_type: u8,
 }
 
@@ -5288,6 +6815,7 @@ pub struct LogFailedMoneyTransaction_TransactionData {
 /// 		/// record lost money transactions.  This message could be generated
 /// /// from either the simulator or the dataserver, depending on how
 /// /// the transaction failed.
+///
 #[derive(Clone, Debug)]
 pub struct LogFailedMoneyTransaction {
     pub transaction_data: LogFailedMoneyTransaction_TransactionData,
@@ -5296,27 +6824,36 @@ pub struct LogFailedMoneyTransaction {
 
 #[derive(Clone, Debug)]
 pub struct LogParcelChanges_AgentData {
+    /// TODO
     pub agent_id: Uuid,
 }
 
 #[derive(Clone, Debug)]
 pub struct LogParcelChanges_RegionData {
+    /// TODO
     pub region_handle: u64,
 }
 
 #[derive(Clone, Debug)]
 pub struct LogParcelChanges_ParcelData {
+    /// TODO
     pub parcel_id: Uuid,
+    /// TODO
     pub owner_id: Uuid,
+    /// TODO
     pub is_owner_group: bool,
+    /// TODO
     pub actual_area: i32,
+    /// TODO
     pub action: i8,
+    /// TODO
     pub transaction_id: Uuid,
 }
 
 ///
 /// TODO:
 /// /// sim -> dataserver
+///
 #[derive(Clone, Debug)]
 pub struct LogParcelChanges {
     pub agent_data: LogParcelChanges_AgentData,
@@ -5327,11 +6864,17 @@ pub struct LogParcelChanges {
 
 #[derive(Clone, Debug)]
 pub struct LogTextMessage_DataBlock {
+    /// TODO
     pub from_agent_id: Uuid,
+    /// TODO
     pub to_agent_id: Uuid,
+    /// TODO
     pub global_x: f64,
+    /// TODO
     pub global_y: f64,
+    /// TODO
     pub time: u32,
+    /// TODO
     pub message: Vec<u8>,
 }
 
@@ -5341,6 +6884,7 @@ pub struct LogTextMessage_DataBlock {
 /// /// Asks the dataserver to log the contents of this message in the
 /// /// chat and IM log table.
 /// /// Sent from userserver (IM logging) and simulator (chat logging).
+///
 #[derive(Clone, Debug)]
 pub struct LogTextMessage {
     pub data_block: Vec<LogTextMessage_DataBlock>,
@@ -5349,12 +6893,15 @@ pub struct LogTextMessage {
 
 #[derive(Clone, Debug)]
 pub struct LogoutReply_AgentData {
+    /// TODO
     pub agent_id: Uuid,
+    /// TODO
     pub session_id: Uuid,
 }
 
 #[derive(Clone, Debug)]
 pub struct LogoutReply_InventoryData {
+    /// TODO
     pub item_id: Uuid,
 }
 
@@ -5365,6 +6912,7 @@ pub struct LogoutReply_InventoryData {
 /// /// sim -> viewer
 /// /// reliable
 /// /// Includes inventory items to update with new asset ids
+///
 #[derive(Clone, Debug)]
 pub struct LogoutReply {
     pub agent_data: LogoutReply_AgentData,
@@ -5374,7 +6922,9 @@ pub struct LogoutReply {
 
 #[derive(Clone, Debug)]
 pub struct LogoutRequest_AgentData {
+    /// TODO
     pub agent_id: Uuid,
+    /// TODO
     pub session_id: Uuid,
 }
 
@@ -5383,6 +6933,7 @@ pub struct LogoutRequest_AgentData {
 /// 		/// LogoutRequest
 /// /// viewer -> sim
 /// /// reliable
+///
 #[derive(Clone, Debug)]
 pub struct LogoutRequest {
     pub agent_data: LogoutRequest_AgentData,
@@ -5391,25 +6942,36 @@ pub struct LogoutRequest {
 
 #[derive(Clone, Debug)]
 pub struct MapBlockReply_AgentData {
+    /// TODO
     pub agent_id: Uuid,
+    /// TODO
     pub flags: u32,
 }
 
 #[derive(Clone, Debug)]
 pub struct MapBlockReply_Data {
+    /// TODO
     pub x: u16,
+    /// TODO
     pub y: u16,
+    /// TODO
     pub name: Vec<u8>,
+    /// TODO
     pub access: u8,
+    /// TODO
     pub region_flags: u32,
+    /// TODO
     pub water_height: u8,
+    /// TODO
     pub agents: u8,
+    /// TODO
     pub map_image_id: Uuid,
 }
 
 ///
 /// TODO:
 /// /// sim -> viewer
+///
 #[derive(Clone, Debug)]
 pub struct MapBlockReply {
     pub agent_data: MapBlockReply_AgentData,
@@ -5419,18 +6981,27 @@ pub struct MapBlockReply {
 
 #[derive(Clone, Debug)]
 pub struct MapBlockRequest_AgentData {
+    /// TODO
     pub agent_id: Uuid,
+    /// TODO
     pub session_id: Uuid,
+    /// TODO
     pub flags: u32,
+    /// TODO
     pub estate_id: u32,
+    /// TODO
     pub godlike: bool,
 }
 
 #[derive(Clone, Debug)]
 pub struct MapBlockRequest_PositionData {
+    /// TODO
     pub min_x: u16,
+    /// TODO
     pub max_x: u16,
+    /// TODO
     pub min_y: u16,
+    /// TODO
     pub max_y: u16,
 }
 
@@ -5440,6 +7011,7 @@ pub struct MapBlockRequest_PositionData {
 /// /// This message is sent up from the viewer to get a list
 /// /// of the sims in a specified region.
 /// /// Returns: MapBlockReply
+///
 #[derive(Clone, Debug)]
 pub struct MapBlockRequest {
     pub agent_data: MapBlockRequest_AgentData,
@@ -5449,28 +7021,38 @@ pub struct MapBlockRequest {
 
 #[derive(Clone, Debug)]
 pub struct MapItemReply_AgentData {
+    /// TODO
     pub agent_id: Uuid,
+    /// TODO
     pub flags: u32,
 }
 
 #[derive(Clone, Debug)]
 pub struct MapItemReply_RequestData {
+    /// TODO
     pub item_type: u32,
 }
 
 #[derive(Clone, Debug)]
 pub struct MapItemReply_Data {
+    /// TODO
     pub x: u32,
+    /// TODO
     pub y: u32,
+    /// TODO
     pub id: Uuid,
+    /// TODO
     pub extra: i32,
+    /// TODO
     pub extra2: i32,
+    /// TODO
     pub name: Vec<u8>,
 }
 
 ///
 /// TODO:
 /// /// sim -> viewer
+///
 #[derive(Clone, Debug)]
 pub struct MapItemReply {
     pub agent_data: MapItemReply_AgentData,
@@ -5481,16 +7063,23 @@ pub struct MapItemReply {
 
 #[derive(Clone, Debug)]
 pub struct MapItemRequest_AgentData {
+    /// TODO
     pub agent_id: Uuid,
+    /// TODO
     pub session_id: Uuid,
+    /// TODO
     pub flags: u32,
+    /// TODO
     pub estate_id: u32,
+    /// TODO
     pub godlike: bool,
 }
 
 #[derive(Clone, Debug)]
 pub struct MapItemRequest_RequestData {
+    /// TODO
     pub item_type: u32,
+    /// TODO
     pub region_handle: u64,
 }
 
@@ -5501,6 +7090,7 @@ pub struct MapItemRequest_RequestData {
 /// /// of the items of a particular type on the map.
 /// /// Used for Telehubs, Agents, Events, Popular Places, etc.
 /// /// Returns: MapBlockReply
+///
 #[derive(Clone, Debug)]
 pub struct MapItemRequest {
     pub agent_data: MapItemRequest_AgentData,
@@ -5510,22 +7100,30 @@ pub struct MapItemRequest {
 
 #[derive(Clone, Debug)]
 pub struct MapLayerReply_AgentData {
+    /// TODO
     pub agent_id: Uuid,
+    /// TODO
     pub flags: u32,
 }
 
 #[derive(Clone, Debug)]
 pub struct MapLayerReply_LayerData {
+    /// TODO
     pub left: u32,
+    /// TODO
     pub right: u32,
+    /// TODO
     pub top: u32,
+    /// TODO
     pub bottom: u32,
+    /// TODO
     pub image_id: Uuid,
 }
 
 ///
 /// TODO:
 /// /// sim -> viewer
+///
 #[derive(Clone, Debug)]
 pub struct MapLayerReply {
     pub agent_data: MapLayerReply_AgentData,
@@ -5535,10 +7133,15 @@ pub struct MapLayerReply {
 
 #[derive(Clone, Debug)]
 pub struct MapLayerRequest_AgentData {
+    /// TODO
     pub agent_id: Uuid,
+    /// TODO
     pub session_id: Uuid,
+    /// TODO
     pub flags: u32,
+    /// TODO
     pub estate_id: u32,
+    /// TODO
     pub godlike: bool,
 }
 
@@ -5549,6 +7152,7 @@ pub struct MapLayerRequest_AgentData {
 /// /// This message is sent up from the viewer to (eventually) get a list
 /// /// of all map layers and NULL-layer sims.
 /// /// Returns: MapLayerReply and MapBlockReply
+///
 #[derive(Clone, Debug)]
 pub struct MapLayerRequest {
     pub agent_data: MapLayerRequest_AgentData,
@@ -5557,15 +7161,21 @@ pub struct MapLayerRequest {
 
 #[derive(Clone, Debug)]
 pub struct MapNameRequest_AgentData {
+    /// TODO
     pub agent_id: Uuid,
+    /// TODO
     pub session_id: Uuid,
+    /// TODO
     pub flags: u32,
+    /// TODO
     pub estate_id: u32,
+    /// TODO
     pub godlike: bool,
 }
 
 #[derive(Clone, Debug)]
 pub struct MapNameRequest_NameData {
+    /// TODO
     pub name: Vec<u8>,
 }
 
@@ -5575,6 +7185,7 @@ pub struct MapNameRequest_NameData {
 /// /// This message is sent up from the viewer to get a list
 /// /// of the sims with a given name.
 /// /// Returns: MapBlockReply
+///
 #[derive(Clone, Debug)]
 pub struct MapNameRequest {
     pub agent_data: MapNameRequest_AgentData,
@@ -5584,10 +7195,15 @@ pub struct MapNameRequest {
 
 #[derive(Clone, Debug)]
 pub struct MeanCollisionAlert_MeanCollision {
+    /// TODO
     pub victim: Uuid,
+    /// TODO
     pub perp: Uuid,
+    /// TODO
     pub time: u32,
+    /// TODO
     pub mag: f32,
+    /// TODO
     pub type_: u8,
 }
 
@@ -5595,6 +7211,7 @@ pub struct MeanCollisionAlert_MeanCollision {
 /// 		TODO:
 /// 		/// MeanCollisionAlert
 /// /// Specifies the text to be posted in an alert dialog
+///
 #[derive(Clone, Debug)]
 pub struct MeanCollisionAlert {
     pub mean_collision: Vec<MeanCollisionAlert_MeanCollision>,
@@ -5603,11 +7220,13 @@ pub struct MeanCollisionAlert {
 
 #[derive(Clone, Debug)]
 pub struct MergeParcel_MasterParcelData {
+    /// TODO
     pub master_id: Uuid,
 }
 
 #[derive(Clone, Debug)]
 pub struct MergeParcel_SlaveParcelData {
+    /// TODO
     pub slave_id: Uuid,
 }
 
@@ -5615,6 +7234,7 @@ pub struct MergeParcel_SlaveParcelData {
 /// 		TODO:
 /// 		/// sim -> dataserver
 /// /// Merges some of the database information for parcels (dwell).
+///
 #[derive(Clone, Debug)]
 pub struct MergeParcel {
     pub master_parcel_data: MergeParcel_MasterParcelData,
@@ -5624,29 +7244,41 @@ pub struct MergeParcel {
 
 #[derive(Clone, Debug)]
 pub struct ModifyLand_AgentData {
+    /// TODO
     pub agent_id: Uuid,
+    /// TODO
     pub session_id: Uuid,
 }
 
 #[derive(Clone, Debug)]
 pub struct ModifyLand_ModifyBlock {
+    /// TODO
     pub action: u8,
+    /// TODO
     pub brush_size: u8,
+    /// TODO
     pub seconds: f32,
+    /// TODO
     pub height: f32,
 }
 
 #[derive(Clone, Debug)]
 pub struct ModifyLand_ParcelData {
+    /// TODO
     pub local_id: i32,
+    /// TODO
     pub west: f32,
+    /// TODO
     pub south: f32,
+    /// TODO
     pub east: f32,
+    /// TODO
     pub north: f32,
 }
 
 #[derive(Clone, Debug)]
 pub struct ModifyLand_ModifyBlockExtended {
+    /// TODO
     pub brush_size: f32,
 }
 
@@ -5654,6 +7286,7 @@ pub struct ModifyLand_ModifyBlockExtended {
 /// 		TODO:
 /// 		/// ModifyLand - sent to modify a piece of land on a simulator.
 /// /// viewer -> sim
+///
 #[derive(Clone, Debug)]
 pub struct ModifyLand {
     pub agent_data: ModifyLand_AgentData,
@@ -5665,23 +7298,37 @@ pub struct ModifyLand {
 
 #[derive(Clone, Debug)]
 pub struct MoneyBalanceReply_MoneyData {
+    /// TODO
     pub agent_id: Uuid,
+    /// TODO
     pub transaction_id: Uuid,
+    /// TODO
     pub transaction_success: bool,
+    /// TODO
     pub money_balance: i32,
+    /// TODO
     pub square_meters_credit: i32,
+    /// TODO
     pub square_meters_committed: i32,
+    /// TODO
     pub description: Vec<u8>,
 }
 
 #[derive(Clone, Debug)]
 pub struct MoneyBalanceReply_TransactionInfo {
+    /// TODO
     pub transaction_type: i32,
+    /// TODO
     pub source_id: Uuid,
+    /// TODO
     pub is_source_group: bool,
+    /// TODO
     pub dest_id: Uuid,
+    /// TODO
     pub is_dest_group: bool,
+    /// TODO
     pub amount: i32,
+    /// TODO
     pub item_description: Vec<u8>,
 }
 
@@ -5691,6 +7338,7 @@ pub struct MoneyBalanceReply_TransactionInfo {
 /// /// For replies that are part of a transaction (buying something) provide
 /// /// metadata for localization.  If TransactionType is 0, the message is
 /// /// purely a balance update.  Added for server 1.40 and viewer 2.1.  JC
+///
 #[derive(Clone, Debug)]
 pub struct MoneyBalanceReply {
     pub money_data: MoneyBalanceReply_MoneyData,
@@ -5700,12 +7348,15 @@ pub struct MoneyBalanceReply {
 
 #[derive(Clone, Debug)]
 pub struct MoneyBalanceRequest_AgentData {
+    /// TODO
     pub agent_id: Uuid,
+    /// TODO
     pub session_id: Uuid,
 }
 
 #[derive(Clone, Debug)]
 pub struct MoneyBalanceRequest_MoneyData {
+    /// TODO
     pub transaction_id: Uuid,
 }
 
@@ -5713,6 +7364,7 @@ pub struct MoneyBalanceRequest_MoneyData {
 /// 		TODO:
 /// 		/// viewer -> userserver -> dataserver
 /// /// Reliable
+///
 #[derive(Clone, Debug)]
 pub struct MoneyBalanceRequest {
     pub agent_data: MoneyBalanceRequest_AgentData,
@@ -5722,18 +7374,31 @@ pub struct MoneyBalanceRequest {
 
 #[derive(Clone, Debug)]
 pub struct MoneyTransferBackend_MoneyData {
+    /// TODO
     pub transaction_id: Uuid,
+    /// TODO
     pub transaction_time: u32,
+    /// TODO
     pub source_id: Uuid,
+    /// TODO
     pub dest_id: Uuid,
+    /// TODO
     pub flags: u8,
+    /// TODO
     pub amount: i32,
+    /// TODO
     pub aggregate_perm_next_owner: u8,
+    /// TODO
     pub aggregate_perm_inventory: u8,
+    /// TODO
     pub transaction_type: i32,
+    /// TODO
     pub region_id: Uuid,
+    /// TODO
     pub grid_x: u32,
+    /// TODO
     pub grid_y: u32,
+    /// TODO
     pub description: Vec<u8>,
 }
 
@@ -5742,6 +7407,7 @@ pub struct MoneyTransferBackend_MoneyData {
 /// 		/// And, the money transfer
 /// /// *NOTE: Unused as of 2010-04-06, because all back-end money transactions
 /// /// are done with web services via L$ API.  JC
+///
 #[derive(Clone, Debug)]
 pub struct MoneyTransferBackend {
     pub money_data: MoneyTransferBackend_MoneyData,
@@ -5750,19 +7416,29 @@ pub struct MoneyTransferBackend {
 
 #[derive(Clone, Debug)]
 pub struct MoneyTransferRequest_AgentData {
+    /// TODO
     pub agent_id: Uuid,
+    /// TODO
     pub session_id: Uuid,
 }
 
 #[derive(Clone, Debug)]
 pub struct MoneyTransferRequest_MoneyData {
+    /// TODO
     pub source_id: Uuid,
+    /// TODO
     pub dest_id: Uuid,
+    /// TODO
     pub flags: u8,
+    /// TODO
     pub amount: i32,
+    /// TODO
     pub aggregate_perm_next_owner: u8,
+    /// TODO
     pub aggregate_perm_inventory: u8,
+    /// TODO
     pub transaction_type: i32,
+    /// TODO
     pub description: Vec<u8>,
 }
 
@@ -5773,6 +7449,7 @@ pub struct MoneyTransferRequest_MoneyData {
 /// /// generates a MoneyBalance message in reply.  The simulator
 /// /// will generate a MoneyTransferBackend in response to this.
 /// /// viewer -> simulator -> dataserver
+///
 #[derive(Clone, Debug)]
 pub struct MoneyTransferRequest {
     pub agent_data: MoneyTransferRequest_AgentData,
@@ -5782,19 +7459,25 @@ pub struct MoneyTransferRequest {
 
 #[derive(Clone, Debug)]
 pub struct MoveInventoryFolder_AgentData {
+    /// TODO
     pub agent_id: Uuid,
+    /// TODO
     pub session_id: Uuid,
+    /// TODO
     pub stamp: bool,
 }
 
 #[derive(Clone, Debug)]
 pub struct MoveInventoryFolder_InventoryData {
+    /// TODO
     pub folder_id: Uuid,
+    /// TODO
     pub parent_id: Uuid,
 }
 
 ///
 /// TODO:
+///
 ///
 #[derive(Clone, Debug)]
 pub struct MoveInventoryFolder {
@@ -5805,20 +7488,27 @@ pub struct MoveInventoryFolder {
 
 #[derive(Clone, Debug)]
 pub struct MoveInventoryItem_AgentData {
+    /// TODO
     pub agent_id: Uuid,
+    /// TODO
     pub session_id: Uuid,
+    /// TODO
     pub stamp: bool,
 }
 
 #[derive(Clone, Debug)]
 pub struct MoveInventoryItem_InventoryData {
+    /// TODO
     pub item_id: Uuid,
+    /// TODO
     pub folder_id: Uuid,
+    /// TODO
     pub new_name: Vec<u8>,
 }
 
 ///
 /// TODO:
+///
 ///
 #[derive(Clone, Debug)]
 pub struct MoveInventoryItem {
@@ -5829,19 +7519,25 @@ pub struct MoveInventoryItem {
 
 #[derive(Clone, Debug)]
 pub struct MoveTaskInventory_AgentData {
+    /// TODO
     pub agent_id: Uuid,
+    /// TODO
     pub session_id: Uuid,
+    /// TODO
     pub folder_id: Uuid,
 }
 
 #[derive(Clone, Debug)]
 pub struct MoveTaskInventory_InventoryData {
+    /// TODO
     pub local_id: u32,
+    /// TODO
     pub item_id: Uuid,
 }
 
 ///
 /// TODO:
+///
 ///
 #[derive(Clone, Debug)]
 pub struct MoveTaskInventory {
@@ -5852,14 +7548,19 @@ pub struct MoveTaskInventory {
 
 #[derive(Clone, Debug)]
 pub struct MultipleObjectUpdate_AgentData {
+    /// TODO
     pub agent_id: Uuid,
+    /// TODO
     pub session_id: Uuid,
 }
 
 #[derive(Clone, Debug)]
 pub struct MultipleObjectUpdate_ObjectData {
+    /// TODO
     pub object_local_id: u32,
+    /// TODO
     pub type_: u8,
+    /// TODO
     pub data: Vec<u8>,
 }
 
@@ -5869,6 +7570,7 @@ pub struct MultipleObjectUpdate_ObjectData {
 /// /// viewer -> simulator
 /// /// updates position, rotation and scale in one message
 /// /// positions sent as region-local floats
+///
 #[derive(Clone, Debug)]
 pub struct MultipleObjectUpdate {
     pub agent_data: MultipleObjectUpdate_AgentData,
@@ -5878,18 +7580,22 @@ pub struct MultipleObjectUpdate {
 
 #[derive(Clone, Debug)]
 pub struct MuteListRequest_AgentData {
+    /// TODO
     pub agent_id: Uuid,
+    /// TODO
     pub session_id: Uuid,
 }
 
 #[derive(Clone, Debug)]
 pub struct MuteListRequest_MuteData {
+    /// TODO
     pub mute_crc: u32,
 }
 
 ///
 /// TODO:
 /// /// request for mute list
+///
 #[derive(Clone, Debug)]
 pub struct MuteListRequest {
     pub agent_data: MuteListRequest_AgentData,
@@ -5899,13 +7605,16 @@ pub struct MuteListRequest {
 
 #[derive(Clone, Debug)]
 pub struct MuteListUpdate_MuteData {
+    /// TODO
     pub agent_id: Uuid,
+    /// TODO
     pub filename: Vec<u8>,
 }
 
 ///
 /// TODO:
 /// /// dataserver-> userserver -> viewer to move around the mute list
+///
 #[derive(Clone, Debug)]
 pub struct MuteListUpdate {
     pub mute_data: MuteListUpdate_MuteData,
@@ -5914,17 +7623,20 @@ pub struct MuteListUpdate {
 
 #[derive(Clone, Debug)]
 pub struct NameValuePair_TaskData {
+    /// TODO
     pub id: Uuid,
 }
 
 #[derive(Clone, Debug)]
 pub struct NameValuePair_NameValueData {
+    /// TODO
     pub nv_pair: Vec<u8>,
 }
 
 ///
 /// TODO:
 /// /// NameValuePair - if the specific task exists on simulator, add or replace this name value pair
+///
 #[derive(Clone, Debug)]
 pub struct NameValuePair {
     pub task_data: NameValuePair_TaskData,
@@ -5934,6 +7646,7 @@ pub struct NameValuePair {
 
 #[derive(Clone, Debug)]
 pub struct NearestLandingRegionReply_LandingRegionData {
+    /// TODO
     pub region_handle: u64,
 }
 
@@ -5944,6 +7657,7 @@ pub struct NearestLandingRegionReply_LandingRegionData {
 /// ///Sent from the data server to a region in reply
 /// ///to the redirectregion request stating which region
 /// ///the requesting region should redirect teleports to if necessary
+///
 #[derive(Clone, Debug)]
 pub struct NearestLandingRegionReply {
     pub landing_region_data: NearestLandingRegionReply_LandingRegionData,
@@ -5952,6 +7666,7 @@ pub struct NearestLandingRegionReply {
 
 #[derive(Clone, Debug)]
 pub struct NearestLandingRegionRequest_RequestingRegionData {
+    /// TODO
     pub region_handle: u64,
 }
 
@@ -5962,6 +7677,7 @@ pub struct NearestLandingRegionRequest_RequestingRegionData {
 /// ///Sent from the region to the data server
 /// ///to request the most up to date region for the requesting
 /// ///region to redirect teleports to
+///
 #[derive(Clone, Debug)]
 pub struct NearestLandingRegionRequest {
     pub requesting_region_data: NearestLandingRegionRequest_RequestingRegionData,
@@ -5970,6 +7686,7 @@ pub struct NearestLandingRegionRequest {
 
 #[derive(Clone, Debug)]
 pub struct NearestLandingRegionUpdated_RegionData {
+    /// TODO
     pub region_handle: u64,
 }
 
@@ -5980,6 +7697,7 @@ pub struct NearestLandingRegionUpdated_RegionData {
 /// ///Sent from a region to the data server
 /// ///to have the dataserver note/clear in the db
 /// ///that the region has updated it's nearest landing point
+///
 #[derive(Clone, Debug)]
 pub struct NearestLandingRegionUpdated {
     pub region_data: NearestLandingRegionUpdated_RegionData,
@@ -5988,18 +7706,26 @@ pub struct NearestLandingRegionUpdated {
 
 #[derive(Clone, Debug)]
 pub struct NeighborList_NeighborBlock {
+    /// TODO
     pub ip: Ip4Addr,
+    /// TODO
     pub port: IpPort,
+    /// TODO
     pub public_ip: Ip4Addr,
+    /// TODO
     pub public_port: IpPort,
+    /// TODO
     pub region_id: Uuid,
+    /// TODO
     pub name: Vec<u8>,
+    /// TODO
     pub sim_access: u8,
 }
 
 ///
 /// TODO:
 /// /// Neighbor List - Passed anytime neighbors change
+///
 #[derive(Clone, Debug)]
 pub struct NeighborList {
     pub neighbor_block: ArrayVec<[NeighborList_NeighborBlock; 4]>,
@@ -6008,6 +7734,7 @@ pub struct NeighborList {
 
 #[derive(Clone, Debug)]
 pub struct NetTest_NetBlock {
+    /// TODO
     pub port: IpPort,
 }
 
@@ -6015,6 +7742,7 @@ pub struct NetTest_NetBlock {
 /// 		TODO:
 /// 		/// NetTest - This goes back and forth to the space server because of
 /// /// problems determining the port
+///
 #[derive(Clone, Debug)]
 pub struct NetTest {
     pub net_block: NetTest_NetBlock,
@@ -6023,46 +7751,79 @@ pub struct NetTest {
 
 #[derive(Clone, Debug)]
 pub struct ObjectAdd_AgentData {
+    /// TODO
     pub agent_id: Uuid,
+    /// TODO
     pub session_id: Uuid,
+    /// TODO
     pub group_id: Uuid,
 }
 
 #[derive(Clone, Debug)]
 pub struct ObjectAdd_ObjectData {
+    /// TODO
     pub p_code: u8,
+    /// TODO
     pub material: u8,
+    /// TODO
     pub add_flags: u32,
+    /// TODO
     pub path_curve: u8,
+    /// TODO
     pub profile_curve: u8,
+    /// TODO
     pub path_begin: u16,
+    /// TODO
     pub path_end: u16,
+    /// TODO
     pub path_scale_x: u8,
+    /// TODO
     pub path_scale_y: u8,
+    /// TODO
     pub path_shear_x: u8,
+    /// TODO
     pub path_shear_y: u8,
+    /// TODO
     pub path_twist: i8,
+    /// TODO
     pub path_twist_begin: i8,
+    /// TODO
     pub path_radius_offset: i8,
+    /// TODO
     pub path_taper_x: i8,
+    /// TODO
     pub path_taper_y: i8,
+    /// TODO
     pub path_revolutions: u8,
+    /// TODO
     pub path_skew: i8,
+    /// TODO
     pub profile_begin: u16,
+    /// TODO
     pub profile_end: u16,
+    /// TODO
     pub profile_hollow: u16,
+    /// TODO
     pub bypass_raycast: u8,
+    /// TODO
     pub ray_start: Vector3<f32>,
+    /// TODO
     pub ray_end: Vector3<f32>,
+    /// TODO
     pub ray_target_id: Uuid,
+    /// TODO
     pub ray_end_is_intersection: u8,
+    /// TODO
     pub scale: Vector3<f32>,
+    /// TODO
     pub rotation: Quaternion<f32>,
+    /// TODO
     pub state: u8,
 }
 
 ///
 /// TODO:
+///
 ///
 #[derive(Clone, Debug)]
 pub struct ObjectAdd {
@@ -6073,20 +7834,26 @@ pub struct ObjectAdd {
 
 #[derive(Clone, Debug)]
 pub struct ObjectAttach_AgentData {
+    /// TODO
     pub agent_id: Uuid,
+    /// TODO
     pub session_id: Uuid,
+    /// TODO
     pub attachment_point: u8,
 }
 
 #[derive(Clone, Debug)]
 pub struct ObjectAttach_ObjectData {
+    /// TODO
     pub object_local_id: u32,
+    /// TODO
     pub rotation: Quaternion<f32>,
 }
 
 ///
 /// TODO:
 /// /// ObjectAttach
+///
 #[derive(Clone, Debug)]
 pub struct ObjectAttach {
     pub agent_data: ObjectAttach_AgentData,
@@ -6096,22 +7863,30 @@ pub struct ObjectAttach {
 
 #[derive(Clone, Debug)]
 pub struct ObjectBuy_AgentData {
+    /// TODO
     pub agent_id: Uuid,
+    /// TODO
     pub session_id: Uuid,
+    /// TODO
     pub group_id: Uuid,
+    /// TODO
     pub category_id: Uuid,
 }
 
 #[derive(Clone, Debug)]
 pub struct ObjectBuy_ObjectData {
+    /// TODO
     pub object_local_id: u32,
+    /// TODO
     pub sale_type: u8,
+    /// TODO
     pub sale_price: i32,
 }
 
 ///
 /// TODO:
 /// /// Attempt to buy an object. This will only pack root objects.
+///
 #[derive(Clone, Debug)]
 pub struct ObjectBuy {
     pub agent_data: ObjectBuy_AgentData,
@@ -6121,19 +7896,24 @@ pub struct ObjectBuy {
 
 #[derive(Clone, Debug)]
 pub struct ObjectCategory_AgentData {
+    /// TODO
     pub agent_id: Uuid,
+    /// TODO
     pub session_id: Uuid,
 }
 
 #[derive(Clone, Debug)]
 pub struct ObjectCategory_ObjectData {
+    /// TODO
     pub local_id: u32,
+    /// TODO
     pub category: u32,
 }
 
 ///
 /// TODO:
 /// /// set object category
+///
 #[derive(Clone, Debug)]
 pub struct ObjectCategory {
     pub agent_data: ObjectCategory_AgentData,
@@ -6143,13 +7923,17 @@ pub struct ObjectCategory {
 
 #[derive(Clone, Debug)]
 pub struct ObjectClickAction_AgentData {
+    /// TODO
     pub agent_id: Uuid,
+    /// TODO
     pub session_id: Uuid,
 }
 
 #[derive(Clone, Debug)]
 pub struct ObjectClickAction_ObjectData {
+    /// TODO
     pub object_local_id: u32,
+    /// TODO
     pub click_action: u8,
 }
 
@@ -6157,6 +7941,7 @@ pub struct ObjectClickAction_ObjectData {
 /// 		TODO:
 /// 		/// ObjectClickAction
 /// /// viewer -> simulator
+///
 #[derive(Clone, Debug)]
 pub struct ObjectClickAction {
     pub agent_data: ObjectClickAction_AgentData,
@@ -6166,28 +7951,38 @@ pub struct ObjectClickAction {
 
 #[derive(Clone, Debug)]
 pub struct ObjectDeGrab_AgentData {
+    /// TODO
     pub agent_id: Uuid,
+    /// TODO
     pub session_id: Uuid,
 }
 
 #[derive(Clone, Debug)]
 pub struct ObjectDeGrab_ObjectData {
+    /// TODO
     pub local_id: u32,
 }
 
 #[derive(Clone, Debug)]
 pub struct ObjectDeGrab_SurfaceInfo {
+    /// TODO
     pub uv_coord: Vector3<f32>,
+    /// TODO
     pub st_coord: Vector3<f32>,
+    /// TODO
     pub face_index: i32,
+    /// TODO
     pub position: Vector3<f32>,
+    /// TODO
     pub normal: Vector3<f32>,
+    /// TODO
     pub binormal: Vector3<f32>,
 }
 
 ///
 /// TODO:
 /// /// ObjectDeGrab
+///
 #[derive(Clone, Debug)]
 pub struct ObjectDeGrab {
     pub agent_data: ObjectDeGrab_AgentData,
@@ -6198,13 +7993,17 @@ pub struct ObjectDeGrab {
 
 #[derive(Clone, Debug)]
 pub struct ObjectDelete_AgentData {
+    /// TODO
     pub agent_id: Uuid,
+    /// TODO
     pub session_id: Uuid,
+    /// TODO
     pub force: bool,
 }
 
 #[derive(Clone, Debug)]
 pub struct ObjectDelete_ObjectData {
+    /// TODO
     pub object_local_id: u32,
 }
 
@@ -6212,6 +8011,7 @@ pub struct ObjectDelete_ObjectData {
 /// 		TODO:
 /// 		/// ObjectDelete
 /// /// viewer -> simulator
+///
 #[derive(Clone, Debug)]
 pub struct ObjectDelete {
     pub agent_data: ObjectDelete_AgentData,
@@ -6221,18 +8021,22 @@ pub struct ObjectDelete {
 
 #[derive(Clone, Debug)]
 pub struct ObjectDelink_AgentData {
+    /// TODO
     pub agent_id: Uuid,
+    /// TODO
     pub session_id: Uuid,
 }
 
 #[derive(Clone, Debug)]
 pub struct ObjectDelink_ObjectData {
+    /// TODO
     pub object_local_id: u32,
 }
 
 ///
 /// TODO:
 /// /// ObjectDelink
+///
 #[derive(Clone, Debug)]
 pub struct ObjectDelink {
     pub agent_data: ObjectDelink_AgentData,
@@ -6242,19 +8046,24 @@ pub struct ObjectDelink {
 
 #[derive(Clone, Debug)]
 pub struct ObjectDescription_AgentData {
+    /// TODO
     pub agent_id: Uuid,
+    /// TODO
     pub session_id: Uuid,
 }
 
 #[derive(Clone, Debug)]
 pub struct ObjectDescription_ObjectData {
+    /// TODO
     pub local_id: u32,
+    /// TODO
     pub description: Vec<u8>,
 }
 
 ///
 /// TODO:
 /// /// set object descriptions
+///
 #[derive(Clone, Debug)]
 pub struct ObjectDescription {
     pub agent_data: ObjectDescription_AgentData,
@@ -6264,17 +8073,21 @@ pub struct ObjectDescription {
 
 #[derive(Clone, Debug)]
 pub struct ObjectDeselect_AgentData {
+    /// TODO
     pub agent_id: Uuid,
+    /// TODO
     pub session_id: Uuid,
 }
 
 #[derive(Clone, Debug)]
 pub struct ObjectDeselect_ObjectData {
+    /// TODO
     pub object_local_id: u32,
 }
 
 ///
 /// TODO:
+///
 ///
 #[derive(Clone, Debug)]
 pub struct ObjectDeselect {
@@ -6285,18 +8098,22 @@ pub struct ObjectDeselect {
 
 #[derive(Clone, Debug)]
 pub struct ObjectDetach_AgentData {
+    /// TODO
     pub agent_id: Uuid,
+    /// TODO
     pub session_id: Uuid,
 }
 
 #[derive(Clone, Debug)]
 pub struct ObjectDetach_ObjectData {
+    /// TODO
     pub object_local_id: u32,
 }
 
 ///
 /// TODO:
 /// /// ObjectDetach -- derezzes an attachment, marking its item in your inventory as not "(worn)"
+///
 #[derive(Clone, Debug)]
 pub struct ObjectDetach {
     pub agent_data: ObjectDetach_AgentData,
@@ -6306,18 +8123,22 @@ pub struct ObjectDetach {
 
 #[derive(Clone, Debug)]
 pub struct ObjectDrop_AgentData {
+    /// TODO
     pub agent_id: Uuid,
+    /// TODO
     pub session_id: Uuid,
 }
 
 #[derive(Clone, Debug)]
 pub struct ObjectDrop_ObjectData {
+    /// TODO
     pub object_local_id: u32,
 }
 
 ///
 /// TODO:
 /// /// ObjectDrop -- drops an attachment from your avatar onto the ground
+///
 #[derive(Clone, Debug)]
 pub struct ObjectDrop {
     pub agent_data: ObjectDrop_AgentData,
@@ -6327,19 +8148,25 @@ pub struct ObjectDrop {
 
 #[derive(Clone, Debug)]
 pub struct ObjectDuplicate_AgentData {
+    /// TODO
     pub agent_id: Uuid,
+    /// TODO
     pub session_id: Uuid,
+    /// TODO
     pub group_id: Uuid,
 }
 
 #[derive(Clone, Debug)]
 pub struct ObjectDuplicate_SharedData {
+    /// TODO
     pub offset: Vector3<f32>,
+    /// TODO
     pub duplicate_flags: u32,
 }
 
 #[derive(Clone, Debug)]
 pub struct ObjectDuplicate_ObjectData {
+    /// TODO
     pub object_local_id: u32,
 }
 
@@ -6348,6 +8175,7 @@ pub struct ObjectDuplicate_ObjectData {
 /// 		/// ObjectDuplicate
 /// /// viewer -> simulator
 /// /// Makes a copy of a set of objects, offset by a given amount
+///
 #[derive(Clone, Debug)]
 pub struct ObjectDuplicate {
     pub agent_data: ObjectDuplicate_AgentData,
@@ -6358,21 +8186,33 @@ pub struct ObjectDuplicate {
 
 #[derive(Clone, Debug)]
 pub struct ObjectDuplicateOnRay_AgentData {
+    /// TODO
     pub agent_id: Uuid,
+    /// TODO
     pub session_id: Uuid,
+    /// TODO
     pub group_id: Uuid,
+    /// TODO
     pub ray_start: Vector3<f32>,
+    /// TODO
     pub ray_end: Vector3<f32>,
+    /// TODO
     pub bypass_raycast: bool,
+    /// TODO
     pub ray_end_is_intersection: bool,
+    /// TODO
     pub copy_centers: bool,
+    /// TODO
     pub copy_rotates: bool,
+    /// TODO
     pub ray_target_id: Uuid,
+    /// TODO
     pub duplicate_flags: u32,
 }
 
 #[derive(Clone, Debug)]
 pub struct ObjectDuplicateOnRay_ObjectData {
+    /// TODO
     pub object_local_id: u32,
 }
 
@@ -6382,6 +8222,7 @@ pub struct ObjectDuplicateOnRay_ObjectData {
 /// /// viewer -> simulator
 /// /// Makes a copy of an object, using the add object raycast
 /// /// code to abut it to other objects.
+///
 #[derive(Clone, Debug)]
 pub struct ObjectDuplicateOnRay {
     pub agent_data: ObjectDuplicateOnRay_AgentData,
@@ -6391,13 +8232,17 @@ pub struct ObjectDuplicateOnRay {
 
 #[derive(Clone, Debug)]
 pub struct ObjectExportSelected_AgentData {
+    /// TODO
     pub agent_id: Uuid,
+    /// TODO
     pub request_id: Uuid,
+    /// TODO
     pub volume_detail: i16,
 }
 
 #[derive(Clone, Debug)]
 pub struct ObjectExportSelected_ObjectData {
+    /// TODO
     pub object_id: Uuid,
 }
 
@@ -6405,6 +8250,7 @@ pub struct ObjectExportSelected_ObjectData {
 /// 		TODO:
 /// 		/// Export selected objects
 /// /// viewer->sim
+///
 #[derive(Clone, Debug)]
 pub struct ObjectExportSelected {
     pub agent_data: ObjectExportSelected_AgentData,
@@ -6414,21 +8260,29 @@ pub struct ObjectExportSelected {
 
 #[derive(Clone, Debug)]
 pub struct ObjectExtraParams_AgentData {
+    /// TODO
     pub agent_id: Uuid,
+    /// TODO
     pub session_id: Uuid,
 }
 
 #[derive(Clone, Debug)]
 pub struct ObjectExtraParams_ObjectData {
+    /// TODO
     pub object_local_id: u32,
+    /// TODO
     pub param_type: u16,
+    /// TODO
     pub param_in_use: bool,
+    /// TODO
     pub param_size: u32,
+    /// TODO
     pub param_data: Vec<u8>,
 }
 
 ///
 /// TODO:
+///
 ///
 #[derive(Clone, Debug)]
 pub struct ObjectExtraParams {
@@ -6439,12 +8293,19 @@ pub struct ObjectExtraParams {
 
 #[derive(Clone, Debug)]
 pub struct ObjectFlagUpdate_AgentData {
+    /// TODO
     pub agent_id: Uuid,
+    /// TODO
     pub session_id: Uuid,
+    /// TODO
     pub object_local_id: u32,
+    /// TODO
     pub use_physics: bool,
+    /// TODO
     pub is_temporary: bool,
+    /// TODO
     pub is_phantom: bool,
+    /// TODO
     pub casts_shadows: bool,
 }
 
@@ -6452,6 +8313,7 @@ pub struct ObjectFlagUpdate_AgentData {
 /// 		TODO:
 /// 		/// ObjectFlagUpdate
 /// /// viewer -> simulator
+///
 #[derive(Clone, Debug)]
 pub struct ObjectFlagUpdate {
     pub agent_data: ObjectFlagUpdate_AgentData,
@@ -6460,29 +8322,40 @@ pub struct ObjectFlagUpdate {
 
 #[derive(Clone, Debug)]
 pub struct ObjectGrab_AgentData {
+    /// TODO
     pub agent_id: Uuid,
+    /// TODO
     pub session_id: Uuid,
 }
 
 #[derive(Clone, Debug)]
 pub struct ObjectGrab_ObjectData {
+    /// TODO
     pub local_id: u32,
+    /// TODO
     pub grab_offset: Vector3<f32>,
 }
 
 #[derive(Clone, Debug)]
 pub struct ObjectGrab_SurfaceInfo {
+    /// TODO
     pub uv_coord: Vector3<f32>,
+    /// TODO
     pub st_coord: Vector3<f32>,
+    /// TODO
     pub face_index: i32,
+    /// TODO
     pub position: Vector3<f32>,
+    /// TODO
     pub normal: Vector3<f32>,
+    /// TODO
     pub binormal: Vector3<f32>,
 }
 
 ///
 /// TODO:
 /// /// ObjectGrab
+///
 #[derive(Clone, Debug)]
 pub struct ObjectGrab {
     pub agent_data: ObjectGrab_AgentData,
@@ -6493,30 +8366,43 @@ pub struct ObjectGrab {
 
 #[derive(Clone, Debug)]
 pub struct ObjectGrabUpdate_AgentData {
+    /// TODO
     pub agent_id: Uuid,
+    /// TODO
     pub session_id: Uuid,
 }
 
 #[derive(Clone, Debug)]
 pub struct ObjectGrabUpdate_ObjectData {
+    /// TODO
     pub object_id: Uuid,
+    /// TODO
     pub grab_offset_initial: Vector3<f32>,
+    /// TODO
     pub grab_position: Vector3<f32>,
+    /// TODO
     pub time_since_last: u32,
 }
 
 #[derive(Clone, Debug)]
 pub struct ObjectGrabUpdate_SurfaceInfo {
+    /// TODO
     pub uv_coord: Vector3<f32>,
+    /// TODO
     pub st_coord: Vector3<f32>,
+    /// TODO
     pub face_index: i32,
+    /// TODO
     pub position: Vector3<f32>,
+    /// TODO
     pub normal: Vector3<f32>,
+    /// TODO
     pub binormal: Vector3<f32>,
 }
 
 ///
 /// TODO:
+///
 ///
 #[derive(Clone, Debug)]
 pub struct ObjectGrabUpdate {
@@ -6528,13 +8414,17 @@ pub struct ObjectGrabUpdate {
 
 #[derive(Clone, Debug)]
 pub struct ObjectGroup_AgentData {
+    /// TODO
     pub agent_id: Uuid,
+    /// TODO
     pub session_id: Uuid,
+    /// TODO
     pub group_id: Uuid,
 }
 
 #[derive(Clone, Debug)]
 pub struct ObjectGroup_ObjectData {
+    /// TODO
     pub object_local_id: u32,
 }
 
@@ -6543,6 +8433,7 @@ pub struct ObjectGroup_ObjectData {
 /// 		/// ObjectGroup
 /// /// To make the object part of no group, set GroupID = LLUUID::null.
 /// /// This call only works if objectid.ownerid == agentid.
+///
 #[derive(Clone, Debug)]
 pub struct ObjectGroup {
     pub agent_data: ObjectGroup_AgentData,
@@ -6552,14 +8443,19 @@ pub struct ObjectGroup {
 
 #[derive(Clone, Debug)]
 pub struct ObjectImage_AgentData {
+    /// TODO
     pub agent_id: Uuid,
+    /// TODO
     pub session_id: Uuid,
 }
 
 #[derive(Clone, Debug)]
 pub struct ObjectImage_ObjectData {
+    /// TODO
     pub object_local_id: u32,
+    /// TODO
     pub media_url: Vec<u8>,
+    /// TODO
     pub texture_entry: Vec<u8>,
 }
 
@@ -6567,6 +8463,7 @@ pub struct ObjectImage_ObjectData {
 /// 		TODO:
 /// 		/// ObjectImage
 /// /// viewer -> simulator
+///
 #[derive(Clone, Debug)]
 pub struct ObjectImage {
     pub agent_data: ObjectImage_AgentData,
@@ -6576,13 +8473,17 @@ pub struct ObjectImage {
 
 #[derive(Clone, Debug)]
 pub struct ObjectIncludeInSearch_AgentData {
+    /// TODO
     pub agent_id: Uuid,
+    /// TODO
     pub session_id: Uuid,
 }
 
 #[derive(Clone, Debug)]
 pub struct ObjectIncludeInSearch_ObjectData {
+    /// TODO
     pub object_local_id: u32,
+    /// TODO
     pub include_in_search: bool,
 }
 
@@ -6590,6 +8491,7 @@ pub struct ObjectIncludeInSearch_ObjectData {
 /// 		TODO:
 /// 		/// ObjectIncludeInSearch
 /// /// viewer -> simulator
+///
 #[derive(Clone, Debug)]
 pub struct ObjectIncludeInSearch {
     pub agent_data: ObjectIncludeInSearch_AgentData,
@@ -6599,18 +8501,22 @@ pub struct ObjectIncludeInSearch {
 
 #[derive(Clone, Debug)]
 pub struct ObjectLink_AgentData {
+    /// TODO
     pub agent_id: Uuid,
+    /// TODO
     pub session_id: Uuid,
 }
 
 #[derive(Clone, Debug)]
 pub struct ObjectLink_ObjectData {
+    /// TODO
     pub object_local_id: u32,
 }
 
 ///
 /// TODO:
 /// /// ObjectLink
+///
 #[derive(Clone, Debug)]
 pub struct ObjectLink {
     pub agent_data: ObjectLink_AgentData,
@@ -6620,18 +8526,23 @@ pub struct ObjectLink {
 
 #[derive(Clone, Debug)]
 pub struct ObjectMaterial_AgentData {
+    /// TODO
     pub agent_id: Uuid,
+    /// TODO
     pub session_id: Uuid,
 }
 
 #[derive(Clone, Debug)]
 pub struct ObjectMaterial_ObjectData {
+    /// TODO
     pub object_local_id: u32,
+    /// TODO
     pub material: u8,
 }
 
 ///
 /// TODO:
+///
 ///
 #[derive(Clone, Debug)]
 pub struct ObjectMaterial {
@@ -6642,19 +8553,24 @@ pub struct ObjectMaterial {
 
 #[derive(Clone, Debug)]
 pub struct ObjectName_AgentData {
+    /// TODO
     pub agent_id: Uuid,
+    /// TODO
     pub session_id: Uuid,
 }
 
 #[derive(Clone, Debug)]
 pub struct ObjectName_ObjectData {
+    /// TODO
     pub local_id: u32,
+    /// TODO
     pub name: Vec<u8>,
 }
 
 ///
 /// TODO:
 /// /// set object names
+///
 #[derive(Clone, Debug)]
 pub struct ObjectName {
     pub agent_data: ObjectName_AgentData,
@@ -6664,19 +8580,25 @@ pub struct ObjectName {
 
 #[derive(Clone, Debug)]
 pub struct ObjectOwner_AgentData {
+    /// TODO
     pub agent_id: Uuid,
+    /// TODO
     pub session_id: Uuid,
 }
 
 #[derive(Clone, Debug)]
 pub struct ObjectOwner_HeaderData {
+    /// TODO
     pub override_: bool,
+    /// TODO
     pub owner_id: Uuid,
+    /// TODO
     pub group_id: Uuid,
 }
 
 #[derive(Clone, Debug)]
 pub struct ObjectOwner_ObjectData {
+    /// TODO
     pub object_local_id: u32,
 }
 
@@ -6686,6 +8608,7 @@ pub struct ObjectOwner_ObjectData {
 /// /// To make public, set OwnerID to LLUUID::null.
 /// /// TODO: Eliminate god-bit. Maybe not. God-bit is ok, because it's
 /// /// known on the server.
+///
 #[derive(Clone, Debug)]
 pub struct ObjectOwner {
     pub agent_data: ObjectOwner_AgentData,
@@ -6696,20 +8619,27 @@ pub struct ObjectOwner {
 
 #[derive(Clone, Debug)]
 pub struct ObjectPermissions_AgentData {
+    /// TODO
     pub agent_id: Uuid,
+    /// TODO
     pub session_id: Uuid,
 }
 
 #[derive(Clone, Debug)]
 pub struct ObjectPermissions_HeaderData {
+    /// TODO
     pub override_: bool,
 }
 
 #[derive(Clone, Debug)]
 pub struct ObjectPermissions_ObjectData {
+    /// TODO
     pub object_local_id: u32,
+    /// TODO
     pub field: u8,
+    /// TODO
     pub set: u8,
+    /// TODO
     pub mask: u32,
 }
 
@@ -6720,6 +8650,7 @@ pub struct ObjectPermissions_ObjectData {
 /// /// If Set is true, tries to turn on bits in mask.
 /// /// If set is false, tries to turn off bits in mask.
 /// /// BUG: This just forces the permissions field.
+///
 #[derive(Clone, Debug)]
 pub struct ObjectPermissions {
     pub agent_data: ObjectPermissions_AgentData,
@@ -6730,13 +8661,17 @@ pub struct ObjectPermissions {
 
 #[derive(Clone, Debug)]
 pub struct ObjectPosition_AgentData {
+    /// TODO
     pub agent_id: Uuid,
+    /// TODO
     pub session_id: Uuid,
 }
 
 #[derive(Clone, Debug)]
 pub struct ObjectPosition_ObjectData {
+    /// TODO
     pub object_local_id: u32,
+    /// TODO
     pub position: Vector3<f32>,
 }
 
@@ -6753,6 +8688,7 @@ pub struct ObjectPosition_ObjectData {
 /// ///
 /// /// == New Location ==
 /// /// MultipleObjectUpdate can be used instead.
+///
 #[derive(Clone, Debug)]
 pub struct ObjectPosition {
     pub agent_data: ObjectPosition_AgentData,
@@ -6762,32 +8698,59 @@ pub struct ObjectPosition {
 
 #[derive(Clone, Debug)]
 pub struct ObjectProperties_ObjectData {
+    /// TODO
     pub object_id: Uuid,
+    /// TODO
     pub creator_id: Uuid,
+    /// TODO
     pub owner_id: Uuid,
+    /// TODO
     pub group_id: Uuid,
+    /// TODO
     pub creation_date: u64,
+    /// TODO
     pub base_mask: u32,
+    /// TODO
     pub owner_mask: u32,
+    /// TODO
     pub group_mask: u32,
+    /// TODO
     pub everyone_mask: u32,
+    /// TODO
     pub next_owner_mask: u32,
+    /// TODO
     pub ownership_cost: i32,
+    /// TODO
     pub sale_type: u8,
+    /// TODO
     pub sale_price: i32,
+    /// TODO
     pub aggregate_perms: u8,
+    /// TODO
     pub aggregate_perm_textures: u8,
+    /// TODO
     pub aggregate_perm_textures_owner: u8,
+    /// TODO
     pub category: u32,
+    /// TODO
     pub inventory_serial: i16,
+    /// TODO
     pub item_id: Uuid,
+    /// TODO
     pub folder_id: Uuid,
+    /// TODO
     pub from_task_id: Uuid,
+    /// TODO
     pub last_owner_id: Uuid,
+    /// TODO
     pub name: Vec<u8>,
+    /// TODO
     pub description: Vec<u8>,
+    /// TODO
     pub touch_name: Vec<u8>,
+    /// TODO
     pub sit_name: Vec<u8>,
+    /// TODO
     pub texture_id: Vec<u8>,
 }
 
@@ -6797,6 +8760,7 @@ pub struct ObjectProperties_ObjectData {
 /// /// Extended information such as creator, permissions, etc.
 /// /// Medium because potentially driven by mouse hover events.
 /// ///		{	TaxRate			F32	}	// F32
+///
 #[derive(Clone, Debug)]
 pub struct ObjectProperties {
     pub object_data: Vec<ObjectProperties_ObjectData>,
@@ -6805,21 +8769,37 @@ pub struct ObjectProperties {
 
 #[derive(Clone, Debug)]
 pub struct ObjectPropertiesFamily_ObjectData {
+    /// TODO
     pub request_flags: u32,
+    /// TODO
     pub object_id: Uuid,
+    /// TODO
     pub owner_id: Uuid,
+    /// TODO
     pub group_id: Uuid,
+    /// TODO
     pub base_mask: u32,
+    /// TODO
     pub owner_mask: u32,
+    /// TODO
     pub group_mask: u32,
+    /// TODO
     pub everyone_mask: u32,
+    /// TODO
     pub next_owner_mask: u32,
+    /// TODO
     pub ownership_cost: i32,
+    /// TODO
     pub sale_type: u8,
+    /// TODO
     pub sale_price: i32,
+    /// TODO
     pub category: u32,
+    /// TODO
     pub last_owner_id: Uuid,
+    /// TODO
     pub name: Vec<u8>,
+    /// TODO
     pub description: Vec<u8>,
 }
 
@@ -6827,6 +8807,7 @@ pub struct ObjectPropertiesFamily_ObjectData {
 /// 		TODO:
 /// 		/// ObjectPropertiesFamily
 /// /// Medium because potentially driven by mouse hover events.
+///
 #[derive(Clone, Debug)]
 pub struct ObjectPropertiesFamily {
     pub object_data: ObjectPropertiesFamily_ObjectData,
@@ -6835,13 +8816,17 @@ pub struct ObjectPropertiesFamily {
 
 #[derive(Clone, Debug)]
 pub struct ObjectRotation_AgentData {
+    /// TODO
     pub agent_id: Uuid,
+    /// TODO
     pub session_id: Uuid,
 }
 
 #[derive(Clone, Debug)]
 pub struct ObjectRotation_ObjectData {
+    /// TODO
     pub object_local_id: u32,
+    /// TODO
     pub rotation: Quaternion<f32>,
 }
 
@@ -6849,6 +8834,7 @@ pub struct ObjectRotation_ObjectData {
 /// 		TODO:
 /// 		/// ObjectRotation
 /// /// viewer -> simulator
+///
 #[derive(Clone, Debug)]
 pub struct ObjectRotation {
     pub agent_data: ObjectRotation_AgentData,
@@ -6858,20 +8844,26 @@ pub struct ObjectRotation {
 
 #[derive(Clone, Debug)]
 pub struct ObjectSaleInfo_AgentData {
+    /// TODO
     pub agent_id: Uuid,
+    /// TODO
     pub session_id: Uuid,
 }
 
 #[derive(Clone, Debug)]
 pub struct ObjectSaleInfo_ObjectData {
+    /// TODO
     pub local_id: u32,
+    /// TODO
     pub sale_type: u8,
+    /// TODO
     pub sale_price: i32,
 }
 
 ///
 /// TODO:
 /// /// set object sale information
+///
 #[derive(Clone, Debug)]
 pub struct ObjectSaleInfo {
     pub agent_data: ObjectSaleInfo_AgentData,
@@ -6881,13 +8873,17 @@ pub struct ObjectSaleInfo {
 
 #[derive(Clone, Debug)]
 pub struct ObjectScale_AgentData {
+    /// TODO
     pub agent_id: Uuid,
+    /// TODO
     pub session_id: Uuid,
 }
 
 #[derive(Clone, Debug)]
 pub struct ObjectScale_ObjectData {
+    /// TODO
     pub object_local_id: u32,
+    /// TODO
     pub scale: Vector3<f32>,
 }
 
@@ -6904,6 +8900,7 @@ pub struct ObjectScale_ObjectData {
 /// ///
 /// /// == New Location ==
 /// /// MultipleObjectUpdate can be used instead.
+///
 #[derive(Clone, Debug)]
 pub struct ObjectScale {
     pub agent_data: ObjectScale_AgentData,
@@ -6913,17 +8910,21 @@ pub struct ObjectScale {
 
 #[derive(Clone, Debug)]
 pub struct ObjectSelect_AgentData {
+    /// TODO
     pub agent_id: Uuid,
+    /// TODO
     pub session_id: Uuid,
 }
 
 #[derive(Clone, Debug)]
 pub struct ObjectSelect_ObjectData {
+    /// TODO
     pub object_local_id: u32,
 }
 
 ///
 /// TODO:
+///
 ///
 #[derive(Clone, Debug)]
 pub struct ObjectSelect {
@@ -6934,35 +8935,57 @@ pub struct ObjectSelect {
 
 #[derive(Clone, Debug)]
 pub struct ObjectShape_AgentData {
+    /// TODO
     pub agent_id: Uuid,
+    /// TODO
     pub session_id: Uuid,
 }
 
 #[derive(Clone, Debug)]
 pub struct ObjectShape_ObjectData {
+    /// TODO
     pub object_local_id: u32,
+    /// TODO
     pub path_curve: u8,
+    /// TODO
     pub profile_curve: u8,
+    /// TODO
     pub path_begin: u16,
+    /// TODO
     pub path_end: u16,
+    /// TODO
     pub path_scale_x: u8,
+    /// TODO
     pub path_scale_y: u8,
+    /// TODO
     pub path_shear_x: u8,
+    /// TODO
     pub path_shear_y: u8,
+    /// TODO
     pub path_twist: i8,
+    /// TODO
     pub path_twist_begin: i8,
+    /// TODO
     pub path_radius_offset: i8,
+    /// TODO
     pub path_taper_x: i8,
+    /// TODO
     pub path_taper_y: i8,
+    /// TODO
     pub path_revolutions: u8,
+    /// TODO
     pub path_skew: i8,
+    /// TODO
     pub profile_begin: u16,
+    /// TODO
     pub profile_end: u16,
+    /// TODO
     pub profile_hollow: u16,
 }
 
 ///
 /// TODO:
+///
 ///
 #[derive(Clone, Debug)]
 pub struct ObjectShape {
@@ -6973,18 +8996,22 @@ pub struct ObjectShape {
 
 #[derive(Clone, Debug)]
 pub struct ObjectSpinStart_AgentData {
+    /// TODO
     pub agent_id: Uuid,
+    /// TODO
     pub session_id: Uuid,
 }
 
 #[derive(Clone, Debug)]
 pub struct ObjectSpinStart_ObjectData {
+    /// TODO
     pub object_id: Uuid,
 }
 
 ///
 /// TODO:
 /// /// ObjectSpinStart
+///
 #[derive(Clone, Debug)]
 pub struct ObjectSpinStart {
     pub agent_data: ObjectSpinStart_AgentData,
@@ -6994,18 +9021,22 @@ pub struct ObjectSpinStart {
 
 #[derive(Clone, Debug)]
 pub struct ObjectSpinStop_AgentData {
+    /// TODO
     pub agent_id: Uuid,
+    /// TODO
     pub session_id: Uuid,
 }
 
 #[derive(Clone, Debug)]
 pub struct ObjectSpinStop_ObjectData {
+    /// TODO
     pub object_id: Uuid,
 }
 
 ///
 /// TODO:
 /// /// ObjectSpinStop
+///
 #[derive(Clone, Debug)]
 pub struct ObjectSpinStop {
     pub agent_data: ObjectSpinStop_AgentData,
@@ -7015,19 +9046,24 @@ pub struct ObjectSpinStop {
 
 #[derive(Clone, Debug)]
 pub struct ObjectSpinUpdate_AgentData {
+    /// TODO
     pub agent_id: Uuid,
+    /// TODO
     pub session_id: Uuid,
 }
 
 #[derive(Clone, Debug)]
 pub struct ObjectSpinUpdate_ObjectData {
+    /// TODO
     pub object_id: Uuid,
+    /// TODO
     pub rotation: Quaternion<f32>,
 }
 
 ///
 /// TODO:
 /// /// ObjectSpinUpdate
+///
 #[derive(Clone, Debug)]
 pub struct ObjectSpinUpdate {
     pub agent_data: ObjectSpinUpdate_AgentData,
@@ -7037,63 +9073,112 @@ pub struct ObjectSpinUpdate {
 
 #[derive(Clone, Debug)]
 pub struct ObjectUpdate_RegionData {
+    /// TODO
     pub region_handle: u64,
+    /// TODO
     pub time_dilation: u16,
 }
 
 #[derive(Clone, Debug)]
 pub struct ObjectUpdate_ObjectData {
+    /// TODO: What is the difference between ID and FullID of objects?
     pub id: u32,
+    /// TODO
     pub state: u8,
+    /// TODO
     pub full_id: Uuid,
+    /// TODO
     pub crc: u32,
+    /// TODO
     pub p_code: u8,
+    /// TODO
     pub material: u8,
+    /// TODO
     pub click_action: u8,
+    /// TODO
     pub scale: Vector3<f32>,
+    /// TODO
     pub object_data: Vec<u8>,
+    /// TODO
     pub parent_id: u32,
+    /// TODO
     pub update_flags: u32,
+    /// TODO
     pub path_curve: u8,
+    /// TODO
     pub profile_curve: u8,
+    /// TODO
     pub path_begin: u16,
+    /// TODO
     pub path_end: u16,
+    /// TODO
     pub path_scale_x: u8,
+    /// TODO
     pub path_scale_y: u8,
+    /// TODO
     pub path_shear_x: u8,
+    /// TODO
     pub path_shear_y: u8,
+    /// TODO
     pub path_twist: i8,
+    /// TODO
     pub path_twist_begin: i8,
+    /// TODO
     pub path_radius_offset: i8,
+    /// TODO
     pub path_taper_x: i8,
+    /// TODO
     pub path_taper_y: i8,
+    /// TODO
     pub path_revolutions: u8,
+    /// TODO
     pub path_skew: i8,
+    /// TODO
     pub profile_begin: u16,
+    /// TODO
     pub profile_end: u16,
+    /// TODO
     pub profile_hollow: u16,
+    /// TODO
     pub texture_entry: Vec<u8>,
+    /// TODO
     pub texture_anim: Vec<u8>,
+    /// TODO
     pub name_value: Vec<u8>,
+    /// TODO
     pub data: Vec<u8>,
+    /// TODO
     pub text: Vec<u8>,
+    /// TODO
     pub text_color: [u8; 4],
+    /// TODO
     pub media_url: Vec<u8>,
+    /// TODO
     pub ps_block: Vec<u8>,
+    /// TODO
     pub extra_params: Vec<u8>,
+    /// TODO
     pub sound: Uuid,
+    /// TODO
     pub owner_id: Uuid,
+    /// TODO
     pub gain: f32,
+    /// TODO
     pub flags: u8,
+    /// TODO
     pub radius: f32,
+    /// TODO
     pub joint_type: u8,
+    /// TODO
     pub joint_pivot: Vector3<f32>,
+    /// TODO
     pub joint_axis_or_anchor: Vector3<f32>,
 }
 
 ///
 /// TODO:
 /// /// joint info -- is sent in the update of each joint-child-root
+///
 #[derive(Clone, Debug)]
 pub struct ObjectUpdate {
     pub region_data: ObjectUpdate_RegionData,
@@ -7103,14 +9188,19 @@ pub struct ObjectUpdate {
 
 #[derive(Clone, Debug)]
 pub struct ObjectUpdateCached_RegionData {
+    /// TODO
     pub region_handle: u64,
+    /// TODO
     pub time_dilation: u16,
 }
 
 #[derive(Clone, Debug)]
 pub struct ObjectUpdateCached_ObjectData {
+    /// TODO
     pub id: u32,
+    /// TODO
     pub crc: u32,
+    /// TODO
     pub update_flags: u32,
 }
 
@@ -7118,6 +9208,7 @@ pub struct ObjectUpdateCached_ObjectData {
 /// 		TODO:
 /// 		/// ObjectUpdateCached
 /// /// reliable
+///
 #[derive(Clone, Debug)]
 pub struct ObjectUpdateCached {
     pub region_data: ObjectUpdateCached_RegionData,
@@ -7127,19 +9218,24 @@ pub struct ObjectUpdateCached {
 
 #[derive(Clone, Debug)]
 pub struct ObjectUpdateCompressed_RegionData {
+    /// TODO
     pub region_handle: u64,
+    /// TODO
     pub time_dilation: u16,
 }
 
 #[derive(Clone, Debug)]
 pub struct ObjectUpdateCompressed_ObjectData {
+    /// TODO
     pub update_flags: u32,
+    /// TODO
     pub data: Vec<u8>,
 }
 
 ///
 /// TODO:
 /// /// ObjectUpdateCompressed
+///
 #[derive(Clone, Debug)]
 pub struct ObjectUpdateCompressed {
     pub region_data: ObjectUpdateCompressed_RegionData,
@@ -7149,19 +9245,24 @@ pub struct ObjectUpdateCompressed {
 
 #[derive(Clone, Debug)]
 pub struct OfferCallingCard_AgentData {
+    /// TODO
     pub agent_id: Uuid,
+    /// TODO
     pub session_id: Uuid,
 }
 
 #[derive(Clone, Debug)]
 pub struct OfferCallingCard_AgentBlock {
+    /// TODO
     pub dest_id: Uuid,
+    /// TODO
     pub transaction_id: Uuid,
 }
 
 ///
 /// TODO:
 /// /// used to give someone a calling card.
+///
 #[derive(Clone, Debug)]
 pub struct OfferCallingCard {
     pub agent_data: OfferCallingCard_AgentData,
@@ -7171,11 +9272,13 @@ pub struct OfferCallingCard {
 
 #[derive(Clone, Debug)]
 pub struct OfflineNotification_AgentBlock {
+    /// TODO
     pub agent_id: Uuid,
 }
 
 ///
 /// TODO:
+///
 ///
 #[derive(Clone, Debug)]
 pub struct OfflineNotification {
@@ -7185,6 +9288,7 @@ pub struct OfflineNotification {
 
 #[derive(Clone, Debug)]
 pub struct OnlineNotification_AgentBlock {
+    /// TODO
     pub agent_id: Uuid,
 }
 
@@ -7192,6 +9296,7 @@ pub struct OnlineNotification_AgentBlock {
 /// 		TODO:
 /// 		/// notification for login and logout.
 /// /// source_sim -> dest_viewer
+///
 #[derive(Clone, Debug)]
 pub struct OnlineNotification {
     pub agent_block: Vec<OnlineNotification_AgentBlock>,
@@ -7200,13 +9305,16 @@ pub struct OnlineNotification {
 
 #[derive(Clone, Debug)]
 pub struct OpenCircuit_CircuitInfo {
+    /// TODO
     pub ip: Ip4Addr,
+    /// TODO
     pub port: IpPort,
 }
 
 ///
 /// TODO:
 /// /// OpenCircuit - Tells the recipient's messaging system to open the descibed circuit
+///
 #[derive(Clone, Debug)]
 pub struct OpenCircuit {
     pub circuit_info: OpenCircuit_CircuitInfo,
@@ -7215,11 +9323,13 @@ pub struct OpenCircuit {
 
 #[derive(Clone, Debug)]
 pub struct PacketAck_Packets {
+    /// Packet id to be acknowledged.
     pub id: u32,
 }
 
 ///
 /// Informs the receiver that the provided list of packets was successfully received.
+///
 #[derive(Clone, Debug)]
 pub struct PacketAck {
     pub packets: Vec<PacketAck_Packets>,
@@ -7228,16 +9338,23 @@ pub struct PacketAck {
 
 #[derive(Clone, Debug)]
 pub struct ParcelAccessListReply_Data {
+    /// TODO
     pub agent_id: Uuid,
+    /// TODO
     pub sequence_id: i32,
+    /// TODO
     pub flags: u32,
+    /// TODO
     pub local_id: i32,
 }
 
 #[derive(Clone, Debug)]
 pub struct ParcelAccessListReply_List {
+    /// TODO
     pub id: Uuid,
+    /// TODO
     pub time: i32,
+    /// TODO
     pub flags: u32,
 }
 
@@ -7245,6 +9362,7 @@ pub struct ParcelAccessListReply_List {
 /// 		TODO:
 /// 		/// sim -> viewer
 /// /// ParcelAccessListReply
+///
 #[derive(Clone, Debug)]
 pub struct ParcelAccessListReply {
     pub data: ParcelAccessListReply_Data,
@@ -7254,14 +9372,19 @@ pub struct ParcelAccessListReply {
 
 #[derive(Clone, Debug)]
 pub struct ParcelAccessListRequest_AgentData {
+    /// TODO
     pub agent_id: Uuid,
+    /// TODO
     pub session_id: Uuid,
 }
 
 #[derive(Clone, Debug)]
 pub struct ParcelAccessListRequest_Data {
+    /// TODO
     pub sequence_id: i32,
+    /// TODO
     pub flags: u32,
+    /// TODO
     pub local_id: i32,
 }
 
@@ -7269,6 +9392,7 @@ pub struct ParcelAccessListRequest_Data {
 /// 		TODO:
 /// 		/// viewer -> sim
 /// /// ParcelAccessListRequest
+///
 #[derive(Clone, Debug)]
 pub struct ParcelAccessListRequest {
     pub agent_data: ParcelAccessListRequest_AgentData,
@@ -7278,23 +9402,33 @@ pub struct ParcelAccessListRequest {
 
 #[derive(Clone, Debug)]
 pub struct ParcelAccessListUpdate_AgentData {
+    /// TODO
     pub agent_id: Uuid,
+    /// TODO
     pub session_id: Uuid,
 }
 
 #[derive(Clone, Debug)]
 pub struct ParcelAccessListUpdate_Data {
+    /// TODO
     pub flags: u32,
+    /// TODO
     pub local_id: i32,
+    /// TODO
     pub transaction_id: Uuid,
+    /// TODO
     pub sequence_id: i32,
+    /// TODO
     pub sections: i32,
 }
 
 #[derive(Clone, Debug)]
 pub struct ParcelAccessListUpdate_List {
+    /// TODO
     pub id: Uuid,
+    /// TODO
     pub time: i32,
+    /// TODO
     pub flags: u32,
 }
 
@@ -7302,6 +9436,7 @@ pub struct ParcelAccessListUpdate_List {
 /// 		TODO:
 /// 		/// viewer -> sim
 /// /// ParcelAccessListUpdate
+///
 #[derive(Clone, Debug)]
 pub struct ParcelAccessListUpdate {
     pub agent_data: ParcelAccessListUpdate_AgentData,
@@ -7312,7 +9447,9 @@ pub struct ParcelAccessListUpdate {
 
 #[derive(Clone, Debug)]
 pub struct ParcelAuctions_ParcelData {
+    /// TODO
     pub parcel_id: Uuid,
+    /// TODO
     pub winner_id: Uuid,
 }
 
@@ -7320,6 +9457,7 @@ pub struct ParcelAuctions_ParcelData {
 /// 		TODO:
 /// 		/// dataserver -> sim
 /// /// tell a particular simulator to finish parcel sale.
+///
 #[derive(Clone, Debug)]
 pub struct ParcelAuctions {
     pub parcel_data: Vec<ParcelAuctions_ParcelData>,
@@ -7328,22 +9466,31 @@ pub struct ParcelAuctions {
 
 #[derive(Clone, Debug)]
 pub struct ParcelBuy_AgentData {
+    /// TODO
     pub agent_id: Uuid,
+    /// TODO
     pub session_id: Uuid,
 }
 
 #[derive(Clone, Debug)]
 pub struct ParcelBuy_Data {
+    /// TODO
     pub group_id: Uuid,
+    /// TODO
     pub is_group_owned: bool,
+    /// TODO
     pub remove_contribution: bool,
+    /// TODO
     pub local_id: i32,
+    /// TODO
     pub final_: bool,
 }
 
 #[derive(Clone, Debug)]
 pub struct ParcelBuy_ParcelData {
+    /// TODO
     pub price: i32,
+    /// TODO
     pub area: i32,
 }
 
@@ -7352,6 +9499,7 @@ pub struct ParcelBuy_ParcelData {
 /// 		/// ParcelBuy - change the owner of a patch of land.
 /// /// viewer -> sim
 /// /// reliable
+///
 #[derive(Clone, Debug)]
 pub struct ParcelBuy {
     pub agent_data: ParcelBuy_AgentData,
@@ -7362,12 +9510,15 @@ pub struct ParcelBuy {
 
 #[derive(Clone, Debug)]
 pub struct ParcelBuyPass_AgentData {
+    /// TODO
     pub agent_id: Uuid,
+    /// TODO
     pub session_id: Uuid,
 }
 
 #[derive(Clone, Debug)]
 pub struct ParcelBuyPass_ParcelData {
+    /// TODO
     pub local_id: i32,
 }
 
@@ -7376,6 +9527,7 @@ pub struct ParcelBuyPass_ParcelData {
 /// 		/// ParcelBuyPass - purchase a temporary access pass
 /// /// viewer -> sim
 /// /// reliable
+///
 #[derive(Clone, Debug)]
 pub struct ParcelBuyPass {
     pub agent_data: ParcelBuyPass_AgentData,
@@ -7385,22 +9537,31 @@ pub struct ParcelBuyPass {
 
 #[derive(Clone, Debug)]
 pub struct ParcelClaim_AgentData {
+    /// TODO
     pub agent_id: Uuid,
+    /// TODO
     pub session_id: Uuid,
 }
 
 #[derive(Clone, Debug)]
 pub struct ParcelClaim_Data {
+    /// TODO
     pub group_id: Uuid,
+    /// TODO
     pub is_group_owned: bool,
+    /// TODO
     pub final_: bool,
 }
 
 #[derive(Clone, Debug)]
 pub struct ParcelClaim_ParcelData {
+    /// TODO
     pub west: f32,
+    /// TODO
     pub south: f32,
+    /// TODO
     pub east: f32,
+    /// TODO
     pub north: f32,
 }
 
@@ -7409,6 +9570,7 @@ pub struct ParcelClaim_ParcelData {
 /// 		/// ParcelClaim - change the owner of a patch of land
 /// /// viewer -> sim
 /// /// reliable
+///
 #[derive(Clone, Debug)]
 pub struct ParcelClaim {
     pub agent_data: ParcelClaim_AgentData,
@@ -7419,13 +9581,17 @@ pub struct ParcelClaim {
 
 #[derive(Clone, Debug)]
 pub struct ParcelDeedToGroup_AgentData {
+    /// TODO
     pub agent_id: Uuid,
+    /// TODO
     pub session_id: Uuid,
 }
 
 #[derive(Clone, Debug)]
 pub struct ParcelDeedToGroup_Data {
+    /// TODO
     pub group_id: Uuid,
+    /// TODO
     pub local_id: i32,
 }
 
@@ -7434,6 +9600,7 @@ pub struct ParcelDeedToGroup_Data {
 /// 		/// ParcelDeedToGroup - deed a patch of land to a group
 /// /// viewer -> sim
 /// /// reliable
+///
 #[derive(Clone, Debug)]
 pub struct ParcelDeedToGroup {
     pub agent_data: ParcelDeedToGroup_AgentData,
@@ -7443,23 +9610,29 @@ pub struct ParcelDeedToGroup {
 
 #[derive(Clone, Debug)]
 pub struct ParcelDisableObjects_AgentData {
+    /// TODO
     pub agent_id: Uuid,
+    /// TODO
     pub session_id: Uuid,
 }
 
 #[derive(Clone, Debug)]
 pub struct ParcelDisableObjects_ParcelData {
+    /// TODO
     pub local_id: i32,
+    /// TODO
     pub return_type: u32,
 }
 
 #[derive(Clone, Debug)]
 pub struct ParcelDisableObjects_TaskIDs {
+    /// TODO
     pub task_id: Uuid,
 }
 
 #[derive(Clone, Debug)]
 pub struct ParcelDisableObjects_OwnerIDs {
+    /// TODO
     pub owner_id: Uuid,
 }
 
@@ -7469,6 +9642,7 @@ pub struct ParcelDisableObjects_OwnerIDs {
 /// /// ParcelDisableObjects
 /// /// viewer -> sim
 /// /// reliable
+///
 #[derive(Clone, Debug)]
 pub struct ParcelDisableObjects {
     pub agent_data: ParcelDisableObjects_AgentData,
@@ -7480,15 +9654,21 @@ pub struct ParcelDisableObjects {
 
 #[derive(Clone, Debug)]
 pub struct ParcelDivide_AgentData {
+    /// TODO
     pub agent_id: Uuid,
+    /// TODO
     pub session_id: Uuid,
 }
 
 #[derive(Clone, Debug)]
 pub struct ParcelDivide_ParcelData {
+    /// TODO
     pub west: f32,
+    /// TODO
     pub south: f32,
+    /// TODO
     pub east: f32,
+    /// TODO
     pub north: f32,
 }
 
@@ -7499,6 +9679,7 @@ pub struct ParcelDivide_ParcelData {
 /// /// chop out that section and make a new parcel of it.
 /// /// viewer -> sim
 /// /// reliable
+///
 #[derive(Clone, Debug)]
 pub struct ParcelDivide {
     pub agent_data: ParcelDivide_AgentData,
@@ -7508,13 +9689,17 @@ pub struct ParcelDivide {
 
 #[derive(Clone, Debug)]
 pub struct ParcelDwellReply_AgentData {
+    /// TODO
     pub agent_id: Uuid,
 }
 
 #[derive(Clone, Debug)]
 pub struct ParcelDwellReply_Data {
+    /// TODO
     pub local_id: i32,
+    /// TODO
     pub parcel_id: Uuid,
+    /// TODO
     pub dwell: f32,
 }
 
@@ -7522,6 +9707,7 @@ pub struct ParcelDwellReply_Data {
 /// 		TODO:
 /// 		/// dataserver -> sim -> viewer
 /// /// reliable
+///
 #[derive(Clone, Debug)]
 pub struct ParcelDwellReply {
     pub agent_data: ParcelDwellReply_AgentData,
@@ -7531,13 +9717,17 @@ pub struct ParcelDwellReply {
 
 #[derive(Clone, Debug)]
 pub struct ParcelDwellRequest_AgentData {
+    /// TODO
     pub agent_id: Uuid,
+    /// TODO
     pub session_id: Uuid,
 }
 
 #[derive(Clone, Debug)]
 pub struct ParcelDwellRequest_Data {
+    /// TODO
     pub local_id: i32,
+    /// TODO
     pub parcel_id: Uuid,
 }
 
@@ -7545,6 +9735,7 @@ pub struct ParcelDwellRequest_Data {
 /// 		TODO:
 /// 		/// viewer -> sim -> dataserver
 /// /// reliable
+///
 #[derive(Clone, Debug)]
 pub struct ParcelDwellRequest {
     pub agent_data: ParcelDwellRequest_AgentData,
@@ -7554,19 +9745,24 @@ pub struct ParcelDwellRequest {
 
 #[derive(Clone, Debug)]
 pub struct ParcelGodForceOwner_AgentData {
+    /// TODO
     pub agent_id: Uuid,
+    /// TODO
     pub session_id: Uuid,
 }
 
 #[derive(Clone, Debug)]
 pub struct ParcelGodForceOwner_Data {
+    /// TODO
     pub owner_id: Uuid,
+    /// TODO
     pub local_id: i32,
 }
 
 ///
 /// TODO:
 /// /// ParcelGodForceOwner Unencoded
+///
 #[derive(Clone, Debug)]
 pub struct ParcelGodForceOwner {
     pub agent_data: ParcelGodForceOwner_AgentData,
@@ -7576,12 +9772,15 @@ pub struct ParcelGodForceOwner {
 
 #[derive(Clone, Debug)]
 pub struct ParcelGodMarkAsContent_AgentData {
+    /// TODO
     pub agent_id: Uuid,
+    /// TODO
     pub session_id: Uuid,
 }
 
 #[derive(Clone, Debug)]
 pub struct ParcelGodMarkAsContent_ParcelData {
+    /// TODO
     pub local_id: i32,
 }
 
@@ -7590,6 +9789,7 @@ pub struct ParcelGodMarkAsContent_ParcelData {
 /// 		/// viewer -> sim
 /// /// mark parcel and double secret agent content on parcel as owned by
 /// /// governor/maint and adjusts permissions approriately. Godlike request.
+///
 #[derive(Clone, Debug)]
 pub struct ParcelGodMarkAsContent {
     pub agent_data: ParcelGodMarkAsContent_AgentData,
@@ -7599,25 +9799,41 @@ pub struct ParcelGodMarkAsContent {
 
 #[derive(Clone, Debug)]
 pub struct ParcelInfoReply_AgentData {
+    /// TODO
     pub agent_id: Uuid,
 }
 
 #[derive(Clone, Debug)]
 pub struct ParcelInfoReply_Data {
+    /// TODO
     pub parcel_id: Uuid,
+    /// TODO
     pub owner_id: Uuid,
+    /// TODO
     pub name: Vec<u8>,
+    /// TODO
     pub desc: Vec<u8>,
+    /// TODO
     pub actual_area: i32,
+    /// TODO
     pub billable_area: i32,
+    /// TODO
     pub flags: u8,
+    /// TODO
     pub global_x: f32,
+    /// TODO
     pub global_y: f32,
+    /// TODO
     pub global_z: f32,
+    /// TODO
     pub sim_name: Vec<u8>,
+    /// TODO
     pub snapshot_id: Uuid,
+    /// TODO
     pub dwell: f32,
+    /// TODO
     pub sale_price: i32,
+    /// TODO
     pub auction_id: i32,
 }
 
@@ -7626,6 +9842,7 @@ pub struct ParcelInfoReply_Data {
 /// 		/// ParcelInfoReply
 /// /// dataserver -> simulator -> viewer
 /// /// reliable
+///
 #[derive(Clone, Debug)]
 pub struct ParcelInfoReply {
     pub agent_data: ParcelInfoReply_AgentData,
@@ -7635,12 +9852,15 @@ pub struct ParcelInfoReply {
 
 #[derive(Clone, Debug)]
 pub struct ParcelInfoRequest_AgentData {
+    /// TODO
     pub agent_id: Uuid,
+    /// TODO
     pub session_id: Uuid,
 }
 
 #[derive(Clone, Debug)]
 pub struct ParcelInfoRequest_Data {
+    /// TODO
     pub parcel_id: Uuid,
 }
 
@@ -7649,6 +9869,7 @@ pub struct ParcelInfoRequest_Data {
 /// 		/// ParcelInfoRequest
 /// /// viewer -> simulator -> dataserver
 /// /// reliable
+///
 #[derive(Clone, Debug)]
 pub struct ParcelInfoRequest {
     pub agent_data: ParcelInfoRequest_AgentData,
@@ -7658,15 +9879,21 @@ pub struct ParcelInfoRequest {
 
 #[derive(Clone, Debug)]
 pub struct ParcelJoin_AgentData {
+    /// TODO
     pub agent_id: Uuid,
+    /// TODO
     pub session_id: Uuid,
 }
 
 #[derive(Clone, Debug)]
 pub struct ParcelJoin_ParcelData {
+    /// TODO
     pub west: f32,
+    /// TODO
     pub south: f32,
+    /// TODO
     pub east: f32,
+    /// TODO
     pub north: f32,
 }
 
@@ -7676,6 +9903,7 @@ pub struct ParcelJoin_ParcelData {
 /// /// rectangle, and make them 1 parcel if they all are leased.
 /// /// viewer -> sim
 /// /// reliable
+///
 #[derive(Clone, Debug)]
 pub struct ParcelJoin {
     pub agent_data: ParcelJoin_AgentData,
@@ -7685,8 +9913,11 @@ pub struct ParcelJoin {
 
 #[derive(Clone, Debug)]
 pub struct ParcelMediaCommandMessage_CommandBlock {
+    /// TODO
     pub flags: u32,
+    /// TODO
     pub command: u32,
+    /// TODO
     pub time: f32,
 }
 
@@ -7694,6 +9925,7 @@ pub struct ParcelMediaCommandMessage_CommandBlock {
 /// 		TODO:
 /// 		/// ParcelMediaCommandMessage
 /// /// Sends a parcel media command
+///
 #[derive(Clone, Debug)]
 pub struct ParcelMediaCommandMessage {
     pub command_block: ParcelMediaCommandMessage_CommandBlock,
@@ -7702,17 +9934,25 @@ pub struct ParcelMediaCommandMessage {
 
 #[derive(Clone, Debug)]
 pub struct ParcelMediaUpdate_DataBlock {
+    /// TODO
     pub media_url: Vec<u8>,
+    /// TODO
     pub media_id: Uuid,
+    /// TODO
     pub media_auto_scale: u8,
 }
 
 #[derive(Clone, Debug)]
 pub struct ParcelMediaUpdate_DataBlockExtended {
+    /// TODO
     pub media_type: Vec<u8>,
+    /// TODO
     pub media_desc: Vec<u8>,
+    /// TODO
     pub media_width: i32,
+    /// TODO
     pub media_height: i32,
+    /// TODO
     pub media_loop: u8,
 }
 
@@ -7721,6 +9961,7 @@ pub struct ParcelMediaUpdate_DataBlockExtended {
 /// 		/// ParcelMediaUpdate
 /// /// Sends a parcel media update to a single user
 /// /// For global updates use the parcel manager.
+///
 #[derive(Clone, Debug)]
 pub struct ParcelMediaUpdate {
     pub data_block: ParcelMediaUpdate_DataBlock,
@@ -7730,9 +9971,13 @@ pub struct ParcelMediaUpdate {
 
 #[derive(Clone, Debug)]
 pub struct ParcelObjectOwnersReply_Data {
+    /// TODO
     pub owner_id: Uuid,
+    /// TODO
     pub is_group_owned: bool,
+    /// TODO
     pub count: i32,
+    /// TODO
     pub online_status: bool,
 }
 
@@ -7741,6 +9986,7 @@ pub struct ParcelObjectOwnersReply_Data {
 /// 		/// ParcelObjectOwnersReply
 /// /// simulator -> viewer
 /// /// reliable
+///
 #[derive(Clone, Debug)]
 pub struct ParcelObjectOwnersReply {
     pub data: Vec<ParcelObjectOwnersReply_Data>,
@@ -7749,12 +9995,15 @@ pub struct ParcelObjectOwnersReply {
 
 #[derive(Clone, Debug)]
 pub struct ParcelObjectOwnersRequest_AgentData {
+    /// TODO
     pub agent_id: Uuid,
+    /// TODO
     pub session_id: Uuid,
 }
 
 #[derive(Clone, Debug)]
 pub struct ParcelObjectOwnersRequest_ParcelData {
+    /// TODO
     pub local_id: i32,
 }
 
@@ -7763,6 +10012,7 @@ pub struct ParcelObjectOwnersRequest_ParcelData {
 /// 		/// ParcelObjectOwnersRequest
 /// /// viewer -> simulator
 /// /// reliable
+///
 #[derive(Clone, Debug)]
 pub struct ParcelObjectOwnersRequest {
     pub agent_data: ParcelObjectOwnersRequest_AgentData,
@@ -7772,7 +10022,9 @@ pub struct ParcelObjectOwnersRequest {
 
 #[derive(Clone, Debug)]
 pub struct ParcelOverlay_ParcelData {
+    /// TODO
     pub sequence_id: i32,
+    /// TODO
     pub data: Vec<u8>,
 }
 
@@ -7785,6 +10037,7 @@ pub struct ParcelOverlay_ParcelData {
 /// /// per packet, allowing 8 bit bytes.
 /// /// sim -> viewer
 /// /// reliable
+///
 #[derive(Clone, Debug)]
 pub struct ParcelOverlay {
     pub parcel_data: ParcelOverlay_ParcelData,
@@ -7793,64 +10046,115 @@ pub struct ParcelOverlay {
 
 #[derive(Clone, Debug)]
 pub struct ParcelProperties_ParcelData {
+    /// TODO
     pub request_result: i32,
+    /// TODO
     pub sequence_id: i32,
+    /// TODO
     pub snap_selection: bool,
+    /// TODO
     pub self_count: i32,
+    /// TODO
     pub other_count: i32,
+    /// TODO
     pub public_count: i32,
+    /// TODO
     pub local_id: i32,
+    /// TODO
     pub owner_id: Uuid,
+    /// TODO
     pub is_group_owned: bool,
+    /// TODO
     pub auction_id: u32,
+    /// TODO
     pub claim_date: i32,
+    /// TODO
     pub claim_price: i32,
+    /// TODO
     pub rent_price: i32,
+    /// TODO
     pub aabb_min: Vector3<f32>,
+    /// TODO
     pub aabb_max: Vector3<f32>,
+    /// TODO
     pub bitmap: Vec<u8>,
+    /// TODO
     pub area: i32,
+    /// TODO
     pub status: u8,
+    /// TODO
     pub sim_wide_max_prims: i32,
+    /// TODO
     pub sim_wide_total_prims: i32,
+    /// TODO
     pub max_prims: i32,
+    /// TODO
     pub total_prims: i32,
+    /// TODO
     pub owner_prims: i32,
+    /// TODO
     pub group_prims: i32,
+    /// TODO
     pub other_prims: i32,
+    /// TODO
     pub selected_prims: i32,
+    /// TODO
     pub parcel_prim_bonus: f32,
+    /// TODO
     pub other_clean_time: i32,
+    /// TODO
     pub parcel_flags: u32,
+    /// TODO
     pub sale_price: i32,
+    /// TODO
     pub name: Vec<u8>,
+    /// TODO
     pub desc: Vec<u8>,
+    /// TODO
     pub music_url: Vec<u8>,
+    /// TODO
     pub media_url: Vec<u8>,
+    /// TODO
     pub media_id: Uuid,
+    /// TODO
     pub media_auto_scale: u8,
+    /// TODO
     pub group_id: Uuid,
+    /// TODO
     pub pass_price: i32,
+    /// TODO
     pub pass_hours: f32,
+    /// TODO
     pub category: u8,
+    /// TODO
     pub auth_buyer_id: Uuid,
+    /// TODO
     pub snapshot_id: Uuid,
+    /// TODO
     pub user_location: Vector3<f32>,
+    /// TODO
     pub user_look_at: Vector3<f32>,
+    /// TODO
     pub landing_type: u8,
+    /// TODO
     pub region_push_override: bool,
+    /// TODO
     pub region_deny_anonymous: bool,
+    /// TODO
     pub region_deny_identified: bool,
+    /// TODO
     pub region_deny_transacted: bool,
 }
 
 #[derive(Clone, Debug)]
 pub struct ParcelProperties_AgeVerificationBlock {
+    /// TODO
     pub region_deny_age_unverified: bool,
 }
 
 ///
 /// TODO:
+///
 ///
 #[derive(Clone, Debug)]
 pub struct ParcelProperties {
@@ -7861,17 +10165,25 @@ pub struct ParcelProperties {
 
 #[derive(Clone, Debug)]
 pub struct ParcelPropertiesRequest_AgentData {
+    /// TODO
     pub agent_id: Uuid,
+    /// TODO
     pub session_id: Uuid,
 }
 
 #[derive(Clone, Debug)]
 pub struct ParcelPropertiesRequest_ParcelData {
+    /// TODO
     pub sequence_id: i32,
+    /// TODO
     pub west: f32,
+    /// TODO
     pub south: f32,
+    /// TODO
     pub east: f32,
+    /// TODO
     pub north: f32,
+    /// TODO
     pub snap_selection: bool,
 }
 
@@ -7882,6 +10194,7 @@ pub struct ParcelPropertiesRequest_ParcelData {
 /// /// parcel properties message.
 /// /// viewer -> sim
 /// /// reliable
+///
 #[derive(Clone, Debug)]
 pub struct ParcelPropertiesRequest {
     pub agent_data: ParcelPropertiesRequest_AgentData,
@@ -7891,13 +10204,17 @@ pub struct ParcelPropertiesRequest {
 
 #[derive(Clone, Debug)]
 pub struct ParcelPropertiesRequestByID_AgentData {
+    /// TODO
     pub agent_id: Uuid,
+    /// TODO
     pub session_id: Uuid,
 }
 
 #[derive(Clone, Debug)]
 pub struct ParcelPropertiesRequestByID_ParcelData {
+    /// TODO
     pub sequence_id: i32,
+    /// TODO
     pub local_id: i32,
 }
 
@@ -7906,6 +10223,7 @@ pub struct ParcelPropertiesRequestByID_ParcelData {
 /// 		/// ParcelPropertiesRequestByID
 /// /// viewer -> sim
 /// /// reliable
+///
 #[derive(Clone, Debug)]
 pub struct ParcelPropertiesRequestByID {
     pub agent_data: ParcelPropertiesRequestByID_AgentData,
@@ -7915,35 +10233,57 @@ pub struct ParcelPropertiesRequestByID {
 
 #[derive(Clone, Debug)]
 pub struct ParcelPropertiesUpdate_AgentData {
+    /// TODO
     pub agent_id: Uuid,
+    /// TODO
     pub session_id: Uuid,
 }
 
 #[derive(Clone, Debug)]
 pub struct ParcelPropertiesUpdate_ParcelData {
+    /// TODO
     pub local_id: i32,
+    /// TODO
     pub flags: u32,
+    /// TODO
     pub parcel_flags: u32,
+    /// TODO
     pub sale_price: i32,
+    /// TODO
     pub name: Vec<u8>,
+    /// TODO
     pub desc: Vec<u8>,
+    /// TODO
     pub music_url: Vec<u8>,
+    /// TODO
     pub media_url: Vec<u8>,
+    /// TODO
     pub media_id: Uuid,
+    /// TODO
     pub media_auto_scale: u8,
+    /// TODO
     pub group_id: Uuid,
+    /// TODO
     pub pass_price: i32,
+    /// TODO
     pub pass_hours: f32,
+    /// TODO
     pub category: u8,
+    /// TODO
     pub auth_buyer_id: Uuid,
+    /// TODO
     pub snapshot_id: Uuid,
+    /// TODO
     pub user_location: Vector3<f32>,
+    /// TODO
     pub user_look_at: Vector3<f32>,
+    /// TODO
     pub landing_type: u8,
 }
 
 ///
 /// TODO:
+///
 ///
 #[derive(Clone, Debug)]
 pub struct ParcelPropertiesUpdate {
@@ -7954,18 +10294,22 @@ pub struct ParcelPropertiesUpdate {
 
 #[derive(Clone, Debug)]
 pub struct ParcelReclaim_AgentData {
+    /// TODO
     pub agent_id: Uuid,
+    /// TODO
     pub session_id: Uuid,
 }
 
 #[derive(Clone, Debug)]
 pub struct ParcelReclaim_Data {
+    /// TODO
     pub local_id: i32,
 }
 
 ///
 /// TODO:
 /// /// reserved for when island owners force re-claim parcel
+///
 #[derive(Clone, Debug)]
 pub struct ParcelReclaim {
     pub agent_data: ParcelReclaim_AgentData,
@@ -7975,12 +10319,15 @@ pub struct ParcelReclaim {
 
 #[derive(Clone, Debug)]
 pub struct ParcelRelease_AgentData {
+    /// TODO
     pub agent_id: Uuid,
+    /// TODO
     pub session_id: Uuid,
 }
 
 #[derive(Clone, Debug)]
 pub struct ParcelRelease_Data {
+    /// TODO
     pub local_id: i32,
 }
 
@@ -7990,6 +10337,7 @@ pub struct ParcelRelease_Data {
 /// /// Release a parcel to public
 /// /// viewer -> sim
 /// /// reliable
+///
 #[derive(Clone, Debug)]
 pub struct ParcelRelease {
     pub agent_data: ParcelRelease_AgentData,
@@ -7999,7 +10347,9 @@ pub struct ParcelRelease {
 
 #[derive(Clone, Debug)]
 pub struct ParcelRename_ParcelData {
+    /// TODO
     pub parcel_id: Uuid,
+    /// TODO
     pub new_name: Vec<u8>,
 }
 
@@ -8007,6 +10357,7 @@ pub struct ParcelRename_ParcelData {
 /// 		TODO:
 /// 		/// spaceserver -> sim
 /// /// tell a particular simulator to rename a parcel
+///
 #[derive(Clone, Debug)]
 pub struct ParcelRename {
     pub parcel_data: Vec<ParcelRename_ParcelData>,
@@ -8015,23 +10366,29 @@ pub struct ParcelRename {
 
 #[derive(Clone, Debug)]
 pub struct ParcelReturnObjects_AgentData {
+    /// TODO
     pub agent_id: Uuid,
+    /// TODO
     pub session_id: Uuid,
 }
 
 #[derive(Clone, Debug)]
 pub struct ParcelReturnObjects_ParcelData {
+    /// TODO
     pub local_id: i32,
+    /// TODO
     pub return_type: u32,
 }
 
 #[derive(Clone, Debug)]
 pub struct ParcelReturnObjects_TaskIDs {
+    /// TODO
     pub task_id: Uuid,
 }
 
 #[derive(Clone, Debug)]
 pub struct ParcelReturnObjects_OwnerIDs {
+    /// TODO
     pub owner_id: Uuid,
 }
 
@@ -8040,6 +10397,7 @@ pub struct ParcelReturnObjects_OwnerIDs {
 /// 		/// ParcelReturnObjects
 /// /// viewer -> sim
 /// /// reliable
+///
 #[derive(Clone, Debug)]
 pub struct ParcelReturnObjects {
     pub agent_data: ParcelReturnObjects_AgentData,
@@ -8051,7 +10409,9 @@ pub struct ParcelReturnObjects {
 
 #[derive(Clone, Debug)]
 pub struct ParcelSales_ParcelData {
+    /// TODO
     pub parcel_id: Uuid,
+    /// TODO
     pub buyer_id: Uuid,
 }
 
@@ -8059,6 +10419,7 @@ pub struct ParcelSales_ParcelData {
 /// 		TODO:
 /// 		/// dataserver -> simulator
 /// /// tell a particular simulator to finish parcel sale.
+///
 #[derive(Clone, Debug)]
 pub struct ParcelSales {
     pub parcel_data: Vec<ParcelSales_ParcelData>,
@@ -8067,18 +10428,23 @@ pub struct ParcelSales {
 
 #[derive(Clone, Debug)]
 pub struct ParcelSelectObjects_AgentData {
+    /// TODO
     pub agent_id: Uuid,
+    /// TODO
     pub session_id: Uuid,
 }
 
 #[derive(Clone, Debug)]
 pub struct ParcelSelectObjects_ParcelData {
+    /// TODO
     pub local_id: i32,
+    /// TODO
     pub return_type: u32,
 }
 
 #[derive(Clone, Debug)]
 pub struct ParcelSelectObjects_ReturnIDs {
+    /// TODO
     pub return_id: Uuid,
 }
 
@@ -8087,6 +10453,7 @@ pub struct ParcelSelectObjects_ReturnIDs {
 /// 		/// ParcelSelectObjects
 /// /// viewer -> sim
 /// /// reliable
+///
 #[derive(Clone, Debug)]
 pub struct ParcelSelectObjects {
     pub agent_data: ParcelSelectObjects_AgentData,
@@ -8097,13 +10464,17 @@ pub struct ParcelSelectObjects {
 
 #[derive(Clone, Debug)]
 pub struct ParcelSetOtherCleanTime_AgentData {
+    /// TODO
     pub agent_id: Uuid,
+    /// TODO
     pub session_id: Uuid,
 }
 
 #[derive(Clone, Debug)]
 pub struct ParcelSetOtherCleanTime_ParcelData {
+    /// TODO
     pub local_id: i32,
+    /// TODO
     pub other_clean_time: i32,
 }
 
@@ -8112,6 +10483,7 @@ pub struct ParcelSetOtherCleanTime_ParcelData {
 /// 		/// ParcelSetOtherCleanTime
 /// /// viewer -> sim
 /// /// reliable
+///
 #[derive(Clone, Debug)]
 pub struct ParcelSetOtherCleanTime {
     pub agent_data: ParcelSetOtherCleanTime_AgentData,
@@ -8121,17 +10493,21 @@ pub struct ParcelSetOtherCleanTime {
 
 #[derive(Clone, Debug)]
 pub struct PayPriceReply_ObjectData {
+    /// TODO
     pub object_id: Uuid,
+    /// TODO
     pub default_pay_price: i32,
 }
 
 #[derive(Clone, Debug)]
 pub struct PayPriceReply_ButtonData {
+    /// TODO
     pub pay_button: i32,
 }
 
 ///
 /// TODO:
+///
 ///
 #[derive(Clone, Debug)]
 pub struct PayPriceReply {
@@ -8142,12 +10518,15 @@ pub struct PayPriceReply {
 
 #[derive(Clone, Debug)]
 pub struct PickDelete_AgentData {
+    /// TODO
     pub agent_id: Uuid,
+    /// TODO
     pub session_id: Uuid,
 }
 
 #[derive(Clone, Debug)]
 pub struct PickDelete_Data {
+    /// TODO
     pub pick_id: Uuid,
 }
 
@@ -8157,6 +10536,7 @@ pub struct PickDelete_Data {
 /// /// Delete a non-top pick from the database.
 /// /// viewer -> simulator -> dataserver
 /// /// reliable
+///
 #[derive(Clone, Debug)]
 pub struct PickDelete {
     pub agent_data: PickDelete_AgentData,
@@ -8166,13 +10546,17 @@ pub struct PickDelete {
 
 #[derive(Clone, Debug)]
 pub struct PickGodDelete_AgentData {
+    /// TODO
     pub agent_id: Uuid,
+    /// TODO
     pub session_id: Uuid,
 }
 
 #[derive(Clone, Debug)]
 pub struct PickGodDelete_Data {
+    /// TODO
     pub pick_id: Uuid,
+    /// TODO
     pub query_id: Uuid,
 }
 
@@ -8184,6 +10568,7 @@ pub struct PickGodDelete_Data {
 /// /// picks.
 /// /// viewer -> simulator -> dataserver
 /// /// reliable
+///
 #[derive(Clone, Debug)]
 pub struct PickGodDelete {
     pub agent_data: PickGodDelete_AgentData,
@@ -8193,23 +10578,37 @@ pub struct PickGodDelete {
 
 #[derive(Clone, Debug)]
 pub struct PickInfoReply_AgentData {
+    /// TODO
     pub agent_id: Uuid,
 }
 
 #[derive(Clone, Debug)]
 pub struct PickInfoReply_Data {
+    /// TODO
     pub pick_id: Uuid,
+    /// TODO
     pub creator_id: Uuid,
+    /// TODO
     pub top_pick: bool,
+    /// TODO
     pub parcel_id: Uuid,
+    /// TODO
     pub name: Vec<u8>,
+    /// TODO
     pub desc: Vec<u8>,
+    /// TODO
     pub snapshot_id: Uuid,
+    /// TODO
     pub user: Vec<u8>,
+    /// TODO
     pub original_name: Vec<u8>,
+    /// TODO
     pub sim_name: Vec<u8>,
+    /// TODO
     pub pos_global: Vector3<f64>,
+    /// TODO
     pub sort_order: i32,
+    /// TODO
     pub enabled: bool,
 }
 
@@ -8219,6 +10618,7 @@ pub struct PickInfoReply_Data {
 /// /// dataserver -> simulator
 /// /// simulator -> viewer
 /// /// reliable
+///
 #[derive(Clone, Debug)]
 pub struct PickInfoReply {
     pub agent_data: PickInfoReply_AgentData,
@@ -8228,21 +10628,33 @@ pub struct PickInfoReply {
 
 #[derive(Clone, Debug)]
 pub struct PickInfoUpdate_AgentData {
+    /// TODO
     pub agent_id: Uuid,
+    /// TODO
     pub session_id: Uuid,
 }
 
 #[derive(Clone, Debug)]
 pub struct PickInfoUpdate_Data {
+    /// TODO
     pub pick_id: Uuid,
+    /// TODO
     pub creator_id: Uuid,
+    /// TODO
     pub top_pick: bool,
+    /// TODO
     pub parcel_id: Uuid,
+    /// TODO
     pub name: Vec<u8>,
+    /// TODO
     pub desc: Vec<u8>,
+    /// TODO
     pub snapshot_id: Uuid,
+    /// TODO
     pub pos_global: Vector3<f64>,
+    /// TODO
     pub sort_order: i32,
+    /// TODO
     pub enabled: bool,
 }
 
@@ -8255,6 +10667,7 @@ pub struct PickInfoUpdate_Data {
 /// /// if the agent_id is a god.
 /// /// viewer -> simulator -> dataserver
 /// /// reliable
+///
 #[derive(Clone, Debug)]
 pub struct PickInfoUpdate {
     pub agent_data: PickInfoUpdate_AgentData,
@@ -8264,21 +10677,29 @@ pub struct PickInfoUpdate {
 
 #[derive(Clone, Debug)]
 pub struct PlacesQuery_AgentData {
+    /// TODO
     pub agent_id: Uuid,
+    /// TODO
     pub session_id: Uuid,
+    /// TODO
     pub query_id: Uuid,
 }
 
 #[derive(Clone, Debug)]
 pub struct PlacesQuery_TransactionData {
+    /// TODO
     pub transaction_id: Uuid,
 }
 
 #[derive(Clone, Debug)]
 pub struct PlacesQuery_QueryData {
+    /// TODO
     pub query_text: Vec<u8>,
+    /// TODO
     pub query_flags: u32,
+    /// TODO
     pub category: i8,
+    /// TODO
     pub sim_name: Vec<u8>,
 }
 
@@ -8287,6 +10708,7 @@ pub struct PlacesQuery_QueryData {
 /// 		/// PlacesQuery
 /// /// Used for getting a list of places for the group land panel
 /// /// and the user land holdings panel.  NOT for the directory.
+///
 #[derive(Clone, Debug)]
 pub struct PlacesQuery {
     pub agent_data: PlacesQuery_AgentData,
@@ -8297,29 +10719,45 @@ pub struct PlacesQuery {
 
 #[derive(Clone, Debug)]
 pub struct PlacesReply_AgentData {
+    /// TODO
     pub agent_id: Uuid,
+    /// TODO
     pub query_id: Uuid,
 }
 
 #[derive(Clone, Debug)]
 pub struct PlacesReply_TransactionData {
+    /// TODO
     pub transaction_id: Uuid,
 }
 
 #[derive(Clone, Debug)]
 pub struct PlacesReply_QueryData {
+    /// TODO
     pub owner_id: Uuid,
+    /// TODO
     pub name: Vec<u8>,
+    /// TODO
     pub desc: Vec<u8>,
+    /// TODO
     pub actual_area: i32,
+    /// TODO
     pub billable_area: i32,
+    /// TODO
     pub flags: u8,
+    /// TODO
     pub global_x: f32,
+    /// TODO
     pub global_y: f32,
+    /// TODO
     pub global_z: f32,
+    /// TODO
     pub sim_name: Vec<u8>,
+    /// TODO
     pub snapshot_id: Uuid,
+    /// TODO
     pub dwell: f32,
+    /// TODO
     pub price: i32,
 }
 
@@ -8331,6 +10769,7 @@ pub struct PlacesReply_QueryData {
 /// /// global x,y,z.  Otherwise, use center of the AABB.
 /// /// reliable
 /// ///{	ProductSKU		Variable	1	}
+///
 #[derive(Clone, Debug)]
 pub struct PlacesReply {
     pub agent_data: PlacesReply_AgentData,
@@ -8341,13 +10780,17 @@ pub struct PlacesReply {
 
 #[derive(Clone, Debug)]
 pub struct PreloadSound_DataBlock {
+    /// TODO
     pub object_id: Uuid,
+    /// TODO
     pub owner_id: Uuid,
+    /// TODO
     pub sound_id: Uuid,
 }
 
 ///
 /// TODO:
+///
 ///
 #[derive(Clone, Debug)]
 pub struct PreloadSound {
@@ -8357,12 +10800,15 @@ pub struct PreloadSound {
 
 #[derive(Clone, Debug)]
 pub struct PurgeInventoryDescendents_AgentData {
+    /// TODO
     pub agent_id: Uuid,
+    /// TODO
     pub session_id: Uuid,
 }
 
 #[derive(Clone, Debug)]
 pub struct PurgeInventoryDescendents_InventoryData {
+    /// TODO
     pub folder_id: Uuid,
 }
 
@@ -8370,6 +10816,7 @@ pub struct PurgeInventoryDescendents_InventoryData {
 /// 		TODO:
 /// 		/// This is how you remove inventory when you're not even sure what it
 /// /// is - only it's parenting.
+///
 #[derive(Clone, Debug)]
 pub struct PurgeInventoryDescendents {
     pub agent_data: PurgeInventoryDescendents_AgentData,
@@ -8379,6 +10826,7 @@ pub struct PurgeInventoryDescendents {
 
 #[derive(Clone, Debug)]
 pub struct RebakeAvatarTextures_TextureData {
+    /// TODO
     pub texture_id: Uuid,
 }
 
@@ -8386,6 +10834,7 @@ pub struct RebakeAvatarTextures_TextureData {
 /// 		TODO:
 /// 		/// RebakeAvatarTextures
 /// /// simulator -> viewer request when a temporary baked avatar texture is not found
+///
 #[derive(Clone, Debug)]
 pub struct RebakeAvatarTextures {
     pub texture_data: RebakeAvatarTextures_TextureData,
@@ -8394,19 +10843,24 @@ pub struct RebakeAvatarTextures {
 
 #[derive(Clone, Debug)]
 pub struct Redo_AgentData {
+    /// TODO
     pub agent_id: Uuid,
+    /// TODO
     pub session_id: Uuid,
+    /// TODO
     pub group_id: Uuid,
 }
 
 #[derive(Clone, Debug)]
 pub struct Redo_ObjectData {
+    /// TODO
     pub object_id: Uuid,
 }
 
 ///
 /// TODO:
 /// /// Redo
+///
 #[derive(Clone, Debug)]
 pub struct Redo {
     pub agent_data: Redo_AgentData,
@@ -8416,6 +10870,7 @@ pub struct Redo {
 
 #[derive(Clone, Debug)]
 pub struct RegionHandleRequest_RequestBlock {
+    /// TODO
     pub region_id: Uuid,
 }
 
@@ -8423,6 +10878,7 @@ pub struct RegionHandleRequest_RequestBlock {
 /// 		TODO:
 /// 		/// get information about landmarks. Used by viewers for determining
 /// /// the location of a landmark, and by simulators for teleport
+///
 #[derive(Clone, Debug)]
 pub struct RegionHandleRequest {
     pub request_block: RegionHandleRequest_RequestBlock,
@@ -8431,43 +10887,73 @@ pub struct RegionHandleRequest {
 
 #[derive(Clone, Debug)]
 pub struct RegionHandshake_RegionInfo {
+    /// TODO
     pub region_flags: u32,
+    /// TODO
     pub sim_access: u8,
+    /// TODO
     pub sim_name: Vec<u8>,
+    /// TODO
     pub sim_owner: Uuid,
+    /// TODO
     pub is_estate_manager: bool,
+    /// TODO
     pub water_height: f32,
+    /// TODO
     pub billable_factor: f32,
+    /// TODO
     pub cache_id: Uuid,
+    /// TODO
     pub terrain_base0: Uuid,
+    /// TODO
     pub terrain_base1: Uuid,
+    /// TODO
     pub terrain_base2: Uuid,
+    /// TODO
     pub terrain_base3: Uuid,
+    /// TODO
     pub terrain_detail0: Uuid,
+    /// TODO
     pub terrain_detail1: Uuid,
+    /// TODO
     pub terrain_detail2: Uuid,
+    /// TODO
     pub terrain_detail3: Uuid,
+    /// TODO
     pub terrain_start_height00: f32,
+    /// TODO
     pub terrain_start_height01: f32,
+    /// TODO
     pub terrain_start_height10: f32,
+    /// TODO
     pub terrain_start_height11: f32,
+    /// TODO
     pub terrain_height_range00: f32,
+    /// TODO
     pub terrain_height_range01: f32,
+    /// TODO
     pub terrain_height_range10: f32,
+    /// TODO
     pub terrain_height_range11: f32,
 }
 
 #[derive(Clone, Debug)]
 pub struct RegionHandshake_RegionInfo2 {
+    /// TODO
     pub region_id: Uuid,
 }
 
 #[derive(Clone, Debug)]
 pub struct RegionHandshake_RegionInfo3 {
+    /// TODO
     pub cpu_class_id: i32,
+    /// TODO
     pub cpu_ratio: i32,
+    /// TODO
     pub colo_name: Vec<u8>,
+    /// TODO
     pub product_sku: Vec<u8>,
+    /// TODO
     pub product_name: Vec<u8>,
 }
 
@@ -8478,6 +10964,7 @@ pub struct RegionHandshake_RegionInfo3 {
 /// /// from that viewer.
 /// /// sim -> viewer
 /// /// reliable
+///
 #[derive(Clone, Debug)]
 pub struct RegionHandshake {
     pub region_info: RegionHandshake_RegionInfo,
@@ -8488,12 +10975,15 @@ pub struct RegionHandshake {
 
 #[derive(Clone, Debug)]
 pub struct RegionHandshakeReply_AgentData {
+    /// TODO
     pub agent_id: Uuid,
+    /// TODO
     pub session_id: Uuid,
 }
 
 #[derive(Clone, Debug)]
 pub struct RegionHandshakeReply_RegionInfo {
+    /// TODO
     pub flags: u32,
 }
 
@@ -8507,6 +10997,7 @@ pub struct RegionHandshakeReply_RegionInfo {
 /// /// has loaded the cache for the region.
 /// /// After the simulator receives this, it will start sending
 /// /// data about objects.
+///
 #[derive(Clone, Debug)]
 pub struct RegionHandshakeReply {
     pub agent_data: RegionHandshakeReply_AgentData,
@@ -8516,12 +11007,15 @@ pub struct RegionHandshakeReply {
 
 #[derive(Clone, Debug)]
 pub struct RegionIDAndHandleReply_ReplyBlock {
+    /// TODO
     pub region_id: Uuid,
+    /// TODO
     pub region_handle: u64,
 }
 
 ///
 /// TODO:
+///
 ///
 #[derive(Clone, Debug)]
 pub struct RegionIDAndHandleReply {
@@ -8531,36 +11025,59 @@ pub struct RegionIDAndHandleReply {
 
 #[derive(Clone, Debug)]
 pub struct RegionInfo_AgentData {
+    /// TODO
     pub agent_id: Uuid,
+    /// TODO
     pub session_id: Uuid,
 }
 
 #[derive(Clone, Debug)]
 pub struct RegionInfo_RegionInfo {
+    /// TODO
     pub sim_name: Vec<u8>,
+    /// TODO
     pub estate_id: u32,
+    /// TODO
     pub parent_estate_id: u32,
+    /// TODO
     pub region_flags: u32,
+    /// TODO
     pub sim_access: u8,
+    /// TODO
     pub max_agents: u8,
+    /// TODO
     pub billable_factor: f32,
+    /// TODO
     pub object_bonus_factor: f32,
+    /// TODO
     pub water_height: f32,
+    /// TODO
     pub terrain_raise_limit: f32,
+    /// TODO
     pub terrain_lower_limit: f32,
+    /// TODO
     pub price_per_meter: i32,
+    /// TODO
     pub redirect_grid_x: i32,
+    /// TODO
     pub redirect_grid_y: i32,
+    /// TODO
     pub use_estate_sun: bool,
+    /// TODO
     pub sun_hour: f32,
 }
 
 #[derive(Clone, Debug)]
 pub struct RegionInfo_RegionInfo2 {
+    /// TODO
     pub product_sku: Vec<u8>,
+    /// TODO
     pub product_name: Vec<u8>,
+    /// TODO
     pub max_agents32: u32,
+    /// TODO
     pub hard_max_agents: u32,
+    /// TODO
     pub hard_max_objects: u32,
 }
 
@@ -8571,6 +11088,7 @@ pub struct RegionInfo_RegionInfo2 {
 /// /// and god tools floater
 /// /// sim -> viewer
 /// /// reliable
+///
 #[derive(Clone, Debug)]
 pub struct RegionInfo {
     pub agent_data: RegionInfo_AgentData,
@@ -8581,12 +11099,14 @@ pub struct RegionInfo {
 
 #[derive(Clone, Debug)]
 pub struct RegionPresenceRequestByHandle_RegionData {
+    /// TODO
     pub region_handle: u64,
 }
 
 ///
 /// TODO:
 /// /// sim -> dataserver
+///
 #[derive(Clone, Debug)]
 pub struct RegionPresenceRequestByHandle {
     pub region_data: Vec<RegionPresenceRequestByHandle_RegionData>,
@@ -8595,12 +11115,14 @@ pub struct RegionPresenceRequestByHandle {
 
 #[derive(Clone, Debug)]
 pub struct RegionPresenceRequestByRegionID_RegionData {
+    /// TODO
     pub region_id: Uuid,
 }
 
 ///
 /// TODO:
 /// /// sim -> dataserver
+///
 #[derive(Clone, Debug)]
 pub struct RegionPresenceRequestByRegionID {
     pub region_data: Vec<RegionPresenceRequestByRegionID_RegionData>,
@@ -8609,18 +11131,26 @@ pub struct RegionPresenceRequestByRegionID {
 
 #[derive(Clone, Debug)]
 pub struct RegionPresenceResponse_RegionData {
+    /// TODO
     pub region_id: Uuid,
+    /// TODO
     pub region_handle: u64,
+    /// TODO
     pub internal_region_ip: Ip4Addr,
+    /// TODO
     pub external_region_ip: Ip4Addr,
+    /// TODO
     pub region_port: IpPort,
+    /// TODO
     pub valid_until: f64,
+    /// TODO
     pub message: Vec<u8>,
 }
 
 ///
 /// TODO:
 /// /// dataserver -> sim
+///
 #[derive(Clone, Debug)]
 pub struct RegionPresenceResponse {
     pub region_data: Vec<RegionPresenceResponse_RegionData>,
@@ -8629,19 +11159,24 @@ pub struct RegionPresenceResponse {
 
 #[derive(Clone, Debug)]
 pub struct RemoveAttachment_AgentData {
+    /// TODO
     pub agent_id: Uuid,
+    /// TODO
     pub session_id: Uuid,
 }
 
 #[derive(Clone, Debug)]
 pub struct RemoveAttachment_AttachmentBlock {
+    /// TODO
     pub attachment_point: u8,
+    /// TODO
     pub item_id: Uuid,
 }
 
 ///
 /// TODO:
 /// /// Simulator informs Dataserver that attachment has been taken off
+///
 #[derive(Clone, Debug)]
 pub struct RemoveAttachment {
     pub agent_data: RemoveAttachment_AgentData,
@@ -8651,17 +11186,21 @@ pub struct RemoveAttachment {
 
 #[derive(Clone, Debug)]
 pub struct RemoveInventoryFolder_AgentData {
+    /// TODO
     pub agent_id: Uuid,
+    /// TODO
     pub session_id: Uuid,
 }
 
 #[derive(Clone, Debug)]
 pub struct RemoveInventoryFolder_FolderData {
+    /// TODO
     pub folder_id: Uuid,
 }
 
 ///
 /// TODO:
+///
 ///
 #[derive(Clone, Debug)]
 pub struct RemoveInventoryFolder {
@@ -8672,17 +11211,21 @@ pub struct RemoveInventoryFolder {
 
 #[derive(Clone, Debug)]
 pub struct RemoveInventoryItem_AgentData {
+    /// TODO
     pub agent_id: Uuid,
+    /// TODO
     pub session_id: Uuid,
 }
 
 #[derive(Clone, Debug)]
 pub struct RemoveInventoryItem_InventoryData {
+    /// TODO
     pub item_id: Uuid,
 }
 
 ///
 /// TODO:
+///
 ///
 #[derive(Clone, Debug)]
 pub struct RemoveInventoryItem {
@@ -8693,17 +11236,21 @@ pub struct RemoveInventoryItem {
 
 #[derive(Clone, Debug)]
 pub struct RemoveInventoryObjects_AgentData {
+    /// TODO
     pub agent_id: Uuid,
+    /// TODO
     pub session_id: Uuid,
 }
 
 #[derive(Clone, Debug)]
 pub struct RemoveInventoryObjects_FolderData {
+    /// TODO
     pub folder_id: Uuid,
 }
 
 #[derive(Clone, Debug)]
 pub struct RemoveInventoryObjects_ItemData {
+    /// TODO
     pub item_id: Uuid,
 }
 
@@ -8712,6 +11259,7 @@ pub struct RemoveInventoryObjects_ItemData {
 /// 		/// This is the new improved way to remove inventory items.  It is
 /// /// currently only supported in viewer->userserver->dataserver
 /// /// messages typically initiated by an empty trash method.
+///
 #[derive(Clone, Debug)]
 pub struct RemoveInventoryObjects {
     pub agent_data: RemoveInventoryObjects_AgentData,
@@ -8722,19 +11270,24 @@ pub struct RemoveInventoryObjects {
 
 #[derive(Clone, Debug)]
 pub struct RemoveMuteListEntry_AgentData {
+    /// TODO
     pub agent_id: Uuid,
+    /// TODO
     pub session_id: Uuid,
 }
 
 #[derive(Clone, Debug)]
 pub struct RemoveMuteListEntry_MuteData {
+    /// TODO
     pub mute_id: Uuid,
+    /// TODO
     pub mute_name: Vec<u8>,
 }
 
 ///
 /// TODO:
 /// /// Remove a mute list entry.
+///
 #[derive(Clone, Debug)]
 pub struct RemoveMuteListEntry {
     pub agent_data: RemoveMuteListEntry_AgentData,
@@ -8744,17 +11297,20 @@ pub struct RemoveMuteListEntry {
 
 #[derive(Clone, Debug)]
 pub struct RemoveNameValuePair_TaskData {
+    /// TODO
     pub id: Uuid,
 }
 
 #[derive(Clone, Debug)]
 pub struct RemoveNameValuePair_NameValueData {
+    /// TODO
     pub nv_pair: Vec<u8>,
 }
 
 ///
 /// TODO:
 /// /// NameValuePair - if the specific task exists on simulator or dataserver, remove the name value pair (value is ignored)
+///
 #[derive(Clone, Debug)]
 pub struct RemoveNameValuePair {
     pub task_data: RemoveNameValuePair_TaskData,
@@ -8764,6 +11320,7 @@ pub struct RemoveNameValuePair {
 
 #[derive(Clone, Debug)]
 pub struct RemoveParcel_ParcelData {
+    /// TODO
     pub parcel_id: Uuid,
 }
 
@@ -8772,6 +11329,7 @@ pub struct RemoveParcel_ParcelData {
 /// 		/// sim -> dataserver or space ->sim
 /// /// This message is used to tell the dataserver that a parcel has been
 /// /// removed.
+///
 #[derive(Clone, Debug)]
 pub struct RemoveParcel {
     pub parcel_data: Vec<RemoveParcel_ParcelData>,
@@ -8780,18 +11338,23 @@ pub struct RemoveParcel {
 
 #[derive(Clone, Debug)]
 pub struct RemoveTaskInventory_AgentData {
+    /// TODO
     pub agent_id: Uuid,
+    /// TODO
     pub session_id: Uuid,
 }
 
 #[derive(Clone, Debug)]
 pub struct RemoveTaskInventory_InventoryData {
+    /// TODO
     pub local_id: u32,
+    /// TODO
     pub item_id: Uuid,
 }
 
 ///
 /// TODO:
+///
 ///
 #[derive(Clone, Debug)]
 pub struct RemoveTaskInventory {
@@ -8802,13 +11365,17 @@ pub struct RemoveTaskInventory {
 
 #[derive(Clone, Debug)]
 pub struct ReplyTaskInventory_InventoryData {
+    /// TODO
     pub task_id: Uuid,
+    /// TODO
     pub serial: i16,
+    /// TODO
     pub filename: Vec<u8>,
 }
 
 ///
 /// TODO:
+///
 ///
 #[derive(Clone, Debug)]
 pub struct ReplyTaskInventory {
@@ -8818,7 +11385,9 @@ pub struct ReplyTaskInventory {
 
 #[derive(Clone, Debug)]
 pub struct ReportAutosaveCrash_AutosaveData {
+    /// TODO
     pub pid: i32,
+    /// TODO
     pub status: i32,
 }
 
@@ -8826,6 +11395,7 @@ pub struct ReportAutosaveCrash_AutosaveData {
 /// 		TODO:
 /// 		/// ReportAutosaveCrash
 /// /// sim->launcher
+///
 #[derive(Clone, Debug)]
 pub struct ReportAutosaveCrash {
     pub autosave_data: ReportAutosaveCrash_AutosaveData,
@@ -8834,13 +11404,17 @@ pub struct ReportAutosaveCrash {
 
 #[derive(Clone, Debug)]
 pub struct RequestGodlikePowers_AgentData {
+    /// TODO
     pub agent_id: Uuid,
+    /// TODO
     pub session_id: Uuid,
 }
 
 #[derive(Clone, Debug)]
 pub struct RequestGodlikePowers_RequestBlock {
+    /// TODO
     pub godlike: bool,
+    /// TODO
     pub token: Uuid,
 }
 
@@ -8850,6 +11424,7 @@ pub struct RequestGodlikePowers_RequestBlock {
 /// /// Set godlike to 0 if you want to relinquish god powers.
 /// /// viewer -> simulator -> dataserver
 /// /// reliable
+///
 #[derive(Clone, Debug)]
 pub struct RequestGodlikePowers {
     pub agent_data: RequestGodlikePowers_AgentData,
@@ -8859,16 +11434,51 @@ pub struct RequestGodlikePowers {
 
 #[derive(Clone, Debug)]
 pub struct RequestImage_AgentData {
+    /// Agent id of the sender.
     pub agent_id: Uuid,
+    /// Temporary id assigned to this session by the simulator on login, used to verify our identity in packets.
     pub session_id: Uuid,
 }
 
 #[derive(Clone, Debug)]
 pub struct RequestImage_RequestImage {
+    /// UUID of the texture to be downloaded.
     pub image: Uuid,
+    ///
+    /// Specifies how much detail the texture should have.
+    ///
+    /// 0 = Original version with all detail preserved.
+    /// 1 = Second highest detail, half the size in each dimension.
+    ///
+    /// TODO: According to a screenshot values > 1 are possible, however it's unclear what kind of detail they correspond to.
+    ///
     pub discard_level: i8,
+    ///
+    /// Priority of this download compared to other requests.
+    /// A higher value indicates a higher priority.
+    ///
     pub download_priority: f32,
+    ///
+    /// Specifies which part of the file should be transmitted.
+    ///
+    /// It's not possible to transmit large images in one single message, hence they are split into
+    /// multiple packets by the server and the client can specify a value ≥ 0 to select a specific
+    /// chunk of data.
+    ///
+    /// In the code we find the following definition:
+    /// last_packet = (mFileSize - FIRST_PACKET_SIZE + MAX_IMG_PACKET_SIZE-1) / MAX_IMG_PACKET_SIZE + 1;
+    /// where everything in caps is hard coded, with the following values:
+    ///
+    /// FIRST_PACKET_SIZE: 600
+    /// MAX_IMG_PACKET_SIZE: 1000
+    ///
+    /// TODO: But I'm still not convinced, is only the first packet 600 bytes long, and every other packet size is 1000 until for the last one? Or is there some other mechanism to communicate the packet sizes. (Also they misleadingly call this packet sizes, but it's more like a chunk size since it seems to only indicate the size of the image payload.)
+    ///
     pub packet: u32,
+    ///
+    /// 0 = NORMAL
+    /// 1 = AVATAR_BAKE
+    ///
     pub type_: u8,
 }
 
@@ -8876,6 +11486,7 @@ pub struct RequestImage_RequestImage {
 /// Used to request textures over UDP from a simulator.
 ///
 /// It's also possible to cancel a texture transmission using this message, by specifying certain values. TODO: which ones (lines 3381-3386)
+///
 #[derive(Clone, Debug)]
 pub struct RequestImage {
     pub agent_data: RequestImage_AgentData,
@@ -8885,9 +11496,13 @@ pub struct RequestImage {
 
 #[derive(Clone, Debug)]
 pub struct RequestInventoryAsset_QueryData {
+    /// TODO
     pub query_id: Uuid,
+    /// TODO
     pub agent_id: Uuid,
+    /// TODO
     pub owner_id: Uuid,
+    /// TODO
     pub item_id: Uuid,
 }
 
@@ -8895,6 +11510,7 @@ pub struct RequestInventoryAsset_QueryData {
 /// 		TODO:
 /// 		/// request permissions for agent id to get the asset for owner_id's
 /// /// item_id.
+///
 #[derive(Clone, Debug)]
 pub struct RequestInventoryAsset {
     pub query_data: RequestInventoryAsset_QueryData,
@@ -8903,13 +11519,17 @@ pub struct RequestInventoryAsset {
 
 #[derive(Clone, Debug)]
 pub struct RequestMultipleObjects_AgentData {
+    /// TODO
     pub agent_id: Uuid,
+    /// TODO
     pub session_id: Uuid,
 }
 
 #[derive(Clone, Debug)]
 pub struct RequestMultipleObjects_ObjectData {
+    /// TODO
     pub cache_miss_type: u8,
+    /// TODO
     pub id: u32,
 }
 
@@ -8925,6 +11545,7 @@ pub struct RequestMultipleObjects_ObjectData {
 /// ///
 /// /// CacheMissType 0 => full object (viewer doesn't have it)
 /// /// CacheMissType 1 => CRC mismatch only
+///
 #[derive(Clone, Debug)]
 pub struct RequestMultipleObjects {
     pub agent_data: RequestMultipleObjects_AgentData,
@@ -8934,13 +11555,17 @@ pub struct RequestMultipleObjects {
 
 #[derive(Clone, Debug)]
 pub struct RequestObjectPropertiesFamily_AgentData {
+    /// TODO
     pub agent_id: Uuid,
+    /// TODO
     pub session_id: Uuid,
 }
 
 #[derive(Clone, Debug)]
 pub struct RequestObjectPropertiesFamily_ObjectData {
+    /// TODO
     pub request_flags: u32,
+    /// TODO
     pub object_id: Uuid,
 }
 
@@ -8950,6 +11575,7 @@ pub struct RequestObjectPropertiesFamily_ObjectData {
 /// /// Ask for extended information, such as creator, permissions, resources, etc.
 /// /// Medium frequency because it is driven by mouse hovering over objects, which
 /// /// occurs at high rates.
+///
 #[derive(Clone, Debug)]
 pub struct RequestObjectPropertiesFamily {
     pub agent_data: RequestObjectPropertiesFamily_AgentData,
@@ -8959,23 +11585,37 @@ pub struct RequestObjectPropertiesFamily {
 
 #[derive(Clone, Debug)]
 pub struct RequestParcelTransfer_Data {
+    /// TODO
     pub transaction_id: Uuid,
+    /// TODO
     pub transaction_time: u32,
+    /// TODO
     pub source_id: Uuid,
+    /// TODO
     pub dest_id: Uuid,
+    /// TODO
     pub owner_id: Uuid,
+    /// TODO
     pub flags: u8,
+    /// TODO
     pub transaction_type: i32,
+    /// TODO
     pub amount: i32,
+    /// TODO
     pub billable_area: i32,
+    /// TODO
     pub actual_area: i32,
+    /// TODO
     pub final_: bool,
 }
 
 #[derive(Clone, Debug)]
 pub struct RequestParcelTransfer_RegionData {
+    /// TODO
     pub region_id: Uuid,
+    /// TODO
     pub grid_x: u32,
+    /// TODO
     pub grid_y: u32,
 }
 
@@ -8985,6 +11625,7 @@ pub struct RequestParcelTransfer_RegionData {
 /// /// This message is used to check if a user can buy a parcel. If
 /// /// successful, the transaction is approved through a money balance reply
 /// /// with the same transaction id.
+///
 #[derive(Clone, Debug)]
 pub struct RequestParcelTransfer {
     pub data: RequestParcelTransfer_Data,
@@ -8994,6 +11635,7 @@ pub struct RequestParcelTransfer {
 
 #[derive(Clone, Debug)]
 pub struct RequestPayPrice_ObjectData {
+    /// TODO
     pub object_id: Uuid,
 }
 
@@ -9001,6 +11643,7 @@ pub struct RequestPayPrice_ObjectData {
 /// 		TODO:
 /// 		/// RequestPayPrice
 /// /// viewer -> sim
+///
 #[derive(Clone, Debug)]
 pub struct RequestPayPrice {
     pub object_data: RequestPayPrice_ObjectData,
@@ -9009,7 +11652,9 @@ pub struct RequestPayPrice {
 
 #[derive(Clone, Debug)]
 pub struct RequestRegionInfo_AgentData {
+    /// TODO
     pub agent_id: Uuid,
+    /// TODO
     pub session_id: Uuid,
 }
 
@@ -9017,6 +11662,7 @@ pub struct RequestRegionInfo_AgentData {
 /// 		TODO:
 /// 		/// viewer -> sim
 /// /// reliable
+///
 #[derive(Clone, Debug)]
 pub struct RequestRegionInfo {
     pub agent_data: RequestRegionInfo_AgentData,
@@ -9025,17 +11671,21 @@ pub struct RequestRegionInfo {
 
 #[derive(Clone, Debug)]
 pub struct RequestTaskInventory_AgentData {
+    /// TODO
     pub agent_id: Uuid,
+    /// TODO
     pub session_id: Uuid,
 }
 
 #[derive(Clone, Debug)]
 pub struct RequestTaskInventory_InventoryData {
+    /// TODO
     pub local_id: u32,
 }
 
 ///
 /// TODO:
+///
 ///
 #[derive(Clone, Debug)]
 pub struct RequestTaskInventory {
@@ -9048,24 +11698,33 @@ pub struct RequestTaskInventory {
 /// 		TODO:
 /// 		/// RequestTrustedCircuit
 /// /// If the destination does not trust the sender, a Deny is sent back.
+///
 #[derive(Clone, Debug)]
 pub struct RequestTrustedCircuit {}
 
 
 #[derive(Clone, Debug)]
 pub struct RequestXfer_XferID {
+    /// TODO
     pub id: u64,
+    /// TODO
     pub filename: Vec<u8>,
+    /// TODO
     pub file_path: u8,
+    /// TODO
     pub delete_on_completion: bool,
+    /// TODO
     pub use_big_packets: bool,
+    /// TODO
     pub v_file_id: Uuid,
+    /// TODO
     pub v_file_type: i16,
 }
 
 ///
 /// TODO:
 /// /// RequestXfer - request an arbitrary xfer
+///
 #[derive(Clone, Debug)]
 pub struct RequestXfer {
     pub xfer_id: RequestXfer_XferID,
@@ -9074,7 +11733,9 @@ pub struct RequestXfer {
 
 #[derive(Clone, Debug)]
 pub struct RetrieveInstantMessages_AgentData {
+    /// TODO
     pub agent_id: Uuid,
+    /// TODO
     pub session_id: Uuid,
 }
 
@@ -9082,6 +11743,7 @@ pub struct RetrieveInstantMessages_AgentData {
 /// 		TODO:
 /// 		/// RetrieveInstantMessages - used to get instant messages that
 /// /// were persisted out to the database while the user was offline
+///
 #[derive(Clone, Debug)]
 pub struct RetrieveInstantMessages {
     pub agent_data: RetrieveInstantMessages_AgentData,
@@ -9090,13 +11752,17 @@ pub struct RetrieveInstantMessages {
 
 #[derive(Clone, Debug)]
 pub struct RevokePermissions_AgentData {
+    /// TODO
     pub agent_id: Uuid,
+    /// TODO
     pub session_id: Uuid,
 }
 
 #[derive(Clone, Debug)]
 pub struct RevokePermissions_Data {
+    /// TODO
     pub object_id: Uuid,
+    /// TODO
     pub object_permissions: u32,
 }
 
@@ -9104,6 +11770,7 @@ pub struct RevokePermissions_Data {
 /// 		TODO:
 /// 		/// RevokePermissions
 /// /// reliable
+///
 #[derive(Clone, Debug)]
 pub struct RevokePermissions {
     pub agent_data: RevokePermissions_AgentData,
@@ -9113,32 +11780,47 @@ pub struct RevokePermissions {
 
 #[derive(Clone, Debug)]
 pub struct RezMultipleAttachmentsFromInv_AgentData {
+    /// TODO
     pub agent_id: Uuid,
+    /// TODO
     pub session_id: Uuid,
 }
 
 #[derive(Clone, Debug)]
 pub struct RezMultipleAttachmentsFromInv_HeaderData {
+    /// TODO
     pub compound_msg_id: Uuid,
+    /// TODO
     pub total_objects: u8,
+    /// TODO
     pub first_detach_all: bool,
 }
 
 #[derive(Clone, Debug)]
 pub struct RezMultipleAttachmentsFromInv_ObjectData {
+    /// TODO
     pub item_id: Uuid,
+    /// TODO
     pub owner_id: Uuid,
+    /// TODO
     pub attachment_pt: u8,
+    /// TODO
     pub item_flags: u32,
+    /// TODO
     pub group_mask: u32,
+    /// TODO
     pub everyone_mask: u32,
+    /// TODO
     pub next_owner_mask: u32,
+    /// TODO
     pub name: Vec<u8>,
+    /// TODO
     pub description: Vec<u8>,
 }
 
 ///
 /// TODO:
+///
 ///
 #[derive(Clone, Debug)]
 pub struct RezMultipleAttachmentsFromInv {
@@ -9150,49 +11832,85 @@ pub struct RezMultipleAttachmentsFromInv {
 
 #[derive(Clone, Debug)]
 pub struct RezObject_AgentData {
+    /// TODO
     pub agent_id: Uuid,
+    /// TODO
     pub session_id: Uuid,
+    /// TODO
     pub group_id: Uuid,
 }
 
 #[derive(Clone, Debug)]
 pub struct RezObject_RezData {
+    /// TODO
     pub from_task_id: Uuid,
+    /// TODO
     pub bypass_raycast: u8,
+    /// TODO
     pub ray_start: Vector3<f32>,
+    /// TODO
     pub ray_end: Vector3<f32>,
+    /// TODO
     pub ray_target_id: Uuid,
+    /// TODO
     pub ray_end_is_intersection: bool,
+    /// TODO
     pub rez_selected: bool,
+    /// TODO
     pub remove_item: bool,
+    /// TODO
     pub item_flags: u32,
+    /// TODO
     pub group_mask: u32,
+    /// TODO
     pub everyone_mask: u32,
+    /// TODO
     pub next_owner_mask: u32,
 }
 
 #[derive(Clone, Debug)]
 pub struct RezObject_InventoryData {
+    /// TODO
     pub item_id: Uuid,
+    /// TODO
     pub folder_id: Uuid,
+    /// TODO
     pub creator_id: Uuid,
+    /// TODO
     pub owner_id: Uuid,
+    /// TODO
     pub group_id: Uuid,
+    /// TODO
     pub base_mask: u32,
+    /// TODO
     pub owner_mask: u32,
+    /// TODO
     pub group_mask: u32,
+    /// TODO
     pub everyone_mask: u32,
+    /// TODO
     pub next_owner_mask: u32,
+    /// TODO
     pub group_owned: bool,
+    /// TODO
     pub transaction_id: Uuid,
+    /// TODO
     pub type_: i8,
+    /// TODO
     pub inv_type: i8,
+    /// TODO
     pub flags: u32,
+    /// TODO
     pub sale_type: u8,
+    /// TODO
     pub sale_price: i32,
+    /// TODO
     pub name: Vec<u8>,
+    /// TODO
     pub description: Vec<u8>,
+    /// TODO
     pub creation_date: i32,
+    /// TODO
     pub crc: u32,
 }
 
@@ -9200,6 +11918,7 @@ pub struct RezObject_InventoryData {
 /// 		TODO:
 /// 		/// This message is sent from viewer -> simulator when the viewer wants
 /// /// to rez an object out of inventory.
+///
 #[derive(Clone, Debug)]
 pub struct RezObject {
     pub agent_data: RezObject_AgentData,
@@ -9210,35 +11929,53 @@ pub struct RezObject {
 
 #[derive(Clone, Debug)]
 pub struct RezObjectFromNotecard_AgentData {
+    /// TODO
     pub agent_id: Uuid,
+    /// TODO
     pub session_id: Uuid,
+    /// TODO
     pub group_id: Uuid,
 }
 
 #[derive(Clone, Debug)]
 pub struct RezObjectFromNotecard_RezData {
+    /// TODO
     pub from_task_id: Uuid,
+    /// TODO
     pub bypass_raycast: u8,
+    /// TODO
     pub ray_start: Vector3<f32>,
+    /// TODO
     pub ray_end: Vector3<f32>,
+    /// TODO
     pub ray_target_id: Uuid,
+    /// TODO
     pub ray_end_is_intersection: bool,
+    /// TODO
     pub rez_selected: bool,
+    /// TODO
     pub remove_item: bool,
+    /// TODO
     pub item_flags: u32,
+    /// TODO
     pub group_mask: u32,
+    /// TODO
     pub everyone_mask: u32,
+    /// TODO
     pub next_owner_mask: u32,
 }
 
 #[derive(Clone, Debug)]
 pub struct RezObjectFromNotecard_NotecardData {
+    /// TODO
     pub notecard_item_id: Uuid,
+    /// TODO
     pub object_id: Uuid,
 }
 
 #[derive(Clone, Debug)]
 pub struct RezObjectFromNotecard_InventoryData {
+    /// TODO
     pub item_id: Uuid,
 }
 
@@ -9246,6 +11983,7 @@ pub struct RezObjectFromNotecard_InventoryData {
 /// 		TODO:
 /// 		/// This message is sent from viewer -> simulator when the viewer wants
 /// /// to rez an object from a notecard.
+///
 #[derive(Clone, Debug)]
 pub struct RezObjectFromNotecard {
     pub agent_data: RezObjectFromNotecard_AgentData,
@@ -9257,32 +11995,55 @@ pub struct RezObjectFromNotecard {
 
 #[derive(Clone, Debug)]
 pub struct RezRestoreToWorld_AgentData {
+    /// TODO
     pub agent_id: Uuid,
+    /// TODO
     pub session_id: Uuid,
 }
 
 #[derive(Clone, Debug)]
 pub struct RezRestoreToWorld_InventoryData {
+    /// TODO
     pub item_id: Uuid,
+    /// TODO
     pub folder_id: Uuid,
+    /// TODO
     pub creator_id: Uuid,
+    /// TODO
     pub owner_id: Uuid,
+    /// TODO
     pub group_id: Uuid,
+    /// TODO
     pub base_mask: u32,
+    /// TODO
     pub owner_mask: u32,
+    /// TODO
     pub group_mask: u32,
+    /// TODO
     pub everyone_mask: u32,
+    /// TODO
     pub next_owner_mask: u32,
+    /// TODO
     pub group_owned: bool,
+    /// TODO
     pub transaction_id: Uuid,
+    /// TODO
     pub type_: i8,
+    /// TODO
     pub inv_type: i8,
+    /// TODO
     pub flags: u32,
+    /// TODO
     pub sale_type: u8,
+    /// TODO
     pub sale_price: i32,
+    /// TODO
     pub name: Vec<u8>,
+    /// TODO
     pub description: Vec<u8>,
+    /// TODO
     pub creation_date: i32,
+    /// TODO
     pub crc: u32,
 }
 
@@ -9291,6 +12052,7 @@ pub struct RezRestoreToWorld_InventoryData {
 /// 		/// This message is sent from viewer -> simulator when the viewer wants
 /// /// to rez an object out of inventory back to its position before it
 /// /// last moved into the inventory
+///
 #[derive(Clone, Debug)]
 pub struct RezRestoreToWorld {
     pub agent_data: RezRestoreToWorld_AgentData,
@@ -9300,45 +12062,72 @@ pub struct RezRestoreToWorld {
 
 #[derive(Clone, Debug)]
 pub struct RezScript_AgentData {
+    /// TODO
     pub agent_id: Uuid,
+    /// TODO
     pub session_id: Uuid,
+    /// TODO
     pub group_id: Uuid,
 }
 
 #[derive(Clone, Debug)]
 pub struct RezScript_UpdateBlock {
+    /// TODO
     pub object_local_id: u32,
+    /// TODO
     pub enabled: bool,
 }
 
 #[derive(Clone, Debug)]
 pub struct RezScript_InventoryBlock {
+    /// TODO
     pub item_id: Uuid,
+    /// TODO
     pub folder_id: Uuid,
+    /// TODO
     pub creator_id: Uuid,
+    /// TODO
     pub owner_id: Uuid,
+    /// TODO
     pub group_id: Uuid,
+    /// TODO
     pub base_mask: u32,
+    /// TODO
     pub owner_mask: u32,
+    /// TODO
     pub group_mask: u32,
+    /// TODO
     pub everyone_mask: u32,
+    /// TODO
     pub next_owner_mask: u32,
+    /// TODO
     pub group_owned: bool,
+    /// TODO
     pub transaction_id: Uuid,
+    /// TODO
     pub type_: i8,
+    /// TODO
     pub inv_type: i8,
+    /// TODO
     pub flags: u32,
+    /// TODO
     pub sale_type: u8,
+    /// TODO
     pub sale_price: i32,
+    /// TODO
     pub name: Vec<u8>,
+    /// TODO
     pub description: Vec<u8>,
+    /// TODO
     pub creation_date: i32,
+    /// TODO
     pub crc: u32,
 }
 
 ///
 /// TODO:
 /// /// Rez a script onto an object
+///
 #[derive(Clone, Debug)]
 pub struct RezScript {
     pub agent_data: RezScript_AgentData,
@@ -9349,25 +12138,37 @@ pub struct RezScript {
 
 #[derive(Clone, Debug)]
 pub struct RezSingleAttachmentFromInv_AgentData {
+    /// TODO
     pub agent_id: Uuid,
+    /// TODO
     pub session_id: Uuid,
 }
 
 #[derive(Clone, Debug)]
 pub struct RezSingleAttachmentFromInv_ObjectData {
+    /// TODO
     pub item_id: Uuid,
+    /// TODO
     pub owner_id: Uuid,
+    /// TODO
     pub attachment_pt: u8,
+    /// TODO
     pub item_flags: u32,
+    /// TODO
     pub group_mask: u32,
+    /// TODO
     pub everyone_mask: u32,
+    /// TODO
     pub next_owner_mask: u32,
+    /// TODO
     pub name: Vec<u8>,
+    /// TODO
     pub description: Vec<u8>,
 }
 
 ///
 /// TODO:
+///
 ///
 #[derive(Clone, Debug)]
 pub struct RezSingleAttachmentFromInv {
@@ -9378,29 +12179,45 @@ pub struct RezSingleAttachmentFromInv {
 
 #[derive(Clone, Debug)]
 pub struct RoutedMoneyBalanceReply_TargetBlock {
+    /// TODO
     pub target_ip: Ip4Addr,
+    /// TODO
     pub target_port: IpPort,
 }
 
 #[derive(Clone, Debug)]
 pub struct RoutedMoneyBalanceReply_MoneyData {
+    /// TODO
     pub agent_id: Uuid,
+    /// TODO
     pub transaction_id: Uuid,
+    /// TODO
     pub transaction_success: bool,
+    /// TODO
     pub money_balance: i32,
+    /// TODO
     pub square_meters_credit: i32,
+    /// TODO
     pub square_meters_committed: i32,
+    /// TODO
     pub description: Vec<u8>,
 }
 
 #[derive(Clone, Debug)]
 pub struct RoutedMoneyBalanceReply_TransactionInfo {
+    /// TODO
     pub transaction_type: i32,
+    /// TODO
     pub source_id: Uuid,
+    /// TODO
     pub is_source_group: bool,
+    /// TODO
     pub dest_id: Uuid,
+    /// TODO
     pub is_dest_group: bool,
+    /// TODO
     pub amount: i32,
+    /// TODO
     pub item_description: Vec<u8>,
 }
 
@@ -9413,6 +12230,7 @@ pub struct RoutedMoneyBalanceReply_TransactionInfo {
 /// /// dataserver -> simulator -> spaceserver -> simulator -> viewer
 /// /// reliable
 /// /// See MoneyBalanceReply above.
+///
 #[derive(Clone, Debug)]
 pub struct RoutedMoneyBalanceReply {
     pub target_block: RoutedMoneyBalanceReply_TargetBlock,
@@ -9423,8 +12241,11 @@ pub struct RoutedMoneyBalanceReply {
 
 #[derive(Clone, Debug)]
 pub struct RpcChannelReply_DataBlock {
+    /// TODO
     pub task_id: Uuid,
+    /// TODO
     pub item_id: Uuid,
+    /// TODO
     pub channel_id: Uuid,
 }
 
@@ -9433,6 +12254,7 @@ pub struct RpcChannelReply_DataBlock {
 /// 		/// RpcServer allocated a session for the script
 /// /// ChannelID will be the NULL UUID if unable to register
 /// /// dataserver -> simulator
+///
 #[derive(Clone, Debug)]
 pub struct RpcChannelReply {
     pub data_block: RpcChannelReply_DataBlock,
@@ -9441,9 +12263,13 @@ pub struct RpcChannelReply {
 
 #[derive(Clone, Debug)]
 pub struct RpcChannelRequest_DataBlock {
+    /// TODO
     pub grid_x: u32,
+    /// TODO
     pub grid_y: u32,
+    /// TODO
     pub task_id: Uuid,
+    /// TODO
     pub item_id: Uuid,
 }
 
@@ -9452,6 +12278,7 @@ pub struct RpcChannelRequest_DataBlock {
 /// 		/// RPC messages
 /// /// Script on simulator requests rpc channel from rpcserver
 /// /// simulator -> dataserver -> MySQL
+///
 #[derive(Clone, Debug)]
 pub struct RpcChannelRequest {
     pub data_block: RpcChannelRequest_DataBlock,
@@ -9460,10 +12287,15 @@ pub struct RpcChannelRequest {
 
 #[derive(Clone, Debug)]
 pub struct RpcScriptReplyInbound_DataBlock {
+    /// TODO
     pub task_id: Uuid,
+    /// TODO
     pub item_id: Uuid,
+    /// TODO
     pub channel_id: Uuid,
+    /// TODO
     pub int_value: u32,
+    /// TODO
     pub string_value: Vec<u8>,
 }
 
@@ -9471,6 +12303,7 @@ pub struct RpcScriptReplyInbound_DataBlock {
 /// 		TODO:
 /// 		/// simulator -> rpcserver
 /// /// Not trusted because trust establishment doesn't work here.
+///
 #[derive(Clone, Debug)]
 pub struct RpcScriptReplyInbound {
     pub data_block: RpcScriptReplyInbound_DataBlock,
@@ -9479,16 +12312,23 @@ pub struct RpcScriptReplyInbound {
 
 #[derive(Clone, Debug)]
 pub struct RpcScriptRequestInbound_TargetBlock {
+    /// TODO
     pub grid_x: u32,
+    /// TODO
     pub grid_y: u32,
 }
 
 #[derive(Clone, Debug)]
 pub struct RpcScriptRequestInbound_DataBlock {
+    /// TODO
     pub task_id: Uuid,
+    /// TODO
     pub item_id: Uuid,
+    /// TODO
     pub channel_id: Uuid,
+    /// TODO
     pub int_value: u32,
+    /// TODO
     pub string_value: Vec<u8>,
 }
 
@@ -9498,6 +12338,7 @@ pub struct RpcScriptRequestInbound_DataBlock {
 /// /// RpcScriptRequestInbound: rpcserver -> spaceserver
 /// /// RpcScriptRequestInboundForward: spaceserver -> simulator
 /// /// reply: simulator -> rpcserver
+///
 #[derive(Clone, Debug)]
 pub struct RpcScriptRequestInbound {
     pub target_block: RpcScriptRequestInbound_TargetBlock,
@@ -9507,18 +12348,26 @@ pub struct RpcScriptRequestInbound {
 
 #[derive(Clone, Debug)]
 pub struct RpcScriptRequestInboundForward_DataBlock {
+    /// TODO
     pub rpc_server_ip: Ip4Addr,
+    /// TODO
     pub rpc_server_port: IpPort,
+    /// TODO
     pub task_id: Uuid,
+    /// TODO
     pub item_id: Uuid,
+    /// TODO
     pub channel_id: Uuid,
+    /// TODO
     pub int_value: u32,
+    /// TODO
     pub string_value: Vec<u8>,
 }
 
 ///
 /// TODO:
 /// /// spaceserver -> simulator
+///
 #[derive(Clone, Debug)]
 pub struct RpcScriptRequestInboundForward {
     pub data_block: RpcScriptRequestInboundForward_DataBlock,
@@ -9527,12 +12376,15 @@ pub struct RpcScriptRequestInboundForward {
 
 #[derive(Clone, Debug)]
 pub struct SaveAssetIntoInventory_AgentData {
+    /// TODO
     pub agent_id: Uuid,
 }
 
 #[derive(Clone, Debug)]
 pub struct SaveAssetIntoInventory_InventoryData {
+    /// TODO
     pub item_id: Uuid,
+    /// TODO
     pub new_asset_id: Uuid,
 }
 
@@ -9543,6 +12395,7 @@ pub struct SaveAssetIntoInventory_InventoryData {
 /// /// NOT viewer to sim, sim should not have handler, ever
 /// /// This message is currently only uses objects, so the viewer ignores
 /// /// the asset id.
+///
 #[derive(Clone, Debug)]
 pub struct SaveAssetIntoInventory {
     pub agent_data: SaveAssetIntoInventory_AgentData,
@@ -9552,14 +12405,19 @@ pub struct SaveAssetIntoInventory {
 
 #[derive(Clone, Debug)]
 pub struct ScriptAnswerYes_AgentData {
+    /// TODO
     pub agent_id: Uuid,
+    /// TODO
     pub session_id: Uuid,
 }
 
 #[derive(Clone, Debug)]
 pub struct ScriptAnswerYes_Data {
+    /// TODO
     pub task_id: Uuid,
+    /// TODO
     pub item_id: Uuid,
+    /// TODO
     pub questions: i32,
 }
 
@@ -9567,6 +12425,7 @@ pub struct ScriptAnswerYes_Data {
 /// 		TODO:
 /// 		/// ScriptAnswerYes
 /// /// reliable
+///
 #[derive(Clone, Debug)]
 pub struct ScriptAnswerYes {
     pub agent_data: ScriptAnswerYes_AgentData,
@@ -9576,8 +12435,11 @@ pub struct ScriptAnswerYes {
 
 #[derive(Clone, Debug)]
 pub struct ScriptControlChange_Data {
+    /// TODO
     pub take_controls: bool,
+    /// TODO
     pub controls: u32,
+    /// TODO
     pub pass_to_agent: bool,
 }
 
@@ -9585,6 +12447,7 @@ pub struct ScriptControlChange_Data {
 /// 		TODO:
 /// 		/// ScriptControlChange
 /// /// reliable
+///
 #[derive(Clone, Debug)]
 pub struct ScriptControlChange {
     pub data: Vec<ScriptControlChange_Data>,
@@ -9593,13 +12456,16 @@ pub struct ScriptControlChange {
 
 #[derive(Clone, Debug)]
 pub struct ScriptDataReply_DataBlock {
+    /// TODO
     pub hash: u64,
+    /// TODO
     pub reply: Vec<u8>,
 }
 
 ///
 /// TODO:
 /// /// Data server responds with data
+///
 #[derive(Clone, Debug)]
 pub struct ScriptDataReply {
     pub data_block: Vec<ScriptDataReply_DataBlock>,
@@ -9608,14 +12474,18 @@ pub struct ScriptDataReply {
 
 #[derive(Clone, Debug)]
 pub struct ScriptDataRequest_DataBlock {
+    /// TODO
     pub hash: u64,
+    /// TODO
     pub request_type: i8,
+    /// TODO
     pub request: Vec<u8>,
 }
 
 ///
 /// TODO:
 /// /// Script on simulator asks dataserver for information
+///
 #[derive(Clone, Debug)]
 pub struct ScriptDataRequest {
     pub data_block: Vec<ScriptDataRequest_DataBlock>,
@@ -9624,22 +12494,31 @@ pub struct ScriptDataRequest {
 
 #[derive(Clone, Debug)]
 pub struct ScriptDialog_Data {
+    /// TODO
     pub object_id: Uuid,
+    /// TODO
     pub first_name: Vec<u8>,
+    /// TODO
     pub last_name: Vec<u8>,
+    /// TODO
     pub object_name: Vec<u8>,
+    /// TODO
     pub message: Vec<u8>,
+    /// TODO
     pub chat_channel: i32,
+    /// TODO
     pub image_id: Uuid,
 }
 
 #[derive(Clone, Debug)]
 pub struct ScriptDialog_Buttons {
+    /// TODO
     pub button_label: Vec<u8>,
 }
 
 #[derive(Clone, Debug)]
 pub struct ScriptDialog_OwnerData {
+    /// TODO
     pub owner_id: Uuid,
 }
 
@@ -9648,6 +12527,7 @@ pub struct ScriptDialog_OwnerData {
 /// 		/// ScriptDialog
 /// /// sim -> viewer
 /// /// reliable
+///
 #[derive(Clone, Debug)]
 pub struct ScriptDialog {
     pub data: ScriptDialog_Data,
@@ -9658,15 +12538,21 @@ pub struct ScriptDialog {
 
 #[derive(Clone, Debug)]
 pub struct ScriptDialogReply_AgentData {
+    /// TODO
     pub agent_id: Uuid,
+    /// TODO
     pub session_id: Uuid,
 }
 
 #[derive(Clone, Debug)]
 pub struct ScriptDialogReply_Data {
+    /// TODO
     pub object_id: Uuid,
+    /// TODO
     pub chat_channel: i32,
+    /// TODO
     pub button_index: i32,
+    /// TODO
     pub button_label: Vec<u8>,
 }
 
@@ -9675,6 +12561,7 @@ pub struct ScriptDialogReply_Data {
 /// 		/// ScriptDialogReply
 /// /// viewer -> sim
 /// /// reliable
+///
 #[derive(Clone, Debug)]
 pub struct ScriptDialogReply {
     pub agent_data: ScriptDialogReply_AgentData,
@@ -9684,9 +12571,13 @@ pub struct ScriptDialogReply {
 
 #[derive(Clone, Debug)]
 pub struct ScriptMailRegistration_DataBlock {
+    /// TODO
     pub target_ip: Vec<u8>,
+    /// TODO
     pub target_port: IpPort,
+    /// TODO
     pub task_id: Uuid,
+    /// TODO
     pub flags: u32,
 }
 
@@ -9694,6 +12585,7 @@ pub struct ScriptMailRegistration_DataBlock {
 /// 		TODO:
 /// 		/// ScriptMailRegistration
 /// /// Simulator -> dataserver
+///
 #[derive(Clone, Debug)]
 pub struct ScriptMailRegistration {
     pub data_block: ScriptMailRegistration_DataBlock,
@@ -9702,10 +12594,15 @@ pub struct ScriptMailRegistration {
 
 #[derive(Clone, Debug)]
 pub struct ScriptQuestion_Data {
+    /// TODO
     pub task_id: Uuid,
+    /// TODO
     pub item_id: Uuid,
+    /// TODO
     pub object_name: Vec<u8>,
+    /// TODO
     pub object_owner: Vec<u8>,
+    /// TODO
     pub questions: i32,
 }
 
@@ -9713,6 +12610,7 @@ pub struct ScriptQuestion_Data {
 /// 		TODO:
 /// 		/// ScriptQuestion
 /// /// reliable
+///
 #[derive(Clone, Debug)]
 pub struct ScriptQuestion {
     pub data: ScriptQuestion_Data,
@@ -9721,19 +12619,24 @@ pub struct ScriptQuestion {
 
 #[derive(Clone, Debug)]
 pub struct ScriptReset_AgentData {
+    /// TODO
     pub agent_id: Uuid,
+    /// TODO
     pub session_id: Uuid,
 }
 
 #[derive(Clone, Debug)]
 pub struct ScriptReset_Script {
+    /// TODO
     pub object_id: Uuid,
+    /// TODO
     pub item_id: Uuid,
 }
 
 ///
 /// TODO:
 /// /// ScriptReset - causes a script to reset
+///
 #[derive(Clone, Debug)]
 pub struct ScriptReset {
     pub agent_data: ScriptReset_AgentData,
@@ -9743,8 +12646,11 @@ pub struct ScriptReset {
 
 #[derive(Clone, Debug)]
 pub struct ScriptRunningReply_Script {
+    /// TODO
     pub object_id: Uuid,
+    /// TODO
     pub item_id: Uuid,
+    /// TODO
     pub running: bool,
 }
 
@@ -9752,6 +12658,7 @@ pub struct ScriptRunningReply_Script {
 /// 		TODO:
 /// 		/// ScriptRunningReply - response from simulator to message above
 /// ///		{	Mono			BOOL	} Added to LLSD message
+///
 #[derive(Clone, Debug)]
 pub struct ScriptRunningReply {
     pub script: ScriptRunningReply_Script,
@@ -9760,25 +12667,36 @@ pub struct ScriptRunningReply {
 
 #[derive(Clone, Debug)]
 pub struct ScriptSensorReply_Requester {
+    /// TODO
     pub source_id: Uuid,
 }
 
 #[derive(Clone, Debug)]
 pub struct ScriptSensorReply_SensedData {
+    /// TODO
     pub object_id: Uuid,
+    /// TODO
     pub owner_id: Uuid,
+    /// TODO
     pub group_id: Uuid,
+    /// TODO
     pub position: Vector3<f32>,
+    /// TODO
     pub velocity: Vector3<f32>,
+    /// TODO
     pub rotation: Quaternion<f32>,
+    /// TODO
     pub name: Vec<u8>,
+    /// TODO
     pub type_: i32,
+    /// TODO
     pub range: f32,
 }
 
 ///
 /// TODO:
 /// /// ScriptSensorReply - returns the request script search information back to the requester
+///
 #[derive(Clone, Debug)]
 pub struct ScriptSensorReply {
     pub requester: ScriptSensorReply_Requester,
@@ -9788,22 +12706,34 @@ pub struct ScriptSensorReply {
 
 #[derive(Clone, Debug)]
 pub struct ScriptSensorRequest_Requester {
+    /// TODO
     pub source_id: Uuid,
+    /// TODO
     pub request_id: Uuid,
+    /// TODO
     pub search_id: Uuid,
+    /// TODO
     pub search_pos: Vector3<f32>,
+    /// TODO
     pub search_dir: Quaternion<f32>,
+    /// TODO
     pub search_name: Vec<u8>,
+    /// TODO
     pub type_: i32,
+    /// TODO
     pub range: f32,
+    /// TODO
     pub arc: f32,
+    /// TODO
     pub region_handle: u64,
+    /// TODO
     pub search_regions: u8,
 }
 
 ///
 /// TODO:
 /// /// ScriptSensorRequest - causes the receiving sim to run a script sensor and return the results
+///
 #[derive(Clone, Debug)]
 pub struct ScriptSensorRequest {
     pub requester: ScriptSensorRequest_Requester,
@@ -9812,9 +12742,13 @@ pub struct ScriptSensorRequest {
 
 #[derive(Clone, Debug)]
 pub struct ScriptTeleportRequest_Data {
+    /// TODO
     pub object_name: Vec<u8>,
+    /// TODO
     pub sim_name: Vec<u8>,
+    /// TODO
     pub sim_position: Vector3<f32>,
+    /// TODO
     pub look_at: Vector3<f32>,
 }
 
@@ -9822,6 +12756,7 @@ pub struct ScriptTeleportRequest_Data {
 /// 		TODO:
 /// 		/// ScriptTeleportRequest
 /// /// reliable
+///
 #[derive(Clone, Debug)]
 pub struct ScriptTeleportRequest {
     pub data: ScriptTeleportRequest_Data,
@@ -9830,16 +12765,27 @@ pub struct ScriptTeleportRequest {
 
 #[derive(Clone, Debug)]
 pub struct SendPostcard_AgentData {
+    /// TODO
     pub agent_id: Uuid,
+    /// TODO
     pub session_id: Uuid,
+    /// TODO
     pub asset_id: Uuid,
+    /// TODO
     pub pos_global: Vector3<f64>,
+    /// TODO
     pub to: Vec<u8>,
+    /// TODO
     pub from: Vec<u8>,
+    /// TODO
     pub name: Vec<u8>,
+    /// TODO
     pub subject: Vec<u8>,
+    /// TODO
     pub msg: Vec<u8>,
+    /// TODO
     pub allow_publish: bool,
+    /// TODO
     pub mature_publish: bool,
 }
 
@@ -9849,6 +12795,7 @@ pub struct SendPostcard_AgentData {
 /// /// Postcard messages
 /// ///-----------------------------------------------------------------------------
 /// /// reliable
+///
 #[derive(Clone, Debug)]
 pub struct SendPostcard {
     pub agent_data: SendPostcard_AgentData,
@@ -9857,18 +12804,22 @@ pub struct SendPostcard {
 
 #[derive(Clone, Debug)]
 pub struct SendXferPacket_XferID {
+    /// TODO
     pub id: u64,
+    /// TODO
     pub packet: u32,
 }
 
 #[derive(Clone, Debug)]
 pub struct SendXferPacket_DataPacket {
+    /// TODO
     pub data: Vec<u8>,
 }
 
 ///
 /// TODO:
 /// /// SendXferPacket - send an additional packet of an arbitrary xfer from sim -> viewer
+///
 #[derive(Clone, Debug)]
 pub struct SendXferPacket {
     pub xfer_id: SendXferPacket_XferID,
@@ -9878,8 +12829,11 @@ pub struct SendXferPacket {
 
 #[derive(Clone, Debug)]
 pub struct SetAlwaysRun_AgentData {
+    /// TODO
     pub agent_id: Uuid,
+    /// TODO
     pub session_id: Uuid,
+    /// TODO
     pub always_run: bool,
 }
 
@@ -9887,6 +12841,7 @@ pub struct SetAlwaysRun_AgentData {
 /// 		TODO:
 /// 		/// SetAlwaysRun
 /// /// Lets the viewer choose between running and walking
+///
 #[derive(Clone, Debug)]
 pub struct SetAlwaysRun {
     pub agent_data: SetAlwaysRun_AgentData,
@@ -9895,6 +12850,7 @@ pub struct SetAlwaysRun {
 
 #[derive(Clone, Debug)]
 pub struct SetCPURatio_Data {
+    /// TODO
     pub ratio: u8,
 }
 
@@ -9902,6 +12858,7 @@ pub struct SetCPURatio_Data {
 /// 		TODO:
 /// 		/// SetChildCount - Sent to launcher to adjust nominal child count
 /// /// Simulator sends this increase the sim/cpu ratio on startup
+///
 #[derive(Clone, Debug)]
 pub struct SetCPURatio {
     pub data: SetCPURatio_Data,
@@ -9910,18 +12867,22 @@ pub struct SetCPURatio {
 
 #[derive(Clone, Debug)]
 pub struct SetFollowCamProperties_ObjectData {
+    /// TODO
     pub object_id: Uuid,
 }
 
 #[derive(Clone, Debug)]
 pub struct SetFollowCamProperties_CameraProperty {
+    /// TODO
     pub type_: i32,
+    /// TODO
     pub value: f32,
 }
 
 ///
 /// TODO:
 /// /// SetFollowCamProperties
+///
 #[derive(Clone, Debug)]
 pub struct SetFollowCamProperties {
     pub object_data: SetFollowCamProperties_ObjectData,
@@ -9931,24 +12892,30 @@ pub struct SetFollowCamProperties {
 
 #[derive(Clone, Debug)]
 pub struct SetGroupAcceptNotices_AgentData {
+    /// TODO
     pub agent_id: Uuid,
+    /// TODO
     pub session_id: Uuid,
 }
 
 #[derive(Clone, Debug)]
 pub struct SetGroupAcceptNotices_Data {
+    /// TODO
     pub group_id: Uuid,
+    /// TODO
     pub accept_notices: bool,
 }
 
 #[derive(Clone, Debug)]
 pub struct SetGroupAcceptNotices_NewData {
+    /// TODO
     pub list_in_profile: bool,
 }
 
 ///
 /// TODO:
 /// /// viewer -> simulator -> dataserver
+///
 #[derive(Clone, Debug)]
 pub struct SetGroupAcceptNotices {
     pub agent_data: SetGroupAcceptNotices_AgentData,
@@ -9959,19 +12926,24 @@ pub struct SetGroupAcceptNotices {
 
 #[derive(Clone, Debug)]
 pub struct SetGroupContribution_AgentData {
+    /// TODO
     pub agent_id: Uuid,
+    /// TODO
     pub session_id: Uuid,
 }
 
 #[derive(Clone, Debug)]
 pub struct SetGroupContribution_Data {
+    /// TODO
     pub group_id: Uuid,
+    /// TODO
     pub contribution: i32,
 }
 
 ///
 /// TODO:
 /// /// viewer -> simulator -> dataserver
+///
 #[derive(Clone, Debug)]
 pub struct SetGroupContribution {
     pub agent_data: SetGroupContribution_AgentData,
@@ -9981,14 +12953,19 @@ pub struct SetGroupContribution {
 
 #[derive(Clone, Debug)]
 pub struct SetScriptRunning_AgentData {
+    /// TODO
     pub agent_id: Uuid,
+    /// TODO
     pub session_id: Uuid,
 }
 
 #[derive(Clone, Debug)]
 pub struct SetScriptRunning_Script {
+    /// TODO
     pub object_id: Uuid,
+    /// TODO
     pub item_id: Uuid,
+    /// TODO
     pub running: bool,
 }
 
@@ -9996,6 +12973,7 @@ pub struct SetScriptRunning_Script {
 /// 		TODO:
 /// 		/// SetScriptRunning - makes a script active or inactive (Enable may be
 /// /// true or false)
+///
 #[derive(Clone, Debug)]
 pub struct SetScriptRunning {
     pub agent_data: SetScriptRunning_AgentData,
@@ -10005,13 +12983,21 @@ pub struct SetScriptRunning {
 
 #[derive(Clone, Debug)]
 pub struct SetSimPresenceInDatabase_SimData {
+    /// TODO
     pub region_id: Uuid,
+    /// TODO
     pub host_name: Vec<u8>,
+    /// TODO
     pub grid_x: u32,
+    /// TODO
     pub grid_y: u32,
+    /// TODO
     pub pid: i32,
+    /// TODO
     pub agent_count: i32,
+    /// TODO
     pub time_to_live: i32,
+    /// TODO
     pub status: Vec<u8>,
 }
 
@@ -10021,6 +13007,7 @@ pub struct SetSimPresenceInDatabase_SimData {
 /// /// updates the "presence" table in the database to ensure
 /// /// that a given simulator is present and valid for a set amount of
 /// /// time
+///
 #[derive(Clone, Debug)]
 pub struct SetSimPresenceInDatabase {
     pub sim_data: SetSimPresenceInDatabase_SimData,
@@ -10029,13 +13016,21 @@ pub struct SetSimPresenceInDatabase {
 
 #[derive(Clone, Debug)]
 pub struct SetSimStatusInDatabase_Data {
+    /// TODO
     pub region_id: Uuid,
+    /// TODO
     pub host_name: Vec<u8>,
+    /// TODO
     pub x: i32,
+    /// TODO
     pub y: i32,
+    /// TODO
     pub pid: i32,
+    /// TODO
     pub agent_count: i32,
+    /// TODO
     pub time_to_live: i32,
+    /// TODO
     pub status: Vec<u8>,
 }
 
@@ -10045,6 +13040,7 @@ pub struct SetSimStatusInDatabase_Data {
 /// /// alters the "simulator" table in the database
 /// /// sim -> dataserver
 /// /// reliable
+///
 #[derive(Clone, Debug)]
 pub struct SetSimStatusInDatabase {
     pub data: SetSimStatusInDatabase_Data,
@@ -10053,11 +13049,17 @@ pub struct SetSimStatusInDatabase {
 
 #[derive(Clone, Debug)]
 pub struct SetStartLocation_StartLocationData {
+    /// TODO
     pub agent_id: Uuid,
+    /// TODO
     pub region_id: Uuid,
+    /// TODO
     pub location_id: u32,
+    /// TODO
     pub region_handle: u64,
+    /// TODO
     pub location_pos: Vector3<f32>,
+    /// TODO
     pub location_look_at: Vector3<f32>,
 }
 
@@ -10065,6 +13067,7 @@ pub struct SetStartLocation_StartLocationData {
 /// 		TODO:
 /// 		/// SetStartLocation
 /// /// sim -> dataserver
+///
 #[derive(Clone, Debug)]
 pub struct SetStartLocation {
     pub start_location_data: SetStartLocation_StartLocationData,
@@ -10073,15 +13076,21 @@ pub struct SetStartLocation {
 
 #[derive(Clone, Debug)]
 pub struct SetStartLocationRequest_AgentData {
+    /// TODO
     pub agent_id: Uuid,
+    /// TODO
     pub session_id: Uuid,
 }
 
 #[derive(Clone, Debug)]
 pub struct SetStartLocationRequest_StartLocationData {
+    /// TODO
     pub sim_name: Vec<u8>,
+    /// TODO
     pub location_id: u32,
+    /// TODO
     pub location_pos: Vector3<f32>,
+    /// TODO
     pub location_look_at: Vector3<f32>,
 }
 
@@ -10091,6 +13100,7 @@ pub struct SetStartLocationRequest_StartLocationData {
 /// /// viewer -> sim
 /// /// failure checked at sim and triggers ImprovedInstantMessage
 /// /// success triggers SetStartLocation
+///
 #[derive(Clone, Debug)]
 pub struct SetStartLocationRequest {
     pub agent_data: SetStartLocationRequest_AgentData,
@@ -10100,12 +13110,15 @@ pub struct SetStartLocationRequest {
 
 #[derive(Clone, Debug)]
 pub struct SimCrashed_Data {
+    /// TODO
     pub region_x: u32,
+    /// TODO
     pub region_y: u32,
 }
 
 #[derive(Clone, Debug)]
 pub struct SimCrashed_Users {
+    /// TODO
     pub agent_id: Uuid,
 }
 
@@ -10113,6 +13126,7 @@ pub struct SimCrashed_Users {
 /// 		TODO:
 /// 		/// SimCrashed - Sent to dataserver when the sim goes down.
 /// /// Maybe we should notify the spaceserver as well?
+///
 #[derive(Clone, Debug)]
 pub struct SimCrashed {
     pub data: SimCrashed_Data,
@@ -10122,26 +13136,34 @@ pub struct SimCrashed {
 
 #[derive(Clone, Debug)]
 pub struct SimStats_Region {
+    /// TODO
     pub region_x: u32,
+    /// TODO
     pub region_y: u32,
+    /// TODO
     pub region_flags: u32,
+    /// TODO
     pub object_capacity: u32,
 }
 
 #[derive(Clone, Debug)]
 pub struct SimStats_Stat {
+    /// TODO
     pub stat_id: u32,
+    /// TODO
     pub stat_value: f32,
 }
 
 #[derive(Clone, Debug)]
 pub struct SimStats_PidStat {
+    /// TODO
     pub pid: i32,
 }
 
 ///
 /// TODO:
 /// /// Simulator statistics packet (goes out to viewer and dataserver/spaceserver)
+///
 #[derive(Clone, Debug)]
 pub struct SimStats {
     pub region: SimStats_Region,
@@ -10152,7 +13174,9 @@ pub struct SimStats {
 
 #[derive(Clone, Debug)]
 pub struct SimStatus_SimStatus {
+    /// TODO
     pub can_accept_agents: bool,
+    /// TODO
     pub can_accept_tasks: bool,
 }
 
@@ -10160,6 +13184,7 @@ pub struct SimStatus_SimStatus {
 /// 		TODO:
 /// 		/// Sim status, condition of this sim
 /// /// sent reliably, when dirty
+///
 #[derive(Clone, Debug)]
 pub struct SimStatus {
     pub sim_status: SimStatus_SimStatus,
@@ -10168,19 +13193,24 @@ pub struct SimStatus {
 
 #[derive(Clone, Debug)]
 pub struct SimWideDeletes_AgentData {
+    /// TODO
     pub agent_id: Uuid,
+    /// TODO
     pub session_id: Uuid,
 }
 
 #[derive(Clone, Debug)]
 pub struct SimWideDeletes_DataBlock {
+    /// TODO
     pub target_id: Uuid,
+    /// TODO
     pub flags: u32,
 }
 
 ///
 /// TODO:
 /// /// SimWideDeletes
+///
 #[derive(Clone, Debug)]
 pub struct SimWideDeletes {
     pub agent_data: SimWideDeletes_AgentData,
@@ -10190,15 +13220,21 @@ pub struct SimWideDeletes {
 
 #[derive(Clone, Debug)]
 pub struct SimulatorLoad_SimulatorLoad {
+    /// TODO
     pub time_dilation: f32,
+    /// TODO
     pub agent_count: i32,
+    /// TODO
     pub can_accept_agents: bool,
 }
 
 #[derive(Clone, Debug)]
 pub struct SimulatorLoad_AgentList {
+    /// TODO
     pub circuit_code: u32,
+    /// TODO
     pub x: u8,
+    /// TODO
     pub y: u8,
 }
 
@@ -10207,6 +13243,7 @@ pub struct SimulatorLoad_AgentList {
 /// 		/// SimulatorLoad
 /// /// simulator -> spaceserver
 /// /// reliable
+///
 #[derive(Clone, Debug)]
 pub struct SimulatorLoad {
     pub simulator_load: SimulatorLoad_SimulatorLoad,
@@ -10216,6 +13253,7 @@ pub struct SimulatorLoad {
 
 #[derive(Clone, Debug)]
 pub struct SimulatorMapUpdate_MapData {
+    /// TODO
     pub flags: u32,
 }
 
@@ -10224,6 +13262,7 @@ pub struct SimulatorMapUpdate_MapData {
 /// 		/// SimulatorMapUpdate
 /// /// simulator -> dataserver
 /// /// reliable
+///
 #[derive(Clone, Debug)]
 pub struct SimulatorMapUpdate {
     pub map_data: SimulatorMapUpdate_MapData,
@@ -10232,31 +13271,45 @@ pub struct SimulatorMapUpdate {
 
 #[derive(Clone, Debug)]
 pub struct SimulatorPresentAtLocation_SimulatorPublicHostBlock {
+    /// TODO
     pub port: IpPort,
+    /// TODO
     pub simulator_ip: Ip4Addr,
+    /// TODO
     pub grid_x: u32,
+    /// TODO
     pub grid_y: u32,
 }
 
 #[derive(Clone, Debug)]
 pub struct SimulatorPresentAtLocation_NeighborBlock {
+    /// TODO
     pub ip: Ip4Addr,
+    /// TODO
     pub port: IpPort,
 }
 
 #[derive(Clone, Debug)]
 pub struct SimulatorPresentAtLocation_SimulatorBlock {
+    /// TODO
     pub sim_name: Vec<u8>,
+    /// TODO
     pub sim_access: u8,
+    /// TODO
     pub region_flags: u32,
+    /// TODO
     pub region_id: Uuid,
+    /// TODO
     pub estate_id: u32,
+    /// TODO
     pub parent_estate_id: u32,
 }
 
 #[derive(Clone, Debug)]
 pub struct SimulatorPresentAtLocation_TelehubBlock {
+    /// TODO
     pub has_telehub: bool,
+    /// TODO
     pub telehub_pos: Vector3<f32>,
 }
 
@@ -10264,6 +13317,7 @@ pub struct SimulatorPresentAtLocation_TelehubBlock {
 /// 		TODO:
 /// 		/// SimulatorPresentAtLocation - indicates that the sim is present at a grid
 /// /// location and passes what it believes its neighbors are
+///
 #[derive(Clone, Debug)]
 pub struct SimulatorPresentAtLocation {
     pub simulator_public_host_block: SimulatorPresentAtLocation_SimulatorPublicHostBlock,
@@ -10275,17 +13329,25 @@ pub struct SimulatorPresentAtLocation {
 
 #[derive(Clone, Debug)]
 pub struct SimulatorReady_SimulatorBlock {
+    /// TODO
     pub sim_name: Vec<u8>,
+    /// TODO
     pub sim_access: u8,
+    /// TODO
     pub region_flags: u32,
+    /// TODO
     pub region_id: Uuid,
+    /// TODO
     pub estate_id: u32,
+    /// TODO
     pub parent_estate_id: u32,
 }
 
 #[derive(Clone, Debug)]
 pub struct SimulatorReady_TelehubBlock {
+    /// TODO
     pub has_telehub: bool,
+    /// TODO
     pub telehub_pos: Vector3<f32>,
 }
 
@@ -10293,6 +13355,7 @@ pub struct SimulatorReady_TelehubBlock {
 /// 		TODO:
 /// 		/// SimulatorReady - indicates the sim has finished loading its state
 /// /// and is ready to receive updates from others
+///
 #[derive(Clone, Debug)]
 pub struct SimulatorReady {
     pub simulator_block: SimulatorReady_SimulatorBlock,
@@ -10302,8 +13365,11 @@ pub struct SimulatorReady {
 
 #[derive(Clone, Debug)]
 pub struct SimulatorSetMap_MapData {
+    /// TODO
     pub region_handle: u64,
+    /// TODO
     pub type_: i32,
+    /// TODO
     pub map_image: Uuid,
 }
 
@@ -10313,6 +13379,7 @@ pub struct SimulatorSetMap_MapData {
 /// /// simulator -> dataserver
 /// /// reliable
 /// /// Used to upload a map image into the database (currently used only for Land For Sale)
+///
 #[derive(Clone, Debug)]
 pub struct SimulatorSetMap {
     pub map_data: SimulatorSetMap_MapData,
@@ -10322,22 +13389,30 @@ pub struct SimulatorSetMap {
 ///
 /// TODO:
 /// /// Simulator Shutdown Request - Tells spaceserver that a simulator is trying to shutdown
+///
 #[derive(Clone, Debug)]
 pub struct SimulatorShutdownRequest {}
 
 
 #[derive(Clone, Debug)]
 pub struct SimulatorViewerTimeMessage_TimeInfo {
+    /// TODO
     pub usec_since_start: u64,
+    /// TODO
     pub sec_per_day: u32,
+    /// TODO
     pub sec_per_year: u32,
+    /// TODO
     pub sun_direction: Vector3<f32>,
+    /// TODO
     pub sun_phase: f32,
+    /// TODO
     pub sun_ang_velocity: Vector3<f32>,
 }
 
 ///
 /// TODO:
+///
 ///
 #[derive(Clone, Debug)]
 pub struct SimulatorViewerTimeMessage {
@@ -10347,18 +13422,26 @@ pub struct SimulatorViewerTimeMessage {
 
 #[derive(Clone, Debug)]
 pub struct SoundTrigger_SoundData {
+    /// TODO
     pub sound_id: Uuid,
+    /// TODO
     pub owner_id: Uuid,
+    /// TODO
     pub object_id: Uuid,
+    /// TODO
     pub parent_id: Uuid,
+    /// TODO
     pub handle: u64,
+    /// TODO
     pub position: Vector3<f32>,
+    /// TODO
     pub gain: f32,
 }
 
 ///
 /// TODO:
 /// /// SoundTrigger - Sent by simulator to viewer to trigger sound outside current region
+///
 #[derive(Clone, Debug)]
 pub struct SoundTrigger {
     pub sound_data: SoundTrigger_SoundData,
@@ -10367,13 +13450,17 @@ pub struct SoundTrigger {
 
 #[derive(Clone, Debug)]
 pub struct StartAuction_AgentData {
+    /// TODO
     pub agent_id: Uuid,
 }
 
 #[derive(Clone, Debug)]
 pub struct StartAuction_ParcelData {
+    /// TODO
     pub parcel_id: Uuid,
+    /// TODO
     pub snapshot_id: Uuid,
+    /// TODO
     pub name: Vec<u8>,
 }
 
@@ -10381,6 +13468,7 @@ pub struct StartAuction_ParcelData {
 /// 		TODO:
 /// 		/// sim -> dataserver
 /// /// Once all of the data has been gathered,
+///
 #[derive(Clone, Debug)]
 pub struct StartAuction {
     pub agent_data: StartAuction_AgentData,
@@ -10390,16 +13478,23 @@ pub struct StartAuction {
 
 #[derive(Clone, Debug)]
 pub struct StartGroupProposal_AgentData {
+    /// TODO
     pub agent_id: Uuid,
+    /// TODO
     pub session_id: Uuid,
 }
 
 #[derive(Clone, Debug)]
 pub struct StartGroupProposal_ProposalData {
+    /// TODO
     pub group_id: Uuid,
+    /// TODO
     pub quorum: i32,
+    /// TODO
     pub majority: f32,
+    /// TODO
     pub duration: i32,
+    /// TODO
     pub proposal_text: Vec<u8>,
 }
 
@@ -10408,6 +13503,7 @@ pub struct StartGroupProposal_ProposalData {
 /// 		/// StartGroupProposal
 /// /// viewer -> simulator -> dataserver
 /// /// reliable
+///
 #[derive(Clone, Debug)]
 pub struct StartGroupProposal {
     pub agent_data: StartGroupProposal_AgentData,
@@ -10417,18 +13513,23 @@ pub struct StartGroupProposal {
 
 #[derive(Clone, Debug)]
 pub struct StartLure_AgentData {
+    /// TODO
     pub agent_id: Uuid,
+    /// TODO
     pub session_id: Uuid,
 }
 
 #[derive(Clone, Debug)]
 pub struct StartLure_Info {
+    /// TODO
     pub lure_type: u8,
+    /// TODO
     pub message: Vec<u8>,
 }
 
 #[derive(Clone, Debug)]
 pub struct StartLure_TargetData {
+    /// TODO
     pub target_id: Uuid,
 }
 
@@ -10442,6 +13543,7 @@ pub struct StartLure_TargetData {
 /// /// userserver will send an InitializeLure to the spaceserver. When that
 /// /// packet is acked, the original instant message is finally forwarded to
 /// /// TargetID.
+///
 #[derive(Clone, Debug)]
 pub struct StartLure {
     pub agent_data: StartLure_AgentData,
@@ -10452,7 +13554,9 @@ pub struct StartLure {
 
 #[derive(Clone, Debug)]
 pub struct StartPingCheck_PingID {
+    /// TODO
     pub ping_id: u8,
+    /// TODO
     pub oldest_unacked: u32,
 }
 
@@ -10461,6 +13565,7 @@ pub struct StartPingCheck_PingID {
 /// 		/// StartPingCheck - used to measure circuit ping times
 /// /// PingID is used to determine how backlogged the ping was that was
 /// /// returned (or how hosed the other side is)
+///
 #[derive(Clone, Debug)]
 pub struct StartPingCheck {
     pub ping_id: StartPingCheck_PingID,
@@ -10469,12 +13574,15 @@ pub struct StartPingCheck {
 
 #[derive(Clone, Debug)]
 pub struct StateSave_AgentData {
+    /// TODO
     pub agent_id: Uuid,
+    /// TODO
     pub session_id: Uuid,
 }
 
 #[derive(Clone, Debug)]
 pub struct StateSave_DataBlock {
+    /// TODO
     pub filename: Vec<u8>,
 }
 
@@ -10483,6 +13591,7 @@ pub struct StateSave_DataBlock {
 /// 		/// Save State
 /// /// viewer->sim
 /// /// requires administrative access
+///
 #[derive(Clone, Debug)]
 pub struct StateSave {
     pub agent_data: StateSave_AgentData,
@@ -10495,12 +13604,14 @@ pub struct StateSave {
 /// 		/// SubscribeLoad
 /// /// spaceserver -> simulator
 /// /// reliable
+///
 #[derive(Clone, Debug)]
 pub struct SubscribeLoad {}
 
 
 #[derive(Clone, Debug)]
 pub struct SystemKickUser_AgentInfo {
+    /// TODO
     pub agent_id: Uuid,
 }
 
@@ -10508,6 +13619,7 @@ pub struct SystemKickUser_AgentInfo {
 /// 		TODO:
 /// 		/// SystemKickUser
 /// /// user->space, reliable
+///
 #[derive(Clone, Debug)]
 pub struct SystemKickUser {
     pub agent_info: Vec<SystemKickUser_AgentInfo>,
@@ -10516,13 +13628,17 @@ pub struct SystemKickUser {
 
 #[derive(Clone, Debug)]
 pub struct SystemMessage_MethodData {
+    /// TODO
     pub method: Vec<u8>,
+    /// TODO
     pub invoice: Uuid,
+    /// TODO
     pub digest: [u8; 32],
 }
 
 #[derive(Clone, Debug)]
 pub struct SystemMessage_ParamList {
+    /// TODO
     pub parameter: Vec<u8>,
 }
 
@@ -10530,6 +13646,7 @@ pub struct SystemMessage_ParamList {
 /// 		TODO:
 /// 		/// Generalized system message. Each Requst has its own protocol for
 /// /// the StringData block format and contents.
+///
 #[derive(Clone, Debug)]
 pub struct SystemMessage {
     pub method_data: SystemMessage_MethodData,
@@ -10541,20 +13658,26 @@ pub struct SystemMessage {
 /// 		TODO:
 /// 		/// TallyVotes userserver -> dataserver
 /// /// reliable
+///
 #[derive(Clone, Debug)]
 pub struct TallyVotes {}
 
 
 #[derive(Clone, Debug)]
 pub struct TelehubInfo_TelehubBlock {
+    /// TODO
     pub object_id: Uuid,
+    /// TODO
     pub object_name: Vec<u8>,
+    /// TODO
     pub telehub_pos: Vector3<f32>,
+    /// TODO
     pub telehub_rot: Quaternion<f32>,
 }
 
 #[derive(Clone, Debug)]
 pub struct TelehubInfo_SpawnPointBlock {
+    /// TODO
     pub spawn_point_pos: Vector3<f32>,
 }
 
@@ -10563,6 +13686,7 @@ pub struct TelehubInfo_SpawnPointBlock {
 /// 		/// TelehubInfo - fill in the UI for telehub creation floater.
 /// /// sim -> viewer
 /// /// reliable
+///
 #[derive(Clone, Debug)]
 pub struct TelehubInfo {
     pub telehub_block: TelehubInfo_TelehubBlock,
@@ -10572,7 +13696,9 @@ pub struct TelehubInfo {
 
 #[derive(Clone, Debug)]
 pub struct TeleportCancel_Info {
+    /// TODO
     pub agent_id: Uuid,
+    /// TODO
     pub session_id: Uuid,
 }
 
@@ -10580,6 +13706,7 @@ pub struct TeleportCancel_Info {
 /// 		TODO:
 /// 		/// TeleportCancel viewer->sim
 /// /// reliable
+///
 #[derive(Clone, Debug)]
 pub struct TeleportCancel {
     pub info: TeleportCancel_Info,
@@ -10588,13 +13715,17 @@ pub struct TeleportCancel {
 
 #[derive(Clone, Debug)]
 pub struct TeleportFailed_Info {
+    /// TODO
     pub agent_id: Uuid,
+    /// TODO
     pub reason: Vec<u8>,
 }
 
 #[derive(Clone, Debug)]
 pub struct TeleportFailed_AlertInfo {
+    /// TODO
     pub message: Vec<u8>,
+    /// TODO
     pub extra_params: Vec<u8>,
 }
 
@@ -10602,6 +13733,7 @@ pub struct TeleportFailed_AlertInfo {
 /// 		TODO:
 /// 		/// TeleportFailed somewhere->sim->viewer
 /// /// announce failure of teleport request
+///
 #[derive(Clone, Debug)]
 pub struct TeleportFailed {
     pub info: TeleportFailed_Info,
@@ -10611,15 +13743,25 @@ pub struct TeleportFailed {
 
 #[derive(Clone, Debug)]
 pub struct TeleportFinish_Info {
+    /// Agent id of the client.
     pub agent_id: Uuid,
+    /// TODO
     pub location_id: u32,
+    /// TODO
     pub sim_ip: Ip4Addr,
+    /// TODO
     pub sim_port: IpPort,
+    /// TODO
     pub region_handle: u64,
+    /// TODO
     pub seed_capability: Vec<u8>,
+    /// TODO
     pub sim_access: u8,
+    /// TODO
     pub teleport_flags: u32,
+    /// TODO
     pub region_size_x: u32,
+    /// TODO
     pub region_size_y: u32,
 }
 
@@ -10628,6 +13770,7 @@ pub struct TeleportFinish_Info {
 ///         /// TeleportFinish sim->viewer
 /// /// called when all of the information has been collected and readied for
 /// /// the agent.
+///
 #[derive(Clone, Debug)]
 pub struct TeleportFinish {
     pub info: TeleportFinish_Info,
@@ -10636,6 +13779,7 @@ pub struct TeleportFinish {
 
 #[derive(Clone, Debug)]
 pub struct TeleportLandingStatusChanged_RegionData {
+    /// TODO
     pub region_handle: u64,
 }
 
@@ -10645,6 +13789,7 @@ pub struct TeleportLandingStatusChanged_RegionData {
 /// ///sim->dataserver
 /// ///Sent from the region to the data server
 /// ///to note that the region's teleportation landing status has changed
+///
 #[derive(Clone, Debug)]
 pub struct TeleportLandingStatusChanged {
     pub region_data: TeleportLandingStatusChanged_RegionData,
@@ -10653,8 +13798,11 @@ pub struct TeleportLandingStatusChanged {
 
 #[derive(Clone, Debug)]
 pub struct TeleportLandmarkRequest_Info {
+    /// TODO
     pub agent_id: Uuid,
+    /// TODO
     pub session_id: Uuid,
+    /// TODO
     pub landmark_id: Uuid,
 }
 
@@ -10662,6 +13810,7 @@ pub struct TeleportLandmarkRequest_Info {
 /// 		TODO:
 /// 		/// TeleportLandmarkRequest viewer->sim
 /// /// teleport to landmark asset ID destination. use LLUUD::null for home.
+///
 #[derive(Clone, Debug)]
 pub struct TeleportLandmarkRequest {
     pub info: TeleportLandmarkRequest_Info,
@@ -10670,10 +13819,15 @@ pub struct TeleportLandmarkRequest {
 
 #[derive(Clone, Debug)]
 pub struct TeleportLocal_Info {
+    /// TODO
     pub agent_id: Uuid,
+    /// TODO
     pub location_id: u32,
+    /// TODO
     pub position: Vector3<f32>,
+    /// TODO
     pub look_at: Vector3<f32>,
+    /// TODO
     pub teleport_flags: u32,
 }
 
@@ -10682,6 +13836,7 @@ pub struct TeleportLocal_Info {
 /// 		/// TeleportLocal
 /// /// sim -> viewer reply telling the viewer that we've successfully TP'd
 /// /// to somewhere else within the sim
+///
 #[derive(Clone, Debug)]
 pub struct TeleportLocal {
     pub info: TeleportLocal_Info,
@@ -10690,14 +13845,19 @@ pub struct TeleportLocal {
 
 #[derive(Clone, Debug)]
 pub struct TeleportLocationRequest_AgentData {
+    /// TODO
     pub agent_id: Uuid,
+    /// TODO
     pub session_id: Uuid,
 }
 
 #[derive(Clone, Debug)]
 pub struct TeleportLocationRequest_Info {
+    /// TODO
     pub region_handle: u64,
+    /// TODO
     pub position: Vector3<f32>,
+    /// TODO
     pub look_at: Vector3<f32>,
 }
 
@@ -10705,6 +13865,7 @@ pub struct TeleportLocationRequest_Info {
 /// 		TODO:
 /// 		/// TeleportLocationRequest
 /// /// viewer -> sim specifying exact teleport destination
+///
 #[derive(Clone, Debug)]
 pub struct TeleportLocationRequest {
     pub agent_data: TeleportLocationRequest_AgentData,
@@ -10714,9 +13875,13 @@ pub struct TeleportLocationRequest {
 
 #[derive(Clone, Debug)]
 pub struct TeleportLureRequest_Info {
+    /// TODO
     pub agent_id: Uuid,
+    /// TODO
     pub session_id: Uuid,
+    /// TODO
     pub lure_id: Uuid,
+    /// TODO
     pub teleport_flags: u32,
 }
 
@@ -10725,6 +13890,7 @@ pub struct TeleportLureRequest_Info {
 /// 		/// TeleportLureRequest viewer->sim
 /// /// Message from target of lure to begin the teleport process on the
 /// /// local simulator.
+///
 #[derive(Clone, Debug)]
 pub struct TeleportLureRequest {
     pub info: TeleportLureRequest_Info,
@@ -10733,12 +13899,15 @@ pub struct TeleportLureRequest {
 
 #[derive(Clone, Debug)]
 pub struct TeleportProgress_AgentData {
+    /// TODO
     pub agent_id: Uuid,
 }
 
 #[derive(Clone, Debug)]
 pub struct TeleportProgress_Info {
+    /// TODO
     pub teleport_flags: u32,
+    /// TODO
     pub message: Vec<u8>,
 }
 
@@ -10746,6 +13915,7 @@ pub struct TeleportProgress_Info {
 /// 		TODO:
 /// 		/// TeleportProgress sim->viewer
 /// /// Tell the agent how the teleport is going.
+///
 #[derive(Clone, Debug)]
 pub struct TeleportProgress {
     pub agent_data: TeleportProgress_AgentData,
@@ -10755,14 +13925,19 @@ pub struct TeleportProgress {
 
 #[derive(Clone, Debug)]
 pub struct TeleportRequest_AgentData {
+    /// TODO
     pub agent_id: Uuid,
+    /// TODO
     pub session_id: Uuid,
 }
 
 #[derive(Clone, Debug)]
 pub struct TeleportRequest_Info {
+    /// TODO
     pub region_id: Uuid,
+    /// TODO
     pub position: Vector3<f32>,
+    /// TODO
     pub look_at: Vector3<f32>,
 }
 
@@ -10770,6 +13945,7 @@ pub struct TeleportRequest_Info {
 /// 		TODO:
 /// 		/// TeleportRequest
 /// /// viewer -> sim specifying exact teleport destination
+///
 #[derive(Clone, Debug)]
 pub struct TeleportRequest {
     pub agent_data: TeleportRequest_AgentData,
@@ -10779,6 +13955,7 @@ pub struct TeleportRequest {
 
 #[derive(Clone, Debug)]
 pub struct TeleportStart_Info {
+    /// TODO
     pub teleport_flags: u32,
 }
 
@@ -10786,6 +13963,7 @@ pub struct TeleportStart_Info {
 /// 		TODO:
 /// 		/// TeleportStart sim->viewer
 /// /// announce a successful teleport request to the viewer.
+///
 #[derive(Clone, Debug)]
 pub struct TeleportStart {
     pub info: TeleportStart_Info,
@@ -10794,12 +13972,15 @@ pub struct TeleportStart {
 
 #[derive(Clone, Debug)]
 pub struct TerminateFriendship_AgentData {
+    /// TODO
     pub agent_id: Uuid,
+    /// TODO
     pub session_id: Uuid,
 }
 
 #[derive(Clone, Debug)]
 pub struct TerminateFriendship_ExBlock {
+    /// TODO
     pub other_id: Uuid,
 }
 
@@ -10810,6 +13991,7 @@ pub struct TerminateFriendship_ExBlock {
 /// /// Stops agent tracking in userserver.
 /// /// viewer -> userserver -> dataserver
 /// /// reliable
+///
 #[derive(Clone, Debug)]
 pub struct TerminateFriendship {
     pub agent_data: TerminateFriendship_AgentData,
@@ -10819,18 +14001,23 @@ pub struct TerminateFriendship {
 
 #[derive(Clone, Debug)]
 pub struct TestMessage_TestBlock1 {
+    /// TODO
     pub test1: u32,
 }
 
 #[derive(Clone, Debug)]
 pub struct TestMessage_NeighborBlock {
+    /// TODO
     pub test0: u32,
+    /// TODO
     pub test1: u32,
+    /// TODO
     pub test2: u32,
 }
 
 ///
 /// TODO:
+///
 ///
 #[derive(Clone, Debug)]
 pub struct TestMessage {
@@ -10841,12 +14028,15 @@ pub struct TestMessage {
 
 #[derive(Clone, Debug)]
 pub struct TrackAgent_AgentData {
+    /// TODO
     pub agent_id: Uuid,
+    /// TODO
     pub session_id: Uuid,
 }
 
 #[derive(Clone, Debug)]
 pub struct TrackAgent_TargetData {
+    /// TODO
     pub prey_id: Uuid,
 }
 
@@ -10855,6 +14045,7 @@ pub struct TrackAgent_TargetData {
 /// 		/// Track agent - this information is used when sending out the
 /// /// coarse location update so that we know who you are tracking.
 /// /// To stop tracking - send a null uuid as the prey.
+///
 #[derive(Clone, Debug)]
 pub struct TrackAgent {
     pub agent_data: TrackAgent_AgentData,
@@ -10864,13 +14055,16 @@ pub struct TrackAgent {
 
 #[derive(Clone, Debug)]
 pub struct TransferAbort_TransferInfo {
+    /// TODO
     pub transfer_id: Uuid,
+    /// TODO
     pub channel_type: i32,
 }
 
 ///
 /// TODO:
 /// /// Abort a transfer in progress (either from target->source or source->target)
+///
 #[derive(Clone, Debug)]
 pub struct TransferAbort {
     pub transfer_info: TransferAbort_TransferInfo,
@@ -10879,11 +14073,17 @@ pub struct TransferAbort {
 
 #[derive(Clone, Debug)]
 pub struct TransferInfo_TransferInfo {
+    /// TODO
     pub transfer_id: Uuid,
+    /// TODO
     pub channel_type: i32,
+    /// TODO
     pub target_type: i32,
+    /// TODO
     pub status: i32,
+    /// TODO
     pub size: i32,
+    /// TODO
     pub params: Vec<u8>,
 }
 
@@ -10891,6 +14091,7 @@ pub struct TransferInfo_TransferInfo {
 /// 		TODO:
 /// 		/// Return info about a transfer/initiate transfer (source->target)
 /// /// Possibly should have a Params field like above
+///
 #[derive(Clone, Debug)]
 pub struct TransferInfo {
     pub transfer_info: TransferInfo_TransferInfo,
@@ -10899,14 +14100,19 @@ pub struct TransferInfo {
 
 #[derive(Clone, Debug)]
 pub struct TransferInventory_InfoBlock {
+    /// TODO
     pub source_id: Uuid,
+    /// TODO
     pub dest_id: Uuid,
+    /// TODO
     pub transaction_id: Uuid,
 }
 
 #[derive(Clone, Debug)]
 pub struct TransferInventory_InventoryBlock {
+    /// TODO
     pub inventory_id: Uuid,
+    /// TODO
     pub type_: i8,
 }
 
@@ -10914,6 +14120,7 @@ pub struct TransferInventory_InventoryBlock {
 /// 		TODO:
 /// 		/// sim -> dataserver
 /// /// sent during agent to agent inventory transfers
+///
 #[derive(Clone, Debug)]
 pub struct TransferInventory {
     pub info_block: TransferInventory_InfoBlock,
@@ -10923,7 +14130,9 @@ pub struct TransferInventory {
 
 #[derive(Clone, Debug)]
 pub struct TransferInventoryAck_InfoBlock {
+    /// TODO
     pub transaction_id: Uuid,
+    /// TODO
     pub inventory_id: Uuid,
 }
 
@@ -10932,6 +14141,7 @@ pub struct TransferInventoryAck_InfoBlock {
 /// 		/// dataserver -> sim
 /// /// InventoryID is the id of the inventory object that the end user
 /// /// should discard if they deny the transfer.
+///
 #[derive(Clone, Debug)]
 pub struct TransferInventoryAck {
     pub info_block: TransferInventoryAck_InfoBlock,
@@ -10940,15 +14150,21 @@ pub struct TransferInventoryAck {
 
 #[derive(Clone, Debug)]
 pub struct TransferPacket_TransferData {
+    /// TODO
     pub transfer_id: Uuid,
+    /// TODO
     pub channel_type: i32,
+    /// TODO
     pub packet: i32,
+    /// TODO
     pub status: i32,
+    /// TODO
     pub data: Vec<u8>,
 }
 
 ///
 /// TODO:
+///
 ///
 #[derive(Clone, Debug)]
 pub struct TransferPacket {
@@ -10958,16 +14174,22 @@ pub struct TransferPacket {
 
 #[derive(Clone, Debug)]
 pub struct TransferRequest_TransferInfo {
+    /// TODO
     pub transfer_id: Uuid,
+    /// TODO
     pub channel_type: i32,
+    /// TODO
     pub source_type: i32,
+    /// TODO
     pub priority: f32,
+    /// TODO
     pub params: Vec<u8>,
 }
 
 ///
 /// TODO:
 /// /// Request a new transfer (target->source)
+///
 #[derive(Clone, Debug)]
 pub struct TransferRequest {
     pub transfer_info: TransferRequest_TransferInfo,
@@ -10976,7 +14198,9 @@ pub struct TransferRequest {
 
 #[derive(Clone, Debug)]
 pub struct UUIDGroupNameReply_UUIDNameBlock {
+    /// TODO
     pub id: Uuid,
+    /// TODO
     pub group_name: Vec<u8>,
 }
 
@@ -10984,6 +14208,7 @@ pub struct UUIDGroupNameReply_UUIDNameBlock {
 /// 		TODO:
 /// 		/// UUIDGroupNameReply
 /// /// Translate a UUID into a group name
+///
 #[derive(Clone, Debug)]
 pub struct UUIDGroupNameReply {
     pub uuid_name_block: Vec<UUIDGroupNameReply_UUIDNameBlock>,
@@ -10992,6 +14217,7 @@ pub struct UUIDGroupNameReply {
 
 #[derive(Clone, Debug)]
 pub struct UUIDGroupNameRequest_UUIDNameBlock {
+    /// TODO
     pub id: Uuid,
 }
 
@@ -10999,6 +14225,7 @@ pub struct UUIDGroupNameRequest_UUIDNameBlock {
 /// 		TODO:
 /// 		/// UUIDGroupNameRequest
 /// /// Translate a UUID into a group name
+///
 #[derive(Clone, Debug)]
 pub struct UUIDGroupNameRequest {
     pub uuid_name_block: Vec<UUIDGroupNameRequest_UUIDNameBlock>,
@@ -11007,8 +14234,11 @@ pub struct UUIDGroupNameRequest {
 
 #[derive(Clone, Debug)]
 pub struct UUIDNameReply_UUIDNameBlock {
+    /// TODO
     pub id: Uuid,
+    /// TODO
     pub first_name: Vec<u8>,
+    /// TODO
     pub last_name: Vec<u8>,
 }
 
@@ -11016,6 +14246,7 @@ pub struct UUIDNameReply_UUIDNameBlock {
 /// 		TODO:
 /// 		/// UUIDNameReply
 /// /// Translate a UUID into first and last names
+///
 #[derive(Clone, Debug)]
 pub struct UUIDNameReply {
     pub uuid_name_block: Vec<UUIDNameReply_UUIDNameBlock>,
@@ -11024,6 +14255,7 @@ pub struct UUIDNameReply {
 
 #[derive(Clone, Debug)]
 pub struct UUIDNameRequest_UUIDNameBlock {
+    /// TODO
     pub id: Uuid,
 }
 
@@ -11031,6 +14263,7 @@ pub struct UUIDNameRequest_UUIDNameBlock {
 /// 		TODO:
 /// 		/// UUIDNameRequest
 /// /// Translate a UUID into first and last names
+///
 #[derive(Clone, Debug)]
 pub struct UUIDNameRequest {
     pub uuid_name_block: Vec<UUIDNameRequest_UUIDNameBlock>,
@@ -11039,19 +14272,24 @@ pub struct UUIDNameRequest {
 
 #[derive(Clone, Debug)]
 pub struct Undo_AgentData {
+    /// TODO
     pub agent_id: Uuid,
+    /// TODO
     pub session_id: Uuid,
+    /// TODO
     pub group_id: Uuid,
 }
 
 #[derive(Clone, Debug)]
 pub struct Undo_ObjectData {
+    /// TODO
     pub object_id: Uuid,
 }
 
 ///
 /// TODO:
 /// /// Undo
+///
 #[derive(Clone, Debug)]
 pub struct Undo {
     pub agent_data: Undo_AgentData,
@@ -11061,13 +14299,16 @@ pub struct Undo {
 
 #[derive(Clone, Debug)]
 pub struct UndoLand_AgentData {
+    /// TODO
     pub agent_id: Uuid,
+    /// TODO
     pub session_id: Uuid,
 }
 
 ///
 /// TODO:
 /// /// UndoLand
+///
 #[derive(Clone, Debug)]
 pub struct UndoLand {
     pub agent_data: UndoLand_AgentData,
@@ -11079,54 +14320,82 @@ pub struct UndoLand {
 /// 		/// UnsubscribeLoad
 /// /// spaceserver -> simulator
 /// /// reliable
+///
 #[derive(Clone, Debug)]
 pub struct UnsubscribeLoad {}
 
 
 #[derive(Clone, Debug)]
 pub struct UpdateAttachment_AgentData {
+    /// TODO
     pub agent_id: Uuid,
+    /// TODO
     pub session_id: Uuid,
 }
 
 #[derive(Clone, Debug)]
 pub struct UpdateAttachment_AttachmentBlock {
+    /// TODO
     pub attachment_point: u8,
 }
 
 #[derive(Clone, Debug)]
 pub struct UpdateAttachment_OperationData {
+    /// TODO
     pub add_item: bool,
+    /// TODO
     pub use_existing_asset: bool,
 }
 
 #[derive(Clone, Debug)]
 pub struct UpdateAttachment_InventoryData {
+    /// TODO
     pub item_id: Uuid,
+    /// TODO
     pub folder_id: Uuid,
+    /// TODO
     pub creator_id: Uuid,
+    /// TODO
     pub owner_id: Uuid,
+    /// TODO
     pub group_id: Uuid,
+    /// TODO
     pub base_mask: u32,
+    /// TODO
     pub owner_mask: u32,
+    /// TODO
     pub group_mask: u32,
+    /// TODO
     pub everyone_mask: u32,
+    /// TODO
     pub next_owner_mask: u32,
+    /// TODO
     pub group_owned: bool,
+    /// TODO
     pub asset_id: Uuid,
+    /// TODO
     pub type_: i8,
+    /// TODO
     pub inv_type: i8,
+    /// TODO
     pub flags: u32,
+    /// TODO
     pub sale_type: u8,
+    /// TODO
     pub sale_price: i32,
+    /// TODO
     pub name: Vec<u8>,
+    /// TODO
     pub description: Vec<u8>,
+    /// TODO
     pub creation_date: i32,
+    /// TODO
     pub crc: u32,
 }
 
 ///
 /// TODO:
+///
 ///
 #[derive(Clone, Debug)]
 pub struct UpdateAttachment {
@@ -11139,39 +14408,65 @@ pub struct UpdateAttachment {
 
 #[derive(Clone, Debug)]
 pub struct UpdateCreateInventoryItem_AgentData {
+    /// TODO
     pub agent_id: Uuid,
+    /// TODO
     pub sim_approved: bool,
+    /// TODO
     pub transaction_id: Uuid,
 }
 
 #[derive(Clone, Debug)]
 pub struct UpdateCreateInventoryItem_InventoryData {
+    /// TODO
     pub item_id: Uuid,
+    /// TODO
     pub folder_id: Uuid,
+    /// TODO
     pub callback_id: u32,
+    /// TODO
     pub creator_id: Uuid,
+    /// TODO
     pub owner_id: Uuid,
+    /// TODO
     pub group_id: Uuid,
+    /// TODO
     pub base_mask: u32,
+    /// TODO
     pub owner_mask: u32,
+    /// TODO
     pub group_mask: u32,
+    /// TODO
     pub everyone_mask: u32,
+    /// TODO
     pub next_owner_mask: u32,
+    /// TODO
     pub group_owned: bool,
+    /// TODO
     pub asset_id: Uuid,
+    /// TODO
     pub type_: i8,
+    /// TODO
     pub inv_type: i8,
+    /// TODO
     pub flags: u32,
+    /// TODO
     pub sale_type: u8,
+    /// TODO
     pub sale_price: i32,
+    /// TODO
     pub name: Vec<u8>,
+    /// TODO
     pub description: Vec<u8>,
+    /// TODO
     pub creation_date: i32,
+    /// TODO
     pub crc: u32,
 }
 
 ///
 /// TODO:
+///
 ///
 #[derive(Clone, Debug)]
 pub struct UpdateCreateInventoryItem {
@@ -11182,19 +14477,29 @@ pub struct UpdateCreateInventoryItem {
 
 #[derive(Clone, Debug)]
 pub struct UpdateGroupInfo_AgentData {
+    /// TODO
     pub agent_id: Uuid,
+    /// TODO
     pub session_id: Uuid,
 }
 
 #[derive(Clone, Debug)]
 pub struct UpdateGroupInfo_GroupData {
+    /// TODO
     pub group_id: Uuid,
+    /// TODO
     pub charter: Vec<u8>,
+    /// TODO
     pub show_in_list: bool,
+    /// TODO
     pub insignia_id: Uuid,
+    /// TODO
     pub membership_fee: i32,
+    /// TODO
     pub open_enrollment: bool,
+    /// TODO
     pub allow_publish: bool,
+    /// TODO
     pub mature_publish: bool,
 }
 
@@ -11204,6 +14509,7 @@ pub struct UpdateGroupInfo_GroupData {
 /// /// viewer -> simulator
 /// /// simulator -> dataserver
 /// /// reliable
+///
 #[derive(Clone, Debug)]
 pub struct UpdateGroupInfo {
     pub agent_data: UpdateGroupInfo_AgentData,
@@ -11213,20 +14519,27 @@ pub struct UpdateGroupInfo {
 
 #[derive(Clone, Debug)]
 pub struct UpdateInventoryFolder_AgentData {
+    /// TODO
     pub agent_id: Uuid,
+    /// TODO
     pub session_id: Uuid,
 }
 
 #[derive(Clone, Debug)]
 pub struct UpdateInventoryFolder_FolderData {
+    /// TODO
     pub folder_id: Uuid,
+    /// TODO
     pub parent_id: Uuid,
+    /// TODO
     pub type_: i8,
+    /// TODO
     pub name: Vec<u8>,
 }
 
 ///
 /// TODO:
+///
 ///
 #[derive(Clone, Debug)]
 pub struct UpdateInventoryFolder {
@@ -11237,39 +14550,65 @@ pub struct UpdateInventoryFolder {
 
 #[derive(Clone, Debug)]
 pub struct UpdateInventoryItem_AgentData {
+    /// TODO
     pub agent_id: Uuid,
+    /// TODO
     pub session_id: Uuid,
+    /// TODO
     pub transaction_id: Uuid,
 }
 
 #[derive(Clone, Debug)]
 pub struct UpdateInventoryItem_InventoryData {
+    /// TODO
     pub item_id: Uuid,
+    /// TODO
     pub folder_id: Uuid,
+    /// TODO
     pub callback_id: u32,
+    /// TODO
     pub creator_id: Uuid,
+    /// TODO
     pub owner_id: Uuid,
+    /// TODO
     pub group_id: Uuid,
+    /// TODO
     pub base_mask: u32,
+    /// TODO
     pub owner_mask: u32,
+    /// TODO
     pub group_mask: u32,
+    /// TODO
     pub everyone_mask: u32,
+    /// TODO
     pub next_owner_mask: u32,
+    /// TODO
     pub group_owned: bool,
+    /// TODO
     pub transaction_id: Uuid,
+    /// TODO
     pub type_: i8,
+    /// TODO
     pub inv_type: i8,
+    /// TODO
     pub flags: u32,
+    /// TODO
     pub sale_type: u8,
+    /// TODO
     pub sale_price: i32,
+    /// TODO
     pub name: Vec<u8>,
+    /// TODO
     pub description: Vec<u8>,
+    /// TODO
     pub creation_date: i32,
+    /// TODO
     pub crc: u32,
 }
 
 ///
 /// TODO:
+///
 ///
 #[derive(Clone, Debug)]
 pub struct UpdateInventoryItem {
@@ -11280,21 +14619,28 @@ pub struct UpdateInventoryItem {
 
 #[derive(Clone, Debug)]
 pub struct UpdateMuteListEntry_AgentData {
+    /// TODO
     pub agent_id: Uuid,
+    /// TODO
     pub session_id: Uuid,
 }
 
 #[derive(Clone, Debug)]
 pub struct UpdateMuteListEntry_MuteData {
+    /// TODO
     pub mute_id: Uuid,
+    /// TODO
     pub mute_name: Vec<u8>,
+    /// TODO
     pub mute_type: i32,
+    /// TODO
     pub mute_flags: u32,
 }
 
 ///
 /// TODO:
 /// /// update/add someone in the mute list
+///
 #[derive(Clone, Debug)]
 pub struct UpdateMuteListEntry {
     pub agent_data: UpdateMuteListEntry_AgentData,
@@ -11304,26 +14650,47 @@ pub struct UpdateMuteListEntry {
 
 #[derive(Clone, Debug)]
 pub struct UpdateParcel_ParcelData {
+    /// TODO
     pub parcel_id: Uuid,
+    /// TODO
     pub region_handle: u64,
+    /// TODO
     pub owner_id: Uuid,
+    /// TODO
     pub group_owned: bool,
+    /// TODO
     pub status: u8,
+    /// TODO
     pub name: Vec<u8>,
+    /// TODO
     pub description: Vec<u8>,
+    /// TODO
     pub music_url: Vec<u8>,
+    /// TODO
     pub region_x: f32,
+    /// TODO
     pub region_y: f32,
+    /// TODO
     pub actual_area: i32,
+    /// TODO
     pub billable_area: i32,
+    /// TODO
     pub show_dir: bool,
+    /// TODO
     pub is_for_sale: bool,
+    /// TODO
     pub category: u8,
+    /// TODO
     pub snapshot_id: Uuid,
+    /// TODO
     pub user_location: Vector3<f32>,
+    /// TODO
     pub sale_price: i32,
+    /// TODO
     pub authorized_buyer_id: Uuid,
+    /// TODO
     pub allow_publish: bool,
+    /// TODO
     pub mature_publish: bool,
 }
 
@@ -11334,6 +14701,7 @@ pub struct UpdateParcel_ParcelData {
 /// /// persistance in the database.
 /// /// If you add something here, you should probably also change the
 /// /// simulator's database update query on startup.
+///
 #[derive(Clone, Debug)]
 pub struct UpdateParcel {
     pub parcel_data: UpdateParcel_ParcelData,
@@ -11342,15 +14710,20 @@ pub struct UpdateParcel {
 
 #[derive(Clone, Debug)]
 pub struct UpdateSimulator_SimulatorInfo {
+    /// TODO
     pub region_id: Uuid,
+    /// TODO
     pub sim_name: Vec<u8>,
+    /// TODO
     pub estate_id: u32,
+    /// TODO
     pub sim_access: u8,
 }
 
 ///
 /// TODO:
 /// /// Updates SimName, EstateID and SimAccess using RegionID as a key
+///
 #[derive(Clone, Debug)]
 pub struct UpdateSimulator {
     pub simulator_info: UpdateSimulator_SimulatorInfo,
@@ -11359,38 +14732,63 @@ pub struct UpdateSimulator {
 
 #[derive(Clone, Debug)]
 pub struct UpdateTaskInventory_AgentData {
+    /// TODO
     pub agent_id: Uuid,
+    /// TODO
     pub session_id: Uuid,
 }
 
 #[derive(Clone, Debug)]
 pub struct UpdateTaskInventory_UpdateData {
+    /// TODO
     pub local_id: u32,
+    /// TODO
     pub key: u8,
 }
 
 #[derive(Clone, Debug)]
 pub struct UpdateTaskInventory_InventoryData {
+    /// TODO
     pub item_id: Uuid,
+    /// TODO
     pub folder_id: Uuid,
+    /// TODO
     pub creator_id: Uuid,
+    /// TODO
     pub owner_id: Uuid,
+    /// TODO
     pub group_id: Uuid,
+    /// TODO
     pub base_mask: u32,
+    /// TODO
     pub owner_mask: u32,
+    /// TODO
     pub group_mask: u32,
+    /// TODO
     pub everyone_mask: u32,
+    /// TODO
     pub next_owner_mask: u32,
+    /// TODO
     pub group_owned: bool,
+    /// TODO
     pub transaction_id: Uuid,
+    /// TODO
     pub type_: i8,
+    /// TODO
     pub inv_type: i8,
+    /// TODO
     pub flags: u32,
+    /// TODO
     pub sale_type: u8,
+    /// TODO
     pub sale_price: i32,
+    /// TODO
     pub name: Vec<u8>,
+    /// TODO
     pub description: Vec<u8>,
+    /// TODO
     pub creation_date: i32,
+    /// TODO
     pub crc: u32,
 }
 
@@ -11399,6 +14797,7 @@ pub struct UpdateTaskInventory_InventoryData {
 /// 		/// These messages are viewer->simulator requests to update a task's
 /// /// inventory.
 /// /// if Key == 0, itemid is the key. if Key == 1, assetid is the key.
+///
 #[derive(Clone, Debug)]
 pub struct UpdateTaskInventory {
     pub agent_data: UpdateTaskInventory_AgentData,
@@ -11409,18 +14808,23 @@ pub struct UpdateTaskInventory {
 
 #[derive(Clone, Debug)]
 pub struct UpdateUserInfo_AgentData {
+    /// TODO
     pub agent_id: Uuid,
+    /// TODO
     pub session_id: Uuid,
 }
 
 #[derive(Clone, Debug)]
 pub struct UpdateUserInfo_UserData {
+    /// TODO
     pub im_via_e_mail: bool,
+    /// TODO
     pub directory_visibility: Vec<u8>,
 }
 
 ///
 /// TODO:
+///
 ///
 #[derive(Clone, Debug)]
 pub struct UpdateUserInfo {
@@ -11431,12 +14835,14 @@ pub struct UpdateUserInfo {
 
 #[derive(Clone, Debug)]
 pub struct UseCachedMuteList_AgentData {
+    /// TODO
     pub agent_id: Uuid,
 }
 
 ///
 /// TODO:
 /// /// tell viewer to use the local mute cache
+///
 #[derive(Clone, Debug)]
 pub struct UseCachedMuteList {
     pub agent_data: UseCachedMuteList_AgentData,
@@ -11445,13 +14851,17 @@ pub struct UseCachedMuteList {
 
 #[derive(Clone, Debug)]
 pub struct UseCircuitCode_CircuitCode {
+    /// The circuit code as provided in the login response. It serves as a proof of authentication and identfies the client.
     pub code: u32,
+    /// Temporary id assigned to this session by the simulator on login, used to verify our identity in packets.
     pub session_id: Uuid,
+    /// Agent id of the sender.
     pub id: Uuid,
 }
 
 ///
 /// Provide the recipent with IP address and port information of the sender.
+///
 #[derive(Clone, Debug)]
 pub struct UseCircuitCode {
     pub circuit_code: UseCircuitCode_CircuitCode,
@@ -11460,18 +14870,23 @@ pub struct UseCircuitCode {
 
 #[derive(Clone, Debug)]
 pub struct UserInfoReply_AgentData {
+    /// TODO
     pub agent_id: Uuid,
 }
 
 #[derive(Clone, Debug)]
 pub struct UserInfoReply_UserData {
+    /// TODO
     pub im_via_e_mail: bool,
+    /// TODO
     pub directory_visibility: Vec<u8>,
+    /// TODO
     pub e_mail: Vec<u8>,
 }
 
 ///
 /// TODO:
+///
 ///
 #[derive(Clone, Debug)]
 pub struct UserInfoReply {
@@ -11482,12 +14897,15 @@ pub struct UserInfoReply {
 
 #[derive(Clone, Debug)]
 pub struct UserInfoRequest_AgentData {
+    /// TODO
     pub agent_id: Uuid,
+    /// TODO
     pub session_id: Uuid,
 }
 
 ///
 /// TODO:
+///
 ///
 #[derive(Clone, Debug)]
 pub struct UserInfoRequest {
@@ -11497,23 +14915,37 @@ pub struct UserInfoRequest {
 
 #[derive(Clone, Debug)]
 pub struct UserReport_AgentData {
+    /// TODO
     pub agent_id: Uuid,
+    /// TODO
     pub session_id: Uuid,
 }
 
 #[derive(Clone, Debug)]
 pub struct UserReport_ReportData {
+    /// TODO
     pub report_type: u8,
+    /// TODO
     pub category: u8,
+    /// TODO
     pub position: Vector3<f32>,
+    /// TODO
     pub check_flags: u8,
+    /// TODO
     pub screenshot_id: Uuid,
+    /// TODO
     pub object_id: Uuid,
+    /// TODO
     pub abuser_id: Uuid,
+    /// TODO
     pub abuse_region_name: Vec<u8>,
+    /// TODO
     pub abuse_region_id: Uuid,
+    /// TODO
     pub summary: Vec<u8>,
+    /// TODO
     pub details: Vec<u8>,
+    /// TODO
     pub version_string: Vec<u8>,
 }
 
@@ -11521,6 +14953,7 @@ pub struct UserReport_ReportData {
 /// 		TODO:
 /// 		/// complaint/bug-report
 /// /// reliable
+///
 #[derive(Clone, Debug)]
 pub struct UserReport {
     pub agent_data: UserReport_AgentData,
@@ -11530,22 +14963,39 @@ pub struct UserReport {
 
 #[derive(Clone, Debug)]
 pub struct UserReportInternal_ReportData {
+    /// TODO
     pub report_type: u8,
+    /// TODO
     pub category: u8,
+    /// TODO
     pub reporter_id: Uuid,
+    /// TODO
     pub viewer_position: Vector3<f32>,
+    /// TODO
     pub agent_position: Vector3<f32>,
+    /// TODO
     pub screenshot_id: Uuid,
+    /// TODO
     pub object_id: Uuid,
+    /// TODO
     pub owner_id: Uuid,
+    /// TODO
     pub last_owner_id: Uuid,
+    /// TODO
     pub creator_id: Uuid,
+    /// TODO
     pub region_id: Uuid,
+    /// TODO
     pub abuser_id: Uuid,
+    /// TODO
     pub abuse_region_name: Vec<u8>,
+    /// TODO
     pub abuse_region_id: Uuid,
+    /// TODO
     pub summary: Vec<u8>,
+    /// TODO
     pub details: Vec<u8>,
+    /// TODO
     pub version_string: Vec<u8>,
 }
 
@@ -11553,6 +15003,7 @@ pub struct UserReportInternal_ReportData {
 /// 		TODO:
 /// 		/// complaint/bug-report - sim -> dataserver. see UserReport for details.
 /// /// reliable
+///
 #[derive(Clone, Debug)]
 pub struct UserReportInternal {
     pub report_data: UserReportInternal_ReportData,
@@ -11561,7 +15012,9 @@ pub struct UserReportInternal {
 
 #[derive(Clone, Debug)]
 pub struct VelocityInterpolateOff_AgentData {
+    /// TODO
     pub agent_id: Uuid,
+    /// TODO
     pub session_id: Uuid,
 }
 
@@ -11570,6 +15023,7 @@ pub struct VelocityInterpolateOff_AgentData {
 /// 		/// VelocityInterpolateOff
 /// /// viewer->sim
 /// /// requires administrative access
+///
 #[derive(Clone, Debug)]
 pub struct VelocityInterpolateOff {
     pub agent_data: VelocityInterpolateOff_AgentData,
@@ -11578,7 +15032,9 @@ pub struct VelocityInterpolateOff {
 
 #[derive(Clone, Debug)]
 pub struct VelocityInterpolateOn_AgentData {
+    /// TODO
     pub agent_id: Uuid,
+    /// TODO
     pub session_id: Uuid,
 }
 
@@ -11587,6 +15043,7 @@ pub struct VelocityInterpolateOn_AgentData {
 /// 		/// VelocityInterpolateOn
 /// /// viewer->sim
 /// /// requires administrative access
+///
 #[derive(Clone, Debug)]
 pub struct VelocityInterpolateOn {
     pub agent_data: VelocityInterpolateOn_AgentData,
@@ -11595,17 +15052,25 @@ pub struct VelocityInterpolateOn {
 
 #[derive(Clone, Debug)]
 pub struct ViewerEffect_AgentData {
+    /// TODO
     pub agent_id: Uuid,
+    /// TODO
     pub session_id: Uuid,
 }
 
 #[derive(Clone, Debug)]
 pub struct ViewerEffect_Effect {
+    /// TODO
     pub id: Uuid,
+    /// TODO
     pub agent_id: Uuid,
+    /// TODO
     pub type_: u8,
+    /// TODO
     pub duration: f32,
+    /// TODO
     pub color: [u8; 4],
+    /// TODO
     pub type_data: Vec<u8>,
 }
 
@@ -11616,6 +15081,7 @@ pub struct ViewerEffect_Effect {
 /// /// viewer-->sim (single effect created by viewer)
 /// /// sim-->viewer (multiple effects that can be seen by viewer)
 /// /// the AgentData block used for authentication for viewer-->sim messages
+///
 #[derive(Clone, Debug)]
 pub struct ViewerEffect {
     pub agent_data: ViewerEffect_AgentData,
@@ -11625,6 +15091,7 @@ pub struct ViewerEffect {
 
 #[derive(Clone, Debug)]
 pub struct ViewerFrozenMessage_FrozenData {
+    /// TODO
     pub data: bool,
 }
 
@@ -11632,6 +15099,7 @@ pub struct ViewerFrozenMessage_FrozenData {
 /// 		TODO:
 /// 		/// ViewerFrozenMessage
 /// /// Specifies the text to be posted in an alert dialog
+///
 #[derive(Clone, Debug)]
 pub struct ViewerFrozenMessage {
     pub frozen_data: ViewerFrozenMessage_FrozenData,
@@ -11640,13 +15108,17 @@ pub struct ViewerFrozenMessage {
 
 #[derive(Clone, Debug)]
 pub struct ViewerStartAuction_AgentData {
+    /// TODO
     pub agent_id: Uuid,
+    /// TODO
     pub session_id: Uuid,
 }
 
 #[derive(Clone, Debug)]
 pub struct ViewerStartAuction_ParcelData {
+    /// TODO
     pub local_id: i32,
+    /// TODO
     pub snapshot_id: Uuid,
 }
 
@@ -11656,6 +15128,7 @@ pub struct ViewerStartAuction_ParcelData {
 /// /// start an auction. viewer fills in the appropriate date, simulator
 /// /// validates and fills in the rest of the information to start an auction
 /// /// on a parcel. Processing currently requires that AgentID is a god.
+///
 #[derive(Clone, Debug)]
 pub struct ViewerStartAuction {
     pub agent_data: ViewerStartAuction_AgentData,
@@ -11665,56 +15138,87 @@ pub struct ViewerStartAuction {
 
 #[derive(Clone, Debug)]
 pub struct ViewerStats_AgentData {
+    /// TODO
     pub agent_id: Uuid,
+    /// TODO
     pub session_id: Uuid,
+    /// TODO
     pub ip: Ip4Addr,
+    /// TODO
     pub start_time: u32,
+    /// TODO
     pub run_time: f32,
+    /// TODO
     pub sim_fps: f32,
+    /// TODO
     pub fps: f32,
+    /// TODO
     pub agents_in_view: u8,
+    /// TODO
     pub ping: f32,
+    /// TODO
     pub meters_traveled: f64,
+    /// TODO
     pub regions_visited: i32,
+    /// TODO
     pub sys_ram: u32,
+    /// TODO
     pub sys_os: Vec<u8>,
+    /// TODO
     pub sys_cpu: Vec<u8>,
+    /// TODO
     pub sys_gpu: Vec<u8>,
 }
 
 #[derive(Clone, Debug)]
 pub struct ViewerStats_DownloadTotals {
+    /// TODO
     pub world: u32,
+    /// TODO
     pub objects: u32,
+    /// TODO
     pub textures: u32,
 }
 
 #[derive(Clone, Debug)]
 pub struct ViewerStats_NetStats {
+    /// TODO
     pub bytes: u32,
+    /// TODO
     pub packets: u32,
+    /// TODO
     pub compressed: u32,
+    /// TODO
     pub savings: u32,
 }
 
 #[derive(Clone, Debug)]
 pub struct ViewerStats_FailStats {
+    /// TODO
     pub send_packet: u32,
+    /// TODO
     pub dropped: u32,
+    /// TODO
     pub resent: u32,
+    /// TODO
     pub failed_resends: u32,
+    /// TODO
     pub off_circuit: u32,
+    /// TODO
     pub invalid: u32,
 }
 
 #[derive(Clone, Debug)]
 pub struct ViewerStats_MiscStats {
+    /// TODO
     pub type_: u32,
+    /// TODO
     pub value: f64,
 }
 
 ///
 /// TODO:
+///
 ///
 #[derive(Clone, Debug)]
 pub struct ViewerStats {
