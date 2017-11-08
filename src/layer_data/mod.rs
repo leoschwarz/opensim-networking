@@ -68,11 +68,14 @@ impl Surface {
 
         // Read patch_group_header
         let stride = reader.read_u16(16)?; // TODO byte order
+        // TODO: Can patch_i and patch_j be larger than this?
+        // Because this is what's currently happening in the test, patch_size=16, but patch_i,j
+        // are in the range {0,...LARGE_PATCH_SIZE-1=31}
         let patch_size = reader.read_u8(8)? as usize;
         let layer_type = reader.read_u8(8)?;
 
         println!("stride:     0x{:X}", stride);
-        println!("patch_size: 0x{:X}", patch_size);
+        println!("patch_size: {}", patch_size);
         println!("layer_type: 0x{:X}", layer_type);
 
         loop {
@@ -104,21 +107,24 @@ impl Surface {
             println!("patch_j:        {}", patch_j);
 
             // Read patches.
-            let mut patch_data = Vec::<i16>::new();
-            'patch_body: for i in 0..patch_size * patch_size {
+            // TODO: in the original code this is always initialized to LARGE_PATCH_SIZE^2 items.
+            // TODO: With this code we will always write at least as many items, but assert that we
+            // don't end up writing more items.
+            let mut patch_data = Vec::<i32>::new();
+            'read_patch_data: for i in 0..patch_size * patch_size {
                 let exists = reader.read_bool()?;
                 if exists {
                     let not_eob = reader.read_bool()?;
                     if not_eob {
                         // Read the item.
                         let sign = if reader.read_bool()? { -1 } else { 1 };
-                        let value = reader.read_u8(8)? as i16;
+                        let value = reader.read_u8(8)? as i32;
                         patch_data.push(sign * value);
                     } else {
                         for _ in i..patch_size * patch_size {
                             patch_data.push(0);
                         }
-                        break 'patch_body;
+                        break 'read_patch_data;
                     }
                 } else {
                     patch_data.push(0);
@@ -126,9 +132,6 @@ impl Surface {
             }
             println!("patch_data.len(): {}", patch_data.len());
         }
-
-        println!("bitreader position: {}", reader.position());
-        println!("buffer size: {}", data.len());
 
         Ok(())
     }
