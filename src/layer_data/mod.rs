@@ -4,6 +4,8 @@ use bitreader::{BitReader, BitReaderError};
 
 use messages::all::LayerData;
 
+mod idct;
+
 const END_OF_PATCH: u8 = 97u8;
 
 #[derive(Debug, ErrorChain)]
@@ -32,6 +34,22 @@ pub enum LayerKind {
 }
 
 impl LayerKind {
+    fn from_code(c: u8) -> Result<Self, ExtractSurfaceError> {
+        match c {
+            b'L' => Ok(LayerKind::Land),
+            b'7' => Ok(LayerKind::Wind),
+            b'8' => Ok(LayerKind::Cloud),
+            b'W' => Ok(LayerKind::Water),
+            b'M' => Ok(LayerKind::AuroraLand),
+            b'X' => Ok(LayerKind::AuroraWind),
+            b'9' => Ok(LayerKind::AuroraCloud),
+            b':' => Ok(LayerKind::AuroraWater),
+            code => return Err(ExtractSurfaceErrorKind::UnknownLayerType(code).into()),
+        }
+    }
+}
+
+impl LayerKind {
     fn is_large_patch(&self) -> bool {
         match *self {
             LayerKind::Land => false,
@@ -46,19 +64,26 @@ pub struct Surface {
     surface_width: f32,
 }
 
+#[derive(Debug)]
+pub(crate) struct PatchHeader {
+    quant: u32,
+    word_bits: u32,
+    dc_offset: u32,
+    range: u16,
+    patch_x: u32,
+    patch_y: u32,
+}
+
+#[derive(Debug)]
+pub(crate) struct PatchGroupHeader {
+    stride: u32,
+    patch_size: u32,
+    layer_type: LayerKind,
+}
+
 impl Surface {
     pub fn extract_message(msg: &LayerData) -> Result<(), ExtractSurfaceError> {
-        let kind = match msg.layer_id.type_ {
-            b'L' => LayerKind::Land,
-            b'7' => LayerKind::Wind,
-            b'8' => LayerKind::Cloud,
-            b'W' => LayerKind::Water,
-            b'M' => LayerKind::AuroraLand,
-            b'X' => LayerKind::AuroraWind,
-            b'9' => LayerKind::AuroraCloud,
-            b':' => LayerKind::AuroraWater,
-            code => return Err(ExtractSurfaceErrorKind::UnknownLayerType(code).into()),
-        };
+        let kind = LayerKind::from_code(msg.layer_id.type_)?;
         println!("kind : {:?}", kind);
         Self::extract(&msg.layer_data.data[..], kind.is_large_patch())
     }
@@ -67,51 +92,69 @@ impl Surface {
         let mut reader = BitReader::new(data);
 
         // Read patch_group_header
-        let stride = reader.read_u16(16)?; // TODO byte order
-        // TODO: Can patch_i and patch_j be larger than this?
-        // Because this is what's currently happening in the test, patch_size=16, but patch_i,j
-        // are in the range {0,...LARGE_PATCH_SIZE-1=31}
-        let patch_size = reader.read_u8(8)? as usize;
-        let layer_type = reader.read_u8(8)?;
+        let group_header = {
+            // TODO We read a value of 2049 for the patch, this is way too much!!!
+            let stride = reader.read_u16(16)?; // TODO byte order
+            // TODO: Can patch_i and patch_j be larger than this?
+            // Because this is what's currently happening in the test, patch_size=16, but patch_i,j
+            // are in the range {0,...LARGE_PATCH_SIZE-1=31}
+            //
+            // At this point I suspect (patch_x,patch_y) is not very relevant for decoding, i.e.
+            // for large patches (patches_per_edge=32) patch_x being a u16 means it could go all
+            // the way up to 65565 which is even worse than for normal size patches.
+            let patch_size = reader.read_u8(8)?;
+            let layer_type = reader.read_u8(8)?;
 
-        println!("stride:     0x{:X}", stride);
-        println!("patch_size: {}", patch_size);
-        println!("layer_type: 0x{:X}", layer_type);
+            PatchGroupHeader {
+                stride: stride as u32,
+                patch_size: patch_size as u32,
+                layer_type: LayerKind::from_code(layer_type)?,
+            }
+        };
+
+        println!("patch_group_header: {:?}", group_header);
 
         loop {
             // Read patch_header
-            let quantity_wbits = reader.read_u8(8)?;
-            if quantity_wbits == END_OF_PATCH {
-                break;
-            }
-            let dc_offset = reader.read_u32(32)?; // TODO byte order
-            let range = reader.read_u16(16)?; // TODO byte order
-            let patch_ids = if large_patch {
-                reader.read_u32(32)?
-            } else {
-                reader.read_u32(10)?
-            };
+            let header = {
+                let quantity_wbits = reader.read_u8(8)?;
+                if quantity_wbits == END_OF_PATCH {
+                    break;
+                }
 
-            let (patch_i, patch_j) = if large_patch {
-                (patch_ids >> 16, patch_ids & 0xffff)
-            } else {
-                (patch_ids >> 5, patch_ids & 0x1f)
+                let quant = (quantity_wbits as u32 >> 4) + 2;
+                let word_bits = (quantity_wbits as u32 & 0xf) + 2;
+
+                let dc_offset = reader.read_u32(32)?; // TODO byte order
+                let range = reader.read_u16(16)?; // TODO byte order
+
+                let (patch_x, patch_y) = if large_patch {
+                    let x = reader.read_u32(16)?;
+                    let y = reader.read_u32(16)?;
+                    (x, y)
+                } else {
+                    let x = reader.read_u32(5)?;
+                    let y = reader.read_u32(5)?;
+                    (x, y)
+                };
+
+                PatchHeader {
+                    quant: quant,
+                    word_bits: word_bits,
+                    dc_offset: dc_offset,
+                    range: range,
+                    patch_x: patch_x,
+                    patch_y: patch_y,
+                }
             };
 
             println!("=============== new patch ================ ");
-            println!("quantity_wbits: 0x{:X}", quantity_wbits);
-            println!("dc_offset:      0x{:X}", dc_offset);
-            println!("range:          0x{:X}", range);
-            println!("patch_ids:      0x{:X}", patch_ids);
-            println!("patch_i:        {}", patch_i);
-            println!("patch_j:        {}", patch_j);
+            println!("patch_header: {:?}", header);
 
             // Read patches.
-            // TODO: in the original code this is always initialized to LARGE_PATCH_SIZE^2 items.
-            // TODO: With this code we will always write at least as many items, but assert that we
-            // don't end up writing more items.
+            // TODO: don't depend on group_header.patch_size but make this generic code too.
             let mut patch_data = Vec::<i32>::new();
-            'read_patch_data: for i in 0..patch_size * patch_size {
+            'read_patch_data: for i in 0..group_header.patch_size * group_header.patch_size {
                 let exists = reader.read_bool()?;
                 if exists {
                     let not_eob = reader.read_bool()?;
@@ -121,7 +164,7 @@ impl Surface {
                         let value = reader.read_u8(8)? as i32;
                         patch_data.push(sign * value);
                     } else {
-                        for _ in i..patch_size * patch_size {
+                        for _ in i..group_header.patch_size * group_header.patch_size {
                             patch_data.push(0);
                         }
                         break 'read_patch_data;
@@ -130,7 +173,17 @@ impl Surface {
                     patch_data.push(0);
                 }
             }
+
             println!("patch_data.len(): {}", patch_data.len());
+
+            if large_patch {
+                let tables = idct::PatchTables::compute::<idct::LargePatch>();
+                idct::decompress_patch::<idct::LargePatch>(&patch_data, &header, &group_header, &tables);
+            } else {
+                let tables = idct::PatchTables::compute::<idct::NormalPatch>();
+                idct::decompress_patch::<idct::NormalPatch>(&patch_data, &header, &group_header, &tables);
+            }
+
         }
 
         Ok(())
