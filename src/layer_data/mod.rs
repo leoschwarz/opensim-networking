@@ -13,6 +13,11 @@ use self::reader::{BitsReader, PadOnLeft};
 
 const END_OF_PATCH: u8 = 97u8;
 
+lazy_static! {
+    static ref TABLES_NORMAL: PatchTables = PatchTables::compute::<idct::NormalPatch>();
+    static ref TABLES_LARGE: PatchTables = PatchTables::compute::<idct::LargePatch>();
+}
+
 #[derive(Debug, ErrorChain)]
 #[error_chain(error = "ExtractSurfaceError")]
 #[error_chain(result = "")]
@@ -163,22 +168,18 @@ impl Surface {
             println!("decode patch, header: {:?}", header);
 
             let data = if large_patch {
-                // TODO memoize tables
-                let tables = idct::PatchTables::compute::<idct::LargePatch>();
                 Self::decode_patch_data::<idct::LargePatch>(
                     &mut reader,
                     &header,
                     &group_header,
-                    &tables,
+                    &TABLES_LARGE,
                 )
             } else {
-                // TODO memoize tables
-                let tables = idct::PatchTables::compute::<idct::NormalPatch>();
                 Self::decode_patch_data::<idct::NormalPatch>(
                     &mut reader,
                     &header,
                     &group_header,
-                    &tables,
+                    &TABLES_NORMAL,
                 )
             };
 

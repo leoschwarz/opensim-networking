@@ -10,6 +10,8 @@ extern crate crypto;
 extern crate derive_error_chain;
 extern crate error_chain;
 extern crate futures;
+#[macro_use]
+extern crate lazy_static;
 extern crate mio;
 extern crate regex;
 extern crate reqwest;
