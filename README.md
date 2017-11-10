@@ -16,11 +16,12 @@ There are multiple coexisting "protocols" so following is a list of them and the
 - Texture download
 - Region download
 
-**Not on the current worklist**:
+**Backlog**:
 
 - Sound
 - Voice
 - Inventory
+- Mesh data
 
 ## Protocol
 The main goal of this library is to stay compatible with current versions of OpenSimulator. Since Second Life is diverting from their protocol this library will most likely stop being usable with
