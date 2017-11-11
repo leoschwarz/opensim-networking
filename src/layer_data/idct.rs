@@ -103,7 +103,7 @@ impl PatchTables {
         PatchTables {
             dequantize: dequantize,
             icosines: icosines,
-            decopy: decopy,
+            decopy: decopy.clone(),
         }
     }
 }
@@ -128,9 +128,9 @@ fn idct_column<PS: PatchSize>(
     for n in 0..PS::per_direction() {
         let mut total: f32 = (2f32).sqrt() / 2. * data_in[(column, 0)];
         for x in 1..PS::per_direction() {
-            total += data_in[(x, column)] * tables.icosines[(n, x)];
+            total += data_in[(column, x)] * tables.icosines[(n, x)];
         }
-        data_out[(n, column)] = total;
+        data_out[(column, n)] = total;
     }
 }
 
@@ -140,13 +140,12 @@ fn idct_row<PS: PatchSize>(
     row: usize,
     tables: &PatchTables,
 ) {
-    //let row_offset = (row * PS::per_direction()) as usize;
     for n in 0..PS::per_direction() {
         let mut total: f32 = (2f32).sqrt() / 2. * data_in[(0, row)];
         for x in 1..PS::per_direction() {
             total += data_in[(x, row)] * tables.icosines[(n, x)];
         }
-        data_out[(n, row)] = total * (2. / (PS::per_direction() as f32));
+        data_out[(n, row)] = total * 2. / (PS::per_direction() as f32);
     }
 }
 
@@ -164,11 +163,9 @@ pub(super) fn decompress_patch<PS: PatchSize>(
 
     idct_patch::<PS>(&mut block, tables);
 
-    // TODO: make this cleaner here and in the spec
-    let fact_mult: f32 = (header.range as f32) / ((1u32 << header.quant) as f32);
-    let fact_add: f32 = fact_mult * ((1u32 << (header.quant - 1)) as f32) +
-        (header.dc_offset as f32);
-
+    // Inverse the bijection applied before the DCT.
+    let fact_mult: f32 = (header.range as f32) / 2f32.powi(header.quant as i32);
+    let fact_add: f32 = (header.range as f32) / 2. + header.dc_offset;
     DMatrix::from_fn(PS::per_direction(), PS::per_direction(), |i, j| {
         block[(i, j)] * fact_mult + fact_add
     })

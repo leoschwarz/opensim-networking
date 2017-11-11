@@ -57,6 +57,7 @@ impl PatchGroupHeader {
 
 #[derive(Debug)]
 pub(super) struct PatchHeader {
+    // also called prequant in LL and OpenSim code.
     pub quant: u32,
     pub word_bits: u32,
     pub dc_offset: f32,
@@ -123,7 +124,7 @@ pub fn extract_patches(data: &[u8], large_patch: bool) -> Result<Vec<Patch>, Ext
             // There are no more patches to be extracted.
             break;
         };
-        //println!("patch_header: {:?}", header);
+        println!("patch_header: {:?}", header);
 
         let data = if large_patch {
             decode_patch_data::<idct::LargePatch>(
@@ -161,20 +162,22 @@ fn decode_patch_data<PS: PatchSize>(
 ) -> Result<DMatrix<f32>, ExtractSurfaceError> {
     // Read patches.
     let mut patch_data = Vec::<i32>::new();
-    'read_patch_data: for i in 0..PS::per_patch() {
+    for i in 0..PS::per_patch() {
         let exists = reader.read_bool()?;
         if exists {
             let not_eob = reader.read_bool()?;
             if not_eob {
                 // Read the item.
                 let sign = if reader.read_bool()? { -1 } else { 1 };
-                let value = reader.read_full_u8()? as i32;
+                let value = reader.read_part_u32::<LittleEndian, PadOnLeft>(
+                    header.word_bits as u8,
+                )? as i32;
                 patch_data.push(sign * value);
             } else {
                 for _ in i..PS::per_patch() {
                     patch_data.push(0);
                 }
-                break 'read_patch_data;
+                break;
             }
         } else {
             patch_data.push(0);
@@ -182,15 +185,5 @@ fn decode_patch_data<PS: PatchSize>(
     }
 
     // Decompress the data.
-    let mut decompressed = idct::decompress_patch::<PS>(
-        &patch_data,
-        &header,
-        &group_header,
-        &tables,
-    );
-
-    // Apply dc_offset.
-    decompressed.add_scalar_mut(header.dc_offset);
-
-    Ok(decompressed)
+    Ok(idct::decompress_patch::<PS>(&patch_data, &header, &group_header, &tables))
 }

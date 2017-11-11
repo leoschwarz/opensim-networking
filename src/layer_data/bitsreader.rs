@@ -73,6 +73,11 @@ impl<'d> BitsReader<'d> {
         self.reader.read_bool()
     }
 
+    pub fn read_part_u8<P: Padding>(&mut self, num_bits: u8) -> Result<u8, BitsReaderError> {
+        assert!(num_bits <= 8);
+        Ok(P::pad_u8(self.reader.read_u8(num_bits)?, 8 - num_bits))
+    }
+
     /// Read the specified number of bits, then apply padding, then reorder if needed.
     #[inline]
     pub fn read_part_u32<B: ByteOrder, P: Padding>(
