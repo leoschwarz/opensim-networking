@@ -45,7 +45,7 @@ impl PatchTables {
             1. + 2. * ((i + j) as f32)
         });
         let icosines = DMatrix::from_fn(PS::per_direction(), PS::per_direction(), |i, j| {
-            (2. * (i as f32) + 1.) * (j as f32) * PI / (2. * (PS::per_direction() as f32)).cos()
+            ((2. * (i as f32) + 1.) * (j as f32) * PI / (2. * (PS::per_direction() as f32))).cos()
         });
 
         // TODO: Find a better way to build the decopy matrix.

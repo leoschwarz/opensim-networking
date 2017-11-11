@@ -2,7 +2,7 @@ use layer_data::bitsreader::{BitsReader, BitsReaderError, PadOnLeft};
 use layer_data::idct::{PatchTables, PatchSize};
 use layer_data::{Patch, LayerKind, idct};
 
-use byteorder::{ByteOrder, LittleEndian};
+use byteorder::LittleEndian;
 use nalgebra::DMatrix;
 
 const END_OF_PATCH: u8 = 97u8;
@@ -71,6 +71,7 @@ impl PatchHeader {
         large_patch: bool,
     ) -> Result<Option<Self>, ExtractSurfaceError> {
         let quantity_wbits = reader.read_full_u8()?;
+        println!("quantity_wbits = {}", quantity_wbits);
         if quantity_wbits == END_OF_PATCH {
             return Ok(None);
         }
@@ -122,7 +123,7 @@ pub fn extract_patches(data: &[u8], large_patch: bool) -> Result<Vec<Patch>, Ext
             // There are no more patches to be extracted.
             break;
         };
-        println!("patch_header: {:?}", header);
+        //println!("patch_header: {:?}", header);
 
         let data = if large_patch {
             decode_patch_data::<idct::LargePatch>(
@@ -139,6 +140,7 @@ pub fn extract_patches(data: &[u8], large_patch: bool) -> Result<Vec<Patch>, Ext
                 &TABLES_NORMAL,
             )?
         };
+
         decoded_patches.push(Patch {
             size: 16, // TODO
             patch_x: header.patch_x,
@@ -179,10 +181,16 @@ fn decode_patch_data<PS: PatchSize>(
         }
     }
 
-    Ok(idct::decompress_patch::<PS>(
+    // Decompress the data.
+    let mut decompressed = idct::decompress_patch::<PS>(
         &patch_data,
         &header,
         &group_header,
         &tables,
-    ))
+    );
+
+    // Apply dc_offset.
+    decompressed.add_scalar_mut(header.dc_offset);
+
+    Ok(decompressed)
 }
