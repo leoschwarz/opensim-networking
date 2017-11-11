@@ -5,7 +5,7 @@
 
 use byteorder::{ByteOrder, LittleEndian};
 use bitreader::BitReader;
-use bitreader::BitReaderError as BitsReaderError;
+pub use bitreader::BitReaderError as BitsReaderError;
 
 pub struct BitsReader<'d> {
     reader: BitReader<'d>,
@@ -31,6 +31,18 @@ impl<'d> BitsReader<'d> {
     #[inline]
     pub fn read_full_u32<B: ByteOrder>(&mut self) -> Result<u32, BitsReaderError> {
         Ok(B::read_u32(
+            &[
+                self.reader.read_u8(8)?,
+                self.reader.read_u8(8)?,
+                self.reader.read_u8(8)?,
+                self.reader.read_u8(8)?,
+            ],
+        ))
+    }
+
+    #[inline]
+    pub fn read_full_f32<B: ByteOrder>(&mut self) -> Result<f32, BitsReaderError> {
+        Ok(B::read_f32(
             &[
                 self.reader.read_u8(8)?,
                 self.reader.read_u8(8)?,

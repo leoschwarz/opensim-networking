@@ -20,24 +20,25 @@ fn main()
         _ => panic!("wrong message instance"),
     };
     // TODO rename once naming is clear
-    let grids = Surface::extract_message(&msg).unwrap();
+    let patches = Surface::extract_message(&msg).unwrap();
 
     // Generate a 16x16 bitmap displaying the received height map.
-    for (i_layer, ref grid) in grids.iter().enumerate() {
-        let data = grid.as_vec();
-        let mut min = 1e20f32;
-        let mut max = -1e20f32;
-        for val in data.iter() {
-            if val > &max {
-                max = *val;
-            }
+    for (i_layer, ref patch) in patches.iter().enumerate() {
+        println!("(x,y) = {:?}", patch.patch_position());
+
+        let mut min = 1e20;
+        let mut max = -1e20;
+        for val in patch.data().iter() {
             if val < &min {
                 min = *val;
+            }
+            if val > &max {
+                max = *val;
             }
         }
 
         let image = ImageBuffer::from_fn(16, 16, |x, y| {
-            let pixel = 255. * (data[(x*16+y) as usize] - min) / (max - min);
+            let pixel = 255. * (patch.data()[(x as usize, y as usize)] - min) / (max - min);
             image::Luma([pixel as u8])
         });
         image.save(format!("layerdata/layer_{:2}.png", i_layer)).unwrap();
