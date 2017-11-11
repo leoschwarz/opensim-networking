@@ -61,6 +61,10 @@ impl PatchMatrix {
         self.data[index]
         */
     }
+
+    pub fn as_vec(&self) -> &Vec<f32> {
+        &self.data
+    }
 }
 
 pub trait PatchSize {

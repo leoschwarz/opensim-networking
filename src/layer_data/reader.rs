@@ -1,4 +1,7 @@
-//! Implementation of the byte reader we will use for our purposes.
+//! Implementation of the BitsReader we will use for our purposes.
+//!
+//! Maybe in the future the content of this module can be pushed upstream, for this reason the
+//! functionality in here should be kept as general as possible.
 
 use byteorder::{ByteOrder, LittleEndian};
 use bitreader::BitReader;

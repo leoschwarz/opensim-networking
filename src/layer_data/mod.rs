@@ -1,4 +1,8 @@
-// TODO: This should probably moved to its own crate at a later time.
+// TODO: This should probably moved to its own crate at a later time. (Maybe some decoding
+// facilities could be combined together conveniently.)
+//
+// TODO: Cleanup the module, move everything out of the mod.rs file which doesn't have to reside in
+// here.
 
 use messages::all::LayerData;
 
@@ -17,6 +21,7 @@ lazy_static! {
     static ref TABLES_NORMAL: PatchTables = PatchTables::compute::<idct::NormalPatch>();
     static ref TABLES_LARGE: PatchTables = PatchTables::compute::<idct::LargePatch>();
 }
+
 
 #[derive(Debug, ErrorChain)]
 #[error_chain(error = "ExtractSurfaceError")]
@@ -68,6 +73,37 @@ impl LayerKind {
     }
 }
 
+#[derive(Debug)]
+pub struct Patch {
+    /// Side length of the square shape patch.
+    size: usize,
+
+    /// Patch position in region.
+    patch_x: u32,
+    patch_y: u32,
+
+    /// Decoded height map, square matrix of size `size`x`size`.
+    /// TODO: (x,y)<->(i,j) ?
+    data: Vec<f32>,
+}
+
+impl Patch {
+    /// Side length of the square shape patch.
+    pub fn side_length(&self) -> usize {
+        self.size
+    }
+
+    /// Patch position (index, not meters) in the region.
+    pub fn patch_position(&self) -> (u32, u32) {
+        (self.patch_x, self.patch_y)
+    }
+
+    /// Return the value of at position (i,j).
+    pub fn get(&self, i: usize, j: usize) -> f32 {
+        self.data[i + j * self.size]
+    }
+}
+
 pub struct Surface {
     cell_count_per_edge: u32,
     cell_width: f32,
@@ -92,13 +128,13 @@ pub(crate) struct PatchGroupHeader {
 }
 
 impl Surface {
-    pub fn extract_message(msg: &LayerData) -> Result<(), ExtractSurfaceError> {
+    pub fn extract_message(msg: &LayerData) -> Result<Vec<PatchMatrix>, ExtractSurfaceError> {
         let kind = LayerKind::from_code(msg.layer_id.type_)?;
         println!("kind : {:?}", kind);
         Self::extract(&msg.layer_data.data[..], kind.is_large_patch())
     }
 
-    fn extract(data: &[u8], large_patch: bool) -> Result<(), ExtractSurfaceError> {
+    fn extract(data: &[u8], large_patch: bool) -> Result<Vec<Patch>, ExtractSurfaceError> {
         let mut reader = BitsReader::new(data);
 
         // Read patch_group_header
@@ -126,6 +162,7 @@ impl Surface {
 
         println!("patch_group_header: {:?}", group_header);
 
+        let mut decoded_patches = Vec::new();
         loop {
             // Read patch_header
             let header = {
@@ -165,7 +202,7 @@ impl Surface {
                 }
             };
 
-            println!("decode patch, header: {:?}", header);
+            //println!("decode patch, header: {:?}", header);
 
             let data = if large_patch {
                 Self::decode_patch_data::<idct::LargePatch>(
@@ -173,19 +210,19 @@ impl Surface {
                     &header,
                     &group_header,
                     &TABLES_LARGE,
-                )
+                )?
             } else {
                 Self::decode_patch_data::<idct::NormalPatch>(
                     &mut reader,
                     &header,
                     &group_header,
                     &TABLES_NORMAL,
-                )
+                )?
             };
-
+            decoded_patches.push(data);
         }
 
-        Ok(())
+        Ok(decoded_patches)
     }
 
     fn decode_patch_data<SIZE: PatchSize>(
@@ -215,8 +252,6 @@ impl Surface {
                 patch_data.push(0);
             }
         }
-
-        println!("patch_data.len(): {}", patch_data.len());
 
         let tables = idct::PatchTables::compute::<SIZE>();
         Ok(idct::decompress_patch::<SIZE>(
