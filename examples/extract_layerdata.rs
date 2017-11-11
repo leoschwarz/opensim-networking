@@ -32,8 +32,9 @@ fn main() {
 
     // TODO: I still don't understand the logic behind the patches per region,
     // if the region is really only 256m long, there are 4 patches per square meter.
-    let mut heightmap: DMatrix<f32> = DMatrix::from_element(512, 512, 0.);
 
+    // Extract all the patches.
+    let mut all_patches = Vec::new();
     for data in all_data {
         let packet = Packet::read(&data[..]).unwrap();
         let msg_instance = packet.message;
@@ -43,44 +44,67 @@ fn main() {
         };
         // TODO rename once naming is clear
         let patches = Surface::extract_message(&msg).unwrap();
+        all_patches.extend(patches);
+    }
 
-        // Generate a 16x16 bitmap displaying the received height map.
-        for (i_layer, ref patch) in patches.iter().enumerate() {
-            let (patch_x, patch_y) = patch.patch_position();
-            println!("(x,y) = {:?}", patch.patch_position());
-
-            let offset_x = (patch_x * 16) as usize;
-            let offset_y = (patch_y * 16) as usize;
-
-            // TODO I'm assuming the following coordinate system:
-            // ^ y
-            // |
-            // |
-            // +----> x
-
-            let mut min = 1e20;
-            let mut max = -1e20;
-            for val in patch.data().iter() {
-                if val < &min {
-                    min = *val;
-                }
-                if val > &max {
-                    max = *val;
-                }
+    // Find total min and max values.
+    let mut min = 1e20;
+    let mut max = -1e20;
+    for ref patch in all_patches.iter() {
+        for val in patch.data().iter() {
+            if val < &min {
+                min = *val;
             }
+            if val > &max {
+                max = *val;
+            }
+        }
+    }
+    println!("global max: {}", max);
+    println!("global min: {}", min);
 
-            for x in 0..patch.side_length() {
-                for y in 0..patch.side_length() {
-                    heightmap[(x + offset_x, y + offset_y)] = (patch.data()[(x, y)] - min) /
-                        (max - min);
-                }
+    let mut heightmap: DMatrix<f32> = DMatrix::from_element(512, 512, 0.);
+    let mut counter = 0;
+    for patch in all_patches {
+        //println!("extracting file number: {}", counter);
+        counter += 1;
+
+        let (patch_x, patch_y) = patch.patch_position();
+        //println!("(x,y) = {:?}", patch.patch_position());
+
+        let offset_x = (patch_x * 16) as usize;
+        let offset_y = (patch_y * 16) as usize;
+
+        // TODO I'm assuming the following coordinate system:
+        // ^ y
+        // |
+        // |
+        // +----> x
+
+        for x in 0..patch.side_length() {
+            for y in 0..patch.side_length() {
+                heightmap[(x + offset_x, y + offset_y)] = patch.data()[(x, y)];
             }
         }
     }
 
     let image = ImageBuffer::from_fn(512, 512, |x, y| {
-        let pixel = 255. * heightmap[(x as usize, y as usize)];
+        let pixel = 255. * (heightmap[(x as usize, y as usize)] - min) / (max - min);
         image::Luma([pixel as u8])
     });
     image.save("layerdata.png").unwrap();
+
+    use std::io::Write;
+    let mut file = File::create("layerdata.dat").unwrap();
+    for i in 0usize..512 {
+        for j in 0usize..512 {
+            write!(file, "{}", heightmap[(i, j)]);
+            if j != 511 {
+                write!(file, " ");
+            }
+        }
+        if i != 511 {
+            write!(file, "\n");
+        }
+    }
 }
