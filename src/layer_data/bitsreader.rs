@@ -3,7 +3,7 @@
 //! Maybe in the future the content of this module can be pushed upstream, for this reason the
 //! functionality in here should be kept as general as possible.
 
-use byteorder::{ByteOrder, LittleEndian};
+use byteorder::{ByteOrder, BigEndian, LittleEndian};
 use bitreader::BitReader;
 pub use bitreader::BitReaderError as BitsReaderError;
 
@@ -84,10 +84,39 @@ impl<'d> BitsReader<'d> {
         &mut self,
         num_bits: u8,
     ) -> Result<u32, BitsReaderError> {
-        let val = P::pad_u32(self.reader.read_u32(num_bits)?, 32 - num_bits);
-        let mut bytes = [0u8; 4];
-        LittleEndian::write_u32_into(&[val], &mut bytes);
-        Ok(B::read_u32(&bytes))
+        // TODO
+        if num_bits <= 8 {
+            Ok(self.reader.read_u32(num_bits)?)
+        } else if num_bits <= 16 {
+            Ok(B::read_u32(
+                &[
+                    self.reader.read_u8(8)?,
+                    self.reader.read_u8(num_bits - 8)?,
+                    0,
+                    0,
+                ],
+            ))
+        } else if num_bits <= 24 {
+            Ok(B::read_u32(
+                &[
+                    self.reader.read_u8(8)?,
+                    self.reader.read_u8(8)?,
+                    self.reader.read_u8(num_bits - 16)?,
+                    0,
+                ],
+            ))
+        } else if num_bits <= 32 {
+            Ok(B::read_u32(
+                &[
+                    self.reader.read_u8(8)?,
+                    self.reader.read_u8(8)?,
+                    self.reader.read_u8(8)?,
+                    self.reader.read_u8(num_bits - 24)?,
+                ],
+            ))
+        } else {
+            panic!("invalid num_bits: {}", num_bits);
+        }
     }
 }
 

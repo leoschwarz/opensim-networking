@@ -32,6 +32,7 @@ fn main() {
 
     // TODO: I still don't understand the logic behind the patches per region,
     // if the region is really only 256m long, there are 4 patches per square meter.
+    // → it was a bug, it's actually only 16 patches per edge.
 
     // Extract all the patches.
     let mut all_patches = Vec::new();
@@ -63,7 +64,7 @@ fn main() {
     println!("global max: {}", max);
     println!("global min: {}", min);
 
-    let mut heightmap: DMatrix<f32> = DMatrix::from_element(512, 512, 0.);
+    let mut heightmap: DMatrix<f32> = DMatrix::from_element(256, 256, 0.);
     let mut counter = 0;
     for patch in all_patches {
         //println!("extracting file number: {}", counter);
@@ -76,6 +77,7 @@ fn main() {
         let offset_y = (patch_y * 16) as usize;
 
         // TODO I'm assuming the following coordinate system:
+        // TODO: actually wrong, Coordinates are the next thing to fix.
         // ^ y
         // |
         // |
@@ -88,7 +90,7 @@ fn main() {
         }
     }
 
-    let image = ImageBuffer::from_fn(512, 512, |x, y| {
+    let image = ImageBuffer::from_fn(256, 256, |x, y| {
         let pixel = 255. * (heightmap[(x as usize, y as usize)] - min) / (max - min);
         image::Luma([pixel as u8])
     });
@@ -96,14 +98,14 @@ fn main() {
 
     use std::io::Write;
     let mut file = File::create("layerdata.dat").unwrap();
-    for i in 0usize..512 {
-        for j in 0usize..512 {
+    for i in 0usize..256 {
+        for j in 0usize..256 {
             write!(file, "{}", heightmap[(i, j)]);
-            if j != 511 {
+            if j != 255 {
                 write!(file, " ");
             }
         }
-        if i != 511 {
+        if i != 255 {
             write!(file, "\n");
         }
     }
