@@ -4,6 +4,7 @@ Cargo.lock
 *.bk
 .idea
 *.iml
+*.pyc
 
 # more thought should be put into where the examples should log to
 logdir
