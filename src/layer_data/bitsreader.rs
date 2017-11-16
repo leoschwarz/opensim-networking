@@ -3,7 +3,7 @@
 //! Maybe in the future the content of this module can be pushed upstream, for this reason the
 //! functionality in here should be kept as general as possible.
 
-use byteorder::{ByteOrder, BigEndian, LittleEndian};
+use byteorder::ByteOrder;
 use bitreader::BitReader;
 pub use bitreader::BitReaderError as BitsReaderError;
 
@@ -12,6 +12,24 @@ pub struct BitsReader<'d> {
 }
 
 impl<'d> BitsReader<'d> {
+    #[inline]
+    fn read_bytes_partial<'r>(&mut self, n_bits: u8) -> Result<[u8; 8], BitsReaderError>
+    {
+        debug_assert!(n_bits <= 64);
+
+        let mut result = [0u8; 8];
+        let n_full_bytes: u8 = n_bits / 8;
+        let n_remaining_bits: u8 = n_bits - n_full_bytes*8;
+
+        for i in 0..n_full_bytes {
+            result[i as usize] = self.reader.read_u8(8)?;
+        }
+        if n_remaining_bits > 0 {
+            result[n_full_bytes as usize] = self.reader.read_u8(n_remaining_bits)?;
+        }
+        Ok(result)
+    }
+
     pub fn new(data: &'d [u8]) -> Self {
         BitsReader { reader: BitReader::new(data) }
     }
@@ -73,104 +91,40 @@ impl<'d> BitsReader<'d> {
         self.reader.read_bool()
     }
 
-    pub fn read_part_u8<P: Padding>(&mut self, num_bits: u8) -> Result<u8, BitsReaderError> {
-        assert!(num_bits <= 8);
-        Ok(P::pad_u8(self.reader.read_u8(num_bits)?, 8 - num_bits))
+    /// Read a u8 from the next num_bits bits of the reader.
+    #[inline]
+    pub fn read_part_u8<B: ByteOrder>(
+        &mut self,
+        num_bits: u8,
+    ) -> Result<u8, BitsReaderError> {
+        Ok(self.read_bytes_partial(num_bits)?[0])
     }
 
-    /// Read the specified number of bits, then apply padding, then reorder if needed.
+    /// Read a u16 from the next num_bits bits of the reader.
     #[inline]
-    pub fn read_part_u32<B: ByteOrder, P: Padding>(
+    pub fn read_part_u16<B: ByteOrder>(
+        &mut self,
+        num_bits: u8,
+    ) -> Result<u16, BitsReaderError> {
+        Ok(B::read_u16(&self.read_bytes_partial(num_bits)?[0..4]))
+    }
+
+    /// Read a u32 from the next num_bits bits of the reader.
+    #[inline]
+    pub fn read_part_u32<B: ByteOrder>(
         &mut self,
         num_bits: u8,
     ) -> Result<u32, BitsReaderError> {
-        // TODO
-        if num_bits <= 8 {
-            Ok(self.reader.read_u32(num_bits)?)
-        } else if num_bits <= 16 {
-            Ok(B::read_u32(
-                &[
-                    self.reader.read_u8(8)?,
-                    self.reader.read_u8(num_bits - 8)?,
-                    0,
-                    0,
-                ],
-            ))
-        } else if num_bits <= 24 {
-            Ok(B::read_u32(
-                &[
-                    self.reader.read_u8(8)?,
-                    self.reader.read_u8(8)?,
-                    self.reader.read_u8(num_bits - 16)?,
-                    0,
-                ],
-            ))
-        } else if num_bits <= 32 {
-            Ok(B::read_u32(
-                &[
-                    self.reader.read_u8(8)?,
-                    self.reader.read_u8(8)?,
-                    self.reader.read_u8(8)?,
-                    self.reader.read_u8(num_bits - 24)?,
-                ],
-            ))
-        } else {
-            panic!("invalid num_bits: {}", num_bits);
-        }
+        Ok(B::read_u32(&self.read_bytes_partial(num_bits)?[0..4]))
+    }
+
+    /// Read a u64 from the next num_bits bits of the reader.
+    #[inline]
+    pub fn read_part_u64<B: ByteOrder>(
+        &mut self,
+        num_bits: u8,
+    ) -> Result<u64, BitsReaderError> {
+        Ok(B::read_u64(&self.read_bytes_partial(num_bits)?[0..8]))
     }
 }
 
-/// Describes the padding of a value. Padding is applied before correcting endianness.
-///
-/// Generally you will only care whether to supply `PadOnLeft` or `PadOnRight`.
-pub trait Padding {
-    /// Pad the value `val` with `num_zeros` zeros.
-    fn pad_u8(val: u8, num_zeros: u8) -> u8;
-
-    /// Pad the value `val` with `num_zeros` zeros.
-    fn pad_u16(val: u16, num_zeros: u8) -> u16;
-
-    /// Pad the value `val` with `num_zeros` zeros.
-    fn pad_u32(val: u32, num_zeros: u8) -> u32;
-
-    /// Pad the value `val` with `num_zeros` zeros.
-    fn pad_u64(val: u64, num_zeros: u8) -> u64;
-}
-
-/// Add padding on the left side of the number, i.e.
-/// pad `11` to `0011`.
-pub enum PadOnLeft {}
-
-impl Padding for PadOnLeft {
-    fn pad_u8(val: u8, _: u8) -> u8 {
-        val
-    }
-    fn pad_u16(val: u16, _: u8) -> u16 {
-        val
-    }
-    fn pad_u32(val: u32, _: u8) -> u32 {
-        val
-    }
-    fn pad_u64(val: u64, _: u8) -> u64 {
-        val
-    }
-}
-
-/// Add padding on the right side of the number, i.e.
-/// pad `11` to `1100`.
-pub enum PadOnRight {}
-
-impl Padding for PadOnRight {
-    fn pad_u8(val: u8, num_zeros: u8) -> u8 {
-        val << num_zeros
-    }
-    fn pad_u16(val: u16, num_zeros: u8) -> u16 {
-        val << num_zeros
-    }
-    fn pad_u32(val: u32, num_zeros: u8) -> u32 {
-        val << num_zeros
-    }
-    fn pad_u64(val: u64, num_zeros: u8) -> u64 {
-        val << num_zeros
-    }
-}

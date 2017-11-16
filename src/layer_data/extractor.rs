@@ -1,4 +1,4 @@
-use layer_data::bitsreader::{BitsReader, BitsReaderError, PadOnLeft};
+use layer_data::bitsreader::{BitsReader, BitsReaderError};
 use layer_data::idct::{PatchTables, PatchSize};
 use layer_data::{Patch, LayerKind, idct};
 
@@ -90,7 +90,7 @@ impl PatchHeader {
             let y = patchids & 0xffff;
             (x, y)
         } else {
-            let patchids = reader.read_part_u32::<LittleEndian, PadOnLeft>(10)?;
+            let patchids = reader.read_part_u32::<LittleEndian>(10)?;
             let x = patchids >> 5;
             let y = patchids & 0x1f;
             (x, y)
@@ -169,7 +169,7 @@ fn decode_patch_data<PS: PatchSize>(
             if not_eob {
                 // Read the item.
                 let sign = if reader.read_bool()? { -1 } else { 1 };
-                let value = reader.read_part_u32::<LittleEndian, PadOnLeft>(
+                let value = reader.read_part_u32::<LittleEndian>(
                     header.word_bits as u8,
                 )? as i32;
                 patch_data.push(sign * value);
