@@ -19,15 +19,49 @@ pub enum Scalar {
     Binary(Vec<u8>),
 }
 
+#[derive(Debug, Eq, PartialEq)]
+pub(crate) enum ScalarType {
+    Boolean,
+    Integer,
+    Real,
+    Uuid,
+    String,
+    Date,
+    Uri,
+    Binary
+}
+
+impl ScalarType {
+    /// Parse a scalar from the specified data into a scalar with the variant
+    /// specified by this Self instance.
+    pub(crate) fn parse_scalar(&self, source: &[u8]) -> Option<Scalar> {
+        // TODO: Consider optimizing so that only what is actually needed has to be
+        // computed here, or will the compiler actually take care of this for us?
+        let s_value = Scalar::String(String::from_utf8_lossy(source).to_string());
+        let b_value = Scalar::Binary(source.to_vec());
+
+        match *self {
+            ScalarType::Boolean => s_value.as_bool().map(|b| Scalar::Boolean(b)),
+            ScalarType::Integer => b_value.as_int().map(|i| Scalar::Integer(i)),
+            ScalarType::Real => b_value.as_real().map(|r| Scalar::Real(r)),
+            ScalarType::Uuid => b_value.as_uuid().map(|u| Scalar::Uuid(u)),
+            ScalarType::String => Some(s_value),
+            ScalarType::Date => s_value.as_date().map(|d| Scalar::Date(d)),
+            ScalarType::Uri => s_value.as_uri().map(|u| Scalar::Uri(u)),
+            ScalarType::Binary => Some(b_value),
+        }
+    }
+}
+
 pub type Map = HashMap<String, Value>;
 pub type Array = Vec<Value>;
 
-#[derive(Debug)]
+#[derive(Debug, PartialEq)]
 pub enum Value {
     Scalar(Scalar),
     Map(Map),
     Array(Array),
-    Undefined
+    Undefined,
 }
 
 impl Scalar {
@@ -145,7 +179,7 @@ impl Scalar {
             Scalar::String(ref s) => s.parse().ok(),
             Scalar::Date(ref d) => Some(d.clone()),
             Scalar::Uri(_) => None,
-            Scalar::Binary(ref b) => None,
+            Scalar::Binary(_) => None,
         }
     }
 
@@ -164,17 +198,17 @@ impl Scalar {
 
     pub fn as_binary(&self) -> Option<Vec<u8>> {
         match *self {
-            Scalar::Boolean(ref b) => if *b {Some(vec![1])} else { Some(vec![0])} ,
+            Scalar::Boolean(ref b) => if *b { Some(vec![1]) } else { Some(vec![0]) },
             Scalar::Integer(ref i) => {
                 let mut buf = Vec::new();
                 BigEndian::write_i32(&mut buf, *i);
                 Some(buf)
-            },
+            }
             Scalar::Real(ref r) => {
                 let mut buf = Vec::new();
                 BigEndian::write_f64(&mut buf, *r);
                 Some(buf)
-            },
+            }
             Scalar::Uuid(ref u) => Some(u.as_bytes().to_vec()),
             Scalar::String(ref s) => Some(s.as_bytes().to_vec()),
             Scalar::Date(_) => None,

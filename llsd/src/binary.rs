@@ -3,6 +3,8 @@
 // TODO check in the right place for the header "<? LLSD/Binary ?>\n" and remove it from the
 // reader.
 
+// TODO: if needed also writer
+
 use data::*;
 use std::io::Read;
 use byteorder::{ByteOrder, BigEndian, ReadBytesExt};
@@ -27,7 +29,7 @@ fn read_n_bytes<R: Read>(reader: &mut R, n_bytes: u32) -> Result<Vec<u8>, ReadEr
     Ok(data.to_vec())
 }
 
-fn read_value<R: Read>(reader: &mut R) -> Result<Value, ReadError> {
+pub fn read_value<R: Read>(reader: &mut R) -> Result<Value, ReadError> {
     let code = reader.read_u8()? as char;
     match code {
         '!' => Ok(Value::Undefined),
