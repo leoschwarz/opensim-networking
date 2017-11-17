@@ -1,8 +1,31 @@
-use quick_xml::reader::Reader;
+use data_encoding::{BASE64, Encoding};
 use quick_xml::events::Event;
+use quick_xml::reader::Reader;
 use std::io::{BufRead, Read};
 
 use data::*;
+
+// TODO: Also figure out if this is even needed in OpenSim,
+// since the alphabet here does not do the same as the example in the wiki,
+// yet the Python implementation they linked does also follow the RFC 4648 alphabet.
+lazy_static! {
+    static ref BASE16: Encoding = {
+        let mut spec = ::data_encoding::Specification::new();
+        // https://tools.ietf.org/html/rfc4648#page-10
+        spec.symbols.push_str("0123456789ABCDEF");
+        spec.padding = None;
+        spec.encoding().unwrap()
+    };
+}
+/*
+    // TODO: Figure out if this is even implemented in OpenSim.
+    static ref BASE85: Encoding = {
+        let mut spec = ::data_encoding::Specification::new();
+        // https://de.wikipedia.org/wiki/Base85
+        spec.symbols.push_str("0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz!#$%&()*+-;<=>?@^_`{|}~");
+        spec.padding = 
+    }
+*/
 
 // TODO: see in relation to the binary module, that here we are actually reading away the xml
 // header. So in the other case the reader should only be moved, if the expected data is actually
@@ -18,6 +41,9 @@ use data::*;
 pub enum ReadErrorKind {
     #[error_chain(foreign)]
     Xml(::quick_xml::errors::Error),
+
+    #[error_chain(foreign)]
+    BinaryDecode(::data_encoding::DecodeError),
 
     #[error_chain(custom)]
     UnexpectedEof,
@@ -48,10 +74,28 @@ pub enum ReadErrorKind {
 }
 
 #[derive(Debug, PartialEq)]
+enum BinaryEncoding {
+    Base16,
+    Base64,
+    Base85,
+}
+
+impl BinaryEncoding {
+    fn enc(&self) -> &Encoding {
+        match *self {
+            BinaryEncoding::Base16 => &BASE16,
+            BinaryEncoding::Base64 => &BASE64,
+            BinaryEncoding::Base85 => unimplemented!(),
+        }
+    }
+}
+
+#[derive(Debug, PartialEq)]
 enum PartialValue {
     Llsd,
     Array(Array),
     Map(Map),
+    ScalarBinary(Option<Value>, BinaryEncoding),
     Scalar(ScalarType, Option<Value>),
     Key(Option<String>),
 }
@@ -69,7 +113,7 @@ impl PartialValue {
             "string" => Ok(PartialValue::Scalar(ScalarType::String, None)),
             "date" => Ok(PartialValue::Scalar(ScalarType::Date, None)),
             "uri" => Ok(PartialValue::Scalar(ScalarType::Uri, None)),
-            "binary" => Ok(PartialValue::Scalar(ScalarType::Binary, None)),
+            "binary" => Ok(PartialValue::ScalarBinary(None, BinaryEncoding::Base64)),
             "key" => Ok(PartialValue::Key(None)),
             t => Err(ReadErrorKind::InvalidPartialValue(t.to_string()).into()),
         }
@@ -79,6 +123,9 @@ impl PartialValue {
         match self {
             PartialValue::Array(a) => Ok(Value::Array(a)),
             PartialValue::Map(m) => Ok(Value::Map(m)),
+            PartialValue::ScalarBinary(val, _) => Ok(val.ok_or_else(|| {
+                ReadError::from("Scalar binary was not specified.")
+            })?),
             PartialValue::Scalar(_, Some(val)) => Ok(val),
             PartialValue::Scalar(_, None) => Err("Scalar was not specified.".into()),
             PartialValue::Llsd |
@@ -102,9 +149,25 @@ pub fn read_value<B: BufRead>(reader: &mut Reader<B>) -> Result<Value, ReadError
     loop {
         match reader.read_event(&mut buf)? {
             Event::Start(ref e) => {
-                let vt = PartialValue::parse_name(e.unescape_and_decode(reader)?.as_str())?;
+                let mut vt = PartialValue::parse_name(e.unescape_and_decode(reader)?.as_str())?;
                 if vt == PartialValue::Llsd && val_stack.len() > 0 {
                     return Err(ReadErrorKind::InvalidStructure.into());
+                } else if let PartialValue::ScalarBinary(_, ref mut enc) = vt {
+                    for attr in e.attributes() {
+                        let attr = attr?;
+                        let attr_name = String::from_utf8_lossy(attr.key);
+                        match attr_name.as_ref() {
+                            "encoding" => {
+                                let attr_value = String::from_utf8_lossy(attr.value);
+                                *enc = match attr_value.as_ref() {
+                                    "base16" => BinaryEncoding::Base16,
+                                    "base85" => return Err("base85 unsupported.".into()),
+                                    "base64" | _ => BinaryEncoding::Base64,
+                                }
+                            }
+                            _ => {}
+                        }
+                    }
                 }
                 val_stack.push(vt);
             }
@@ -116,6 +179,11 @@ pub fn read_value<B: BufRead>(reader: &mut Reader<B>) -> Result<Value, ReadError
                 // TODO: remove pop/push here later
                 let mut target = val_stack.pop().unwrap();
                 match target {
+                    PartialValue::ScalarBinary(ref mut content, ref encoding) => {
+                        let data = encoding.enc().decode(e.unescaped()?.as_ref())?;
+                        let scalar = Scalar::Binary(data);
+                        *content = Some(Value::Scalar(scalar));
+                    }
                     PartialValue::Scalar(ref s_type, ref mut s_val) => {
                         let scalar = s_type.parse_scalar(e.escaped().as_ref()).ok_or_else(|| {
                             ReadError::from(ReadErrorKind::ConversionFailed)
@@ -153,7 +221,8 @@ pub fn read_value<B: BufRead>(reader: &mut Reader<B>) -> Result<Value, ReadError
                             _ => return Err(ReadErrorKind::InvalidStructure.into()),
                         }
                     }
-                    PartialValue::Scalar(_, _) => {
+                    PartialValue::Scalar(_, _) |
+                    PartialValue::ScalarBinary(_, _) => {
                         return Err(ReadErrorKind::InvalidStructure.into());
                     }
                     PartialValue::Key(Some(ref key)) => {

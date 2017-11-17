@@ -6,7 +6,10 @@ authors = ["Leo Schwarz <mail@leoschwarz.com>"]
 [dependencies]
 byteorder = "1.1.0"
 chrono = "0.4.0"
+data-encoding = "2.0.0"
 derive-error-chain = "0.11.0"
 error-chain = "0.11.0"
+lazy_static = "0.2.10"
+regex = "0.2.2"
 quick-xml = "0.9.4"
 uuid = {version = "0.5.1", features = ["use_std"]}

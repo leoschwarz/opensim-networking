@@ -1,10 +1,16 @@
 //! The data types to be used.
 pub use uuid::Uuid;
-use chrono::{DateTime, Utc, NaiveDateTime, FixedOffset};
 use byteorder::{BigEndian, ByteOrder};
+use chrono::{DateTime, Utc, NaiveDateTime, FixedOffset};
+use regex::Regex;
 use std::collections::HashMap;
 
 pub type Date = DateTime<Utc>;
+
+lazy_static! {
+    static ref RE_INTEGER: Regex = Regex::new(r"(-?\d+)").unwrap();
+    static ref RE_REAL: Regex = Regex::new(r"(-?\d+\.\d+)").unwrap();
+}
 
 #[derive(Clone, Debug, PartialEq)]
 pub enum Scalar {
@@ -28,27 +34,23 @@ pub(crate) enum ScalarType {
     String,
     Date,
     Uri,
-    Binary
+    Binary,
 }
 
 impl ScalarType {
     /// Parse a scalar from the specified data into a scalar with the variant
     /// specified by this Self instance.
     pub(crate) fn parse_scalar(&self, source: &[u8]) -> Option<Scalar> {
-        // TODO: Consider optimizing so that only what is actually needed has to be
-        // computed here, or will the compiler actually take care of this for us?
         let s_value = Scalar::String(String::from_utf8_lossy(source).to_string());
-        let b_value = Scalar::Binary(source.to_vec());
-
         match *self {
             ScalarType::Boolean => s_value.as_bool().map(|b| Scalar::Boolean(b)),
-            ScalarType::Integer => b_value.as_int().map(|i| Scalar::Integer(i)),
-            ScalarType::Real => b_value.as_real().map(|r| Scalar::Real(r)),
-            ScalarType::Uuid => b_value.as_uuid().map(|u| Scalar::Uuid(u)),
+            ScalarType::Integer => s_value.as_int().map(|i| Scalar::Integer(i)),
+            ScalarType::Real => s_value.as_real().map(|r| Scalar::Real(r)),
+            ScalarType::Uuid => s_value.as_uuid().map(|u| Scalar::Uuid(u)),
             ScalarType::String => Some(s_value),
             ScalarType::Date => s_value.as_date().map(|d| Scalar::Date(d)),
             ScalarType::Uri => s_value.as_uri().map(|u| Scalar::Uri(u)),
-            ScalarType::Binary => Some(b_value),
+            ScalarType::Binary => None,
         }
     }
 }
@@ -85,8 +87,12 @@ impl Scalar {
             // Note: this can overflow, but never panics.
             Scalar::Real(ref r) => Some(r.round() as i32),
             Scalar::Uuid(_) => None,
-            // TODO: "A simple conversion of the initial characters to an integer" ???
-            Scalar::String(ref s) => unimplemented!(),
+            Scalar::String(ref s) => {
+                for cap in RE_INTEGER.captures_iter(s) {
+                    return Some(cap[1].parse().unwrap());
+                }
+                None
+            }
             Scalar::Date(ref d) => Some(d.timestamp() as i32),
             Scalar::Uri(_) => None,
             Scalar::Binary(ref b) => {
@@ -105,8 +111,12 @@ impl Scalar {
             Scalar::Integer(ref i) => Some(*i as f64),
             Scalar::Real(ref r) => Some(*r),
             Scalar::Uuid(_) => None,
-            // TODO:
-            Scalar::String(ref s) => unimplemented!(),
+            Scalar::String(ref s) => {
+                for cap in RE_REAL.captures_iter(s) {
+                    return Some(cap[1].parse().unwrap());
+                }
+                None
+            }
             Scalar::Date(ref d) => Some(d.timestamp() as f64),
             Scalar::Uri(_) => None,
             Scalar::Binary(ref b) => {
