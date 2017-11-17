@@ -1,0 +1,10 @@
+[package]
+name = "llsd"
+version = "0.1.0"
+authors = ["Leo Schwarz <mail@leoschwarz.com>"]
+
+[dependencies]
+byteorder = "1.1.0"
+chrono = "0.4.0"
+uuid = {version = "0.5.1", features = ["use_std"]}
+
