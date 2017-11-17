@@ -7,7 +7,7 @@ use std::collections::HashMap;
 pub type Date = DateTime<Utc>;
 
 #[derive(Clone, Debug, PartialEq)]
-pub enum ScalarType {
+pub enum Scalar {
     Boolean(bool),
     Integer(i32),
     Real(f64),
@@ -24,37 +24,38 @@ pub type Array = Vec<Value>;
 
 #[derive(Debug)]
 pub enum Value {
-    Scalar(ScalarType),
+    Scalar(Scalar),
     Map(Map),
     Array(Array),
+    Undefined
 }
 
-impl ScalarType {
+impl Scalar {
     pub fn as_bool(&self) -> Option<bool> {
         match *self {
-            ScalarType::Boolean(ref b) => Some(*b),
-            ScalarType::Integer(ref i) => Some(*i != 0),
-            ScalarType::Real(ref r) => Some(*r != 0.),
-            ScalarType::Uuid(ref u) => Some(*u != Uuid::nil()),
-            ScalarType::String(ref s) => Some(!s.is_empty()),
-            ScalarType::Date(_) => None,
-            ScalarType::Uri(_) => None,
-            ScalarType::Binary(ref b) => Some(!b.is_empty()),
+            Scalar::Boolean(ref b) => Some(*b),
+            Scalar::Integer(ref i) => Some(*i != 0),
+            Scalar::Real(ref r) => Some(*r != 0.),
+            Scalar::Uuid(ref u) => Some(*u != Uuid::nil()),
+            Scalar::String(ref s) => Some(!s.is_empty()),
+            Scalar::Date(_) => None,
+            Scalar::Uri(_) => None,
+            Scalar::Binary(ref b) => Some(!b.is_empty()),
         }
     }
 
     pub fn as_int(&self) -> Option<i32> {
         match *self {
-            ScalarType::Boolean(ref b) => if *b { Some(1) } else { Some(0) },
-            ScalarType::Integer(ref i) => Some(*i),
+            Scalar::Boolean(ref b) => if *b { Some(1) } else { Some(0) },
+            Scalar::Integer(ref i) => Some(*i),
             // Note: this can overflow, but never panics.
-            ScalarType::Real(ref r) => Some(r.round() as i32),
-            ScalarType::Uuid(_) => None,
+            Scalar::Real(ref r) => Some(r.round() as i32),
+            Scalar::Uuid(_) => None,
             // TODO: "A simple conversion of the initial characters to an integer" ???
-            ScalarType::String(ref s) => unimplemented!(),
-            ScalarType::Date(ref d) => Some(d.timestamp() as i32),
-            ScalarType::Uri(_) => None,
-            ScalarType::Binary(ref b) => {
+            Scalar::String(ref s) => unimplemented!(),
+            Scalar::Date(ref d) => Some(d.timestamp() as i32),
+            Scalar::Uri(_) => None,
+            Scalar::Binary(ref b) => {
                 if b.len() < 4 {
                     None
                 } else {
@@ -66,15 +67,15 @@ impl ScalarType {
 
     pub fn as_real(&self) -> Option<f64> {
         match *self {
-            ScalarType::Boolean(ref b) => if *b { Some(1.) } else { Some(0.) },
-            ScalarType::Integer(ref i) => Some(*i as f64),
-            ScalarType::Real(ref r) => Some(*r),
-            ScalarType::Uuid(_) => None,
+            Scalar::Boolean(ref b) => if *b { Some(1.) } else { Some(0.) },
+            Scalar::Integer(ref i) => Some(*i as f64),
+            Scalar::Real(ref r) => Some(*r),
+            Scalar::Uuid(_) => None,
             // TODO:
-            ScalarType::String(ref s) => unimplemented!(),
-            ScalarType::Date(ref d) => Some(d.timestamp() as f64),
-            ScalarType::Uri(_) => None,
-            ScalarType::Binary(ref b) => {
+            Scalar::String(ref s) => unimplemented!(),
+            Scalar::Date(ref d) => Some(d.timestamp() as f64),
+            Scalar::Uri(_) => None,
+            Scalar::Binary(ref b) => {
                 if b.len() < 8 {
                     None
                 } else {
@@ -86,17 +87,17 @@ impl ScalarType {
 
     pub fn as_uuid(&self) -> Option<Uuid> {
         match *self {
-            ScalarType::Boolean(_) => None,
-            ScalarType::Integer(_) => None,
-            ScalarType::Real(_) => None,
-            ScalarType::Uuid(ref u) => Some(u.clone()),
+            Scalar::Boolean(_) => None,
+            Scalar::Integer(_) => None,
+            Scalar::Real(_) => None,
+            Scalar::Uuid(ref u) => Some(u.clone()),
             // TODO: This doesn't correctly implement the spec, as the spec says only the
             // conversion of hyphenated UUIDs should succeed, every other should fail,
             // but this method is agnostic of the hyphens.
-            ScalarType::String(ref s) => Uuid::parse_str(s.as_str()).ok(),
-            ScalarType::Date(_) => None,
-            ScalarType::Uri(_) => None,
-            ScalarType::Binary(ref b) => {
+            Scalar::String(ref s) => Uuid::parse_str(s.as_str()).ok(),
+            Scalar::Date(_) => None,
+            Scalar::Uri(_) => None,
+            Scalar::Binary(ref b) => {
                 if b.len() < 16 {
                     None
                 } else {
@@ -110,75 +111,75 @@ impl ScalarType {
 
     pub fn as_string(&self) -> Option<String> {
         match *self {
-            ScalarType::Boolean(ref b) => {
+            Scalar::Boolean(ref b) => {
                 if *b {
                     Some("true".to_string())
                 } else {
                     Some("false".to_string())
                 }
             }
-            ScalarType::Integer(ref i) => Some(format!("{}", i)),
-            ScalarType::Real(ref r) => Some(format!("{}", r)),
-            ScalarType::Uuid(ref u) => Some(u.hyphenated().to_string()),
-            ScalarType::String(ref s) => Some(s.clone()),
-            ScalarType::Date(ref d) => Some(d.to_rfc3339()),
-            ScalarType::Uri(ref u) => Some(u.clone()),
-            ScalarType::Binary(ref b) => Some(String::from_utf8_lossy(b).to_string()),
+            Scalar::Integer(ref i) => Some(format!("{}", i)),
+            Scalar::Real(ref r) => Some(format!("{}", r)),
+            Scalar::Uuid(ref u) => Some(u.hyphenated().to_string()),
+            Scalar::String(ref s) => Some(s.clone()),
+            Scalar::Date(ref d) => Some(d.to_rfc3339()),
+            Scalar::Uri(ref u) => Some(u.clone()),
+            Scalar::Binary(ref b) => Some(String::from_utf8_lossy(b).to_string()),
         }
     }
 
     pub fn as_date(&self) -> Option<Date> {
         match *self {
-            ScalarType::Boolean(_) => None,
+            Scalar::Boolean(_) => None,
             // TODO: I can't imagine anyone ever wants to use this with a i32, maybe this is
             // another error in the documentation?
-            ScalarType::Integer(ref i) => Some(Date::from_utc(
+            Scalar::Integer(ref i) => Some(Date::from_utc(
                 NaiveDateTime::from_timestamp(*i as i64, 0),
                 Utc,
             )),
-            ScalarType::Real(ref f) => Some(Date::from_utc(
+            Scalar::Real(ref f) => Some(Date::from_utc(
                 NaiveDateTime::from_timestamp(*f as i64, 0),
                 Utc,
             )),
-            ScalarType::Uuid(_) => None,
-            ScalarType::String(ref s) => s.parse().ok(),
-            ScalarType::Date(ref d) => Some(d.clone()),
-            ScalarType::Uri(_) => None,
-            ScalarType::Binary(ref b) => None,
+            Scalar::Uuid(_) => None,
+            Scalar::String(ref s) => s.parse().ok(),
+            Scalar::Date(ref d) => Some(d.clone()),
+            Scalar::Uri(_) => None,
+            Scalar::Binary(ref b) => None,
         }
     }
 
     pub fn as_uri(&self) -> Option<String> {
         match *self {
-            ScalarType::Boolean(_) => None,
-            ScalarType::Integer(_) => None,
-            ScalarType::Real(_) => None,
-            ScalarType::Uuid(_) => None,
-            ScalarType::String(ref s) => Some(s.clone()),
-            ScalarType::Date(_) => None,
-            ScalarType::Uri(ref u) => Some(u.clone()),
-            ScalarType::Binary(ref b) => Some(String::from_utf8_lossy(b).to_string()),
+            Scalar::Boolean(_) => None,
+            Scalar::Integer(_) => None,
+            Scalar::Real(_) => None,
+            Scalar::Uuid(_) => None,
+            Scalar::String(ref s) => Some(s.clone()),
+            Scalar::Date(_) => None,
+            Scalar::Uri(ref u) => Some(u.clone()),
+            Scalar::Binary(ref b) => Some(String::from_utf8_lossy(b).to_string()),
         }
     }
 
     pub fn as_binary(&self) -> Option<Vec<u8>> {
         match *self {
-            ScalarType::Boolean(ref b) => if *b {Some(vec![1])} else { Some(vec![0])} ,
-            ScalarType::Integer(ref i) => {
+            Scalar::Boolean(ref b) => if *b {Some(vec![1])} else { Some(vec![0])} ,
+            Scalar::Integer(ref i) => {
                 let mut buf = Vec::new();
                 BigEndian::write_i32(&mut buf, *i);
                 Some(buf)
             },
-            ScalarType::Real(ref r) => {
+            Scalar::Real(ref r) => {
                 let mut buf = Vec::new();
                 BigEndian::write_f64(&mut buf, *r);
                 Some(buf)
             },
-            ScalarType::Uuid(ref u) => Some(u.as_bytes().to_vec()),
-            ScalarType::String(ref s) => Some(s.as_bytes().to_vec()),
-            ScalarType::Date(_) => None,
-            ScalarType::Uri(_) => None,
-            ScalarType::Binary(ref b) => Some(b.clone()),
+            Scalar::Uuid(ref u) => Some(u.as_bytes().to_vec()),
+            Scalar::String(ref s) => Some(s.as_bytes().to_vec()),
+            Scalar::Date(_) => None,
+            Scalar::Uri(_) => None,
+            Scalar::Binary(ref b) => Some(b.clone()),
         }
     }
 }
