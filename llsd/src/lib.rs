@@ -2,12 +2,5 @@ extern crate byteorder;
 extern crate chrono;
 extern crate uuid;
 
-pub mod llsd;
+pub mod data;
 
-#[cfg(test)]
-mod tests {
-    #[test]
-    fn it_works() {
-        assert_eq!(2 + 2, 4);
-    }
-}

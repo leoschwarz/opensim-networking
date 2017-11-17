@@ -1,10 +1,12 @@
+//! The data types to be used.
 pub use uuid::Uuid;
 use chrono::{DateTime, Utc, NaiveDateTime, FixedOffset};
 use byteorder::{BigEndian, ByteOrder};
+use std::collections::HashMap;
 
 pub type Date = DateTime<Utc>;
 
-#[derive(Debug)]
+#[derive(Clone, Debug, PartialEq)]
 pub enum ScalarType {
     Boolean(bool),
     Integer(i32),
@@ -15,6 +17,16 @@ pub enum ScalarType {
     // TODO: Consider using a dedicated type here?
     Uri(String),
     Binary(Vec<u8>),
+}
+
+pub type Map = HashMap<String, Value>;
+pub type Array = Vec<Value>;
+
+#[derive(Debug)]
+pub enum Value {
+    Scalar(ScalarType),
+    Map(Map),
+    Array(Array),
 }
 
 impl ScalarType {
