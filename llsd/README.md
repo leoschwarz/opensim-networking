@@ -6,4 +6,6 @@ Linden Lab Structured Data (LLSD) describes a data interchange format, widely us
 
 The main point of documentation of the format can be found on the [Second Life Wiki page on LLSD](http://wiki.secondlife.com/wiki/LLSD).
 
-As usual many mistakes were found in the original documentation, most notably encoding of binary data in XML is problematic, which is partly annotated in the code. (But this is probably one more of the parts which will need more documentation in the future.)
+## Implementation notes
+
+- XML: Binary encoding only BASE64, decoding only BASE16 and BASE64 but no BASE85.

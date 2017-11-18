@@ -1,3 +1,5 @@
+//! Handle XML representation of LLSD data.
+
 use data_encoding::{BASE64, Encoding};
 use quick_xml::events::Event;
 use quick_xml::reader::Reader;
@@ -17,15 +19,6 @@ lazy_static! {
         spec.encoding().unwrap()
     };
 }
-/*
-    // TODO: Figure out if this is even implemented in OpenSim.
-    static ref BASE85: Encoding = {
-        let mut spec = ::data_encoding::Specification::new();
-        // https://de.wikipedia.org/wiki/Base85
-        spec.symbols.push_str("0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz!#$%&()*+-;<=>?@^_`{|}~");
-        spec.padding = 
-    }
-*/
 
 // TODO: see in relation to the binary module, that here we are actually reading away the xml
 // header. So in the other case the reader should only be moved, if the expected data is actually
@@ -77,8 +70,6 @@ pub enum ReadErrorKind {
 enum BinaryEncoding {
     Base16,
     Base64,
-    #[allow(dead_code)]
-    Base85,
 }
 
 impl BinaryEncoding {
@@ -86,7 +77,6 @@ impl BinaryEncoding {
         match *self {
             BinaryEncoding::Base16 => &BASE16,
             BinaryEncoding::Base64 => &BASE64,
-            BinaryEncoding::Base85 => unimplemented!(),
         }
     }
 }
@@ -148,9 +138,15 @@ pub fn read_value<B: BufRead>(reader: &mut Reader<B>) -> Result<Value, ReadError
     // Note: The reader takes care of checking that end elements match the open elements,
     //       so less sanity checking has to be done on our end.
     loop {
-        // TODO: setting trim text to true might be a bad idea, but I keep getting empty text
-        // events otherwise which completely mess up my logic in here.
-        match reader.trim_text(true).read_event(&mut buf)? {
+        match reader
+            // Needed because otherwise empty string text events are emitted,
+            // probably for whitespace between elements?
+            //
+            // TODO: But this might mess up strings which should contain whitespace.
+            .trim_text(true)
+            // Needed so we can extract the correct default values for numbers for instance.
+            .expand_empty_elements(true)
+            .read_event(&mut buf)? {
             Event::Start(ref e) => {
                 let mut vt = PartialValue::parse_name(e.unescape_and_decode(reader)?.as_str())?;
                 if vt == PartialValue::Llsd && val_stack.len() > 0 {

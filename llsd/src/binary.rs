@@ -1,4 +1,4 @@
-//! Handling for the binary representation of LLSD data.
+//! Handle binary representation of LLSD data.
 
 // TODO check in the right place for the header "<? LLSD/Binary ?>\n" and remove it from the
 // reader.
