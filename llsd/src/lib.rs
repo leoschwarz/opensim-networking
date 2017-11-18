@@ -13,3 +13,7 @@ extern crate uuid;
 pub mod data;
 pub mod binary;
 pub mod xml;
+
+mod autodetect;
+
+pub use autodetect::read_value;

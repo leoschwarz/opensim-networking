@@ -153,11 +153,12 @@ impl PartialValue {
     }
 }
 
-/// Taking a `Reader` as an argument, allows us to call this recursively.
-pub fn read_value<B: BufRead>(reader: &mut Reader<B>) -> Result<Value, ReadError> {
+pub fn read_value<B: BufRead>(buf_reader: B) -> Result<Value, ReadError> {
     // Internal buffer of quick_xml Reader, which we can use for our purposes.
     let mut buf = Vec::new();
     let mut val_stack: Vec<PartialValue> = Vec::new();
+
+    let mut reader = Reader::from_reader(buf_reader);
 
     // Note: The reader takes care of checking that end elements match the open elements,
     //       so less sanity checking has to be done on our end.
@@ -172,7 +173,7 @@ pub fn read_value<B: BufRead>(reader: &mut Reader<B>) -> Result<Value, ReadError
             .expand_empty_elements(true)
             .read_event(&mut buf)? {
             Event::Start(ref e) => {
-                let name_decoded = e.unescape_and_decode(reader)?;
+                let name_decoded = e.unescape_and_decode(&mut reader)?;
                 let name = name_decoded.split_whitespace().next().unwrap();
 
                 let mut vt = PartialValue::parse_name(name)?;
@@ -215,7 +216,7 @@ pub fn read_value<B: BufRead>(reader: &mut Reader<B>) -> Result<Value, ReadError
                         *s_val = Value::Scalar(scalar);
                     }
                     PartialValue::Key(ref mut key) => {
-                        let string = e.unescape_and_decode(reader)?;
+                        let string = e.unescape_and_decode(&mut reader)?;
                         *key = Some(string);
                     }
                     _ => return Err("Only <key> and scalar elements can contain text.".into()),
@@ -284,10 +285,11 @@ pub fn read_value<B: BufRead>(reader: &mut Reader<B>) -> Result<Value, ReadError
 mod tests {
     use super::*;
     use std::str::FromStr;
+    use std::io::Cursor;
 
     fn read_value_direct(source: &'static str) -> Value {
-        let mut reader = Reader::from_str(source);
-        read_value(&mut reader).unwrap()
+        let reader = Cursor::new(source);
+        read_value(reader).unwrap()
     }
 
     #[test]
@@ -519,8 +521,8 @@ mod tests {
                 </map>
             </llsd>"#;
 
-        let mut reader = Reader::from_str(data);
-        let value = read_value(&mut reader).unwrap();
+        let reader = Cursor::new(data);
+        let value = read_value(reader).unwrap();
 
         let mut map = value.map().unwrap();
 

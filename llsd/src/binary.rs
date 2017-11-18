@@ -32,6 +32,7 @@ fn read_n_bytes<R: Read>(reader: &mut R, n_bytes: u32) -> Result<Vec<u8>, ReadEr
     Ok(data.to_vec())
 }
 
+// This assumes that the header has already been skipped by the initial caller.
 pub fn read_value<R: Read>(reader: &mut R) -> Result<Value, ReadError> {
     let code = reader.read_u8()? as char;
     match code {
@@ -100,4 +101,11 @@ pub fn read_value<R: Read>(reader: &mut R) -> Result<Value, ReadError> {
         }
         _ => Err(ReadErrorKind::InvalidTypePrefix.into()),
     }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+
 }
