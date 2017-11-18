@@ -1,6 +1,6 @@
 use layer_data::bitsreader::{BitsReader, BitsReaderError};
 use layer_data::idct::{PatchTables, PatchSize};
-use layer_data::{Patch, LayerKind, idct};
+use layer_data::{Patch, LayerType, idct};
 
 use byteorder::LittleEndian;
 use nalgebra::DMatrix;
@@ -29,7 +29,7 @@ pub enum ExtractSurfaceErrorKind {
 pub(super) struct PatchGroupHeader {
     pub stride: u32,
     pub patch_size: u32,
-    pub layer_type: LayerKind,
+    pub layer_type: LayerType,
 }
 
 impl PatchGroupHeader {
@@ -50,7 +50,7 @@ impl PatchGroupHeader {
         Ok(PatchGroupHeader {
             stride: stride as u32,
             patch_size: patch_size as u32,
-            layer_type: LayerKind::from_code(layer_type)?,
+            layer_type: LayerType::from_code(layer_type)?,
         })
     }
 }
@@ -72,7 +72,6 @@ impl PatchHeader {
         large_patch: bool,
     ) -> Result<Option<Self>, ExtractSurfaceError> {
         let quantity_wbits = reader.read_full_u8()?;
-        println!("quantity_wbits = {}", quantity_wbits);
         if quantity_wbits == END_OF_PATCH {
             return Ok(None);
         }
@@ -83,7 +82,6 @@ impl PatchHeader {
         let dc_offset = reader.read_full_f32::<LittleEndian>()?;
         let range = reader.read_full_u16::<LittleEndian>()?;
 
-        // TODO: figure out how byte order has to be handled for these
         let (patch_x, patch_y) = if large_patch {
             let patchids = reader.read_full_u32::<LittleEndian>()?;
             let x = patchids >> 16;
@@ -107,26 +105,34 @@ impl PatchHeader {
     }
 }
 
-pub fn extract_patches(data: &[u8], large_patch: bool) -> Result<Vec<Patch>, ExtractSurfaceError> {
+pub fn extract_land_patches(
+    data: &[u8],
+    expected_layer_type: LayerType,
+) -> Result<Vec<Patch>, ExtractSurfaceError> {
     let mut reader = BitsReader::new(data);
 
     // Read patch_group_header
     let group_header = PatchGroupHeader::read(&mut reader)?;
+    // TODO This assertion should not be nescessary.
+    assert_eq!(group_header.layer_type, expected_layer_type);
+    let large_patch = match group_header.layer_type {
+        LayerType::Land => false,
+        LayerType::AuroraLand => true,
+        _ => unimplemented!(), // TODO return error or make impossible
+    };
 
     println!("patch_group_header: {:?}", group_header);
 
     let mut decoded_patches = Vec::new();
     loop {
-        // Read patch_header
-        let header = if let Some(h) = PatchHeader::read(&mut reader, large_patch)? {
-            h
-        } else {
-            // There are no more patches to be extracted.
-            break;
+        // Read patch_header if there are more patches to be read.
+        let header = match PatchHeader::read(&mut reader, large_patch)? {
+            Some(h) => h,
+            None => return Ok(decoded_patches),
         };
-        println!("patch_header: {:?}", header);
 
         let data = if large_patch {
+            // TODO: Test this one further.
             decode_patch_data::<idct::LargePatch>(
                 &mut reader,
                 &header,
@@ -143,14 +149,12 @@ pub fn extract_patches(data: &[u8], large_patch: bool) -> Result<Vec<Patch>, Ext
         };
 
         decoded_patches.push(Patch {
-            size: 16, // TODO
+            size: group_header.patch_size,
             patch_x: header.patch_x,
             patch_y: header.patch_y,
             data: data,
         });
     }
-
-    Ok(decoded_patches)
 }
 
 fn decode_patch_data<PS: PatchSize>(
@@ -169,9 +173,7 @@ fn decode_patch_data<PS: PatchSize>(
             if not_eob {
                 // Read the item.
                 let sign = if reader.read_bool()? { -1 } else { 1 };
-                let value = reader.read_part_u32::<LittleEndian>(
-                    header.word_bits as u8,
-                )? as i32;
+                let value = reader.read_part_u32::<LittleEndian>(header.word_bits as u8)? as i32;
                 patch_data.push(sign * value);
             } else {
                 for _ in i..PS::per_patch() {
@@ -185,5 +187,10 @@ fn decode_patch_data<PS: PatchSize>(
     }
 
     // Decompress the data.
-    Ok(idct::decompress_patch::<PS>(&patch_data, &header, &group_header, &tables))
+    Ok(idct::decompress_patch::<PS>(
+        &patch_data,
+        &header,
+        &group_header,
+        &tables,
+    ))
 }

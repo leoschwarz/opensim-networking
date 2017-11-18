@@ -83,8 +83,8 @@ fn main() {
         // |
         // +----> x
 
-        for x in 0..patch.side_length() {
-            for y in 0..patch.side_length() {
+        for x in 0..(patch.side_length() as usize) {
+            for y in 0..(patch.side_length() as usize) {
                 heightmap[(x + offset_x, y + offset_y)] = patch.data()[(x, y)];
             }
         }

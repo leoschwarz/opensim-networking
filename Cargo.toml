@@ -10,7 +10,7 @@ license = "GPL-3.0"
 #lto = true
 
 [workspace]
-members = ["opensim_messages", "opensim_types"]
+members = ["opensim_messages", "opensim_types", "llsd"]
 
 [dependencies]
 opensim_messages = { path = "opensim_messages" }
