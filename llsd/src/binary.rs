@@ -35,7 +35,7 @@ fn read_n_bytes<R: Read>(reader: &mut R, n_bytes: u32) -> Result<Vec<u8>, ReadEr
 pub fn read_value<R: Read>(reader: &mut R) -> Result<Value, ReadError> {
     let code = reader.read_u8()? as char;
     match code {
-        '!' => Ok(Value::Undefined),
+        '!' => Ok(Value::Scalar(Scalar::Undefined)),
         '1' => Ok(Value::Scalar(Scalar::Boolean(true))),
         '0' => Ok(Value::Scalar(Scalar::Boolean(false))),
         'i' => Ok(Value::Scalar(

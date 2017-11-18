@@ -9,7 +9,7 @@ pub type Date = DateTime<Utc>;
 
 lazy_static! {
     static ref RE_INTEGER: Regex = Regex::new(r"(-?\d+)").unwrap();
-    static ref RE_REAL: Regex = Regex::new(r"(-?\d+\.\d+)").unwrap();
+    static ref RE_REAL: Regex = Regex::new(r"((-?\d+\.?\d*)|nan)").unwrap();
 }
 
 #[derive(Clone, Debug, PartialEq)]
@@ -23,8 +23,10 @@ pub enum Scalar {
     // TODO: Consider using a dedicated type here?
     Uri(String),
     Binary(Vec<u8>),
+    Undefined,
 }
 
+#[allow(dead_code)]
 #[derive(Debug, Eq, PartialEq)]
 pub(crate) enum ScalarType {
     Boolean,
@@ -34,8 +36,8 @@ pub(crate) enum ScalarType {
     String,
     Date,
     Uri,
-    #[allow(dead_code)]
     Binary,
+    Undefined,
 }
 
 impl ScalarType {
@@ -52,6 +54,7 @@ impl ScalarType {
             ScalarType::Date => s_value.as_date().map(|d| Scalar::Date(d)),
             ScalarType::Uri => s_value.as_uri().map(|u| Scalar::Uri(u)),
             ScalarType::Binary => None,
+            ScalarType::Undefined => None,
         }
     }
 }
@@ -64,7 +67,82 @@ pub enum Value {
     Scalar(Scalar),
     Map(Map),
     Array(Array),
-    Undefined,
+}
+
+impl Value {
+    pub fn scalar(self) -> Option<Scalar> {
+        match self {
+            Value::Scalar(s) => Some(s),
+            _ => None,
+        }
+    }
+
+    pub fn scalar_ref(&self) -> Option<&Scalar> {
+        match *self {
+            Value::Scalar(ref s) => Some(s),
+            _ => None,
+        }
+    }
+
+    pub fn map(self) -> Option<Map> {
+        match self {
+            Value::Map(m) => Some(m),
+            _ => None,
+        }
+    }
+
+    pub fn map_ref(&self) -> Option<&Map> {
+        match *self {
+            Value::Map(ref m) => Some(m),
+            _ => None,
+        }
+    }
+
+    pub fn array(self) -> Option<Array> {
+        match self {
+            Value::Array(a) => Some(a),
+            _ => None,
+        }
+    }
+
+    pub fn array_ref(&self) -> Option<&Array> {
+        match *self {
+            Value::Array(ref a) => Some(a),
+            _ => None,
+        }
+    }
+
+    pub fn new_boolean(b: bool) -> Self {
+        Value::Scalar(Scalar::Boolean(b))
+    }
+
+    pub fn new_integer(i: i32) -> Self {
+        Value::Scalar(Scalar::Integer(i))
+    }
+
+    pub fn new_real(r: f64) -> Self {
+        Value::Scalar(Scalar::Real(r))
+    }
+
+    pub fn new_uuid(u: Uuid) -> Self {
+        Value::Scalar(Scalar::Uuid(u))
+    }
+
+    pub fn new_string<S: Into<String>>(s: S) -> Self {
+        Value::Scalar(Scalar::String(s.into()))
+    }
+
+    pub fn new_date(d: Date) -> Self {
+        Value::Scalar(Scalar::Date(d))
+    }
+
+    pub fn new_uri<U: Into<String>>(u: U) -> Self {
+        Value::Scalar(Scalar::Uri(u.into()))
+    }
+
+    pub fn new_binary(b: Vec<u8>) -> Self {
+        Value::Scalar(Scalar::Binary(b))
+    }
 }
 
 impl Scalar {
@@ -74,10 +152,16 @@ impl Scalar {
             Scalar::Integer(ref i) => Some(*i != 0),
             Scalar::Real(ref r) => Some(*r != 0.),
             Scalar::Uuid(ref u) => Some(*u != Uuid::nil()),
-            Scalar::String(ref s) => Some(!s.is_empty()),
+            Scalar::String(ref s) => {
+                match s.as_str() {
+                    "1" | "true" => Some(true),
+                    _ => Some(false),
+                }
+            }
             Scalar::Date(_) => None,
             Scalar::Uri(_) => None,
             Scalar::Binary(ref b) => Some(!b.is_empty()),
+            Scalar::Undefined => None,
         }
     }
 
@@ -103,6 +187,7 @@ impl Scalar {
                     Some(BigEndian::read_i32(&b[0..4]))
                 }
             }
+            Scalar::Undefined => None,
         }
     }
 
@@ -114,7 +199,10 @@ impl Scalar {
             Scalar::Uuid(_) => None,
             Scalar::String(ref s) => {
                 for cap in RE_REAL.captures_iter(s) {
-                    return Some(cap[1].parse().unwrap());
+                    return match &cap[1] {
+                        "nan" => Some(::std::f64::NAN),
+                        s => Some(s.parse().unwrap()),
+                    };
                 }
                 None
             }
@@ -127,6 +215,7 @@ impl Scalar {
                     Some(BigEndian::read_f64(&b[0..8]))
                 }
             }
+            Scalar::Undefined => None,
         }
     }
 
@@ -151,6 +240,7 @@ impl Scalar {
                     Uuid::from_bytes(&b[0..16]).ok()
                 }
             }
+            Scalar::Undefined => None,
         }
     }
 
@@ -170,6 +260,7 @@ impl Scalar {
             Scalar::Date(ref d) => Some(d.to_rfc3339()),
             Scalar::Uri(ref u) => Some(u.clone()),
             Scalar::Binary(ref b) => Some(String::from_utf8_lossy(b).to_string()),
+            Scalar::Undefined => None,
         }
     }
 
@@ -191,6 +282,7 @@ impl Scalar {
             Scalar::Date(ref d) => Some(d.clone()),
             Scalar::Uri(_) => None,
             Scalar::Binary(_) => None,
+            Scalar::Undefined => None,
         }
     }
 
@@ -204,6 +296,7 @@ impl Scalar {
             Scalar::Date(_) => None,
             Scalar::Uri(ref u) => Some(u.clone()),
             Scalar::Binary(ref b) => Some(String::from_utf8_lossy(b).to_string()),
+            Scalar::Undefined => None,
         }
     }
 
@@ -225,6 +318,7 @@ impl Scalar {
             Scalar::Date(_) => None,
             Scalar::Uri(_) => None,
             Scalar::Binary(ref b) => Some(b.clone()),
+            Scalar::Undefined => None,
         }
     }
 }
