@@ -7,7 +7,7 @@
 
 use data::*;
 use std::io::Read;
-use byteorder::{ByteOrder, BigEndian, ReadBytesExt};
+use byteorder::{BigEndian, ReadBytesExt};
 
 #[derive(Debug, ErrorChain)]
 #[error_chain(error = "ReadError")]
@@ -15,6 +15,9 @@ use byteorder::{ByteOrder, BigEndian, ReadBytesExt};
 pub enum ReadErrorKind {
     #[error_chain(foreign)]
     Io(::std::io::Error),
+
+    #[error_chain(foreign)]
+    Uuid(::uuid::ParseError),
 
     #[error_chain(custom)]
     InvalidKey,
@@ -39,7 +42,11 @@ pub fn read_value<R: Read>(reader: &mut R) -> Result<Value, ReadError> {
             Scalar::Integer(reader.read_i32::<BigEndian>()?),
         )),
         'r' => Ok(Value::Scalar(Scalar::Real(reader.read_f64::<BigEndian>()?))),
-        'u' => Ok(Value::Scalar(Scalar::Uuid(unimplemented!()))),
+        'u' => {
+            let mut bytes = [0u8; 16];
+            reader.read_exact(&mut bytes)?;
+            Ok(Value::Scalar(Scalar::Uuid(Uuid::from_bytes(&bytes)?)))
+        }
         'b' => {
             let len = reader.read_u32::<BigEndian>()?;
             Ok(Value::Scalar(Scalar::Binary(read_n_bytes(reader, len)?)))

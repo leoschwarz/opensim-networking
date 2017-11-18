@@ -1,7 +1,7 @@
 //! The data types to be used.
 pub use uuid::Uuid;
 use byteorder::{BigEndian, ByteOrder};
-use chrono::{DateTime, Utc, NaiveDateTime, FixedOffset};
+use chrono::{DateTime, Utc, NaiveDateTime};
 use regex::Regex;
 use std::collections::HashMap;
 
@@ -34,6 +34,7 @@ pub(crate) enum ScalarType {
     String,
     Date,
     Uri,
+    #[allow(dead_code)]
     Binary,
 }
 

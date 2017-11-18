@@ -1,7 +1,7 @@
 use data_encoding::{BASE64, Encoding};
 use quick_xml::events::Event;
 use quick_xml::reader::Reader;
-use std::io::{BufRead, Read};
+use std::io::BufRead;
 
 use data::*;
 
@@ -77,6 +77,7 @@ pub enum ReadErrorKind {
 enum BinaryEncoding {
     Base16,
     Base64,
+    #[allow(dead_code)]
     Base85,
 }
 
@@ -147,7 +148,9 @@ pub fn read_value<B: BufRead>(reader: &mut Reader<B>) -> Result<Value, ReadError
     // Note: The reader takes care of checking that end elements match the open elements,
     //       so less sanity checking has to be done on our end.
     loop {
-        match reader.read_event(&mut buf)? {
+        // TODO: setting trim text to true might be a bad idea, but I keep getting empty text
+        // events otherwise which completely mess up my logic in here.
+        match reader.trim_text(true).read_event(&mut buf)? {
             Event::Start(ref e) => {
                 let mut vt = PartialValue::parse_name(e.unescape_and_decode(reader)?.as_str())?;
                 if vt == PartialValue::Llsd && val_stack.len() > 0 {
@@ -172,10 +175,6 @@ pub fn read_value<B: BufRead>(reader: &mut Reader<B>) -> Result<Value, ReadError
                 val_stack.push(vt);
             }
             Event::Text(ref e) => {
-                if e.is_empty() {
-                    continue;
-                }
-
                 // TODO: remove pop/push here later
                 let mut target = val_stack.pop().unwrap();
                 match target {
@@ -198,7 +197,7 @@ pub fn read_value<B: BufRead>(reader: &mut Reader<B>) -> Result<Value, ReadError
                 }
                 val_stack.push(target);
             }
-            Event::End(ref e) => {
+            Event::End(_) => {
                 // Get the current value from the stack, this should never fail.
                 let curr_val = val_stack.pop().ok_or_else(|| {
                     ReadError::from(ReadErrorKind::InvalidStructure)
@@ -214,7 +213,7 @@ pub fn read_value<B: BufRead>(reader: &mut Reader<B>) -> Result<Value, ReadError
                     PartialValue::Array(ref mut a) => {
                         a.push(curr_val.extract()?);
                     }
-                    PartialValue::Map(ref mut m) => {
+                    PartialValue::Map(_) => {
                         // If the current value is a Key, skip, otherwise error.
                         match curr_val {
                             PartialValue::Key(_) => continue,
