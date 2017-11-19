@@ -1,0 +1,3 @@
+indent_style = "Block"
+array_horizontal_layout_threshold = 3
+array_width = 500
