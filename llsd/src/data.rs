@@ -1,7 +1,7 @@
 //! The data types to be used.
 pub use uuid::Uuid;
 use byteorder::{BigEndian, ByteOrder};
-use chrono::{DateTime, Utc, NaiveDateTime};
+use chrono::{DateTime, NaiveDateTime, Utc};
 use regex::Regex;
 use std::collections::HashMap;
 
@@ -152,12 +152,10 @@ impl Scalar {
             Scalar::Integer(ref i) => Some(*i != 0),
             Scalar::Real(ref r) => Some(*r != 0.),
             Scalar::Uuid(ref u) => Some(*u != Uuid::nil()),
-            Scalar::String(ref s) => {
-                match s.as_str() {
-                    "1" | "true" => Some(true),
-                    _ => Some(false),
-                }
-            }
+            Scalar::String(ref s) => match s.as_str() {
+                "1" | "true" => Some(true),
+                _ => Some(false),
+            },
             Scalar::Date(_) => None,
             Scalar::Uri(_) => None,
             Scalar::Binary(ref b) => Some(!b.is_empty()),
@@ -167,7 +165,11 @@ impl Scalar {
 
     pub fn as_int(&self) -> Option<i32> {
         match *self {
-            Scalar::Boolean(ref b) => if *b { Some(1) } else { Some(0) },
+            Scalar::Boolean(ref b) => if *b {
+                Some(1)
+            } else {
+                Some(0)
+            },
             Scalar::Integer(ref i) => Some(*i),
             // Note: this can overflow, but never panics.
             Scalar::Real(ref r) => Some(r.round() as i32),
@@ -180,20 +182,22 @@ impl Scalar {
             }
             Scalar::Date(ref d) => Some(d.timestamp() as i32),
             Scalar::Uri(_) => None,
-            Scalar::Binary(ref b) => {
-                if b.len() < 4 {
-                    None
-                } else {
-                    Some(BigEndian::read_i32(&b[0..4]))
-                }
-            }
+            Scalar::Binary(ref b) => if b.len() < 4 {
+                None
+            } else {
+                Some(BigEndian::read_i32(&b[0..4]))
+            },
             Scalar::Undefined => None,
         }
     }
 
     pub fn as_real(&self) -> Option<f64> {
         match *self {
-            Scalar::Boolean(ref b) => if *b { Some(1.) } else { Some(0.) },
+            Scalar::Boolean(ref b) => if *b {
+                Some(1.)
+            } else {
+                Some(0.)
+            },
             Scalar::Integer(ref i) => Some(*i as f64),
             Scalar::Real(ref r) => Some(*r),
             Scalar::Uuid(_) => None,
@@ -208,13 +212,11 @@ impl Scalar {
             }
             Scalar::Date(ref d) => Some(d.timestamp() as f64),
             Scalar::Uri(_) => None,
-            Scalar::Binary(ref b) => {
-                if b.len() < 8 {
-                    None
-                } else {
-                    Some(BigEndian::read_f64(&b[0..8]))
-                }
-            }
+            Scalar::Binary(ref b) => if b.len() < 8 {
+                None
+            } else {
+                Some(BigEndian::read_f64(&b[0..8]))
+            },
             Scalar::Undefined => None,
         }
     }
@@ -246,13 +248,11 @@ impl Scalar {
 
     pub fn as_string(&self) -> Option<String> {
         match *self {
-            Scalar::Boolean(ref b) => {
-                if *b {
-                    Some("true".to_string())
-                } else {
-                    Some("false".to_string())
-                }
-            }
+            Scalar::Boolean(ref b) => if *b {
+                Some("true".to_string())
+            } else {
+                Some("false".to_string())
+            },
             Scalar::Integer(ref i) => Some(format!("{}", i)),
             Scalar::Real(ref r) => Some(format!("{}", r)),
             Scalar::Uuid(ref u) => Some(u.hyphenated().to_string()),
@@ -302,7 +302,11 @@ impl Scalar {
 
     pub fn as_binary(&self) -> Option<Vec<u8>> {
         match *self {
-            Scalar::Boolean(ref b) => if *b { Some(vec![1]) } else { Some(vec![0]) },
+            Scalar::Boolean(ref b) => if *b {
+                Some(vec![1])
+            } else {
+                Some(vec![0])
+            },
             Scalar::Integer(ref i) => {
                 let mut buf = Vec::new();
                 BigEndian::write_i32(&mut buf, *i);

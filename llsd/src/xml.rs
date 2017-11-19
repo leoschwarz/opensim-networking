@@ -37,32 +37,23 @@ lazy_static! {
 #[error_chain(error = "ReadError")]
 #[error_chain(result = "")]
 pub enum ReadErrorKind {
-    #[error_chain(foreign)]
-    Xml(::quick_xml::errors::Error),
+    #[error_chain(foreign)] Xml(::quick_xml::errors::Error),
 
-    #[error_chain(foreign)]
-    BinaryDecode(::data_encoding::DecodeError),
+    #[error_chain(foreign)] BinaryDecode(::data_encoding::DecodeError),
 
-    #[error_chain(custom)]
-    UnexpectedEof,
+    #[error_chain(custom)] UnexpectedEof,
 
-    #[error_chain(custom)]
-    UnexpectedText,
+    #[error_chain(custom)] UnexpectedText,
 
-    #[error_chain(custom)]
-    UnexpectedTag(String),
+    #[error_chain(custom)] UnexpectedTag(String),
 
-    #[error_chain(custom)]
-    InvalidContainerType(String),
+    #[error_chain(custom)] InvalidContainerType(String),
 
-    #[error_chain(custom)]
-    InvalidPartialValue(String),
+    #[error_chain(custom)] InvalidPartialValue(String),
 
-    #[error_chain(custom)]
-    InvalidStructure,
+    #[error_chain(custom)] InvalidStructure,
 
-    #[error_chain(custom)]
-    EmptyValue,
+    #[error_chain(custom)] EmptyValue,
 
     /// Type conversion failed.
     #[error_chain(custom)]
@@ -139,15 +130,12 @@ impl PartialValue {
         match self {
             PartialValue::Array(a) => Ok(Value::Array(a)),
             PartialValue::Map(m) => Ok(Value::Map(m)),
-            PartialValue::ScalarBinary(val, _) => Ok(val.unwrap_or_else(
-                || Value::new_binary(Vec::new()),
-            )),
+            PartialValue::ScalarBinary(val, _) => {
+                Ok(val.unwrap_or_else(|| Value::new_binary(Vec::new())))
+            }
             PartialValue::Scalar(_, val) => Ok(val),
-            PartialValue::Llsd |
-            PartialValue::Key(_) => {
-                Err(
-                    "Tried extracting PartialValue that cannot be extracted.".into(),
-                )
+            PartialValue::Llsd | PartialValue::Key(_) => {
+                Err("Tried extracting PartialValue that cannot be extracted.".into())
             }
         }
     }
@@ -171,7 +159,8 @@ pub fn read_value<B: BufRead>(buf_reader: B) -> Result<Value, ReadError> {
             .trim_text(true)
             // Needed so we can extract the correct default values for numbers for instance.
             .expand_empty_elements(true)
-            .read_event(&mut buf)? {
+            .read_event(&mut buf)?
+        {
             Event::Start(ref e) => {
                 let name_decoded = e.unescape_and_decode(&mut reader)?;
                 let name = name_decoded.split_whitespace().next().unwrap();
@@ -208,11 +197,9 @@ pub fn read_value<B: BufRead>(buf_reader: B) -> Result<Value, ReadError> {
                         *content = Some(Value::Scalar(scalar));
                     }
                     PartialValue::Scalar(ref s_type, ref mut s_val) => {
-                        let scalar = s_type.parse_scalar(e.unescaped()?.as_ref()).ok_or_else(
-                            || {
-                                ReadError::from(ReadErrorKind::ConversionFailed)
-                            },
-                        )?;
+                        let scalar = s_type
+                            .parse_scalar(e.unescaped()?.as_ref())
+                            .ok_or_else(|| ReadError::from(ReadErrorKind::ConversionFailed))?;
                         *s_val = Value::Scalar(scalar);
                     }
                     PartialValue::Key(ref mut key) => {
@@ -225,14 +212,14 @@ pub fn read_value<B: BufRead>(buf_reader: B) -> Result<Value, ReadError> {
             }
             Event::End(_) => {
                 // Get the current value from the stack, this should never fail.
-                let curr_val = val_stack.pop().ok_or_else(|| {
-                    ReadError::from(ReadErrorKind::InvalidStructure)
-                })?;
+                let curr_val = val_stack
+                    .pop()
+                    .ok_or_else(|| ReadError::from(ReadErrorKind::InvalidStructure))?;
 
                 // Get the previous value, this shouldn't fail in any valid LLSD XML instance.
-                let prev_val = val_stack.pop().ok_or_else(|| {
-                    ReadError::from(ReadErrorKind::InvalidStructure)
-                })?;
+                let prev_val = val_stack
+                    .pop()
+                    .ok_or_else(|| ReadError::from(ReadErrorKind::InvalidStructure))?;
 
                 match prev_val {
                     PartialValue::Llsd => return Ok(curr_val.extract()?),
@@ -250,15 +237,14 @@ pub fn read_value<B: BufRead>(buf_reader: B) -> Result<Value, ReadError> {
                             _ => return Err(ReadErrorKind::InvalidStructure.into()),
                         }
                     }
-                    PartialValue::Scalar(_, _) |
-                    PartialValue::ScalarBinary(_, _) => {
+                    PartialValue::Scalar(_, _) | PartialValue::ScalarBinary(_, _) => {
                         return Err(ReadErrorKind::InvalidStructure.into());
                     }
                     PartialValue::Key(Some(key)) => {
                         // If the preprevious value is a Map, insert, otherwise error.
-                        let mut prev2_val = val_stack.pop().ok_or_else(|| {
-                            ReadError::from(ReadErrorKind::InvalidStructure)
-                        })?;
+                        let mut prev2_val = val_stack
+                            .pop()
+                            .ok_or_else(|| ReadError::from(ReadErrorKind::InvalidStructure))?;
                         match prev2_val {
                             PartialValue::Map(ref mut m) => {
                                 m.insert(key, curr_val.extract()?);
@@ -271,7 +257,6 @@ pub fn read_value<B: BufRead>(buf_reader: B) -> Result<Value, ReadError> {
                         return Err("Empty key.".into());
                     }
                 };
-
             }
             Event::Eof => return Err(ReadErrorKind::UnexpectedEof.into()),
             _ => {}
@@ -352,9 +337,7 @@ mod tests {
         assert_eq!(array.len(), 2);
         assert_eq!(
             array[0],
-            Value::new_uuid(
-                Uuid::from_str("d7f4aeca-88f1-42a1-b385-b9db18abb255").unwrap(),
-            )
+            Value::new_uuid(Uuid::from_str("d7f4aeca-88f1-42a1-b385-b9db18abb255").unwrap(),)
         );
         assert_eq!(array[1], Value::new_uuid(Uuid::nil()));
     }
@@ -417,30 +400,15 @@ mod tests {
         assert_eq!(array.len(), 3);
         assert_eq!(
             array[0],
-            Value::new_binary(vec![114, 97, 110, 100, 111, 109])
+            Value::new_binary(vec![
+                114, 97, 110, 100, 111, 109
+            ])
         );
         assert_eq!(
             array[1],
             Value::new_binary(vec![
-                116,
-                104,
-                101,
-                32,
-                113,
-                117,
-                105,
-                99,
-                107,
-                32,
-                98,
-                114,
-                111,
-                119,
-                110,
-                32,
-                102,
-                111,
-                120,
+                116, 104, 101, 32, 113, 117, 105, 99, 107, 32, 98, 114, 111, 119, 110, 32, 102,
+                111, 120,
             ])
         );
         assert_eq!(array[2], Value::new_binary(Vec::new()));
@@ -530,8 +498,7 @@ mod tests {
         assert_eq!(
             map["region_id"],
             Value::Scalar(Scalar::Uuid(
-                Uuid::from_str("67153d5b-3659-afb4-8510-adda2c034649")
-                    .unwrap(),
+                Uuid::from_str("67153d5b-3659-afb4-8510-adda2c034649").unwrap(),
             ))
         );
         assert_eq!(
