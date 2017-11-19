@@ -14,20 +14,20 @@ use opensim_networking::messages::MessageInstance;
 
 fn main() {
     let all_data = vec![
-        include_bytes!("layerdata/00000018.bin").to_vec(),
-        include_bytes!("layerdata/00000020.bin").to_vec(),
-        include_bytes!("layerdata/00000025.bin").to_vec(),
-        include_bytes!("layerdata/00000027.bin").to_vec(),
-        include_bytes!("layerdata/00000029.bin").to_vec(),
-        include_bytes!("layerdata/00000032.bin").to_vec(),
-        include_bytes!("layerdata/00000035.bin").to_vec(),
-        include_bytes!("layerdata/00000038.bin").to_vec(),
-        include_bytes!("layerdata/00000040.bin").to_vec(),
-        include_bytes!("layerdata/00000043.bin").to_vec(),
-        include_bytes!("layerdata/00000045.bin").to_vec(),
-        include_bytes!("layerdata/00000046.bin").to_vec(),
-        include_bytes!("layerdata/00000060.bin").to_vec(),
-        include_bytes!("layerdata/00000062.bin").to_vec()
+        include_bytes!("data/layer_land/00000018.bin").to_vec(),
+        include_bytes!("data/layer_land/00000020.bin").to_vec(),
+        include_bytes!("data/layer_land/00000025.bin").to_vec(),
+        include_bytes!("data/layer_land/00000027.bin").to_vec(),
+        include_bytes!("data/layer_land/00000029.bin").to_vec(),
+        include_bytes!("data/layer_land/00000032.bin").to_vec(),
+        include_bytes!("data/layer_land/00000035.bin").to_vec(),
+        include_bytes!("data/layer_land/00000038.bin").to_vec(),
+        include_bytes!("data/layer_land/00000040.bin").to_vec(),
+        include_bytes!("data/layer_land/00000043.bin").to_vec(),
+        include_bytes!("data/layer_land/00000045.bin").to_vec(),
+        include_bytes!("data/layer_land/00000046.bin").to_vec(),
+        include_bytes!("data/layer_land/00000060.bin").to_vec(),
+        include_bytes!("data/layer_land/00000062.bin").to_vec()
     ];
 
     // TODO: I still don't understand the logic behind the patches per region,
