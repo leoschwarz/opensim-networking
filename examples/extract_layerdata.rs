@@ -9,7 +9,7 @@ use nalgebra::DMatrix;
 use std::fs::File;
 
 use opensim_networking::packet::Packet;
-use opensim_networking::layer_data::{Patch, Surface};
+use opensim_networking::layer_data::{Patch, self};
 use opensim_networking::messages::MessageInstance;
 
 fn extract_patches(raw_messages: Vec<Vec<u8>>) -> Vec<Patch> {
@@ -20,8 +20,7 @@ fn extract_patches(raw_messages: Vec<Vec<u8>>) -> Vec<Patch> {
             MessageInstance::LayerData(data) => data,
             _ => panic!("wrong message instance"),
         };
-        // TODO rename once naming is clear
-        Surface::extract_message(&msg).unwrap()
+        layer_data::extract_land_patch(&msg).unwrap()
     }).collect()
 }
 

@@ -148,8 +148,7 @@ pub fn extract_land_patches(
 
         decoded_patches.push(Patch {
             size: group_header.patch_size,
-            patch_x: header.patch_x,
-            patch_y: header.patch_y,
+            patch_pos: (header.patch_x, header.patch_y),
             data: data,
         });
     }

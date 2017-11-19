@@ -47,14 +47,16 @@ impl LayerType {
     }
 }
 
+/// One patch of a region's heightmap.
+///
+/// A region's heightmap is split into many square shaped patches.
 #[derive(Debug)]
 pub struct Patch {
     /// Side length of the square shape patch.
     size: u32,
 
-    /// Patch position in region.
-    patch_x: u32,
-    patch_y: u32,
+    /// (x,y) index of patch in grid.
+    patch_pos: (u32, u32),
 
     /// Decoded height map, square matrix of size `size`x`size`.
     /// TODO: (x,y)<->(i,j) ?
@@ -63,13 +65,16 @@ pub struct Patch {
 
 impl Patch {
     /// Side length of the square shape patch.
+    ///
+    /// This is both the number of values per direction, and the side length in meters of the
+    /// patch, as there is one elevation value per meter.
     pub fn side_length(&self) -> u32 {
         self.size
     }
 
     /// Patch position (index, not meters) in the region.
     pub fn patch_position(&self) -> (u32, u32) {
-        (self.patch_x, self.patch_y)
+        self.patch_pos.clone()
     }
 
     pub fn data(&self) -> &DMatrix<f32> {
@@ -77,19 +82,7 @@ impl Patch {
     }
 }
 
-/*
-pub struct Surface {
-    cell_count_per_edge: u32,
-    cell_width: f32,
-    surface_width: f32,
-}
-*/
-
-pub struct Surface {}
-
-impl Surface {
-    pub fn extract_message(msg: &LayerData) -> Result<Vec<Patch>, ExtractSurfaceError> {
-        let layer_type = LayerType::from_code(msg.layer_id.type_)?;
-        extractor::extract_land_patches(&msg.layer_data.data[..], layer_type)
-    }
+pub fn extract_land_patch(msg: &LayerData) -> Result<Vec<Patch>, ExtractSurfaceError> {
+    let layer_type = LayerType::from_code(msg.layer_id.type_)?;
+    extractor::extract_land_patches(&msg.layer_data.data[..], layer_type)
 }
