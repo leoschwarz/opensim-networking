@@ -117,11 +117,9 @@ pub fn extract_land_patches(
     assert_eq!(group_header.layer_type, expected_layer_type);
     let large_patch = match group_header.layer_type {
         LayerType::Land => false,
-        LayerType::AuroraLand => true,
+        LayerType::VarLand => true,
         _ => unimplemented!(), // TODO return error or make impossible
     };
-
-    println!("patch_group_header: {:?}", group_header);
 
     let mut decoded_patches = Vec::new();
     loop {

@@ -16,10 +16,10 @@ pub enum LayerType {
     Wind,
     Cloud,
     Water,
-    AuroraLand,
-    AuroraWind,
-    AuroraCloud,
-    AuroraWater,
+    VarLand,
+    VarWind,
+    VarCloud,
+    VarWater,
 }
 
 impl LayerType {
@@ -29,10 +29,10 @@ impl LayerType {
             b'7' => Ok(LayerType::Wind),
             b'8' => Ok(LayerType::Cloud),
             b'W' => Ok(LayerType::Water),
-            b'M' => Ok(LayerType::AuroraLand),
-            b'X' => Ok(LayerType::AuroraWind),
-            b'9' => Ok(LayerType::AuroraCloud),
-            b':' => Ok(LayerType::AuroraWater),
+            b'M' => Ok(LayerType::VarLand),
+            b'X' => Ok(LayerType::VarWind),
+            b'9' => Ok(LayerType::VarCloud),
+            b':' => Ok(LayerType::VarWater),
             code => return Err(ExtractSurfaceErrorKind::UnknownLayerType(code).into()),
         }
     }
