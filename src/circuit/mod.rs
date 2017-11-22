@@ -40,6 +40,8 @@ use self::status::SendMessageStatus;
 ///
 /// TODO:
 /// - Stop/exit functionality.
+/// - Consider whether we need functionality to plug in event handlers, or whether this should be
+///   done at a different place.
 pub struct Circuit {
     incoming: mpsc::Receiver<MessageInstance>,
     ackmgr_tx: AckManagerTx,

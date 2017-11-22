@@ -1,6 +1,6 @@
 use layer_data::bitsreader::{BitsReader, BitsReaderError};
 use layer_data::idct::{PatchTables, PatchSize};
-use layer_data::{Patch, LayerType, idct};
+use layer_data::{Patch, LandLayerType, LayerType, idct};
 
 use byteorder::LittleEndian;
 use nalgebra::DMatrix;
@@ -23,6 +23,14 @@ pub enum ExtractSurfaceErrorKind {
     #[error_chain(description = r#"|_| "unknown layer type""#)]
     #[error_chain(display = r#"|code| write!(f, "unknown layer type: {}", code)"#)]
     UnknownLayerType(u8),
+
+    #[error_chain(custom)]
+    UnsupportedPatchsize(u32),
+
+    #[error_chain(custom)]
+    #[error_chain(description = r#"|_| "there was an inconsistency fed into the decoder.""#)]
+    #[error_chain(display = r#"|desc| write!(f, "there was an inconsistency fed into the decoder: {}", desc)"#)]
+    Inconsistency(String),
 }
 
 #[derive(Debug)]
@@ -69,7 +77,7 @@ pub(super) struct PatchHeader {
 impl PatchHeader {
     fn read(
         reader: &mut BitsReader,
-        large_patch: bool,
+        layer: LandLayerType,
     ) -> Result<Option<Self>, ExtractSurfaceError> {
         let quantity_wbits = reader.read_full_u8()?;
         if quantity_wbits == END_OF_PATCH {
@@ -82,16 +90,19 @@ impl PatchHeader {
         let dc_offset = reader.read_full_f32::<LittleEndian>()?;
         let range = reader.read_full_u16::<LittleEndian>()?;
 
-        let (patch_x, patch_y) = if large_patch {
-            let patchids = reader.read_full_u32::<LittleEndian>()?;
-            let x = patchids >> 16;
-            let y = patchids & 0xffff;
-            (x, y)
-        } else {
-            let patchids = reader.read_part_u32::<LittleEndian>(10)?;
-            let x = patchids >> 5;
-            let y = patchids & 0x1f;
-            (x, y)
+        let (patch_x, patch_y) = match layer {
+            LandLayerType::Land => {
+                let patchids = reader.read_part_u32::<LittleEndian>(10)?;
+                let x = patchids >> 5;
+                let y = patchids & 0x1f;
+                (x, y)
+            },
+            LandLayerType::VarLand => {
+                let patchids = reader.read_full_u32::<LittleEndian>()?;
+                let x = patchids >> 16;
+                let y = patchids & 0xffff;
+                (x, y)
+            }
         };
 
         Ok(Some(PatchHeader {
@@ -107,50 +118,32 @@ impl PatchHeader {
 
 pub fn extract_land_patches(
     data: &[u8],
-    expected_layer_type: LayerType,
+    expected_layer_type: LandLayerType,
 ) -> Result<Vec<Patch>, ExtractSurfaceError> {
     let mut reader = BitsReader::new(data);
 
     // Read patch_group_header
     let group_header = PatchGroupHeader::read(&mut reader)?;
     // TODO This assertion should not be nescessary.
-    assert_eq!(group_header.layer_type, expected_layer_type);
-    let large_patch = match group_header.layer_type {
-        LayerType::Land => false,
-        LayerType::VarLand => true,
-        _ => unimplemented!(), // TODO return error or make impossible
-    };
+    assert_eq!(group_header.layer_type.land_layer(), Some(expected_layer_type));
 
     let mut decoded_patches = Vec::new();
     loop {
         // Read patch_header if there are more patches to be read.
-        let header = match PatchHeader::read(&mut reader, large_patch)? {
+        let header = match PatchHeader::read(&mut reader, expected_layer_type)? {
             Some(h) => h,
             None => return Ok(decoded_patches),
         };
 
-        let data = if large_patch {
-            // TODO: Test this one further.
-            decode_patch_data::<idct::LargePatch>(
-                &mut reader,
-                &header,
-                &group_header,
-                &TABLES_LARGE,
-            )?
-        } else {
-            decode_patch_data::<idct::NormalPatch>(
-                &mut reader,
-                &header,
-                &group_header,
-                &TABLES_NORMAL,
-            )?
-        };
+        let patch = match group_header.patch_size {
+            16 => decode_patch_data::<idct::NormalPatch>(
+                &mut reader, &header, &group_header, &TABLES_NORMAL),
+            32 => decode_patch_data::<idct::LargePatch>(
+                &mut reader, &header, &group_header, &TABLES_LARGE),
+            ps => Err(ExtractSurfaceErrorKind::UnsupportedPatchsize(ps).into()),
+        }?;
 
-        decoded_patches.push(Patch {
-            size: group_header.patch_size,
-            patch_pos: (header.patch_x, header.patch_y),
-            data: data,
-        });
+        decoded_patches.push(patch);
     }
 }
 
@@ -159,9 +152,8 @@ fn decode_patch_data<PS: PatchSize>(
     header: &PatchHeader,
     group_header: &PatchGroupHeader,
     tables: &PatchTables,
-    // TODO consider returning a Patch
-) -> Result<DMatrix<f32>, ExtractSurfaceError> {
-    // Read patches.
+) -> Result<Patch, ExtractSurfaceError> {
+    // Read raw patch data.
     let mut patch_data = Vec::<i32>::new();
     for i in 0..PS::per_patch() {
         let exists = reader.read_bool()?;
@@ -184,10 +176,17 @@ fn decode_patch_data<PS: PatchSize>(
     }
 
     // Decompress the data.
-    Ok(idct::decompress_patch::<PS>(
+    let data = idct::decompress_patch::<PS>(
         &patch_data,
         &header,
         &group_header,
         &tables,
-    ))
+    );
+    Ok(Patch {
+        size: PS::per_direction() as u32,
+        z_min: header.dc_offset,
+        z_max: (header.range as f32) - 1. + header.dc_offset,
+        patch_pos: (header.patch_x, header.patch_y),
+        data: data,
+    })
 }

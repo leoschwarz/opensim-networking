@@ -22,6 +22,12 @@ pub enum LayerType {
     VarWater,
 }
 
+#[derive(Copy, Clone, Debug, Eq, PartialEq)]
+pub enum LandLayerType {
+    Land,
+    VarLand
+}
+
 impl LayerType {
     fn from_code(c: u8) -> Result<Self, ExtractSurfaceError> {
         match c {
@@ -34,6 +40,14 @@ impl LayerType {
             b'9' => Ok(LayerType::VarCloud),
             b':' => Ok(LayerType::VarWater),
             code => return Err(ExtractSurfaceErrorKind::UnknownLayerType(code).into()),
+        }
+    }
+
+    fn land_layer(&self) -> Option<LandLayerType> {
+        match *self {
+            LayerType::Land => Some(LandLayerType::Land),
+            LayerType::VarLand => Some(LandLayerType::VarLand),
+            _ => None,
         }
     }
 }
@@ -54,6 +68,10 @@ impl LayerType {
 pub struct Patch {
     /// Side length of the square shape patch.
     size: u32,
+
+    /// Values as they were specified in the header.
+    z_max: f32,
+    z_min: f32,
 
     /// (x,y) index of patch in grid.
     patch_pos: (u32, u32),
@@ -80,9 +98,13 @@ impl Patch {
     pub fn data(&self) -> &DMatrix<f32> {
         &self.data
     }
+
+    pub fn z_min(&self) -> f32 { self.z_min }
+    pub fn z_max(&self) -> f32 { self.z_max }
 }
 
 pub fn extract_land_patch(msg: &LayerData) -> Result<Vec<Patch>, ExtractSurfaceError> {
-    let layer_type = LayerType::from_code(msg.layer_id.type_)?;
+    // TODO remove unwrap
+    let layer_type = LayerType::from_code(msg.layer_id.type_)?.land_layer().unwrap();
     extractor::extract_land_patches(&msg.layer_data.data[..], layer_type)
 }
