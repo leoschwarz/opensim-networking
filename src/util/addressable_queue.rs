@@ -1,5 +1,7 @@
 //! Implementation of an "adressable queue", that is a FIFO queue where it is possible to directly
-//! extract names by a key.
+//! remove values directly by a key.
+
+// TODO: Improve this, test it thoroughly as it is the core of the AckManager.
 
 use std::borrow::Borrow;
 use std::collections::{HashMap, VecDeque};
@@ -27,6 +29,7 @@ where
         }
     }
 
+    /// Insert an entry at the end of the queue.
     pub fn insert(&mut self, key: K, value: V) {
         let arc = Arc::new(Item {
             key: key.clone(),
@@ -36,6 +39,10 @@ where
         self.pointers.insert(key, arc);
     }
 
+    /// Insert an entry at the beginning of the queue.
+    ///
+    /// This is mostly useful when removing the head and
+    /// then deciding to put it back into the queue.
     pub fn insert_head(&mut self, key: K, value: V) {
         let arc = Arc::new(Item {
             key: key.clone(),
