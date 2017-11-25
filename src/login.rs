@@ -157,7 +157,7 @@ impl LoginRequest {
         data.insert("channel".to_string(), XmlValue::from("tokio-opensim"));
         data.insert("platform".to_string(), XmlValue::from("Linux"));
 
-        let client = ::reqwest::Client::new()?;
+        let client = ::reqwest::Client::new();
 
         let value = ::xmlrpc::Request::new("login_to_simulator")
             .arg(XmlValue::Struct(data))

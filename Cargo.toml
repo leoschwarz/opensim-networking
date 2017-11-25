@@ -28,10 +28,9 @@ mio = "0.6"
 nalgebra = "0.13.1"
 num-traits = "0.1.40"
 regex = "0.2.2"
-reqwest = "0.7.3"
+reqwest = "0.8.1"
 rust-crypto = "0.2.36"
-ttl_cache = "0.2.1"
-xmlrpc = "0.7.0"
+xmlrpc = "0.8.0"
 
 [dev-dependencies]
 env_logger = ""

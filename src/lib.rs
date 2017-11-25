@@ -16,7 +16,6 @@ extern crate mio;
 extern crate nalgebra;
 extern crate regex;
 extern crate reqwest;
-extern crate ttl_cache;
 extern crate xmlrpc;
 
 extern crate opensim_types as types;

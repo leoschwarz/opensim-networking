@@ -3,7 +3,6 @@ use layer_data::idct::{PatchSize, PatchTables};
 use layer_data::{idct, LandLayerType, LayerType, Patch};
 
 use byteorder::LittleEndian;
-use nalgebra::DMatrix;
 
 const END_OF_PATCH: u8 = 97u8;
 
@@ -129,8 +128,8 @@ pub fn extract_land_patches(
         };
 
         let patch = match group_header.patch_size {
-            16 => decode_patch_data::<idct::NormalPatch>(&mut reader, &header, &group_header, &TABLES_NORMAL),
-            32 => decode_patch_data::<idct::LargePatch>(&mut reader, &header, &group_header, &TABLES_LARGE),
+            16 => decode_patch_data::<idct::NormalPatch>(&mut reader, &header, &TABLES_NORMAL),
+            32 => decode_patch_data::<idct::LargePatch>(&mut reader, &header, &TABLES_LARGE),
             ps => Err(ExtractSurfaceErrorKind::UnsupportedPatchsize(ps).into()),
         }?;
 
@@ -141,7 +140,6 @@ pub fn extract_land_patches(
 fn decode_patch_data<PS: PatchSize>(
     reader: &mut BitsReader,
     header: &PatchHeader,
-    group_header: &PatchGroupHeader,
     tables: &PatchTables,
 ) -> Result<Patch, ExtractSurfaceError> {
     // Read raw patch data.
@@ -167,7 +165,7 @@ fn decode_patch_data<PS: PatchSize>(
     }
 
     // Decompress the data.
-    let data = idct::decompress_patch::<PS>(&patch_data, &header, &group_header, &tables);
+    let data = idct::decompress_patch::<PS>(&patch_data, &header, &tables);
     Ok(Patch {
         size: PS::per_direction() as u32,
         z_min: header.dc_offset,

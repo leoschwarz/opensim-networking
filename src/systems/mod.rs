@@ -5,11 +5,11 @@
 pub mod agent_update;
 pub mod initiation;
 
-use messages::MessageInstance;
-
 /*
 // TODO: Consider whether for our purposes we want to keep this composable, or just
 //       implement the things we need and avoid the boxing?
+
+use messages::MessageInstance;
 
 /// Trait to enable composable handling of messages received through the circuit.
 pub trait System {
