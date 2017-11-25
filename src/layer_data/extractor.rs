@@ -15,7 +15,16 @@ lazy_static! {
 #[derive(Debug, ErrorChain)]
 #[error_chain(error = "ExtractSurfaceError")]
 #[error_chain(result = "")]
-pub enum ExtractSurfaceErrorKind {}
+pub enum ExtractSurfaceErrorKind {
+    #[error_chain(foreign)] BitReader(BitsReaderError),
+
+    #[error_chain(custom)]
+    #[error_chain(description = r#"|_| "unknown layer type""#)]
+    #[error_chain(display = r#"|code| write!(f, "unknown layer type: {}", code)"#)]
+    UnknownLayerType(u8),
+
+    #[error_chain(custom)] UnsupportedPatchsize(u32),
+}
 
 #[derive(Debug)]
 pub(super) struct PatchGroupHeader {
