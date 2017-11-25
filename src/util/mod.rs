@@ -163,7 +163,8 @@ impl<T> BackoffQueue<T> {
 struct BackoffQueueItem<T> {
     /// The value stored in this item.
     value: T,
-    /// Until which time we have to wait before this could this item be retrieved.
+    /// Until which time we have to wait before this could this item be
+    /// retrieved.
     wait_until: Instant,
 }
 

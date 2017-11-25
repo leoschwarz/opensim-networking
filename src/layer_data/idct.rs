@@ -49,9 +49,9 @@ impl PatchTables {
         });
 
         // TODO: Find a better way to build the decopy matrix.
-        // My initial idea of using Cantor's pairing function for this are complicated by the fact,
-        // that as soon as we reach the lower-right diagonal part of the matrix things get more
-        // complicated.
+        // My initial idea of using Cantor's pairing function for this are complicated
+        // by the fact, that as soon as we reach the lower-right diagonal part
+        // of the matrix things get more complicated.
         let mut decopy = DMatrix::from_element(PS::per_direction(), PS::per_direction(), 0);
         let mut move_diag = false;
         let mut move_right = true;
@@ -154,7 +154,8 @@ pub(super) fn decompress_patch<PS: PatchSize>(
     header: &PatchHeader,
     tables: &PatchTables,
 ) -> DMatrix<f32> {
-    let mut block: DMatrix<f32> = DMatrix::from_element(PS::per_direction(), PS::per_direction(), 0.);
+    let mut block: DMatrix<f32> =
+        DMatrix::from_element(PS::per_direction(), PS::per_direction(), 0.);
     for k in 0..PS::per_patch() {
         block[k] = patch_in[tables.decopy[k]] as f32 * tables.dequantize[k];
     }

@@ -34,16 +34,18 @@ pub(super) struct PatchGroupHeader {
 
 impl PatchGroupHeader {
     fn read(reader: &mut BitsReader) -> Result<Self, ExtractSurfaceError> {
-        // TODO: This is always set to the value 264, but to me it's unclear where I need this.
+        // TODO: This is always set to the value 264, but to me it's unclear where I
+        // need this.
         let stride = reader.read_full_u16::<LittleEndian>()?;
 
         // TODO: Can patch_i and patch_j be larger than this?
-        // Because this is what's currently happening in the test, patch_size=16, but patch_i,j
-        // are in the range {0,...LARGE_PATCH_PS-1=31}
+        // Because this is what's currently happening in the test, patch_size=16, but
+        // patch_i,j are in the range {0,...LARGE_PATCH_PS-1=31}
         //
-        // At this point I suspect (patch_x,patch_y) is not very relevant for decoding, i.e.
-        // for large patches (patches_per_edge=32) patch_x being a u16 means it could go all
-        // the way up to 65565 which is even worse than for normal size patches.
+        // At this point I suspect (patch_x,patch_y) is not very relevant for decoding,
+        // i.e. for large patches (patches_per_edge=32) patch_x being a u16
+        // means it could go all the way up to 65565 which is even worse than
+        // for normal size patches.
         let patch_size = reader.read_full_u8()?;
         let layer_type = reader.read_full_u8()?;
 
@@ -67,7 +69,10 @@ pub(super) struct PatchHeader {
 }
 
 impl PatchHeader {
-    fn read(reader: &mut BitsReader, layer: LandLayerType) -> Result<Option<Self>, ExtractSurfaceError> {
+    fn read(
+        reader: &mut BitsReader,
+        layer: LandLayerType,
+    ) -> Result<Option<Self>, ExtractSurfaceError> {
         let quantity_wbits = reader.read_full_u8()?;
         if quantity_wbits == END_OF_PATCH {
             return Ok(None);

@@ -1,6 +1,6 @@
-// TODO: The idea for this module is to implement some logic which takes care of maintaining a
-// local instance about agent state and having this be automatically sent to the sim at a regular
-// interval.
+// TODO: The idea for this module is to implement some logic which takes care
+// of maintaining a local instance about agent state and having this be
+// automatically sent to the sim at a regular interval.
 
 use {Quaternion, Uuid, Vector3};
 use messages::{AgentUpdate, AgentUpdate_AgentData};

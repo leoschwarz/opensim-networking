@@ -55,7 +55,9 @@ impl Packet {
     /// * http://wiki.secondlife.com/wiki/Packet_Layout
     pub fn write_to<W: Write>(&self, buffer: &mut W) -> Result<(), ::std::io::Error> {
         // Assert: PACKET_APPENDED_ACKS flag set <-> self.appended_acks is empty.
-        debug_assert!(!(self.flags.contains(PacketFlags::APPENDED_ACKS) && self.appended_acks.is_empty()));
+        debug_assert!(
+            !(self.flags.contains(PacketFlags::APPENDED_ACKS) && self.appended_acks.is_empty())
+        );
         // TODO: Zero coded writing not implemented yet.
         assert!(!self.flags.contains(PacketFlags::ZEROCODED));
 

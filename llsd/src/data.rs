@@ -237,8 +237,8 @@ impl Scalar {
                 if b.len() < 16 {
                     None
                 } else {
-                    // We could even unwrap, but just in case they add more error causes in the future,
-                    // this is the safest way.
+                    // We could even unwrap, but just in case they add more error causes in the
+                    // future, this is the safest way.
                     Uuid::from_bytes(&b[0..16]).ok()
                 }
             }

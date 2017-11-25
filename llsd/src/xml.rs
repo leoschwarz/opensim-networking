@@ -9,7 +9,8 @@ use data::*;
 
 // TODO: Also figure out if this is even needed in OpenSim,
 // since the alphabet here does not do the same as the example in the wiki,
-// yet the Python implementation they linked does also follow the RFC 4648 alphabet.
+// yet the Python implementation they linked does also follow the RFC 4648
+// alphabet.
 lazy_static! {
     static ref BASE16: Encoding = {
         let mut spec = ::data_encoding::Specification::new();
@@ -25,14 +26,17 @@ lazy_static! {
     };
 }
 
-// TODO: see in relation to the binary module, that here we are actually reading away the xml
-// header. So in the other case the reader should only be moved, if the expected data is actually
-// found. This might actually complicate the implementation.
+// TODO: see in relation to the binary module, that here we are actually
+// reading away the xml header. So in the other case the reader should only be
+// moved, if the expected data is actually found. This might actually
+// complicate the implementation.
 //
-// → They define the MIME type "application/llsd+binary" for the other encoding, however it is not
-// clear to me where the MIME type will be found in the LLUDP messages.
+// → They define the MIME type "application/llsd+binary" for the other
+// encoding, however it is not clear to me where the MIME type will be found in
+// the LLUDP messages.
 
-/// WARNING (TODO): Don't depend on this yet, this type will have to be refactored in the future.
+/// WARNING (TODO): Don't depend on this yet, this type will have to be
+/// refactored in the future.
 #[derive(Debug, ErrorChain)]
 #[error_chain(error = "ReadError")]
 #[error_chain(result = "")]
@@ -89,7 +93,8 @@ enum PartialValue {
 
 impl PartialValue {
     fn parse_name(name: &str) -> Result<Self, ReadError> {
-        // Scalars are initialized with a default value in case they are actually an empty tag.
+        // Scalars are initialized with a default value in case they are actually an
+        // empty tag.
         match name {
             "llsd" => Ok(PartialValue::Llsd),
             "array" => Ok(PartialValue::Array(Array::new())),
@@ -130,7 +135,9 @@ impl PartialValue {
         match self {
             PartialValue::Array(a) => Ok(Value::Array(a)),
             PartialValue::Map(m) => Ok(Value::Map(m)),
-            PartialValue::ScalarBinary(val, _) => Ok(val.unwrap_or_else(|| Value::new_binary(Vec::new()))),
+            PartialValue::ScalarBinary(val, _) => {
+                Ok(val.unwrap_or_else(|| Value::new_binary(Vec::new())))
+            }
             PartialValue::Scalar(_, val) => Ok(val),
             PartialValue::Llsd | PartialValue::Key(_) => {
                 Err("Tried extracting PartialValue that cannot be extracted.".into())
@@ -146,8 +153,8 @@ pub fn read_value<B: BufRead>(buf_reader: B) -> Result<Value, ReadError> {
 
     let mut reader = Reader::from_reader(buf_reader);
 
-    // Note: The reader takes care of checking that end elements match the open elements,
-    //       so less sanity checking has to be done on our end.
+    // Note: The reader takes care of checking that end elements match the open
+    //       elements, so less sanity checking has to be done on our end.
     loop {
         match reader
             // Needed because otherwise empty string text events are emitted,
@@ -405,7 +412,8 @@ mod tests {
         assert_eq!(
             array[1],
             Value::new_binary(vec![
-                116, 104, 101, 32, 113, 117, 105, 99, 107, 32, 98, 114, 111, 119, 110, 32, 102, 111, 120
+                116, 104, 101, 32, 113, 117, 105, 99, 107, 32, 98, 114, 111, 119, 110, 32, 102,
+                111, 120,
             ])
         );
         assert_eq!(array[2], Value::new_binary(Vec::new()));
@@ -437,7 +445,9 @@ mod tests {
 
     #[test]
     fn read_array() {
-        let value = read_value_direct("<llsd><array><string>abc</string><integer>0</integer></array></llsd>");
+        let value = read_value_direct(
+            "<llsd><array><string>abc</string><integer>0</integer></array></llsd>",
+        );
         let array = value.array().unwrap();
 
         assert_eq!(array.len(), 2);

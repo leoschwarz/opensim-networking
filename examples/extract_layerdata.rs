@@ -91,7 +91,7 @@ fn main() {
 
     let patches_varland = extract_patches(data_varland);
     write_image(patches_varland, 1024, "layer_varland.png");
-    //write_image(patches_varland, 2048, "layer_varland.png");
+    // write_image(patches_varland, 2048, "layer_varland.png");
 }
 
 fn get_data_land() -> Vec<Vec<u8>> {

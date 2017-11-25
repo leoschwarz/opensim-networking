@@ -81,8 +81,13 @@ fn main() {
 
     println!("Created circuit instance.");
     // Perform the last steps of the circuit initiation.
-    opensim_networking::systems::initiation::initiate(&circuit, circuit_code, agent_id, session_id, logger)
-        .expect("circuit init sequence failed.");
+    opensim_networking::systems::initiation::initiate(
+        &circuit,
+        circuit_code,
+        agent_id,
+        session_id,
+        logger,
+    ).expect("circuit init sequence failed.");
     println!("Finish circuit initialization.");
 
     // Let the avatar walk back and forth.

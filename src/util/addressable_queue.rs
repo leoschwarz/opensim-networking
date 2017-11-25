@@ -1,5 +1,5 @@
-//! Implementation of an "adressable queue", that is a FIFO queue where it is possible to directly
-//! remove values directly by a key.
+//! Implementation of an "adressable queue", that is a FIFO queue where it is
+//! possible to directly remove values directly by a key.
 
 // TODO: Improve this, test it thoroughly as it is the core of the AckManager.
 

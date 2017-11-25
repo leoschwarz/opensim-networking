@@ -5,16 +5,17 @@
 
 // TODO:
 // - Proper shutdown of circuit
-//   → This should be accompanied by a systems module providing functionality to send the correct
-//     messages to the sim to make sure the agent is actually disconnected from the sim and doesn't
-//     end up failing the next authentication.
-// - Figure out max packet size and apply the value to our read and write buffers.
-// - Make sure acks are not sent twice?
+// → This should be accompanied by a systems module providing functionality
+// to send the correct messages to the sim to make sure the agent is
+// actually disconnected from the sim and doesn't end up failing the next
+// authentication. - Figure out max packet size and apply the value to our read
+// and write buffers. - Make sure acks are not sent twice?
 // - Do acks need to be sent with a reliable packet?
 // - Make sure the code is free from deadlock and starvation.
 // - Improve error handling.
 // - Once the rest is done: cleanup + verify corectness.
-// - Eliminate all unwraps from this module except where we can verify it will never fail.
+// - Eliminate all unwraps from this module except where we can verify it will
+// never fail.
 
 use logging::Logger;
 use login::LoginResponse;
@@ -89,9 +90,10 @@ impl Circuit {
             // TODO: Determine good maximum size. If it's too be big we are wasting memory,
             // if it's too small things will explode.
             //
-            // → At first I wanted to make this dynamic but this turned out to not be possible,
-            //   and maybe it would have been really inefficient. A workaround could be to use our
-            //   own struct directly reading from a Read and using a larger array as needed?
+            // → At first I wanted to make this dynamic but this turned out to not be
+            // possible, and maybe it would have been really inefficient. A
+            // workaround could be to use our own struct directly reading
+            // from a Read and using a larger array as needed?
             let mut packet_log = FifoCache::<SequenceNumber>::new(10000);
 
             loop {
@@ -181,6 +183,7 @@ pub struct CircuitConfig {
     /// timing out.
     pub send_timeout: Duration,
 
-    /// The number of times resending an unacknowledged packet before reporting it as failure.
+    /// The number of times resending an unacknowledged packet before reporting
+    /// it as failure.
     pub send_attempts: usize,
 }

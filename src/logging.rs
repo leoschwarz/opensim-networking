@@ -206,7 +206,8 @@ impl Logger for FullDebugLogger {
     }
 }
 
-/// This logger can be used in production to avoid the logging overhead completely.
+/// This logger can be used in production to avoid the logging overhead
+/// completely.
 #[derive(Clone)]
 pub struct DiscardLogger;
 

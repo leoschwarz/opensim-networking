@@ -1,17 +1,19 @@
 //! Encapsulates the logic for handling incoming and outgoing packet acks.
 
-// Description of actions and events, for a potential future event based implementation
+// Description of actions and events, for a potential future event based
+// implementation
 //
 // - packet out
 //   → Socket write
 //   → Register ack timeout
 // - packet in
 //   → Retrieve acks and remove pending timeouts
-//     TODO: This is currently the biggest problem how would I implement this using Rust futures?
+// TODO: This is currently the biggest problem how would I implement this
+// using Rust futures?
 //   → Queue the packet for retrieval by client application
 // - ack out
-//   → register ack for timeout queue, either append it to the next packet or send it in a
-//     dedicated packet if waiting for too long.
+// → register ack for timeout queue, either append it to the next packet or
+// send it in a     dedicated packet if waiting for too long.
 
 use circuit::{CircuitConfig, SendMessage, SendMessageError, SendMessageStatus};
 use packet::{Packet, PacketFlags};
@@ -90,17 +92,17 @@ impl AckManagerRx {
         // Apply all available incoming acks.
         while let Ok(ack) = self.acks_inc.try_recv() {
             if let Some(mut acked_msg) = self.acks_wait.remove_key(&ack) {
-                //debug!(self.logger, "incoming ack (msg found): {}", ack);
+                // debug!(self.logger, "incoming ack (msg found): {}", ack);
 
                 // Mark the PendingMessage as successful.
                 acked_msg.future.update_status(SendMessageStatus::Success);
             } else {
-                //debug!(self.logger, "incoming ack (msg not found): {}", ack);
+                // debug!(self.logger, "incoming ack (msg not found): {}", ack);
             }
         }
 
-        // First check if there is a message waiting too long for an ack already, then check the
-        // other pending messages for sending.
+        // First check if there is a message waiting too long for an ack already, then
+        // check the other pending messages for sending.
         if let Some(wait_oldest) = self.acks_wait.remove_head() {
             if wait_oldest.is_too_old() {
                 return Some(wait_oldest);
@@ -124,7 +126,9 @@ impl AckManagerRx {
                                 .map(|num| PacketAck_Packets { id: *num })
                                 .collect(),
                         }.into(),
-                        future: SendMessage::new(SendMessageStatus::PendingSend { reliable: false }),
+                        future: SendMessage::new(
+                            SendMessageStatus::PendingSend { reliable: false },
+                        ),
                     })
                 }
             }
@@ -185,18 +189,18 @@ pub struct AckManagerTx {
 impl AckManagerTx {
     /// Queue an ack to be sent out as soon as possible.
     pub fn send_ack(&self, ack: SequenceNumber) -> Result<(), mpsc::SendError<SequenceNumber>> {
-        //debug!(self.logger, "send_ack: {}", ack);
+        // debug!(self.logger, "send_ack: {}", ack);
         self.acks_out.send(ack)
     }
 
     /// Register an incoming ack to be processed.
     pub fn register_ack(&self, ack: SequenceNumber) -> Result<(), mpsc::SendError<SequenceNumber>> {
-        //debug!(self.logger, "register_ack: {}", ack);
+        // debug!(self.logger, "register_ack: {}", ack);
         self.acks_inc.send(ack)
     }
 
     pub fn send_msg(&self, msg: MessageInstance, reliable: bool) -> SendMessage {
-        //debug!(self.logger, "send_msg: {:?}", msg);
+        // debug!(self.logger, "send_msg: {:?}", msg);
         let future = SendMessage::new(SendMessageStatus::PendingSend { reliable: reliable });
         let p_m = PendingMessage {
             message: msg,
@@ -239,7 +243,8 @@ pub struct PendingMessage {
 }
 
 impl PendingMessage {
-    /// Returns true if the packet has been waiting for an ack for too long by now.
+    /// Returns true if the packet has been waiting for an ack for too long by
+    /// now.
     fn is_too_old(&self) -> bool {
         match self.future.get_status() {
             SendMessageStatus::PendingAck { timeout, .. } => timeout < Instant::now(),

@@ -1,5 +1,5 @@
-// TODO: This should probably moved to its own crate at a later time. (Maybe some decoding
-// facilities could be combined together conveniently.)
+// TODO: This should probably moved to its own crate at a later time. (Maybe
+// some decoding facilities could be combined together conveniently.)
 
 mod idct;
 mod land;

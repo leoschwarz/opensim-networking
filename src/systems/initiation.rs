@@ -1,6 +1,7 @@
-//! Contains some code to finish the initiation for a avatar to enter a new region.
-// TODO: include stuff like session id somehow with the Circuit struct so it doesn't have to be
-// passed around all the time.
+//! Contains some code to finish the initiation for a avatar to enter a new
+//! region.
+// TODO: include stuff like session id somehow with the Circuit struct so it
+// doesn't have to be passed around all the time.
 use Uuid;
 use circuit::{Circuit, SendMessageError};
 use messages::{UseCircuitCode, UseCircuitCode_CircuitCode};
