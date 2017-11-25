@@ -3,12 +3,12 @@
 
 mod idct;
 mod bitsreader;
-mod extractor;
+mod land;
 
 use nalgebra::DMatrix;
 
 use messages::all::LayerData;
-pub use self::extractor::{ExtractSurfaceError, ExtractSurfaceErrorKind};
+pub use self::land::{ExtractSurfaceError, ExtractSurfaceErrorKind};
 
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub enum LayerType {
@@ -112,5 +112,5 @@ pub fn extract_land_patch(msg: &LayerData) -> Result<Vec<Patch>, ExtractSurfaceE
     let layer_type = LayerType::from_code(msg.layer_id.type_)?
         .land_layer()
         .unwrap();
-    extractor::extract_land_patches(&msg.layer_data.data[..], layer_type)
+    land::extract_land_patches(&msg.layer_data.data[..], layer_type)
 }

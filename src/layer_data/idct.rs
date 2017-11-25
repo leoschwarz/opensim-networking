@@ -1,6 +1,6 @@
 //! Code for the DCT patch decompression.
 
-use layer_data::extractor::PatchHeader;
+use layer_data::land::PatchHeader;
 use std::f32::consts::PI;
 
 use nalgebra::DMatrix;
