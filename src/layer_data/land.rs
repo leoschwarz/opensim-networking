@@ -1,4 +1,4 @@
-use layer_data::bitsreader::{BitsReader, BitsReaderError};
+use util::bitsreader::{BitsReader, BitsReaderError};
 use layer_data::idct::{PatchSize, PatchTables};
 use layer_data::{idct, LandLayerType, LayerType, Patch};
 

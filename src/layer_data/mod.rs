@@ -2,7 +2,6 @@
 // facilities could be combined together conveniently.)
 
 mod idct;
-mod bitsreader;
 mod land;
 
 use nalgebra::DMatrix;
