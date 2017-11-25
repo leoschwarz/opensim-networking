@@ -71,5 +71,5 @@ if __name__ == "__main__":
             f.write(code)
 
     # Format the file.
-    os.system("rustfmt --write-mode overwrite --config-path '%s' '%s'" % (os.path.join(SCRIPT_DIR,"."), TARGET_FILE))
+    os.system("rustup run nightly cargo fmt")
 

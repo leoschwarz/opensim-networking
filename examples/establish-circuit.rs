@@ -1,14 +1,14 @@
-extern crate opensim_networking;
 extern crate futures;
+extern crate num_traits;
+extern crate opensim_networking;
 #[macro_use]
 extern crate serde_derive;
 extern crate toml;
-extern crate num_traits;
 
-use opensim_networking::login::{LoginRequest, hash_password};
+use opensim_networking::login::{hash_password, LoginRequest};
 use opensim_networking::circuit::{Circuit, CircuitConfig};
-use opensim_networking::{Duration, Vector3, Quaternion};
-use opensim_networking::systems::agent_update::{AgentState, MoveDirection, Modality};
+use opensim_networking::{Duration, Quaternion, Vector3};
+use opensim_networking::systems::agent_update::{AgentState, Modality, MoveDirection};
 use opensim_networking::messages::{AgentUpdate, AgentUpdate_AgentData};
 use opensim_networking::logging::FullDebugLogger;
 
@@ -42,9 +42,8 @@ fn main() {
     let logger = FullDebugLogger::new("logdir").unwrap();
 
     // Read the configuration file.
-    let mut file = File::open("establish-circuit.toml").expect(
-        "Copy establish-circuit.toml.tpl to establisk-circuit.toml and populate it.",
-    );
+    let mut file = File::open("establish-circuit.toml")
+        .expect("Copy establish-circuit.toml.tpl to establisk-circuit.toml and populate it.");
     let mut raw_data = String::new();
     file.read_to_string(&mut raw_data).unwrap();
     let config: Config = toml::from_str(raw_data.as_str()).expect("invalid TOML");
@@ -82,13 +81,8 @@ fn main() {
 
     println!("Created circuit instance.");
     // Perform the last steps of the circuit initiation.
-    opensim_networking::systems::initiation::initiate(
-        &circuit,
-        circuit_code,
-        agent_id,
-        session_id,
-        logger,
-    ).expect("circuit init sequence failed.");
+    opensim_networking::systems::initiation::initiate(&circuit, circuit_code, agent_id, session_id, logger)
+        .expect("circuit init sequence failed.");
     println!("Finish circuit initialization.");
 
     // Let the avatar walk back and forth.

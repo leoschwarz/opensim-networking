@@ -4,7 +4,7 @@ use std::collections::{BinaryHeap, VecDeque};
 use std::cmp::Ordering;
 use std::sync::mpsc;
 use std::sync::atomic::AtomicUsize;
-use std::time::{Instant, Duration};
+use std::time::{Duration, Instant};
 
 pub mod addressable_queue;
 #[cfg(test)]
@@ -25,18 +25,17 @@ impl AtomicU32Counter {
         // TODO: Remove once AtomicU32 is stabilized.
         assert!(::std::mem::size_of::<usize>() >= 4);
 
-        AtomicU32Counter { value: AtomicUsize::new(value as usize) }
+        AtomicU32Counter {
+            value: AtomicUsize::new(value as usize),
+        }
     }
 
     pub fn next(&self) -> u32 {
         use std::sync::atomic::Ordering;
         loop {
             let current = self.value.load(Ordering::SeqCst);
-            if self.value.compare_and_swap(
-                current,
-                current + 1,
-                Ordering::SeqCst,
-            ) == current
+            if self.value
+                .compare_and_swap(current, current + 1, Ordering::SeqCst) == current
             {
                 return current as u32;
             }
@@ -114,7 +113,9 @@ pub enum BackoffQueueState {
 
 impl<T> BackoffQueue<T> {
     pub fn new() -> Self {
-        BackoffQueue { queue: BinaryHeap::new() }
+        BackoffQueue {
+            queue: BinaryHeap::new(),
+        }
     }
 
     /// Insert an item into the backoff queue.

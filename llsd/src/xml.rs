@@ -130,9 +130,7 @@ impl PartialValue {
         match self {
             PartialValue::Array(a) => Ok(Value::Array(a)),
             PartialValue::Map(m) => Ok(Value::Map(m)),
-            PartialValue::ScalarBinary(val, _) => {
-                Ok(val.unwrap_or_else(|| Value::new_binary(Vec::new())))
-            }
+            PartialValue::ScalarBinary(val, _) => Ok(val.unwrap_or_else(|| Value::new_binary(Vec::new()))),
             PartialValue::Scalar(_, val) => Ok(val),
             PartialValue::Llsd | PartialValue::Key(_) => {
                 Err("Tried extracting PartialValue that cannot be extracted.".into())
@@ -407,8 +405,7 @@ mod tests {
         assert_eq!(
             array[1],
             Value::new_binary(vec![
-                116, 104, 101, 32, 113, 117, 105, 99, 107, 32, 98, 114, 111, 119, 110, 32, 102,
-                111, 120,
+                116, 104, 101, 32, 113, 117, 105, 99, 107, 32, 98, 114, 111, 119, 110, 32, 102, 111, 120
             ])
         );
         assert_eq!(array[2], Value::new_binary(Vec::new()));
@@ -440,9 +437,7 @@ mod tests {
 
     #[test]
     fn read_array() {
-        let value = read_value_direct(
-            "<llsd><array><string>abc</string><integer>0</integer></array></llsd>",
-        );
+        let value = read_value_direct("<llsd><array><string>abc</string><integer>0</integer></array></llsd>");
         let array = value.array().unwrap();
 
         assert_eq!(array.len(), 2);

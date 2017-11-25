@@ -12,15 +12,15 @@ extern crate error_chain;
 extern crate futures;
 #[macro_use]
 extern crate lazy_static;
-extern crate nalgebra;
 extern crate mio;
+extern crate nalgebra;
 extern crate regex;
 extern crate reqwest;
 extern crate ttl_cache;
 extern crate xmlrpc;
 
-pub extern crate opensim_messages as messages;
 extern crate opensim_types as types;
+pub extern crate opensim_messages as messages;
 pub use types::*;
 
 mod util;

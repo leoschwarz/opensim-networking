@@ -3,7 +3,7 @@
 use types::SequenceNumber;
 
 use futures::{self, Async, Future, Poll};
-use std::sync::{Arc, RwLock, Mutex};
+use std::sync::{Arc, Mutex, RwLock};
 use std::time::Instant;
 
 /// The `Future` returned by the `Circuit`'s send method.
@@ -51,8 +51,7 @@ impl Future for SendMessage {
 
     fn poll(&mut self) -> Poll<Self::Item, Self::Error> {
         match *self.status.read().unwrap() {
-            SendMessageStatus::PendingSend { .. } |
-            SendMessageStatus::PendingAck { .. } => {
+            SendMessageStatus::PendingSend { .. } | SendMessageStatus::PendingAck { .. } => {
                 let mut task = self.task.lock().unwrap();
                 if task.is_none() {
                     *task = Some(futures::task::current());

@@ -1,7 +1,7 @@
 use messages::MessageInstance;
 use types::SequenceNumber;
 
-use byteorder::{BigEndian, WriteBytesExt, ReadBytesExt};
+use byteorder::{BigEndian, ReadBytesExt, WriteBytesExt};
 use std::io::{Read, Write};
 
 bitflags! {
@@ -55,9 +55,7 @@ impl Packet {
     /// * http://wiki.secondlife.com/wiki/Packet_Layout
     pub fn write_to<W: Write>(&self, buffer: &mut W) -> Result<(), ::std::io::Error> {
         // Assert: PACKET_APPENDED_ACKS flag set <-> self.appended_acks is empty.
-        debug_assert!(
-            !(self.flags.contains(PacketFlags::APPENDED_ACKS) && self.appended_acks.is_empty())
-        );
+        debug_assert!(!(self.flags.contains(PacketFlags::APPENDED_ACKS) && self.appended_acks.is_empty()));
         // TODO: Zero coded writing not implemented yet.
         assert!(!self.flags.contains(PacketFlags::ZEROCODED));
 
@@ -149,11 +147,9 @@ impl Packet {
 #[error_chain(error = "ReadPacketError")]
 #[error_chain(result = "")]
 pub enum ReadPacketErrorKind {
-    #[error_chain(foreign)]
-    IoError(::std::io::Error),
+    #[error_chain(foreign)] IoError(::std::io::Error),
 
-    #[error_chain(link = "::messages::ReadError")]
-    ReadError(::messages::ReadErrorKind),
+    #[error_chain(link = "::messages::ReadError")] ReadError(::messages::ReadErrorKind),
 }
 
 /// Used internally to read the content of packages.
@@ -209,17 +205,23 @@ impl<'a> PacketReader<'a> {
         let b1 = self.read_u8()?;
         let bytes = if b1 != 0xff {
             // High frequency messages.
-            [0, 0, 0, b1]
+            [
+                0, 0, 0, b1
+            ]
         } else {
             let b2 = self.read_u8()?;
             if b2 != 0xff {
                 // Medium frequency messages.
-                [0, 0, b2, 0xff]
+                [
+                    0, 0, b2, 0xff
+                ]
             } else {
                 // Low and fixed frequency messages.
                 let b3 = self.read_u8()?;
                 let b4 = self.read_u8()?;
-                [b4, b3, 0xff, 0xff]
+                [
+                    b4, b3, 0xff, 0xff
+                ]
             }
         };
 
@@ -253,8 +255,8 @@ impl<'a> Read for PacketReader<'a> {
                             return Err(::std::io::Error::new(
                                 ::std::io::ErrorKind::InvalidData,
                                 "Zerocoding enabled, but found a \
-                                                              zero byte at EOF without \
-                                                              repetition quantity.",
+                                 zero byte at EOF without \
+                                 repetition quantity.",
                             ));
                         }
                     } else {
@@ -288,18 +290,29 @@ mod tests {
 
     #[test]
     fn read_simple() {
-        let data: [u8; 6] = [2, 4, 6, 8, 10, 12];
+        let data: [u8; 6] = [
+            2, 4, 6, 8, 10, 12
+        ];
         let mut reader = PacketReader::new(&data);
 
-        let mut buffer: [u8; 6] = [0, 0, 0, 0, 0, 0];
+        let mut buffer: [u8; 6] = [
+            0, 0, 0, 0, 0, 0
+        ];
         let bytes = reader.read(&mut buffer).unwrap();
         assert_eq!(bytes, 6);
-        assert_eq!(buffer, [2, 4, 6, 8, 10, 12]);
+        assert_eq!(
+            buffer,
+            [
+                2, 4, 6, 8, 10, 12
+            ]
+        );
     }
 
     #[test]
     fn read_in_chunks() {
-        let data: [u8; 5] = [2, 4, 6, 8, 10];
+        let data: [u8; 5] = [
+            2, 4, 6, 8, 10
+        ];
         let mut reader = PacketReader::new(&data);
 
         let mut buffer: [u8; 2] = [0, 0];
@@ -320,10 +333,17 @@ mod tests {
         let mut reader = PacketReader::new(&data);
         reader.zerocoding_enabled = true;
 
-        let mut buffer: [u8; 10] = [1, 1, 1, 1, 1, 1, 1, 1, 1, 1];
+        let mut buffer: [u8; 10] = [
+            1, 1, 1, 1, 1, 1, 1, 1, 1, 1
+        ];
         let bytes = reader.read(&mut buffer).unwrap();
         assert_eq!(bytes, 5);
-        assert_eq!(buffer, [0, 0, 0, 0, 0, 1, 1, 1, 1, 1]);
+        assert_eq!(
+            buffer,
+            [
+                0, 0, 0, 0, 0, 1, 1, 1, 1, 1
+            ]
+        );
     }
 
     #[test]
@@ -345,7 +365,9 @@ mod tests {
 
     #[test]
     fn reader_skip() {
-        let data: [u8; 6] = [0, 1, 2, 3, 4, 5];
+        let data: [u8; 6] = [
+            0, 1, 2, 3, 4, 5
+        ];
         let mut reader = PacketReader::new(&data);
         assert!(reader.skip_bytes(2).is_ok());
         assert_eq!(reader.read_u8().unwrap(), 2);

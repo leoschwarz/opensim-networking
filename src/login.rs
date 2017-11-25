@@ -3,7 +3,7 @@ use crypto::digest::Digest;
 use std::collections::BTreeMap;
 use xmlrpc::Value as XmlValue;
 use regex::Regex;
-use {Ip4Addr, Vector3, Uuid};
+use {Ip4Addr, Uuid, Vector3};
 use std::str::FromStr;
 
 /// Performing a LoginRequest is the first step at gaining access to a sim.
@@ -33,20 +33,15 @@ pub fn hash_password(password_raw: &str) -> String {
 #[error_chain(error = "LoginError")]
 #[error_chain(result = "")]
 pub enum LoginErrorKind {
-    #[error_chain(foreign)]
-    RequestError(::xmlrpc::RequestError),
+    #[error_chain(foreign)] RequestError(::xmlrpc::RequestError),
 
-    #[error_chain(foreign)]
-    HttpError(::reqwest::Error),
+    #[error_chain(foreign)] HttpError(::reqwest::Error),
 
-    #[error_chain(foreign)]
-    ParseFloatError(::std::num::ParseFloatError),
+    #[error_chain(foreign)] ParseFloatError(::std::num::ParseFloatError),
 
-    #[error_chain(foreign)]
-    AddrParseError(::std::net::AddrParseError),
+    #[error_chain(foreign)] AddrParseError(::std::net::AddrParseError),
 
-    #[error_chain(foreign)]
-    UuidParseError(::types::UuidParseError),
+    #[error_chain(foreign)] UuidParseError(::types::UuidParseError),
 
     /// Login failed.
     #[error_chain(custom)]
@@ -89,9 +84,7 @@ impl LoginResponse {
                 let z = try!(caps.get(3).unwrap().as_str().parse::<f32>());
                 Ok(Vector3::new(x, y, z))
             }
-            _ => Err(
-                LoginErrorKind::ExtractResponseError(format!("vector3='{}'", raw)).into(),
-            ),
+            _ => Err(LoginErrorKind::ExtractResponseError(format!("vector3='{}'", raw)).into()),
         }
     }
 
@@ -172,9 +165,7 @@ impl LoginRequest {
 
         match value {
             XmlValue::Struct(s) => LoginResponse::extract(s),
-            _ => Err(
-                LoginErrorKind::ExtractResponseError("value is not a struct".into()).into(),
-            ),
+            _ => Err(LoginErrorKind::ExtractResponseError("value is not a struct".into()).into()),
         }
     }
 }

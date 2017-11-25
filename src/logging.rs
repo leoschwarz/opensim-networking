@@ -188,21 +188,21 @@ impl FullDebugLoggerInner {
 // TODO: Better error handling.
 impl Logger for FullDebugLogger {
     fn log_recv(&self, raw_data: &[u8], packet: &Result<Packet, ReadPacketError>) {
-        self.inner.try_log_recv(raw_data, packet).expect(
-            "failed logging packet recv.",
-        );
+        self.inner
+            .try_log_recv(raw_data, packet)
+            .expect("failed logging packet recv.");
     }
 
     fn log_send(&self, raw_data: &[u8], packet: &Packet) {
-        self.inner.try_log_send(raw_data, packet).expect(
-            "failed logging message send.",
-        );
+        self.inner
+            .try_log_send(raw_data, packet)
+            .expect("failed logging message send.");
     }
 
     fn debug<S: AsRef<str>>(&self, message: S) {
-        self.inner.try_debug(message.as_ref()).expect(
-            "failed logging debug log message.",
-        );
+        self.inner
+            .try_debug(message.as_ref())
+            .expect("failed logging debug log message.");
     }
 }
 

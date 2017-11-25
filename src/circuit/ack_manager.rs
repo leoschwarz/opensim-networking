@@ -13,12 +13,12 @@
 //   → register ack for timeout queue, either append it to the next packet or send it in a
 //     dedicated packet if waiting for too long.
 
-use circuit::{CircuitConfig, SendMessageStatus, SendMessage, SendMessageError};
+use circuit::{CircuitConfig, SendMessage, SendMessageError, SendMessageStatus};
 use packet::{Packet, PacketFlags};
 use types::SequenceNumber;
-use util::{AtomicU32Counter, mpsc_read_many};
+use util::{mpsc_read_many, AtomicU32Counter};
 use util::addressable_queue::Queue as AddressableQueue;
-use messages::{PacketAck, PacketAck_Packets, MessageInstance};
+use messages::{MessageInstance, PacketAck, PacketAck_Packets};
 
 use std::sync::mpsc;
 use std::sync::mpsc::TryRecvError;
@@ -124,9 +124,7 @@ impl AckManagerRx {
                                 .map(|num| PacketAck_Packets { id: *num })
                                 .collect(),
                         }.into(),
-                        future: SendMessage::new(
-                            SendMessageStatus::PendingSend { reliable: false },
-                        ),
+                        future: SendMessage::new(SendMessageStatus::PendingSend { reliable: false }),
                     })
                 }
             }
@@ -169,8 +167,7 @@ impl AckManagerRx {
                     (Some(packet), new_status)
                 }
             }
-            SendMessageStatus::Success |
-            SendMessageStatus::Failure(_) => (None, old_status),
+            SendMessageStatus::Success | SendMessageStatus::Failure(_) => (None, old_status),
         }
     }
 }

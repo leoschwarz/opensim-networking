@@ -1,30 +1,33 @@
 //! This file is here for debugging purposes and not a real example.
 
-extern crate opensim_networking;
 extern crate image;
 extern crate nalgebra;
+extern crate opensim_networking;
 
 use image::{GenericImage, ImageBuffer};
 use nalgebra::DMatrix;
 use std::fs::File;
 
 use opensim_networking::packet::Packet;
-use opensim_networking::layer_data::{Patch, self};
+use opensim_networking::layer_data::{self, Patch};
 use opensim_networking::messages::MessageInstance;
 
 fn extract_patches(raw_messages: Vec<Vec<u8>>) -> Vec<Patch> {
-    raw_messages.iter().flat_map(|data| {
-        let packet = Packet::read(&data[..]).unwrap();
-        let msg_instance = packet.message;
-        let msg = match msg_instance {
-            MessageInstance::LayerData(data) => data,
-            _ => panic!("wrong message instance"),
-        };
-        layer_data::extract_land_patch(&msg).unwrap()
-    }).collect()
+    raw_messages
+        .iter()
+        .flat_map(|data| {
+            let packet = Packet::read(&data[..]).unwrap();
+            let msg_instance = packet.message;
+            let msg = match msg_instance {
+                MessageInstance::LayerData(data) => data,
+                _ => panic!("wrong message instance"),
+            };
+            layer_data::extract_land_patch(&msg).unwrap()
+        })
+        .collect()
 }
 
-fn write_image(patches: Vec<Patch>, region_size: usize, image_path: &str){
+fn write_image(patches: Vec<Patch>, region_size: usize, image_path: &str) {
     println!("start generating image: {}", image_path);
 
     // Find global min and max values.
@@ -106,7 +109,7 @@ fn get_data_land() -> Vec<Vec<u8>> {
         include_bytes!("data/layer_land/00000045.bin").to_vec(),
         include_bytes!("data/layer_land/00000046.bin").to_vec(),
         include_bytes!("data/layer_land/00000060.bin").to_vec(),
-        include_bytes!("data/layer_land/00000062.bin").to_vec()
+        include_bytes!("data/layer_land/00000062.bin").to_vec(),
     ]
 }
 

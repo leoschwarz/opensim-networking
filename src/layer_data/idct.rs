@@ -1,6 +1,6 @@
 //! Code for the DCT patch decompression.
 
-use layer_data::extractor::{PatchHeader, PatchGroupHeader};
+use layer_data::extractor::{PatchGroupHeader, PatchHeader};
 use std::f32::consts::PI;
 
 use nalgebra::DMatrix;
@@ -155,8 +155,7 @@ pub(super) fn decompress_patch<PS: PatchSize>(
     group_header: &PatchGroupHeader,
     tables: &PatchTables,
 ) -> DMatrix<f32> {
-    let mut block: DMatrix<f32> =
-        DMatrix::from_element(PS::per_direction(), PS::per_direction(), 0.);
+    let mut block: DMatrix<f32> = DMatrix::from_element(PS::per_direction(), PS::per_direction(), 0.);
     for k in 0..PS::per_patch() {
         block[k] = patch_in[tables.decopy[k]] as f32 * tables.dequantize[k];
     }

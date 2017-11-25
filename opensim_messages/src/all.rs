@@ -6,8 +6,8 @@
 /// Don't edit manually, instead edit the generator.
 ///
 
-use {Vector3, Vector4, Quaternion, UnitQuaternion, Ip4Addr, IpPort, Uuid, WriteMessageResult, Message,
-     ReadError, ReadErrorKind};
+use {Ip4Addr, IpPort, Message, Quaternion, ReadError, ReadErrorKind, UnitQuaternion, Uuid, Vector3, Vector4,
+     WriteMessageResult};
 
 use arrayvec::ArrayVec;
 use byteorder::{LittleEndian, ReadBytesExt, WriteBytesExt};
@@ -16191,8 +16191,7 @@ impl MessageInstance {
     }
     pub fn read_message<R: ?Sized>(buffer: &mut R, message_num: u32) -> Result<MessageInstance, ReadError>
     where
-        R: Read,
-    {
+        R: Read {
         match message_num {
             0x9d00ffff => return AbortXfer::read_from(buffer),
             0x2e01ffff => return AcceptCallingCard::read_from(buffer),
@@ -19532,9 +19531,7 @@ impl From<ViewerStats> for MessageInstance {
 
 impl AbortXfer_XferID {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(AbortXfer_XferID {
             id: buffer.read_u64::<LittleEndian>()?,
             result: buffer.read_i32::<LittleEndian>()?,
@@ -19544,9 +19541,7 @@ impl AbortXfer_XferID {
 
 impl AcceptCallingCard_AgentData {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(AcceptCallingCard_AgentData {
             agent_id: {
                 let mut raw = [0u8; 16];
@@ -19564,9 +19559,7 @@ impl AcceptCallingCard_AgentData {
 
 impl AcceptCallingCard_TransactionBlock {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(AcceptCallingCard_TransactionBlock {
             transaction_id: {
                 let mut raw = [0u8; 16];
@@ -19579,9 +19572,7 @@ impl AcceptCallingCard_TransactionBlock {
 
 impl AcceptCallingCard_FolderData {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(AcceptCallingCard_FolderData {
             folder_id: {
                 let mut raw = [0u8; 16];
@@ -19594,9 +19585,7 @@ impl AcceptCallingCard_FolderData {
 
 impl AcceptFriendship_AgentData {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(AcceptFriendship_AgentData {
             agent_id: {
                 let mut raw = [0u8; 16];
@@ -19614,9 +19603,7 @@ impl AcceptFriendship_AgentData {
 
 impl AcceptFriendship_TransactionBlock {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(AcceptFriendship_TransactionBlock {
             transaction_id: {
                 let mut raw = [0u8; 16];
@@ -19629,9 +19616,7 @@ impl AcceptFriendship_TransactionBlock {
 
 impl AcceptFriendship_FolderData {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(AcceptFriendship_FolderData {
             folder_id: {
                 let mut raw = [0u8; 16];
@@ -19644,9 +19629,7 @@ impl AcceptFriendship_FolderData {
 
 impl ActivateGestures_AgentData {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(ActivateGestures_AgentData {
             agent_id: {
                 let mut raw = [0u8; 16];
@@ -19665,9 +19648,7 @@ impl ActivateGestures_AgentData {
 
 impl ActivateGestures_Data {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(ActivateGestures_Data {
             item_id: {
                 let mut raw = [0u8; 16];
@@ -19686,9 +19667,7 @@ impl ActivateGestures_Data {
 
 impl ActivateGroup_AgentData {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(ActivateGroup_AgentData {
             agent_id: {
                 let mut raw = [0u8; 16];
@@ -19711,9 +19690,7 @@ impl ActivateGroup_AgentData {
 
 impl AddCircuitCode_CircuitCode {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(AddCircuitCode_CircuitCode {
             code: buffer.read_u32::<LittleEndian>()?,
             session_id: {
@@ -19732,9 +19709,7 @@ impl AddCircuitCode_CircuitCode {
 
 impl AgentAlertMessage_AgentData {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(AgentAlertMessage_AgentData {
             agent_id: {
                 let mut raw = [0u8; 16];
@@ -19747,9 +19722,7 @@ impl AgentAlertMessage_AgentData {
 
 impl AgentAlertMessage_AlertData {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(AgentAlertMessage_AlertData {
             modal: buffer.read_u8()? == 1,
             message: {
@@ -19764,9 +19737,7 @@ impl AgentAlertMessage_AlertData {
 
 impl AgentAnimation_AgentData {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(AgentAnimation_AgentData {
             agent_id: {
                 let mut raw = [0u8; 16];
@@ -19784,9 +19755,7 @@ impl AgentAnimation_AgentData {
 
 impl AgentAnimation_AnimationList {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(AgentAnimation_AnimationList {
             anim_id: {
                 let mut raw = [0u8; 16];
@@ -19800,9 +19769,7 @@ impl AgentAnimation_AnimationList {
 
 impl AgentAnimation_PhysicalAvatarEventList {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(AgentAnimation_PhysicalAvatarEventList {
             type_data: {
                 let n = buffer.read_u8()? as usize;
@@ -19816,9 +19783,7 @@ impl AgentAnimation_PhysicalAvatarEventList {
 
 impl AgentCachedTexture_AgentData {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(AgentCachedTexture_AgentData {
             agent_id: {
                 let mut raw = [0u8; 16];
@@ -19837,9 +19802,7 @@ impl AgentCachedTexture_AgentData {
 
 impl AgentCachedTexture_WearableData {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(AgentCachedTexture_WearableData {
             id: {
                 let mut raw = [0u8; 16];
@@ -19853,9 +19816,7 @@ impl AgentCachedTexture_WearableData {
 
 impl AgentCachedTextureResponse_AgentData {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(AgentCachedTextureResponse_AgentData {
             agent_id: {
                 let mut raw = [0u8; 16];
@@ -19874,9 +19835,7 @@ impl AgentCachedTextureResponse_AgentData {
 
 impl AgentCachedTextureResponse_WearableData {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(AgentCachedTextureResponse_WearableData {
             texture_id: {
                 let mut raw = [0u8; 16];
@@ -19896,9 +19855,7 @@ impl AgentCachedTextureResponse_WearableData {
 
 impl AgentDataUpdate_AgentData {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(AgentDataUpdate_AgentData {
             agent_id: {
                 let mut raw = [0u8; 16];
@@ -19941,9 +19898,7 @@ impl AgentDataUpdate_AgentData {
 
 impl AgentDataUpdateRequest_AgentData {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(AgentDataUpdateRequest_AgentData {
             agent_id: {
                 let mut raw = [0u8; 16];
@@ -19961,9 +19916,7 @@ impl AgentDataUpdateRequest_AgentData {
 
 impl AgentDropGroup_AgentData {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(AgentDropGroup_AgentData {
             agent_id: {
                 let mut raw = [0u8; 16];
@@ -19981,9 +19934,7 @@ impl AgentDropGroup_AgentData {
 
 impl AgentFOV_AgentData {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(AgentFOV_AgentData {
             agent_id: {
                 let mut raw = [0u8; 16];
@@ -20002,9 +19953,7 @@ impl AgentFOV_AgentData {
 
 impl AgentFOV_FOVBlock {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(AgentFOV_FOVBlock {
             gen_counter: buffer.read_u32::<LittleEndian>()?,
             vertical_angle: buffer.read_f32::<LittleEndian>()?,
@@ -20014,9 +19963,7 @@ impl AgentFOV_FOVBlock {
 
 impl AgentGroupDataUpdate_AgentData {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(AgentGroupDataUpdate_AgentData {
             agent_id: {
                 let mut raw = [0u8; 16];
@@ -20029,9 +19976,7 @@ impl AgentGroupDataUpdate_AgentData {
 
 impl AgentGroupDataUpdate_GroupData {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(AgentGroupDataUpdate_GroupData {
             group_id: {
                 let mut raw = [0u8; 16];
@@ -20058,9 +20003,7 @@ impl AgentGroupDataUpdate_GroupData {
 
 impl AgentHeightWidth_AgentData {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(AgentHeightWidth_AgentData {
             agent_id: {
                 let mut raw = [0u8; 16];
@@ -20079,9 +20022,7 @@ impl AgentHeightWidth_AgentData {
 
 impl AgentHeightWidth_HeightWidthBlock {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(AgentHeightWidth_HeightWidthBlock {
             gen_counter: buffer.read_u32::<LittleEndian>()?,
             height: buffer.read_u16::<LittleEndian>()?,
@@ -20092,9 +20033,7 @@ impl AgentHeightWidth_HeightWidthBlock {
 
 impl AgentIsNowWearing_AgentData {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(AgentIsNowWearing_AgentData {
             agent_id: {
                 let mut raw = [0u8; 16];
@@ -20112,9 +20051,7 @@ impl AgentIsNowWearing_AgentData {
 
 impl AgentIsNowWearing_WearableData {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(AgentIsNowWearing_WearableData {
             item_id: {
                 let mut raw = [0u8; 16];
@@ -20128,9 +20065,7 @@ impl AgentIsNowWearing_WearableData {
 
 impl AgentMovementComplete_AgentData {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(AgentMovementComplete_AgentData {
             agent_id: {
                 let mut raw = [0u8; 16];
@@ -20148,9 +20083,7 @@ impl AgentMovementComplete_AgentData {
 
 impl AgentMovementComplete_Data {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(AgentMovementComplete_Data {
             position: Vector3::new(
                 buffer.read_f32::<LittleEndian>()?,
@@ -20170,9 +20103,7 @@ impl AgentMovementComplete_Data {
 
 impl AgentMovementComplete_SimData {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(AgentMovementComplete_SimData {
             channel_version: {
                 let n = buffer.read_u16::<LittleEndian>()? as usize;
@@ -20186,9 +20117,7 @@ impl AgentMovementComplete_SimData {
 
 impl AgentPause_AgentData {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(AgentPause_AgentData {
             agent_id: {
                 let mut raw = [0u8; 16];
@@ -20207,9 +20136,7 @@ impl AgentPause_AgentData {
 
 impl AgentQuitCopy_AgentData {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(AgentQuitCopy_AgentData {
             agent_id: {
                 let mut raw = [0u8; 16];
@@ -20227,9 +20154,7 @@ impl AgentQuitCopy_AgentData {
 
 impl AgentQuitCopy_FuseBlock {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(AgentQuitCopy_FuseBlock {
             viewer_circuit_code: buffer.read_u32::<LittleEndian>()?,
         })
@@ -20238,9 +20163,7 @@ impl AgentQuitCopy_FuseBlock {
 
 impl AgentRequestSit_AgentData {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(AgentRequestSit_AgentData {
             agent_id: {
                 let mut raw = [0u8; 16];
@@ -20258,9 +20181,7 @@ impl AgentRequestSit_AgentData {
 
 impl AgentRequestSit_TargetObject {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(AgentRequestSit_TargetObject {
             target_id: {
                 let mut raw = [0u8; 16];
@@ -20278,9 +20199,7 @@ impl AgentRequestSit_TargetObject {
 
 impl AgentResume_AgentData {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(AgentResume_AgentData {
             agent_id: {
                 let mut raw = [0u8; 16];
@@ -20299,9 +20218,7 @@ impl AgentResume_AgentData {
 
 impl AgentSetAppearance_AgentData {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(AgentSetAppearance_AgentData {
             agent_id: {
                 let mut raw = [0u8; 16];
@@ -20325,9 +20242,7 @@ impl AgentSetAppearance_AgentData {
 
 impl AgentSetAppearance_WearableData {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(AgentSetAppearance_WearableData {
             cache_id: {
                 let mut raw = [0u8; 16];
@@ -20341,9 +20256,7 @@ impl AgentSetAppearance_WearableData {
 
 impl AgentSetAppearance_ObjectData {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(AgentSetAppearance_ObjectData {
             texture_entry: {
                 let n = buffer.read_u16::<LittleEndian>()? as usize;
@@ -20357,9 +20270,7 @@ impl AgentSetAppearance_ObjectData {
 
 impl AgentSetAppearance_VisualParam {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(AgentSetAppearance_VisualParam {
             param_value: buffer.read_u8()?,
         })
@@ -20368,9 +20279,7 @@ impl AgentSetAppearance_VisualParam {
 
 impl AgentSit_AgentData {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(AgentSit_AgentData {
             agent_id: {
                 let mut raw = [0u8; 16];
@@ -20388,9 +20297,7 @@ impl AgentSit_AgentData {
 
 impl AgentThrottle_AgentData {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(AgentThrottle_AgentData {
             agent_id: {
                 let mut raw = [0u8; 16];
@@ -20409,9 +20316,7 @@ impl AgentThrottle_AgentData {
 
 impl AgentThrottle_Throttle {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(AgentThrottle_Throttle {
             gen_counter: buffer.read_u32::<LittleEndian>()?,
             throttles: {
@@ -20426,9 +20331,7 @@ impl AgentThrottle_Throttle {
 
 impl AgentUpdate_AgentData {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(AgentUpdate_AgentData {
             agent_id: {
                 let mut raw = [0u8; 16];
@@ -20486,9 +20389,7 @@ impl AgentUpdate_AgentData {
 
 impl AgentWearablesRequest_AgentData {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(AgentWearablesRequest_AgentData {
             agent_id: {
                 let mut raw = [0u8; 16];
@@ -20506,9 +20407,7 @@ impl AgentWearablesRequest_AgentData {
 
 impl AgentWearablesUpdate_AgentData {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(AgentWearablesUpdate_AgentData {
             agent_id: {
                 let mut raw = [0u8; 16];
@@ -20527,9 +20426,7 @@ impl AgentWearablesUpdate_AgentData {
 
 impl AgentWearablesUpdate_WearableData {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(AgentWearablesUpdate_WearableData {
             item_id: {
                 let mut raw = [0u8; 16];
@@ -20548,9 +20445,7 @@ impl AgentWearablesUpdate_WearableData {
 
 impl AlertMessage_AlertData {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(AlertMessage_AlertData {
             message: {
                 let n = buffer.read_u8()? as usize;
@@ -20564,9 +20459,7 @@ impl AlertMessage_AlertData {
 
 impl AlertMessage_AlertInfo {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(AlertMessage_AlertInfo {
             message: {
                 let n = buffer.read_u8()? as usize;
@@ -20586,9 +20479,7 @@ impl AlertMessage_AlertInfo {
 
 impl AssetUploadComplete_AssetBlock {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(AssetUploadComplete_AssetBlock {
             uuid: {
                 let mut raw = [0u8; 16];
@@ -20603,9 +20494,7 @@ impl AssetUploadComplete_AssetBlock {
 
 impl AssetUploadRequest_AssetBlock {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(AssetUploadRequest_AssetBlock {
             transaction_id: {
                 let mut raw = [0u8; 16];
@@ -20627,9 +20516,7 @@ impl AssetUploadRequest_AssetBlock {
 
 impl AtomicPassObject_TaskData {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(AtomicPassObject_TaskData {
             task_id: {
                 let mut raw = [0u8; 16];
@@ -20643,9 +20530,7 @@ impl AtomicPassObject_TaskData {
 
 impl AttachedSound_DataBlock {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(AttachedSound_DataBlock {
             sound_id: {
                 let mut raw = [0u8; 16];
@@ -20670,9 +20555,7 @@ impl AttachedSound_DataBlock {
 
 impl AttachedSoundGainChange_DataBlock {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(AttachedSoundGainChange_DataBlock {
             object_id: {
                 let mut raw = [0u8; 16];
@@ -20686,9 +20569,7 @@ impl AttachedSoundGainChange_DataBlock {
 
 impl AvatarAnimation_Sender {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(AvatarAnimation_Sender {
             id: {
                 let mut raw = [0u8; 16];
@@ -20701,9 +20582,7 @@ impl AvatarAnimation_Sender {
 
 impl AvatarAnimation_AnimationList {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(AvatarAnimation_AnimationList {
             anim_id: {
                 let mut raw = [0u8; 16];
@@ -20717,9 +20596,7 @@ impl AvatarAnimation_AnimationList {
 
 impl AvatarAnimation_AnimationSourceList {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(AvatarAnimation_AnimationSourceList {
             object_id: {
                 let mut raw = [0u8; 16];
@@ -20732,9 +20609,7 @@ impl AvatarAnimation_AnimationSourceList {
 
 impl AvatarAnimation_PhysicalAvatarEventList {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(AvatarAnimation_PhysicalAvatarEventList {
             type_data: {
                 let n = buffer.read_u8()? as usize;
@@ -20748,9 +20623,7 @@ impl AvatarAnimation_PhysicalAvatarEventList {
 
 impl AvatarAppearance_Sender {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(AvatarAppearance_Sender {
             id: {
                 let mut raw = [0u8; 16];
@@ -20764,9 +20637,7 @@ impl AvatarAppearance_Sender {
 
 impl AvatarAppearance_ObjectData {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(AvatarAppearance_ObjectData {
             texture_entry: {
                 let n = buffer.read_u16::<LittleEndian>()? as usize;
@@ -20780,9 +20651,7 @@ impl AvatarAppearance_ObjectData {
 
 impl AvatarAppearance_VisualParam {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(AvatarAppearance_VisualParam {
             param_value: buffer.read_u8()?,
         })
@@ -20791,9 +20660,7 @@ impl AvatarAppearance_VisualParam {
 
 impl AvatarClassifiedReply_AgentData {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(AvatarClassifiedReply_AgentData {
             agent_id: {
                 let mut raw = [0u8; 16];
@@ -20811,9 +20678,7 @@ impl AvatarClassifiedReply_AgentData {
 
 impl AvatarClassifiedReply_Data {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(AvatarClassifiedReply_Data {
             classified_id: {
                 let mut raw = [0u8; 16];
@@ -20832,9 +20697,7 @@ impl AvatarClassifiedReply_Data {
 
 impl AvatarGroupsReply_AgentData {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(AvatarGroupsReply_AgentData {
             agent_id: {
                 let mut raw = [0u8; 16];
@@ -20852,9 +20715,7 @@ impl AvatarGroupsReply_AgentData {
 
 impl AvatarGroupsReply_GroupData {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(AvatarGroupsReply_GroupData {
             group_powers: buffer.read_u64::<LittleEndian>()?,
             accept_notices: buffer.read_u8()? == 1,
@@ -20886,9 +20747,7 @@ impl AvatarGroupsReply_GroupData {
 
 impl AvatarGroupsReply_NewGroupData {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(AvatarGroupsReply_NewGroupData {
             list_in_profile: buffer.read_u8()? == 1,
         })
@@ -20897,9 +20756,7 @@ impl AvatarGroupsReply_NewGroupData {
 
 impl AvatarInterestsReply_AgentData {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(AvatarInterestsReply_AgentData {
             agent_id: {
                 let mut raw = [0u8; 16];
@@ -20917,9 +20774,7 @@ impl AvatarInterestsReply_AgentData {
 
 impl AvatarInterestsReply_PropertiesData {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(AvatarInterestsReply_PropertiesData {
             want_to_mask: buffer.read_u32::<LittleEndian>()?,
             want_to_text: {
@@ -20947,9 +20802,7 @@ impl AvatarInterestsReply_PropertiesData {
 
 impl AvatarInterestsUpdate_AgentData {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(AvatarInterestsUpdate_AgentData {
             agent_id: {
                 let mut raw = [0u8; 16];
@@ -20967,9 +20820,7 @@ impl AvatarInterestsUpdate_AgentData {
 
 impl AvatarInterestsUpdate_PropertiesData {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(AvatarInterestsUpdate_PropertiesData {
             want_to_mask: buffer.read_u32::<LittleEndian>()?,
             want_to_text: {
@@ -20997,9 +20848,7 @@ impl AvatarInterestsUpdate_PropertiesData {
 
 impl AvatarNotesReply_AgentData {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(AvatarNotesReply_AgentData {
             agent_id: {
                 let mut raw = [0u8; 16];
@@ -21012,9 +20861,7 @@ impl AvatarNotesReply_AgentData {
 
 impl AvatarNotesReply_Data {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(AvatarNotesReply_Data {
             target_id: {
                 let mut raw = [0u8; 16];
@@ -21033,9 +20880,7 @@ impl AvatarNotesReply_Data {
 
 impl AvatarNotesUpdate_AgentData {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(AvatarNotesUpdate_AgentData {
             agent_id: {
                 let mut raw = [0u8; 16];
@@ -21053,9 +20898,7 @@ impl AvatarNotesUpdate_AgentData {
 
 impl AvatarNotesUpdate_Data {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(AvatarNotesUpdate_Data {
             target_id: {
                 let mut raw = [0u8; 16];
@@ -21074,9 +20917,7 @@ impl AvatarNotesUpdate_Data {
 
 impl AvatarPickerReply_AgentData {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(AvatarPickerReply_AgentData {
             agent_id: {
                 let mut raw = [0u8; 16];
@@ -21094,9 +20935,7 @@ impl AvatarPickerReply_AgentData {
 
 impl AvatarPickerReply_Data {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(AvatarPickerReply_Data {
             avatar_id: {
                 let mut raw = [0u8; 16];
@@ -21121,9 +20960,7 @@ impl AvatarPickerReply_Data {
 
 impl AvatarPickerRequest_AgentData {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(AvatarPickerRequest_AgentData {
             agent_id: {
                 let mut raw = [0u8; 16];
@@ -21146,9 +20983,7 @@ impl AvatarPickerRequest_AgentData {
 
 impl AvatarPickerRequest_Data {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(AvatarPickerRequest_Data {
             name: {
                 let n = buffer.read_u8()? as usize;
@@ -21162,9 +20997,7 @@ impl AvatarPickerRequest_Data {
 
 impl AvatarPickerRequestBackend_AgentData {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(AvatarPickerRequestBackend_AgentData {
             agent_id: {
                 let mut raw = [0u8; 16];
@@ -21188,9 +21021,7 @@ impl AvatarPickerRequestBackend_AgentData {
 
 impl AvatarPickerRequestBackend_Data {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(AvatarPickerRequestBackend_Data {
             name: {
                 let n = buffer.read_u8()? as usize;
@@ -21204,9 +21035,7 @@ impl AvatarPickerRequestBackend_Data {
 
 impl AvatarPicksReply_AgentData {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(AvatarPicksReply_AgentData {
             agent_id: {
                 let mut raw = [0u8; 16];
@@ -21224,9 +21053,7 @@ impl AvatarPicksReply_AgentData {
 
 impl AvatarPicksReply_Data {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(AvatarPicksReply_Data {
             pick_id: {
                 let mut raw = [0u8; 16];
@@ -21245,9 +21072,7 @@ impl AvatarPicksReply_Data {
 
 impl AvatarPropertiesReply_AgentData {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(AvatarPropertiesReply_AgentData {
             agent_id: {
                 let mut raw = [0u8; 16];
@@ -21265,9 +21090,7 @@ impl AvatarPropertiesReply_AgentData {
 
 impl AvatarPropertiesReply_PropertiesData {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(AvatarPropertiesReply_PropertiesData {
             image_id: {
                 let mut raw = [0u8; 16];
@@ -21321,9 +21144,7 @@ impl AvatarPropertiesReply_PropertiesData {
 
 impl AvatarPropertiesRequest_AgentData {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(AvatarPropertiesRequest_AgentData {
             agent_id: {
                 let mut raw = [0u8; 16];
@@ -21346,9 +21167,7 @@ impl AvatarPropertiesRequest_AgentData {
 
 impl AvatarPropertiesRequestBackend_AgentData {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(AvatarPropertiesRequestBackend_AgentData {
             agent_id: {
                 let mut raw = [0u8; 16];
@@ -21368,9 +21187,7 @@ impl AvatarPropertiesRequestBackend_AgentData {
 
 impl AvatarPropertiesUpdate_AgentData {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(AvatarPropertiesUpdate_AgentData {
             agent_id: {
                 let mut raw = [0u8; 16];
@@ -21388,9 +21205,7 @@ impl AvatarPropertiesUpdate_AgentData {
 
 impl AvatarPropertiesUpdate_PropertiesData {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(AvatarPropertiesUpdate_PropertiesData {
             image_id: {
                 let mut raw = [0u8; 16];
@@ -21428,9 +21243,7 @@ impl AvatarPropertiesUpdate_PropertiesData {
 
 impl AvatarSitResponse_SitObject {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(AvatarSitResponse_SitObject {
             id: {
                 let mut raw = [0u8; 16];
@@ -21443,9 +21256,7 @@ impl AvatarSitResponse_SitObject {
 
 impl AvatarSitResponse_SitTransform {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(AvatarSitResponse_SitTransform {
             auto_pilot: buffer.read_u8()? == 1,
             sit_position: Vector3::new(
@@ -21478,9 +21289,7 @@ impl AvatarSitResponse_SitTransform {
 
 impl AvatarTextureUpdate_AgentData {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(AvatarTextureUpdate_AgentData {
             agent_id: {
                 let mut raw = [0u8; 16];
@@ -21494,9 +21303,7 @@ impl AvatarTextureUpdate_AgentData {
 
 impl AvatarTextureUpdate_WearableData {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(AvatarTextureUpdate_WearableData {
             cache_id: {
                 let mut raw = [0u8; 16];
@@ -21516,9 +21323,7 @@ impl AvatarTextureUpdate_WearableData {
 
 impl AvatarTextureUpdate_TextureData {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(AvatarTextureUpdate_TextureData {
             texture_id: {
                 let mut raw = [0u8; 16];
@@ -21531,9 +21336,7 @@ impl AvatarTextureUpdate_TextureData {
 
 impl BulkUpdateInventory_AgentData {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(BulkUpdateInventory_AgentData {
             agent_id: {
                 let mut raw = [0u8; 16];
@@ -21551,9 +21354,7 @@ impl BulkUpdateInventory_AgentData {
 
 impl BulkUpdateInventory_FolderData {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(BulkUpdateInventory_FolderData {
             folder_id: {
                 let mut raw = [0u8; 16];
@@ -21578,9 +21379,7 @@ impl BulkUpdateInventory_FolderData {
 
 impl BulkUpdateInventory_ItemData {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(BulkUpdateInventory_ItemData {
             item_id: {
                 let mut raw = [0u8; 16];
@@ -21644,9 +21443,7 @@ impl BulkUpdateInventory_ItemData {
 
 impl BuyObjectInventory_AgentData {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(BuyObjectInventory_AgentData {
             agent_id: {
                 let mut raw = [0u8; 16];
@@ -21664,9 +21461,7 @@ impl BuyObjectInventory_AgentData {
 
 impl BuyObjectInventory_Data {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(BuyObjectInventory_Data {
             object_id: {
                 let mut raw = [0u8; 16];
@@ -21689,9 +21484,7 @@ impl BuyObjectInventory_Data {
 
 impl CameraConstraint_CameraCollidePlane {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(CameraConstraint_CameraCollidePlane {
             plane: Vector4::new(
                 buffer.read_f32::<LittleEndian>()?,
@@ -21705,9 +21498,7 @@ impl CameraConstraint_CameraCollidePlane {
 
 impl CancelAuction_ParcelData {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(CancelAuction_ParcelData {
             parcel_id: {
                 let mut raw = [0u8; 16];
@@ -21720,9 +21511,7 @@ impl CancelAuction_ParcelData {
 
 impl ChangeInventoryItemFlags_AgentData {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(ChangeInventoryItemFlags_AgentData {
             agent_id: {
                 let mut raw = [0u8; 16];
@@ -21740,9 +21529,7 @@ impl ChangeInventoryItemFlags_AgentData {
 
 impl ChangeInventoryItemFlags_InventoryData {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(ChangeInventoryItemFlags_InventoryData {
             item_id: {
                 let mut raw = [0u8; 16];
@@ -21756,9 +21543,7 @@ impl ChangeInventoryItemFlags_InventoryData {
 
 impl ChangeUserRights_AgentData {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(ChangeUserRights_AgentData {
             agent_id: {
                 let mut raw = [0u8; 16];
@@ -21771,9 +21556,7 @@ impl ChangeUserRights_AgentData {
 
 impl ChangeUserRights_Rights {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(ChangeUserRights_Rights {
             agent_related: {
                 let mut raw = [0u8; 16];
@@ -21787,9 +21570,7 @@ impl ChangeUserRights_Rights {
 
 impl ChatFromSimulator_ChatData {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(ChatFromSimulator_ChatData {
             from_name: {
                 let n = buffer.read_u8()? as usize;
@@ -21827,9 +21608,7 @@ impl ChatFromSimulator_ChatData {
 
 impl ChatFromViewer_AgentData {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(ChatFromViewer_AgentData {
             agent_id: {
                 let mut raw = [0u8; 16];
@@ -21847,9 +21626,7 @@ impl ChatFromViewer_AgentData {
 
 impl ChatFromViewer_ChatData {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(ChatFromViewer_ChatData {
             message: {
                 let n = buffer.read_u16::<LittleEndian>()? as usize;
@@ -21865,9 +21642,7 @@ impl ChatFromViewer_ChatData {
 
 impl ChatPass_ChatData {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(ChatPass_ChatData {
             channel: buffer.read_i32::<LittleEndian>()?,
             position: Vector3::new(
@@ -21907,9 +21682,7 @@ impl ChatPass_ChatData {
 
 impl CheckParcelAuctions_RegionData {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(CheckParcelAuctions_RegionData {
             region_handle: buffer.read_u64::<LittleEndian>()?,
         })
@@ -21918,9 +21691,7 @@ impl CheckParcelAuctions_RegionData {
 
 impl CheckParcelSales_RegionData {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(CheckParcelSales_RegionData {
             region_handle: buffer.read_u64::<LittleEndian>()?,
         })
@@ -21929,9 +21700,7 @@ impl CheckParcelSales_RegionData {
 
 impl ChildAgentAlive_AgentData {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(ChildAgentAlive_AgentData {
             region_handle: buffer.read_u64::<LittleEndian>()?,
             viewer_circuit_code: buffer.read_u32::<LittleEndian>()?,
@@ -21951,9 +21720,7 @@ impl ChildAgentAlive_AgentData {
 
 impl ChildAgentDying_AgentData {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(ChildAgentDying_AgentData {
             agent_id: {
                 let mut raw = [0u8; 16];
@@ -21971,9 +21738,7 @@ impl ChildAgentDying_AgentData {
 
 impl ChildAgentPositionUpdate_AgentData {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(ChildAgentPositionUpdate_AgentData {
             region_handle: buffer.read_u64::<LittleEndian>()?,
             viewer_circuit_code: buffer.read_u32::<LittleEndian>()?,
@@ -22029,9 +21794,7 @@ impl ChildAgentPositionUpdate_AgentData {
 
 impl ChildAgentUnknown_AgentData {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(ChildAgentUnknown_AgentData {
             agent_id: {
                 let mut raw = [0u8; 16];
@@ -22049,9 +21812,7 @@ impl ChildAgentUnknown_AgentData {
 
 impl ChildAgentUpdate_AgentData {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(ChildAgentUpdate_AgentData {
             region_handle: buffer.read_u64::<LittleEndian>()?,
             viewer_circuit_code: buffer.read_u32::<LittleEndian>()?,
@@ -22153,9 +21914,7 @@ impl ChildAgentUpdate_AgentData {
 
 impl ChildAgentUpdate_GroupData {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(ChildAgentUpdate_GroupData {
             group_id: {
                 let mut raw = [0u8; 16];
@@ -22170,9 +21929,7 @@ impl ChildAgentUpdate_GroupData {
 
 impl ChildAgentUpdate_AnimationData {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(ChildAgentUpdate_AnimationData {
             animation: {
                 let mut raw = [0u8; 16];
@@ -22190,9 +21947,7 @@ impl ChildAgentUpdate_AnimationData {
 
 impl ChildAgentUpdate_GranterBlock {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(ChildAgentUpdate_GranterBlock {
             granter_id: {
                 let mut raw = [0u8; 16];
@@ -22205,9 +21960,7 @@ impl ChildAgentUpdate_GranterBlock {
 
 impl ChildAgentUpdate_NVPairData {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(ChildAgentUpdate_NVPairData {
             nv_pairs: {
                 let n = buffer.read_u16::<LittleEndian>()? as usize;
@@ -22221,9 +21974,7 @@ impl ChildAgentUpdate_NVPairData {
 
 impl ChildAgentUpdate_VisualParam {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(ChildAgentUpdate_VisualParam {
             param_value: buffer.read_u8()?,
         })
@@ -22232,9 +21983,7 @@ impl ChildAgentUpdate_VisualParam {
 
 impl ChildAgentUpdate_AgentAccess {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(ChildAgentUpdate_AgentAccess {
             agent_legacy_access: buffer.read_u8()?,
             agent_max_access: buffer.read_u8()?,
@@ -22244,9 +21993,7 @@ impl ChildAgentUpdate_AgentAccess {
 
 impl ChildAgentUpdate_AgentInfo {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(ChildAgentUpdate_AgentInfo {
             flags: buffer.read_u32::<LittleEndian>()?,
         })
@@ -22255,9 +22002,7 @@ impl ChildAgentUpdate_AgentInfo {
 
 impl ClassifiedDelete_AgentData {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(ClassifiedDelete_AgentData {
             agent_id: {
                 let mut raw = [0u8; 16];
@@ -22275,9 +22020,7 @@ impl ClassifiedDelete_AgentData {
 
 impl ClassifiedDelete_Data {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(ClassifiedDelete_Data {
             classified_id: {
                 let mut raw = [0u8; 16];
@@ -22290,9 +22033,7 @@ impl ClassifiedDelete_Data {
 
 impl ClassifiedGodDelete_AgentData {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(ClassifiedGodDelete_AgentData {
             agent_id: {
                 let mut raw = [0u8; 16];
@@ -22310,9 +22051,7 @@ impl ClassifiedGodDelete_AgentData {
 
 impl ClassifiedGodDelete_Data {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(ClassifiedGodDelete_Data {
             classified_id: {
                 let mut raw = [0u8; 16];
@@ -22330,9 +22069,7 @@ impl ClassifiedGodDelete_Data {
 
 impl ClassifiedInfoReply_AgentData {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(ClassifiedInfoReply_AgentData {
             agent_id: {
                 let mut raw = [0u8; 16];
@@ -22345,9 +22082,7 @@ impl ClassifiedInfoReply_AgentData {
 
 impl ClassifiedInfoReply_Data {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(ClassifiedInfoReply_Data {
             classified_id: {
                 let mut raw = [0u8; 16];
@@ -22410,9 +22145,7 @@ impl ClassifiedInfoReply_Data {
 
 impl ClassifiedInfoRequest_AgentData {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(ClassifiedInfoRequest_AgentData {
             agent_id: {
                 let mut raw = [0u8; 16];
@@ -22430,9 +22163,7 @@ impl ClassifiedInfoRequest_AgentData {
 
 impl ClassifiedInfoRequest_Data {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(ClassifiedInfoRequest_Data {
             classified_id: {
                 let mut raw = [0u8; 16];
@@ -22445,9 +22176,7 @@ impl ClassifiedInfoRequest_Data {
 
 impl ClassifiedInfoUpdate_AgentData {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(ClassifiedInfoUpdate_AgentData {
             agent_id: {
                 let mut raw = [0u8; 16];
@@ -22465,9 +22194,7 @@ impl ClassifiedInfoUpdate_AgentData {
 
 impl ClassifiedInfoUpdate_Data {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(ClassifiedInfoUpdate_Data {
             classified_id: {
                 let mut raw = [0u8; 16];
@@ -22511,9 +22238,7 @@ impl ClassifiedInfoUpdate_Data {
 
 impl ClearFollowCamProperties_ObjectData {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(ClearFollowCamProperties_ObjectData {
             object_id: {
                 let mut raw = [0u8; 16];
@@ -22526,9 +22251,7 @@ impl ClearFollowCamProperties_ObjectData {
 
 impl CoarseLocationUpdate_Location {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(CoarseLocationUpdate_Location {
             x: buffer.read_u8()?,
             y: buffer.read_u8()?,
@@ -22539,9 +22262,7 @@ impl CoarseLocationUpdate_Location {
 
 impl CoarseLocationUpdate_Index {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(CoarseLocationUpdate_Index {
             you: buffer.read_i16::<LittleEndian>()?,
             prey: buffer.read_i16::<LittleEndian>()?,
@@ -22551,9 +22272,7 @@ impl CoarseLocationUpdate_Index {
 
 impl CoarseLocationUpdate_AgentData {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(CoarseLocationUpdate_AgentData {
             agent_id: {
                 let mut raw = [0u8; 16];
@@ -22566,9 +22285,7 @@ impl CoarseLocationUpdate_AgentData {
 
 impl CompleteAgentMovement_AgentData {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(CompleteAgentMovement_AgentData {
             agent_id: {
                 let mut raw = [0u8; 16];
@@ -22587,9 +22304,7 @@ impl CompleteAgentMovement_AgentData {
 
 impl CompleteAuction_ParcelData {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(CompleteAuction_ParcelData {
             parcel_id: {
                 let mut raw = [0u8; 16];
@@ -22602,18 +22317,16 @@ impl CompleteAuction_ParcelData {
 
 impl CompletePingCheck_PingID {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
-        Ok(CompletePingCheck_PingID { ping_id: buffer.read_u8()? })
+    where R: Read {
+        Ok(CompletePingCheck_PingID {
+            ping_id: buffer.read_u8()?,
+        })
     }
 }
 
 impl ConfirmAuctionStart_AuctionData {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(ConfirmAuctionStart_AuctionData {
             parcel_id: {
                 let mut raw = [0u8; 16];
@@ -22627,9 +22340,7 @@ impl ConfirmAuctionStart_AuctionData {
 
 impl ConfirmEnableSimulator_AgentData {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(ConfirmEnableSimulator_AgentData {
             agent_id: {
                 let mut raw = [0u8; 16];
@@ -22647,9 +22358,7 @@ impl ConfirmEnableSimulator_AgentData {
 
 impl ConfirmXferPacket_XferID {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(ConfirmXferPacket_XferID {
             id: buffer.read_u64::<LittleEndian>()?,
             packet: buffer.read_u32::<LittleEndian>()?,
@@ -22659,9 +22368,7 @@ impl ConfirmXferPacket_XferID {
 
 impl CopyInventoryFromNotecard_AgentData {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(CopyInventoryFromNotecard_AgentData {
             agent_id: {
                 let mut raw = [0u8; 16];
@@ -22679,9 +22386,7 @@ impl CopyInventoryFromNotecard_AgentData {
 
 impl CopyInventoryFromNotecard_NotecardData {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(CopyInventoryFromNotecard_NotecardData {
             notecard_item_id: {
                 let mut raw = [0u8; 16];
@@ -22699,9 +22404,7 @@ impl CopyInventoryFromNotecard_NotecardData {
 
 impl CopyInventoryFromNotecard_InventoryData {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(CopyInventoryFromNotecard_InventoryData {
             item_id: {
                 let mut raw = [0u8; 16];
@@ -22719,9 +22422,7 @@ impl CopyInventoryFromNotecard_InventoryData {
 
 impl CopyInventoryItem_AgentData {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(CopyInventoryItem_AgentData {
             agent_id: {
                 let mut raw = [0u8; 16];
@@ -22739,9 +22440,7 @@ impl CopyInventoryItem_AgentData {
 
 impl CopyInventoryItem_InventoryData {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(CopyInventoryItem_InventoryData {
             callback_id: buffer.read_u32::<LittleEndian>()?,
             old_agent_id: {
@@ -22771,9 +22470,7 @@ impl CopyInventoryItem_InventoryData {
 
 impl CreateGroupReply_AgentData {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(CreateGroupReply_AgentData {
             agent_id: {
                 let mut raw = [0u8; 16];
@@ -22786,9 +22483,7 @@ impl CreateGroupReply_AgentData {
 
 impl CreateGroupReply_ReplyData {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(CreateGroupReply_ReplyData {
             group_id: {
                 let mut raw = [0u8; 16];
@@ -22808,9 +22503,7 @@ impl CreateGroupReply_ReplyData {
 
 impl CreateGroupRequest_AgentData {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(CreateGroupRequest_AgentData {
             agent_id: {
                 let mut raw = [0u8; 16];
@@ -22828,9 +22521,7 @@ impl CreateGroupRequest_AgentData {
 
 impl CreateGroupRequest_GroupData {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(CreateGroupRequest_GroupData {
             name: {
                 let n = buffer.read_u8()? as usize;
@@ -22860,9 +22551,7 @@ impl CreateGroupRequest_GroupData {
 
 impl CreateInventoryFolder_AgentData {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(CreateInventoryFolder_AgentData {
             agent_id: {
                 let mut raw = [0u8; 16];
@@ -22880,9 +22569,7 @@ impl CreateInventoryFolder_AgentData {
 
 impl CreateInventoryFolder_FolderData {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(CreateInventoryFolder_FolderData {
             folder_id: {
                 let mut raw = [0u8; 16];
@@ -22907,9 +22594,7 @@ impl CreateInventoryFolder_FolderData {
 
 impl CreateInventoryItem_AgentData {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(CreateInventoryItem_AgentData {
             agent_id: {
                 let mut raw = [0u8; 16];
@@ -22927,9 +22612,7 @@ impl CreateInventoryItem_AgentData {
 
 impl CreateInventoryItem_InventoryBlock {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(CreateInventoryItem_InventoryBlock {
             callback_id: buffer.read_u32::<LittleEndian>()?,
             folder_id: {
@@ -22964,9 +22647,7 @@ impl CreateInventoryItem_InventoryBlock {
 
 impl CreateLandmarkForEvent_AgentData {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(CreateLandmarkForEvent_AgentData {
             agent_id: {
                 let mut raw = [0u8; 16];
@@ -22984,9 +22665,7 @@ impl CreateLandmarkForEvent_AgentData {
 
 impl CreateLandmarkForEvent_EventData {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(CreateLandmarkForEvent_EventData {
             event_id: buffer.read_u32::<LittleEndian>()?,
         })
@@ -22995,9 +22674,7 @@ impl CreateLandmarkForEvent_EventData {
 
 impl CreateLandmarkForEvent_InventoryBlock {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(CreateLandmarkForEvent_InventoryBlock {
             folder_id: {
                 let mut raw = [0u8; 16];
@@ -23016,9 +22693,7 @@ impl CreateLandmarkForEvent_InventoryBlock {
 
 impl CreateNewOutfitAttachments_AgentData {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(CreateNewOutfitAttachments_AgentData {
             agent_id: {
                 let mut raw = [0u8; 16];
@@ -23036,9 +22711,7 @@ impl CreateNewOutfitAttachments_AgentData {
 
 impl CreateNewOutfitAttachments_HeaderData {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(CreateNewOutfitAttachments_HeaderData {
             new_folder_id: {
                 let mut raw = [0u8; 16];
@@ -23051,9 +22724,7 @@ impl CreateNewOutfitAttachments_HeaderData {
 
 impl CreateNewOutfitAttachments_ObjectData {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(CreateNewOutfitAttachments_ObjectData {
             old_item_id: {
                 let mut raw = [0u8; 16];
@@ -23071,9 +22742,7 @@ impl CreateNewOutfitAttachments_ObjectData {
 
 impl CreateTrustedCircuit_DataBlock {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(CreateTrustedCircuit_DataBlock {
             end_point_id: {
                 let mut raw = [0u8; 16];
@@ -23091,9 +22760,7 @@ impl CreateTrustedCircuit_DataBlock {
 
 impl CrossedRegion_AgentData {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(CrossedRegion_AgentData {
             agent_id: {
                 let mut raw = [0u8; 16];
@@ -23111,9 +22778,7 @@ impl CrossedRegion_AgentData {
 
 impl CrossedRegion_RegionData {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(CrossedRegion_RegionData {
             sim_ip: {
                 let mut raw = [0u8; 4];
@@ -23134,9 +22799,7 @@ impl CrossedRegion_RegionData {
 
 impl CrossedRegion_Info {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(CrossedRegion_Info {
             position: Vector3::new(
                 buffer.read_f32::<LittleEndian>()?,
@@ -23154,9 +22817,7 @@ impl CrossedRegion_Info {
 
 impl DataHomeLocationReply_Info {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(DataHomeLocationReply_Info {
             agent_id: {
                 let mut raw = [0u8; 16];
@@ -23180,9 +22841,7 @@ impl DataHomeLocationReply_Info {
 
 impl DataHomeLocationRequest_Info {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(DataHomeLocationRequest_Info {
             agent_id: {
                 let mut raw = [0u8; 16];
@@ -23196,9 +22855,7 @@ impl DataHomeLocationRequest_Info {
 
 impl DataHomeLocationRequest_AgentInfo {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(DataHomeLocationRequest_AgentInfo {
             agent_effective_maturity: buffer.read_u32::<LittleEndian>()?,
         })
@@ -23207,9 +22864,7 @@ impl DataHomeLocationRequest_AgentInfo {
 
 impl DataServerLogout_UserData {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(DataServerLogout_UserData {
             agent_id: {
                 let mut raw = [0u8; 16];
@@ -23233,9 +22888,7 @@ impl DataServerLogout_UserData {
 
 impl DeRezAck_TransactionData {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(DeRezAck_TransactionData {
             transaction_id: {
                 let mut raw = [0u8; 16];
@@ -23249,9 +22902,7 @@ impl DeRezAck_TransactionData {
 
 impl DeRezObject_AgentData {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(DeRezObject_AgentData {
             agent_id: {
                 let mut raw = [0u8; 16];
@@ -23269,9 +22920,7 @@ impl DeRezObject_AgentData {
 
 impl DeRezObject_AgentBlock {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(DeRezObject_AgentBlock {
             group_id: {
                 let mut raw = [0u8; 16];
@@ -23297,9 +22946,7 @@ impl DeRezObject_AgentBlock {
 
 impl DeRezObject_ObjectData {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(DeRezObject_ObjectData {
             object_local_id: buffer.read_u32::<LittleEndian>()?,
         })
@@ -23308,9 +22955,7 @@ impl DeRezObject_ObjectData {
 
 impl DeactivateGestures_AgentData {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(DeactivateGestures_AgentData {
             agent_id: {
                 let mut raw = [0u8; 16];
@@ -23329,9 +22974,7 @@ impl DeactivateGestures_AgentData {
 
 impl DeactivateGestures_Data {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(DeactivateGestures_Data {
             item_id: {
                 let mut raw = [0u8; 16];
@@ -23345,9 +22988,7 @@ impl DeactivateGestures_Data {
 
 impl DeclineCallingCard_AgentData {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(DeclineCallingCard_AgentData {
             agent_id: {
                 let mut raw = [0u8; 16];
@@ -23365,9 +23006,7 @@ impl DeclineCallingCard_AgentData {
 
 impl DeclineCallingCard_TransactionBlock {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(DeclineCallingCard_TransactionBlock {
             transaction_id: {
                 let mut raw = [0u8; 16];
@@ -23380,9 +23019,7 @@ impl DeclineCallingCard_TransactionBlock {
 
 impl DeclineFriendship_AgentData {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(DeclineFriendship_AgentData {
             agent_id: {
                 let mut raw = [0u8; 16];
@@ -23400,9 +23037,7 @@ impl DeclineFriendship_AgentData {
 
 impl DeclineFriendship_TransactionBlock {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(DeclineFriendship_TransactionBlock {
             transaction_id: {
                 let mut raw = [0u8; 16];
@@ -23415,9 +23050,7 @@ impl DeclineFriendship_TransactionBlock {
 
 impl DenyTrustedCircuit_DataBlock {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(DenyTrustedCircuit_DataBlock {
             end_point_id: {
                 let mut raw = [0u8; 16];
@@ -23430,9 +23063,7 @@ impl DenyTrustedCircuit_DataBlock {
 
 impl DerezContainer_Data {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(DerezContainer_Data {
             object_id: {
                 let mut raw = [0u8; 16];
@@ -23446,9 +23077,7 @@ impl DerezContainer_Data {
 
 impl DetachAttachmentIntoInv_ObjectData {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(DetachAttachmentIntoInv_ObjectData {
             agent_id: {
                 let mut raw = [0u8; 16];
@@ -23466,9 +23095,7 @@ impl DetachAttachmentIntoInv_ObjectData {
 
 impl DirClassifiedQuery_AgentData {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(DirClassifiedQuery_AgentData {
             agent_id: {
                 let mut raw = [0u8; 16];
@@ -23486,9 +23113,7 @@ impl DirClassifiedQuery_AgentData {
 
 impl DirClassifiedQuery_QueryData {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(DirClassifiedQuery_QueryData {
             query_id: {
                 let mut raw = [0u8; 16];
@@ -23510,9 +23135,7 @@ impl DirClassifiedQuery_QueryData {
 
 impl DirClassifiedQueryBackend_AgentData {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(DirClassifiedQueryBackend_AgentData {
             agent_id: {
                 let mut raw = [0u8; 16];
@@ -23525,9 +23148,7 @@ impl DirClassifiedQueryBackend_AgentData {
 
 impl DirClassifiedQueryBackend_QueryData {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(DirClassifiedQueryBackend_QueryData {
             query_id: {
                 let mut raw = [0u8; 16];
@@ -23551,9 +23172,7 @@ impl DirClassifiedQueryBackend_QueryData {
 
 impl DirClassifiedReply_AgentData {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(DirClassifiedReply_AgentData {
             agent_id: {
                 let mut raw = [0u8; 16];
@@ -23566,9 +23185,7 @@ impl DirClassifiedReply_AgentData {
 
 impl DirClassifiedReply_QueryData {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(DirClassifiedReply_QueryData {
             query_id: {
                 let mut raw = [0u8; 16];
@@ -23581,9 +23198,7 @@ impl DirClassifiedReply_QueryData {
 
 impl DirClassifiedReply_QueryReplies {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(DirClassifiedReply_QueryReplies {
             classified_id: {
                 let mut raw = [0u8; 16];
@@ -23606,9 +23221,7 @@ impl DirClassifiedReply_QueryReplies {
 
 impl DirClassifiedReply_StatusData {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(DirClassifiedReply_StatusData {
             status: buffer.read_u32::<LittleEndian>()?,
         })
@@ -23617,9 +23230,7 @@ impl DirClassifiedReply_StatusData {
 
 impl DirEventsReply_AgentData {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(DirEventsReply_AgentData {
             agent_id: {
                 let mut raw = [0u8; 16];
@@ -23632,9 +23243,7 @@ impl DirEventsReply_AgentData {
 
 impl DirEventsReply_QueryData {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(DirEventsReply_QueryData {
             query_id: {
                 let mut raw = [0u8; 16];
@@ -23647,9 +23256,7 @@ impl DirEventsReply_QueryData {
 
 impl DirEventsReply_QueryReplies {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(DirEventsReply_QueryReplies {
             owner_id: {
                 let mut raw = [0u8; 16];
@@ -23677,9 +23284,7 @@ impl DirEventsReply_QueryReplies {
 
 impl DirEventsReply_StatusData {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(DirEventsReply_StatusData {
             status: buffer.read_u32::<LittleEndian>()?,
         })
@@ -23688,9 +23293,7 @@ impl DirEventsReply_StatusData {
 
 impl DirFindQuery_AgentData {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(DirFindQuery_AgentData {
             agent_id: {
                 let mut raw = [0u8; 16];
@@ -23708,9 +23311,7 @@ impl DirFindQuery_AgentData {
 
 impl DirFindQuery_QueryData {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(DirFindQuery_QueryData {
             query_id: {
                 let mut raw = [0u8; 16];
@@ -23731,9 +23332,7 @@ impl DirFindQuery_QueryData {
 
 impl DirFindQueryBackend_AgentData {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(DirFindQueryBackend_AgentData {
             agent_id: {
                 let mut raw = [0u8; 16];
@@ -23746,9 +23345,7 @@ impl DirFindQueryBackend_AgentData {
 
 impl DirFindQueryBackend_QueryData {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(DirFindQueryBackend_QueryData {
             query_id: {
                 let mut raw = [0u8; 16];
@@ -23771,9 +23368,7 @@ impl DirFindQueryBackend_QueryData {
 
 impl DirGroupsReply_AgentData {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(DirGroupsReply_AgentData {
             agent_id: {
                 let mut raw = [0u8; 16];
@@ -23786,9 +23381,7 @@ impl DirGroupsReply_AgentData {
 
 impl DirGroupsReply_QueryData {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(DirGroupsReply_QueryData {
             query_id: {
                 let mut raw = [0u8; 16];
@@ -23801,9 +23394,7 @@ impl DirGroupsReply_QueryData {
 
 impl DirGroupsReply_QueryReplies {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(DirGroupsReply_QueryReplies {
             group_id: {
                 let mut raw = [0u8; 16];
@@ -23824,9 +23415,7 @@ impl DirGroupsReply_QueryReplies {
 
 impl DirLandQuery_AgentData {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(DirLandQuery_AgentData {
             agent_id: {
                 let mut raw = [0u8; 16];
@@ -23844,9 +23433,7 @@ impl DirLandQuery_AgentData {
 
 impl DirLandQuery_QueryData {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(DirLandQuery_QueryData {
             query_id: {
                 let mut raw = [0u8; 16];
@@ -23864,9 +23451,7 @@ impl DirLandQuery_QueryData {
 
 impl DirLandQueryBackend_AgentData {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(DirLandQueryBackend_AgentData {
             agent_id: {
                 let mut raw = [0u8; 16];
@@ -23879,9 +23464,7 @@ impl DirLandQueryBackend_AgentData {
 
 impl DirLandQueryBackend_QueryData {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(DirLandQueryBackend_QueryData {
             query_id: {
                 let mut raw = [0u8; 16];
@@ -23901,9 +23484,7 @@ impl DirLandQueryBackend_QueryData {
 
 impl DirLandReply_AgentData {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(DirLandReply_AgentData {
             agent_id: {
                 let mut raw = [0u8; 16];
@@ -23916,9 +23497,7 @@ impl DirLandReply_AgentData {
 
 impl DirLandReply_QueryData {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(DirLandReply_QueryData {
             query_id: {
                 let mut raw = [0u8; 16];
@@ -23931,9 +23510,7 @@ impl DirLandReply_QueryData {
 
 impl DirLandReply_QueryReplies {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(DirLandReply_QueryReplies {
             parcel_id: {
                 let mut raw = [0u8; 16];
@@ -23956,9 +23533,7 @@ impl DirLandReply_QueryReplies {
 
 impl DirPeopleReply_AgentData {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(DirPeopleReply_AgentData {
             agent_id: {
                 let mut raw = [0u8; 16];
@@ -23971,9 +23546,7 @@ impl DirPeopleReply_AgentData {
 
 impl DirPeopleReply_QueryData {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(DirPeopleReply_QueryData {
             query_id: {
                 let mut raw = [0u8; 16];
@@ -23986,9 +23559,7 @@ impl DirPeopleReply_QueryData {
 
 impl DirPeopleReply_QueryReplies {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(DirPeopleReply_QueryReplies {
             agent_id: {
                 let mut raw = [0u8; 16];
@@ -24021,9 +23592,7 @@ impl DirPeopleReply_QueryReplies {
 
 impl DirPlacesQuery_AgentData {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(DirPlacesQuery_AgentData {
             agent_id: {
                 let mut raw = [0u8; 16];
@@ -24041,9 +23610,7 @@ impl DirPlacesQuery_AgentData {
 
 impl DirPlacesQuery_QueryData {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(DirPlacesQuery_QueryData {
             query_id: {
                 let mut raw = [0u8; 16];
@@ -24071,9 +23638,7 @@ impl DirPlacesQuery_QueryData {
 
 impl DirPlacesQueryBackend_AgentData {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(DirPlacesQueryBackend_AgentData {
             agent_id: {
                 let mut raw = [0u8; 16];
@@ -24086,9 +23651,7 @@ impl DirPlacesQueryBackend_AgentData {
 
 impl DirPlacesQueryBackend_QueryData {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(DirPlacesQueryBackend_QueryData {
             query_id: {
                 let mut raw = [0u8; 16];
@@ -24118,9 +23681,7 @@ impl DirPlacesQueryBackend_QueryData {
 
 impl DirPlacesReply_AgentData {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(DirPlacesReply_AgentData {
             agent_id: {
                 let mut raw = [0u8; 16];
@@ -24133,9 +23694,7 @@ impl DirPlacesReply_AgentData {
 
 impl DirPlacesReply_QueryData {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(DirPlacesReply_QueryData {
             query_id: {
                 let mut raw = [0u8; 16];
@@ -24148,9 +23707,7 @@ impl DirPlacesReply_QueryData {
 
 impl DirPlacesReply_QueryReplies {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(DirPlacesReply_QueryReplies {
             parcel_id: {
                 let mut raw = [0u8; 16];
@@ -24172,9 +23729,7 @@ impl DirPlacesReply_QueryReplies {
 
 impl DirPlacesReply_StatusData {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(DirPlacesReply_StatusData {
             status: buffer.read_u32::<LittleEndian>()?,
         })
@@ -24183,9 +23738,7 @@ impl DirPlacesReply_StatusData {
 
 impl DirPopularQuery_AgentData {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(DirPopularQuery_AgentData {
             agent_id: {
                 let mut raw = [0u8; 16];
@@ -24203,9 +23756,7 @@ impl DirPopularQuery_AgentData {
 
 impl DirPopularQuery_QueryData {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(DirPopularQuery_QueryData {
             query_id: {
                 let mut raw = [0u8; 16];
@@ -24219,9 +23770,7 @@ impl DirPopularQuery_QueryData {
 
 impl DirPopularQueryBackend_AgentData {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(DirPopularQueryBackend_AgentData {
             agent_id: {
                 let mut raw = [0u8; 16];
@@ -24234,9 +23783,7 @@ impl DirPopularQueryBackend_AgentData {
 
 impl DirPopularQueryBackend_QueryData {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(DirPopularQueryBackend_QueryData {
             query_id: {
                 let mut raw = [0u8; 16];
@@ -24252,9 +23799,7 @@ impl DirPopularQueryBackend_QueryData {
 
 impl DirPopularReply_AgentData {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(DirPopularReply_AgentData {
             agent_id: {
                 let mut raw = [0u8; 16];
@@ -24267,9 +23812,7 @@ impl DirPopularReply_AgentData {
 
 impl DirPopularReply_QueryData {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(DirPopularReply_QueryData {
             query_id: {
                 let mut raw = [0u8; 16];
@@ -24282,9 +23825,7 @@ impl DirPopularReply_QueryData {
 
 impl DirPopularReply_QueryReplies {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(DirPopularReply_QueryReplies {
             parcel_id: {
                 let mut raw = [0u8; 16];
@@ -24304,9 +23845,7 @@ impl DirPopularReply_QueryReplies {
 
 impl EconomyData_Info {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(EconomyData_Info {
             object_capacity: buffer.read_i32::<LittleEndian>()?,
             object_count: buffer.read_i32::<LittleEndian>()?,
@@ -24331,9 +23870,7 @@ impl EconomyData_Info {
 
 impl EdgeDataPacket_EdgeData {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(EdgeDataPacket_EdgeData {
             layer_type: buffer.read_u8()?,
             direction: buffer.read_u8()?,
@@ -24349,9 +23886,7 @@ impl EdgeDataPacket_EdgeData {
 
 impl EjectGroupMemberReply_AgentData {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(EjectGroupMemberReply_AgentData {
             agent_id: {
                 let mut raw = [0u8; 16];
@@ -24364,9 +23899,7 @@ impl EjectGroupMemberReply_AgentData {
 
 impl EjectGroupMemberReply_GroupData {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(EjectGroupMemberReply_GroupData {
             group_id: {
                 let mut raw = [0u8; 16];
@@ -24379,9 +23912,7 @@ impl EjectGroupMemberReply_GroupData {
 
 impl EjectGroupMemberReply_EjectData {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(EjectGroupMemberReply_EjectData {
             success: buffer.read_u8()? == 1,
         })
@@ -24390,9 +23921,7 @@ impl EjectGroupMemberReply_EjectData {
 
 impl EjectGroupMemberRequest_AgentData {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(EjectGroupMemberRequest_AgentData {
             agent_id: {
                 let mut raw = [0u8; 16];
@@ -24410,9 +23939,7 @@ impl EjectGroupMemberRequest_AgentData {
 
 impl EjectGroupMemberRequest_GroupData {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(EjectGroupMemberRequest_GroupData {
             group_id: {
                 let mut raw = [0u8; 16];
@@ -24425,9 +23952,7 @@ impl EjectGroupMemberRequest_GroupData {
 
 impl EjectGroupMemberRequest_EjectData {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(EjectGroupMemberRequest_EjectData {
             ejectee_id: {
                 let mut raw = [0u8; 16];
@@ -24440,9 +23965,7 @@ impl EjectGroupMemberRequest_EjectData {
 
 impl EjectUser_AgentData {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(EjectUser_AgentData {
             agent_id: {
                 let mut raw = [0u8; 16];
@@ -24460,9 +23983,7 @@ impl EjectUser_AgentData {
 
 impl EjectUser_Data {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(EjectUser_Data {
             target_id: {
                 let mut raw = [0u8; 16];
@@ -24476,9 +23997,7 @@ impl EjectUser_Data {
 
 impl EmailMessageReply_DataBlock {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(EmailMessageReply_DataBlock {
             object_id: {
                 let mut raw = [0u8; 16];
@@ -24517,9 +24036,7 @@ impl EmailMessageReply_DataBlock {
 
 impl EmailMessageRequest_DataBlock {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(EmailMessageRequest_DataBlock {
             object_id: {
                 let mut raw = [0u8; 16];
@@ -24544,9 +24061,7 @@ impl EmailMessageRequest_DataBlock {
 
 impl EnableSimulator_SimulatorInfo {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(EnableSimulator_SimulatorInfo {
             handle: buffer.read_u64::<LittleEndian>()?,
             ip: {
@@ -24561,9 +24076,7 @@ impl EnableSimulator_SimulatorInfo {
 
 impl Error_AgentData {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(Error_AgentData {
             agent_id: {
                 let mut raw = [0u8; 16];
@@ -24576,9 +24089,7 @@ impl Error_AgentData {
 
 impl Error_Data {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(Error_Data {
             code: buffer.read_i32::<LittleEndian>()?,
             token: {
@@ -24616,9 +24127,7 @@ impl Error_Data {
 
 impl EstateCovenantReply_Data {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(EstateCovenantReply_Data {
             covenant_id: {
                 let mut raw = [0u8; 16];
@@ -24643,9 +24152,7 @@ impl EstateCovenantReply_Data {
 
 impl EstateCovenantRequest_AgentData {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(EstateCovenantRequest_AgentData {
             agent_id: {
                 let mut raw = [0u8; 16];
@@ -24663,9 +24170,7 @@ impl EstateCovenantRequest_AgentData {
 
 impl EstateOwnerMessage_AgentData {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(EstateOwnerMessage_AgentData {
             agent_id: {
                 let mut raw = [0u8; 16];
@@ -24688,9 +24193,7 @@ impl EstateOwnerMessage_AgentData {
 
 impl EstateOwnerMessage_MethodData {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(EstateOwnerMessage_MethodData {
             method: {
                 let n = buffer.read_u8()? as usize;
@@ -24709,9 +24212,7 @@ impl EstateOwnerMessage_MethodData {
 
 impl EstateOwnerMessage_ParamList {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(EstateOwnerMessage_ParamList {
             parameter: {
                 let n = buffer.read_u8()? as usize;
@@ -24725,9 +24226,7 @@ impl EstateOwnerMessage_ParamList {
 
 impl EventGodDelete_AgentData {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(EventGodDelete_AgentData {
             agent_id: {
                 let mut raw = [0u8; 16];
@@ -24745,9 +24244,7 @@ impl EventGodDelete_AgentData {
 
 impl EventGodDelete_EventData {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(EventGodDelete_EventData {
             event_id: buffer.read_u32::<LittleEndian>()?,
         })
@@ -24756,9 +24253,7 @@ impl EventGodDelete_EventData {
 
 impl EventGodDelete_QueryData {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(EventGodDelete_QueryData {
             query_id: {
                 let mut raw = [0u8; 16];
@@ -24779,9 +24274,7 @@ impl EventGodDelete_QueryData {
 
 impl EventInfoReply_AgentData {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(EventInfoReply_AgentData {
             agent_id: {
                 let mut raw = [0u8; 16];
@@ -24794,9 +24287,7 @@ impl EventInfoReply_AgentData {
 
 impl EventInfoReply_EventData {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(EventInfoReply_EventData {
             event_id: buffer.read_u32::<LittleEndian>()?,
             creator: {
@@ -24851,9 +24342,7 @@ impl EventInfoReply_EventData {
 
 impl EventInfoRequest_AgentData {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(EventInfoRequest_AgentData {
             agent_id: {
                 let mut raw = [0u8; 16];
@@ -24871,9 +24360,7 @@ impl EventInfoRequest_AgentData {
 
 impl EventInfoRequest_EventData {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(EventInfoRequest_EventData {
             event_id: buffer.read_u32::<LittleEndian>()?,
         })
@@ -24882,9 +24369,7 @@ impl EventInfoRequest_EventData {
 
 impl EventLocationReply_QueryData {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(EventLocationReply_QueryData {
             query_id: {
                 let mut raw = [0u8; 16];
@@ -24897,9 +24382,7 @@ impl EventLocationReply_QueryData {
 
 impl EventLocationReply_EventData {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(EventLocationReply_EventData {
             success: buffer.read_u8()? == 1,
             region_id: {
@@ -24918,9 +24401,7 @@ impl EventLocationReply_EventData {
 
 impl EventLocationRequest_QueryData {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(EventLocationRequest_QueryData {
             query_id: {
                 let mut raw = [0u8; 16];
@@ -24933,9 +24414,7 @@ impl EventLocationRequest_QueryData {
 
 impl EventLocationRequest_EventData {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(EventLocationRequest_EventData {
             event_id: buffer.read_u32::<LittleEndian>()?,
         })
@@ -24944,9 +24423,7 @@ impl EventLocationRequest_EventData {
 
 impl EventNotificationAddRequest_AgentData {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(EventNotificationAddRequest_AgentData {
             agent_id: {
                 let mut raw = [0u8; 16];
@@ -24964,9 +24441,7 @@ impl EventNotificationAddRequest_AgentData {
 
 impl EventNotificationAddRequest_EventData {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(EventNotificationAddRequest_EventData {
             event_id: buffer.read_u32::<LittleEndian>()?,
         })
@@ -24975,9 +24450,7 @@ impl EventNotificationAddRequest_EventData {
 
 impl EventNotificationRemoveRequest_AgentData {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(EventNotificationRemoveRequest_AgentData {
             agent_id: {
                 let mut raw = [0u8; 16];
@@ -24995,9 +24468,7 @@ impl EventNotificationRemoveRequest_AgentData {
 
 impl EventNotificationRemoveRequest_EventData {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(EventNotificationRemoveRequest_EventData {
             event_id: buffer.read_u32::<LittleEndian>()?,
         })
@@ -25006,9 +24477,7 @@ impl EventNotificationRemoveRequest_EventData {
 
 impl FeatureDisabled_FailureInfo {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(FeatureDisabled_FailureInfo {
             error_message: {
                 let n = buffer.read_u8()? as usize;
@@ -25032,9 +24501,7 @@ impl FeatureDisabled_FailureInfo {
 
 impl FetchInventory_AgentData {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(FetchInventory_AgentData {
             agent_id: {
                 let mut raw = [0u8; 16];
@@ -25052,9 +24519,7 @@ impl FetchInventory_AgentData {
 
 impl FetchInventory_InventoryData {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(FetchInventory_InventoryData {
             owner_id: {
                 let mut raw = [0u8; 16];
@@ -25072,9 +24537,7 @@ impl FetchInventory_InventoryData {
 
 impl FetchInventoryDescendents_AgentData {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(FetchInventoryDescendents_AgentData {
             agent_id: {
                 let mut raw = [0u8; 16];
@@ -25092,9 +24555,7 @@ impl FetchInventoryDescendents_AgentData {
 
 impl FetchInventoryDescendents_InventoryData {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(FetchInventoryDescendents_InventoryData {
             folder_id: {
                 let mut raw = [0u8; 16];
@@ -25115,9 +24576,7 @@ impl FetchInventoryDescendents_InventoryData {
 
 impl FetchInventoryReply_AgentData {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(FetchInventoryReply_AgentData {
             agent_id: {
                 let mut raw = [0u8; 16];
@@ -25130,9 +24589,7 @@ impl FetchInventoryReply_AgentData {
 
 impl FetchInventoryReply_InventoryData {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(FetchInventoryReply_InventoryData {
             item_id: {
                 let mut raw = [0u8; 16];
@@ -25195,9 +24652,7 @@ impl FetchInventoryReply_InventoryData {
 
 impl FindAgent_AgentBlock {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(FindAgent_AgentBlock {
             hunter: {
                 let mut raw = [0u8; 16];
@@ -25220,9 +24675,7 @@ impl FindAgent_AgentBlock {
 
 impl FindAgent_LocationBlock {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(FindAgent_LocationBlock {
             global_x: buffer.read_f64::<LittleEndian>()?,
             global_y: buffer.read_f64::<LittleEndian>()?,
@@ -25232,9 +24685,7 @@ impl FindAgent_LocationBlock {
 
 impl ForceObjectSelect_Header {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(ForceObjectSelect_Header {
             reset_list: buffer.read_u8()? == 1,
         })
@@ -25243,9 +24694,7 @@ impl ForceObjectSelect_Header {
 
 impl ForceObjectSelect_Data {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(ForceObjectSelect_Data {
             local_id: buffer.read_u32::<LittleEndian>()?,
         })
@@ -25254,9 +24703,7 @@ impl ForceObjectSelect_Data {
 
 impl ForceScriptControlRelease_AgentData {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(ForceScriptControlRelease_AgentData {
             agent_id: {
                 let mut raw = [0u8; 16];
@@ -25274,9 +24721,7 @@ impl ForceScriptControlRelease_AgentData {
 
 impl FormFriendship_AgentBlock {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(FormFriendship_AgentBlock {
             source_id: {
                 let mut raw = [0u8; 16];
@@ -25294,9 +24739,7 @@ impl FormFriendship_AgentBlock {
 
 impl FreezeUser_AgentData {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(FreezeUser_AgentData {
             agent_id: {
                 let mut raw = [0u8; 16];
@@ -25314,9 +24757,7 @@ impl FreezeUser_AgentData {
 
 impl FreezeUser_Data {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(FreezeUser_Data {
             target_id: {
                 let mut raw = [0u8; 16];
@@ -25330,9 +24771,7 @@ impl FreezeUser_Data {
 
 impl GenericMessage_AgentData {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(GenericMessage_AgentData {
             agent_id: {
                 let mut raw = [0u8; 16];
@@ -25355,9 +24794,7 @@ impl GenericMessage_AgentData {
 
 impl GenericMessage_MethodData {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(GenericMessage_MethodData {
             method: {
                 let n = buffer.read_u8()? as usize;
@@ -25376,9 +24813,7 @@ impl GenericMessage_MethodData {
 
 impl GenericMessage_ParamList {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(GenericMessage_ParamList {
             parameter: {
                 let n = buffer.read_u8()? as usize;
@@ -25392,9 +24827,7 @@ impl GenericMessage_ParamList {
 
 impl GetScriptRunning_Script {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(GetScriptRunning_Script {
             object_id: {
                 let mut raw = [0u8; 16];
@@ -25412,9 +24845,7 @@ impl GetScriptRunning_Script {
 
 impl GodKickUser_UserInfo {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(GodKickUser_UserInfo {
             god_id: {
                 let mut raw = [0u8; 16];
@@ -25444,9 +24875,7 @@ impl GodKickUser_UserInfo {
 
 impl GodUpdateRegionInfo_AgentData {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(GodUpdateRegionInfo_AgentData {
             agent_id: {
                 let mut raw = [0u8; 16];
@@ -25464,9 +24893,7 @@ impl GodUpdateRegionInfo_AgentData {
 
 impl GodUpdateRegionInfo_RegionInfo {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(GodUpdateRegionInfo_RegionInfo {
             sim_name: {
                 let n = buffer.read_u8()? as usize;
@@ -25487,9 +24914,7 @@ impl GodUpdateRegionInfo_RegionInfo {
 
 impl GodlikeMessage_AgentData {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(GodlikeMessage_AgentData {
             agent_id: {
                 let mut raw = [0u8; 16];
@@ -25512,9 +24937,7 @@ impl GodlikeMessage_AgentData {
 
 impl GodlikeMessage_MethodData {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(GodlikeMessage_MethodData {
             method: {
                 let n = buffer.read_u8()? as usize;
@@ -25533,9 +24956,7 @@ impl GodlikeMessage_MethodData {
 
 impl GodlikeMessage_ParamList {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(GodlikeMessage_ParamList {
             parameter: {
                 let n = buffer.read_u8()? as usize;
@@ -25549,9 +24970,7 @@ impl GodlikeMessage_ParamList {
 
 impl GrantGodlikePowers_AgentData {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(GrantGodlikePowers_AgentData {
             agent_id: {
                 let mut raw = [0u8; 16];
@@ -25569,9 +24988,7 @@ impl GrantGodlikePowers_AgentData {
 
 impl GrantGodlikePowers_GrantData {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(GrantGodlikePowers_GrantData {
             god_level: buffer.read_u8()?,
             token: {
@@ -25585,9 +25002,7 @@ impl GrantGodlikePowers_GrantData {
 
 impl GrantUserRights_AgentData {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(GrantUserRights_AgentData {
             agent_id: {
                 let mut raw = [0u8; 16];
@@ -25605,9 +25020,7 @@ impl GrantUserRights_AgentData {
 
 impl GrantUserRights_Rights {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(GrantUserRights_Rights {
             agent_related: {
                 let mut raw = [0u8; 16];
@@ -25621,9 +25034,7 @@ impl GrantUserRights_Rights {
 
 impl GroupAccountDetailsReply_AgentData {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(GroupAccountDetailsReply_AgentData {
             agent_id: {
                 let mut raw = [0u8; 16];
@@ -25641,9 +25052,7 @@ impl GroupAccountDetailsReply_AgentData {
 
 impl GroupAccountDetailsReply_MoneyData {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(GroupAccountDetailsReply_MoneyData {
             request_id: {
                 let mut raw = [0u8; 16];
@@ -25664,9 +25073,7 @@ impl GroupAccountDetailsReply_MoneyData {
 
 impl GroupAccountDetailsReply_HistoryData {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(GroupAccountDetailsReply_HistoryData {
             description: {
                 let n = buffer.read_u8()? as usize;
@@ -25681,9 +25088,7 @@ impl GroupAccountDetailsReply_HistoryData {
 
 impl GroupAccountDetailsRequest_AgentData {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(GroupAccountDetailsRequest_AgentData {
             agent_id: {
                 let mut raw = [0u8; 16];
@@ -25706,9 +25111,7 @@ impl GroupAccountDetailsRequest_AgentData {
 
 impl GroupAccountDetailsRequest_MoneyData {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(GroupAccountDetailsRequest_MoneyData {
             request_id: {
                 let mut raw = [0u8; 16];
@@ -25723,9 +25126,7 @@ impl GroupAccountDetailsRequest_MoneyData {
 
 impl GroupAccountSummaryReply_AgentData {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(GroupAccountSummaryReply_AgentData {
             agent_id: {
                 let mut raw = [0u8; 16];
@@ -25743,9 +25144,7 @@ impl GroupAccountSummaryReply_AgentData {
 
 impl GroupAccountSummaryReply_MoneyData {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(GroupAccountSummaryReply_MoneyData {
             request_id: {
                 let mut raw = [0u8; 16];
@@ -25792,9 +25191,7 @@ impl GroupAccountSummaryReply_MoneyData {
 
 impl GroupAccountSummaryRequest_AgentData {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(GroupAccountSummaryRequest_AgentData {
             agent_id: {
                 let mut raw = [0u8; 16];
@@ -25817,9 +25214,7 @@ impl GroupAccountSummaryRequest_AgentData {
 
 impl GroupAccountSummaryRequest_MoneyData {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(GroupAccountSummaryRequest_MoneyData {
             request_id: {
                 let mut raw = [0u8; 16];
@@ -25834,9 +25229,7 @@ impl GroupAccountSummaryRequest_MoneyData {
 
 impl GroupAccountTransactionsReply_AgentData {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(GroupAccountTransactionsReply_AgentData {
             agent_id: {
                 let mut raw = [0u8; 16];
@@ -25854,9 +25247,7 @@ impl GroupAccountTransactionsReply_AgentData {
 
 impl GroupAccountTransactionsReply_MoneyData {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(GroupAccountTransactionsReply_MoneyData {
             request_id: {
                 let mut raw = [0u8; 16];
@@ -25877,9 +25268,7 @@ impl GroupAccountTransactionsReply_MoneyData {
 
 impl GroupAccountTransactionsReply_HistoryData {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(GroupAccountTransactionsReply_HistoryData {
             time: {
                 let n = buffer.read_u8()? as usize;
@@ -25907,9 +25296,7 @@ impl GroupAccountTransactionsReply_HistoryData {
 
 impl GroupAccountTransactionsRequest_AgentData {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(GroupAccountTransactionsRequest_AgentData {
             agent_id: {
                 let mut raw = [0u8; 16];
@@ -25932,9 +25319,7 @@ impl GroupAccountTransactionsRequest_AgentData {
 
 impl GroupAccountTransactionsRequest_MoneyData {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(GroupAccountTransactionsRequest_MoneyData {
             request_id: {
                 let mut raw = [0u8; 16];
@@ -25949,9 +25334,7 @@ impl GroupAccountTransactionsRequest_MoneyData {
 
 impl GroupActiveProposalItemReply_AgentData {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(GroupActiveProposalItemReply_AgentData {
             agent_id: {
                 let mut raw = [0u8; 16];
@@ -25969,9 +25352,7 @@ impl GroupActiveProposalItemReply_AgentData {
 
 impl GroupActiveProposalItemReply_TransactionData {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(GroupActiveProposalItemReply_TransactionData {
             transaction_id: {
                 let mut raw = [0u8; 16];
@@ -25985,9 +25366,7 @@ impl GroupActiveProposalItemReply_TransactionData {
 
 impl GroupActiveProposalItemReply_ProposalData {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(GroupActiveProposalItemReply_ProposalData {
             vote_id: {
                 let mut raw = [0u8; 16];
@@ -26038,9 +25417,7 @@ impl GroupActiveProposalItemReply_ProposalData {
 
 impl GroupActiveProposalsRequest_AgentData {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(GroupActiveProposalsRequest_AgentData {
             agent_id: {
                 let mut raw = [0u8; 16];
@@ -26058,9 +25435,7 @@ impl GroupActiveProposalsRequest_AgentData {
 
 impl GroupActiveProposalsRequest_GroupData {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(GroupActiveProposalsRequest_GroupData {
             group_id: {
                 let mut raw = [0u8; 16];
@@ -26073,9 +25448,7 @@ impl GroupActiveProposalsRequest_GroupData {
 
 impl GroupActiveProposalsRequest_TransactionData {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(GroupActiveProposalsRequest_TransactionData {
             transaction_id: {
                 let mut raw = [0u8; 16];
@@ -26088,9 +25461,7 @@ impl GroupActiveProposalsRequest_TransactionData {
 
 impl GroupDataUpdate_AgentGroupData {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(GroupDataUpdate_AgentGroupData {
             agent_id: {
                 let mut raw = [0u8; 16];
@@ -26115,9 +25486,7 @@ impl GroupDataUpdate_AgentGroupData {
 
 impl GroupMembersReply_AgentData {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(GroupMembersReply_AgentData {
             agent_id: {
                 let mut raw = [0u8; 16];
@@ -26130,9 +25499,7 @@ impl GroupMembersReply_AgentData {
 
 impl GroupMembersReply_GroupData {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(GroupMembersReply_GroupData {
             group_id: {
                 let mut raw = [0u8; 16];
@@ -26151,9 +25518,7 @@ impl GroupMembersReply_GroupData {
 
 impl GroupMembersReply_MemberData {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(GroupMembersReply_MemberData {
             agent_id: {
                 let mut raw = [0u8; 16];
@@ -26181,9 +25546,7 @@ impl GroupMembersReply_MemberData {
 
 impl GroupMembersRequest_AgentData {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(GroupMembersRequest_AgentData {
             agent_id: {
                 let mut raw = [0u8; 16];
@@ -26201,9 +25564,7 @@ impl GroupMembersRequest_AgentData {
 
 impl GroupMembersRequest_GroupData {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(GroupMembersRequest_GroupData {
             group_id: {
                 let mut raw = [0u8; 16];
@@ -26221,9 +25582,7 @@ impl GroupMembersRequest_GroupData {
 
 impl GroupNoticeAdd_AgentData {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(GroupNoticeAdd_AgentData {
             agent_id: {
                 let mut raw = [0u8; 16];
@@ -26236,9 +25595,7 @@ impl GroupNoticeAdd_AgentData {
 
 impl GroupNoticeAdd_MessageBlock {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(GroupNoticeAdd_MessageBlock {
             to_group_id: {
                 let mut raw = [0u8; 16];
@@ -26275,9 +25632,7 @@ impl GroupNoticeAdd_MessageBlock {
 
 impl GroupNoticeRequest_AgentData {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(GroupNoticeRequest_AgentData {
             agent_id: {
                 let mut raw = [0u8; 16];
@@ -26295,9 +25650,7 @@ impl GroupNoticeRequest_AgentData {
 
 impl GroupNoticeRequest_Data {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(GroupNoticeRequest_Data {
             group_notice_id: {
                 let mut raw = [0u8; 16];
@@ -26310,9 +25663,7 @@ impl GroupNoticeRequest_Data {
 
 impl GroupNoticesListReply_AgentData {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(GroupNoticesListReply_AgentData {
             agent_id: {
                 let mut raw = [0u8; 16];
@@ -26330,9 +25681,7 @@ impl GroupNoticesListReply_AgentData {
 
 impl GroupNoticesListReply_Data {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(GroupNoticesListReply_Data {
             notice_id: {
                 let mut raw = [0u8; 16];
@@ -26360,9 +25709,7 @@ impl GroupNoticesListReply_Data {
 
 impl GroupNoticesListRequest_AgentData {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(GroupNoticesListRequest_AgentData {
             agent_id: {
                 let mut raw = [0u8; 16];
@@ -26380,9 +25727,7 @@ impl GroupNoticesListRequest_AgentData {
 
 impl GroupNoticesListRequest_Data {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(GroupNoticesListRequest_Data {
             group_id: {
                 let mut raw = [0u8; 16];
@@ -26395,9 +25740,7 @@ impl GroupNoticesListRequest_Data {
 
 impl GroupProfileReply_AgentData {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(GroupProfileReply_AgentData {
             agent_id: {
                 let mut raw = [0u8; 16];
@@ -26410,9 +25753,7 @@ impl GroupProfileReply_AgentData {
 
 impl GroupProfileReply_GroupData {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(GroupProfileReply_GroupData {
             group_id: {
                 let mut raw = [0u8; 16];
@@ -26467,9 +25808,7 @@ impl GroupProfileReply_GroupData {
 
 impl GroupProfileRequest_AgentData {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(GroupProfileRequest_AgentData {
             agent_id: {
                 let mut raw = [0u8; 16];
@@ -26487,9 +25826,7 @@ impl GroupProfileRequest_AgentData {
 
 impl GroupProfileRequest_GroupData {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(GroupProfileRequest_GroupData {
             group_id: {
                 let mut raw = [0u8; 16];
@@ -26502,9 +25839,7 @@ impl GroupProfileRequest_GroupData {
 
 impl GroupProposalBallot_AgentData {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(GroupProposalBallot_AgentData {
             agent_id: {
                 let mut raw = [0u8; 16];
@@ -26522,9 +25857,7 @@ impl GroupProposalBallot_AgentData {
 
 impl GroupProposalBallot_ProposalData {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(GroupProposalBallot_ProposalData {
             proposal_id: {
                 let mut raw = [0u8; 16];
@@ -26548,9 +25881,7 @@ impl GroupProposalBallot_ProposalData {
 
 impl GroupRoleChanges_AgentData {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(GroupRoleChanges_AgentData {
             agent_id: {
                 let mut raw = [0u8; 16];
@@ -26573,9 +25904,7 @@ impl GroupRoleChanges_AgentData {
 
 impl GroupRoleChanges_RoleChange {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(GroupRoleChanges_RoleChange {
             role_id: {
                 let mut raw = [0u8; 16];
@@ -26594,9 +25923,7 @@ impl GroupRoleChanges_RoleChange {
 
 impl GroupRoleDataReply_AgentData {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(GroupRoleDataReply_AgentData {
             agent_id: {
                 let mut raw = [0u8; 16];
@@ -26609,9 +25936,7 @@ impl GroupRoleDataReply_AgentData {
 
 impl GroupRoleDataReply_GroupData {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(GroupRoleDataReply_GroupData {
             group_id: {
                 let mut raw = [0u8; 16];
@@ -26630,9 +25955,7 @@ impl GroupRoleDataReply_GroupData {
 
 impl GroupRoleDataReply_RoleData {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(GroupRoleDataReply_RoleData {
             role_id: {
                 let mut raw = [0u8; 16];
@@ -26665,9 +25988,7 @@ impl GroupRoleDataReply_RoleData {
 
 impl GroupRoleDataRequest_AgentData {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(GroupRoleDataRequest_AgentData {
             agent_id: {
                 let mut raw = [0u8; 16];
@@ -26685,9 +26006,7 @@ impl GroupRoleDataRequest_AgentData {
 
 impl GroupRoleDataRequest_GroupData {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(GroupRoleDataRequest_GroupData {
             group_id: {
                 let mut raw = [0u8; 16];
@@ -26705,9 +26024,7 @@ impl GroupRoleDataRequest_GroupData {
 
 impl GroupRoleMembersReply_AgentData {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(GroupRoleMembersReply_AgentData {
             agent_id: {
                 let mut raw = [0u8; 16];
@@ -26731,9 +26048,7 @@ impl GroupRoleMembersReply_AgentData {
 
 impl GroupRoleMembersReply_MemberData {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(GroupRoleMembersReply_MemberData {
             role_id: {
                 let mut raw = [0u8; 16];
@@ -26751,9 +26066,7 @@ impl GroupRoleMembersReply_MemberData {
 
 impl GroupRoleMembersRequest_AgentData {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(GroupRoleMembersRequest_AgentData {
             agent_id: {
                 let mut raw = [0u8; 16];
@@ -26771,9 +26084,7 @@ impl GroupRoleMembersRequest_AgentData {
 
 impl GroupRoleMembersRequest_GroupData {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(GroupRoleMembersRequest_GroupData {
             group_id: {
                 let mut raw = [0u8; 16];
@@ -26791,9 +26102,7 @@ impl GroupRoleMembersRequest_GroupData {
 
 impl GroupRoleUpdate_AgentData {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(GroupRoleUpdate_AgentData {
             agent_id: {
                 let mut raw = [0u8; 16];
@@ -26816,9 +26125,7 @@ impl GroupRoleUpdate_AgentData {
 
 impl GroupRoleUpdate_RoleData {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(GroupRoleUpdate_RoleData {
             role_id: {
                 let mut raw = [0u8; 16];
@@ -26851,9 +26158,7 @@ impl GroupRoleUpdate_RoleData {
 
 impl GroupTitleUpdate_AgentData {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(GroupTitleUpdate_AgentData {
             agent_id: {
                 let mut raw = [0u8; 16];
@@ -26881,9 +26186,7 @@ impl GroupTitleUpdate_AgentData {
 
 impl GroupTitlesReply_AgentData {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(GroupTitlesReply_AgentData {
             agent_id: {
                 let mut raw = [0u8; 16];
@@ -26906,9 +26209,7 @@ impl GroupTitlesReply_AgentData {
 
 impl GroupTitlesReply_GroupData {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(GroupTitlesReply_GroupData {
             title: {
                 let n = buffer.read_u8()? as usize;
@@ -26928,9 +26229,7 @@ impl GroupTitlesReply_GroupData {
 
 impl GroupTitlesRequest_AgentData {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(GroupTitlesRequest_AgentData {
             agent_id: {
                 let mut raw = [0u8; 16];
@@ -26958,9 +26257,7 @@ impl GroupTitlesRequest_AgentData {
 
 impl GroupVoteHistoryItemReply_AgentData {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(GroupVoteHistoryItemReply_AgentData {
             agent_id: {
                 let mut raw = [0u8; 16];
@@ -26978,9 +26275,7 @@ impl GroupVoteHistoryItemReply_AgentData {
 
 impl GroupVoteHistoryItemReply_TransactionData {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(GroupVoteHistoryItemReply_TransactionData {
             transaction_id: {
                 let mut raw = [0u8; 16];
@@ -26994,9 +26289,7 @@ impl GroupVoteHistoryItemReply_TransactionData {
 
 impl GroupVoteHistoryItemReply_HistoryItemData {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(GroupVoteHistoryItemReply_HistoryItemData {
             vote_id: {
                 let mut raw = [0u8; 16];
@@ -27052,9 +26345,7 @@ impl GroupVoteHistoryItemReply_HistoryItemData {
 
 impl GroupVoteHistoryItemReply_VoteItem {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(GroupVoteHistoryItemReply_VoteItem {
             candidate_id: {
                 let mut raw = [0u8; 16];
@@ -27074,9 +26365,7 @@ impl GroupVoteHistoryItemReply_VoteItem {
 
 impl GroupVoteHistoryRequest_AgentData {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(GroupVoteHistoryRequest_AgentData {
             agent_id: {
                 let mut raw = [0u8; 16];
@@ -27094,9 +26383,7 @@ impl GroupVoteHistoryRequest_AgentData {
 
 impl GroupVoteHistoryRequest_GroupData {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(GroupVoteHistoryRequest_GroupData {
             group_id: {
                 let mut raw = [0u8; 16];
@@ -27109,9 +26396,7 @@ impl GroupVoteHistoryRequest_GroupData {
 
 impl GroupVoteHistoryRequest_TransactionData {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(GroupVoteHistoryRequest_TransactionData {
             transaction_id: {
                 let mut raw = [0u8; 16];
@@ -27124,9 +26409,7 @@ impl GroupVoteHistoryRequest_TransactionData {
 
 impl HealthMessage_HealthData {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(HealthMessage_HealthData {
             health: buffer.read_f32::<LittleEndian>()?,
         })
@@ -27135,9 +26418,7 @@ impl HealthMessage_HealthData {
 
 impl ImageData_ImageID {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(ImageData_ImageID {
             id: {
                 let mut raw = [0u8; 16];
@@ -27153,9 +26434,7 @@ impl ImageData_ImageID {
 
 impl ImageData_ImageData {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(ImageData_ImageData {
             data: {
                 let n = buffer.read_u16::<LittleEndian>()? as usize;
@@ -27169,9 +26448,7 @@ impl ImageData_ImageData {
 
 impl ImageNotInDatabase_ImageID {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(ImageNotInDatabase_ImageID {
             id: {
                 let mut raw = [0u8; 16];
@@ -27184,9 +26461,7 @@ impl ImageNotInDatabase_ImageID {
 
 impl ImagePacket_ImageID {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(ImagePacket_ImageID {
             id: {
                 let mut raw = [0u8; 16];
@@ -27200,9 +26475,7 @@ impl ImagePacket_ImageID {
 
 impl ImagePacket_ImageData {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(ImagePacket_ImageData {
             data: {
                 let n = buffer.read_u16::<LittleEndian>()? as usize;
@@ -27216,9 +26489,7 @@ impl ImagePacket_ImageData {
 
 impl ImprovedInstantMessage_AgentData {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(ImprovedInstantMessage_AgentData {
             agent_id: {
                 let mut raw = [0u8; 16];
@@ -27236,9 +26507,7 @@ impl ImprovedInstantMessage_AgentData {
 
 impl ImprovedInstantMessage_MessageBlock {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(ImprovedInstantMessage_MessageBlock {
             from_group: buffer.read_u8()? == 1,
             to_agent_id: {
@@ -27289,9 +26558,7 @@ impl ImprovedInstantMessage_MessageBlock {
 
 impl ImprovedTerseObjectUpdate_RegionData {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(ImprovedTerseObjectUpdate_RegionData {
             region_handle: buffer.read_u64::<LittleEndian>()?,
             time_dilation: buffer.read_u16::<LittleEndian>()?,
@@ -27301,9 +26568,7 @@ impl ImprovedTerseObjectUpdate_RegionData {
 
 impl ImprovedTerseObjectUpdate_ObjectData {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(ImprovedTerseObjectUpdate_ObjectData {
             data: {
                 let n = buffer.read_u8()? as usize;
@@ -27323,9 +26588,7 @@ impl ImprovedTerseObjectUpdate_ObjectData {
 
 impl InitiateDownload_AgentData {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(InitiateDownload_AgentData {
             agent_id: {
                 let mut raw = [0u8; 16];
@@ -27338,9 +26601,7 @@ impl InitiateDownload_AgentData {
 
 impl InitiateDownload_FileData {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(InitiateDownload_FileData {
             sim_filename: {
                 let n = buffer.read_u8()? as usize;
@@ -27360,9 +26621,7 @@ impl InitiateDownload_FileData {
 
 impl InternalScriptMail_DataBlock {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(InternalScriptMail_DataBlock {
             from: {
                 let n = buffer.read_u8()? as usize;
@@ -27393,9 +26652,7 @@ impl InternalScriptMail_DataBlock {
 
 impl InventoryAssetResponse_QueryData {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(InventoryAssetResponse_QueryData {
             query_id: {
                 let mut raw = [0u8; 16];
@@ -27414,9 +26671,7 @@ impl InventoryAssetResponse_QueryData {
 
 impl InventoryDescendents_AgentData {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(InventoryDescendents_AgentData {
             agent_id: {
                 let mut raw = [0u8; 16];
@@ -27441,9 +26696,7 @@ impl InventoryDescendents_AgentData {
 
 impl InventoryDescendents_FolderData {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(InventoryDescendents_FolderData {
             folder_id: {
                 let mut raw = [0u8; 16];
@@ -27468,9 +26721,7 @@ impl InventoryDescendents_FolderData {
 
 impl InventoryDescendents_ItemData {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(InventoryDescendents_ItemData {
             item_id: {
                 let mut raw = [0u8; 16];
@@ -27533,9 +26784,7 @@ impl InventoryDescendents_ItemData {
 
 impl InviteGroupRequest_AgentData {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(InviteGroupRequest_AgentData {
             agent_id: {
                 let mut raw = [0u8; 16];
@@ -27553,9 +26802,7 @@ impl InviteGroupRequest_AgentData {
 
 impl InviteGroupRequest_GroupData {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(InviteGroupRequest_GroupData {
             group_id: {
                 let mut raw = [0u8; 16];
@@ -27568,9 +26815,7 @@ impl InviteGroupRequest_GroupData {
 
 impl InviteGroupRequest_InviteData {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(InviteGroupRequest_InviteData {
             invitee_id: {
                 let mut raw = [0u8; 16];
@@ -27588,9 +26833,7 @@ impl InviteGroupRequest_InviteData {
 
 impl InviteGroupResponse_InviteData {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(InviteGroupResponse_InviteData {
             agent_id: {
                 let mut raw = [0u8; 16];
@@ -27619,9 +26862,7 @@ impl InviteGroupResponse_InviteData {
 
 impl JoinGroupReply_AgentData {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(JoinGroupReply_AgentData {
             agent_id: {
                 let mut raw = [0u8; 16];
@@ -27634,9 +26875,7 @@ impl JoinGroupReply_AgentData {
 
 impl JoinGroupReply_GroupData {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(JoinGroupReply_GroupData {
             group_id: {
                 let mut raw = [0u8; 16];
@@ -27650,9 +26889,7 @@ impl JoinGroupReply_GroupData {
 
 impl JoinGroupRequest_AgentData {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(JoinGroupRequest_AgentData {
             agent_id: {
                 let mut raw = [0u8; 16];
@@ -27670,9 +26907,7 @@ impl JoinGroupRequest_AgentData {
 
 impl JoinGroupRequest_GroupData {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(JoinGroupRequest_GroupData {
             group_id: {
                 let mut raw = [0u8; 16];
@@ -27685,9 +26920,7 @@ impl JoinGroupRequest_GroupData {
 
 impl KickUser_TargetBlock {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(KickUser_TargetBlock {
             target_ip: {
                 let mut raw = [0u8; 4];
@@ -27701,9 +26934,7 @@ impl KickUser_TargetBlock {
 
 impl KickUser_UserInfo {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(KickUser_UserInfo {
             agent_id: {
                 let mut raw = [0u8; 16];
@@ -27727,9 +26958,7 @@ impl KickUser_UserInfo {
 
 impl KickUserAck_UserInfo {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(KickUserAck_UserInfo {
             session_id: {
                 let mut raw = [0u8; 16];
@@ -27743,9 +26972,7 @@ impl KickUserAck_UserInfo {
 
 impl KillChildAgents_IDBlock {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(KillChildAgents_IDBlock {
             agent_id: {
                 let mut raw = [0u8; 16];
@@ -27758,9 +26985,7 @@ impl KillChildAgents_IDBlock {
 
 impl KillObject_ObjectData {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(KillObject_ObjectData {
             id: buffer.read_u32::<LittleEndian>()?,
         })
@@ -27769,9 +26994,7 @@ impl KillObject_ObjectData {
 
 impl LandStatReply_RequestData {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(LandStatReply_RequestData {
             report_type: buffer.read_u32::<LittleEndian>()?,
             request_flags: buffer.read_u32::<LittleEndian>()?,
@@ -27782,9 +27005,7 @@ impl LandStatReply_RequestData {
 
 impl LandStatReply_ReportData {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(LandStatReply_ReportData {
             task_local_id: buffer.read_u32::<LittleEndian>()?,
             task_id: {
@@ -27814,9 +27035,7 @@ impl LandStatReply_ReportData {
 
 impl LandStatRequest_AgentData {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(LandStatRequest_AgentData {
             agent_id: {
                 let mut raw = [0u8; 16];
@@ -27834,9 +27053,7 @@ impl LandStatRequest_AgentData {
 
 impl LandStatRequest_RequestData {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(LandStatRequest_RequestData {
             report_type: buffer.read_u32::<LittleEndian>()?,
             request_flags: buffer.read_u32::<LittleEndian>()?,
@@ -27853,18 +27070,16 @@ impl LandStatRequest_RequestData {
 
 impl LayerData_LayerID {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
-        Ok(LayerData_LayerID { type_: buffer.read_u8()? })
+    where R: Read {
+        Ok(LayerData_LayerID {
+            type_: buffer.read_u8()?,
+        })
     }
 }
 
 impl LayerData_LayerData {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(LayerData_LayerData {
             data: {
                 let n = buffer.read_u16::<LittleEndian>()? as usize;
@@ -27878,9 +27093,7 @@ impl LayerData_LayerData {
 
 impl LeaveGroupReply_AgentData {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(LeaveGroupReply_AgentData {
             agent_id: {
                 let mut raw = [0u8; 16];
@@ -27893,9 +27106,7 @@ impl LeaveGroupReply_AgentData {
 
 impl LeaveGroupReply_GroupData {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(LeaveGroupReply_GroupData {
             group_id: {
                 let mut raw = [0u8; 16];
@@ -27909,9 +27120,7 @@ impl LeaveGroupReply_GroupData {
 
 impl LeaveGroupRequest_AgentData {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(LeaveGroupRequest_AgentData {
             agent_id: {
                 let mut raw = [0u8; 16];
@@ -27929,9 +27138,7 @@ impl LeaveGroupRequest_AgentData {
 
 impl LeaveGroupRequest_GroupData {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(LeaveGroupRequest_GroupData {
             group_id: {
                 let mut raw = [0u8; 16];
@@ -27944,9 +27151,7 @@ impl LeaveGroupRequest_GroupData {
 
 impl LinkInventoryItem_AgentData {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(LinkInventoryItem_AgentData {
             agent_id: {
                 let mut raw = [0u8; 16];
@@ -27964,9 +27169,7 @@ impl LinkInventoryItem_AgentData {
 
 impl LinkInventoryItem_InventoryBlock {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(LinkInventoryItem_InventoryBlock {
             callback_id: buffer.read_u32::<LittleEndian>()?,
             folder_id: {
@@ -28004,9 +27207,7 @@ impl LinkInventoryItem_InventoryBlock {
 
 impl LiveHelpGroupReply_ReplyData {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(LiveHelpGroupReply_ReplyData {
             request_id: {
                 let mut raw = [0u8; 16];
@@ -28030,9 +27231,7 @@ impl LiveHelpGroupReply_ReplyData {
 
 impl LiveHelpGroupRequest_RequestData {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(LiveHelpGroupRequest_RequestData {
             request_id: {
                 let mut raw = [0u8; 16];
@@ -28050,9 +27249,7 @@ impl LiveHelpGroupRequest_RequestData {
 
 impl LoadURL_Data {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(LoadURL_Data {
             object_name: {
                 let n = buffer.read_u8()? as usize;
@@ -28089,9 +27286,7 @@ impl LoadURL_Data {
 
 impl LogDwellTime_DwellInfo {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(LogDwellTime_DwellInfo {
             agent_id: {
                 let mut raw = [0u8; 16];
@@ -28120,9 +27315,7 @@ impl LogDwellTime_DwellInfo {
 
 impl LogFailedMoneyTransaction_TransactionData {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(LogFailedMoneyTransaction_TransactionData {
             transaction_id: {
                 let mut raw = [0u8; 16];
@@ -28157,9 +27350,7 @@ impl LogFailedMoneyTransaction_TransactionData {
 
 impl LogParcelChanges_AgentData {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(LogParcelChanges_AgentData {
             agent_id: {
                 let mut raw = [0u8; 16];
@@ -28172,9 +27363,7 @@ impl LogParcelChanges_AgentData {
 
 impl LogParcelChanges_RegionData {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(LogParcelChanges_RegionData {
             region_handle: buffer.read_u64::<LittleEndian>()?,
         })
@@ -28183,9 +27372,7 @@ impl LogParcelChanges_RegionData {
 
 impl LogParcelChanges_ParcelData {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(LogParcelChanges_ParcelData {
             parcel_id: {
                 let mut raw = [0u8; 16];
@@ -28211,9 +27398,7 @@ impl LogParcelChanges_ParcelData {
 
 impl LogTextMessage_DataBlock {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(LogTextMessage_DataBlock {
             from_agent_id: {
                 let mut raw = [0u8; 16];
@@ -28240,9 +27425,7 @@ impl LogTextMessage_DataBlock {
 
 impl LogoutReply_AgentData {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(LogoutReply_AgentData {
             agent_id: {
                 let mut raw = [0u8; 16];
@@ -28260,9 +27443,7 @@ impl LogoutReply_AgentData {
 
 impl LogoutReply_InventoryData {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(LogoutReply_InventoryData {
             item_id: {
                 let mut raw = [0u8; 16];
@@ -28275,9 +27456,7 @@ impl LogoutReply_InventoryData {
 
 impl LogoutRequest_AgentData {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(LogoutRequest_AgentData {
             agent_id: {
                 let mut raw = [0u8; 16];
@@ -28295,9 +27474,7 @@ impl LogoutRequest_AgentData {
 
 impl MapBlockReply_AgentData {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(MapBlockReply_AgentData {
             agent_id: {
                 let mut raw = [0u8; 16];
@@ -28311,9 +27488,7 @@ impl MapBlockReply_AgentData {
 
 impl MapBlockReply_Data {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(MapBlockReply_Data {
             x: buffer.read_u16::<LittleEndian>()?,
             y: buffer.read_u16::<LittleEndian>()?,
@@ -28338,9 +27513,7 @@ impl MapBlockReply_Data {
 
 impl MapBlockRequest_AgentData {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(MapBlockRequest_AgentData {
             agent_id: {
                 let mut raw = [0u8; 16];
@@ -28361,9 +27534,7 @@ impl MapBlockRequest_AgentData {
 
 impl MapBlockRequest_PositionData {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(MapBlockRequest_PositionData {
             min_x: buffer.read_u16::<LittleEndian>()?,
             max_x: buffer.read_u16::<LittleEndian>()?,
@@ -28375,9 +27546,7 @@ impl MapBlockRequest_PositionData {
 
 impl MapItemReply_AgentData {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(MapItemReply_AgentData {
             agent_id: {
                 let mut raw = [0u8; 16];
@@ -28391,9 +27560,7 @@ impl MapItemReply_AgentData {
 
 impl MapItemReply_RequestData {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(MapItemReply_RequestData {
             item_type: buffer.read_u32::<LittleEndian>()?,
         })
@@ -28402,9 +27569,7 @@ impl MapItemReply_RequestData {
 
 impl MapItemReply_Data {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(MapItemReply_Data {
             x: buffer.read_u32::<LittleEndian>()?,
             y: buffer.read_u32::<LittleEndian>()?,
@@ -28427,9 +27592,7 @@ impl MapItemReply_Data {
 
 impl MapItemRequest_AgentData {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(MapItemRequest_AgentData {
             agent_id: {
                 let mut raw = [0u8; 16];
@@ -28450,9 +27613,7 @@ impl MapItemRequest_AgentData {
 
 impl MapItemRequest_RequestData {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(MapItemRequest_RequestData {
             item_type: buffer.read_u32::<LittleEndian>()?,
             region_handle: buffer.read_u64::<LittleEndian>()?,
@@ -28462,9 +27623,7 @@ impl MapItemRequest_RequestData {
 
 impl MapLayerReply_AgentData {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(MapLayerReply_AgentData {
             agent_id: {
                 let mut raw = [0u8; 16];
@@ -28478,9 +27637,7 @@ impl MapLayerReply_AgentData {
 
 impl MapLayerReply_LayerData {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(MapLayerReply_LayerData {
             left: buffer.read_u32::<LittleEndian>()?,
             right: buffer.read_u32::<LittleEndian>()?,
@@ -28497,9 +27654,7 @@ impl MapLayerReply_LayerData {
 
 impl MapLayerRequest_AgentData {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(MapLayerRequest_AgentData {
             agent_id: {
                 let mut raw = [0u8; 16];
@@ -28520,9 +27675,7 @@ impl MapLayerRequest_AgentData {
 
 impl MapNameRequest_AgentData {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(MapNameRequest_AgentData {
             agent_id: {
                 let mut raw = [0u8; 16];
@@ -28543,9 +27696,7 @@ impl MapNameRequest_AgentData {
 
 impl MapNameRequest_NameData {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(MapNameRequest_NameData {
             name: {
                 let n = buffer.read_u8()? as usize;
@@ -28559,9 +27710,7 @@ impl MapNameRequest_NameData {
 
 impl MeanCollisionAlert_MeanCollision {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(MeanCollisionAlert_MeanCollision {
             victim: {
                 let mut raw = [0u8; 16];
@@ -28582,9 +27731,7 @@ impl MeanCollisionAlert_MeanCollision {
 
 impl MergeParcel_MasterParcelData {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(MergeParcel_MasterParcelData {
             master_id: {
                 let mut raw = [0u8; 16];
@@ -28597,9 +27744,7 @@ impl MergeParcel_MasterParcelData {
 
 impl MergeParcel_SlaveParcelData {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(MergeParcel_SlaveParcelData {
             slave_id: {
                 let mut raw = [0u8; 16];
@@ -28612,9 +27757,7 @@ impl MergeParcel_SlaveParcelData {
 
 impl ModifyLand_AgentData {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(ModifyLand_AgentData {
             agent_id: {
                 let mut raw = [0u8; 16];
@@ -28632,9 +27775,7 @@ impl ModifyLand_AgentData {
 
 impl ModifyLand_ModifyBlock {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(ModifyLand_ModifyBlock {
             action: buffer.read_u8()?,
             brush_size: buffer.read_u8()?,
@@ -28646,9 +27787,7 @@ impl ModifyLand_ModifyBlock {
 
 impl ModifyLand_ParcelData {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(ModifyLand_ParcelData {
             local_id: buffer.read_i32::<LittleEndian>()?,
             west: buffer.read_f32::<LittleEndian>()?,
@@ -28661,9 +27800,7 @@ impl ModifyLand_ParcelData {
 
 impl ModifyLand_ModifyBlockExtended {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(ModifyLand_ModifyBlockExtended {
             brush_size: buffer.read_f32::<LittleEndian>()?,
         })
@@ -28672,9 +27809,7 @@ impl ModifyLand_ModifyBlockExtended {
 
 impl MoneyBalanceReply_MoneyData {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(MoneyBalanceReply_MoneyData {
             agent_id: {
                 let mut raw = [0u8; 16];
@@ -28702,9 +27837,7 @@ impl MoneyBalanceReply_MoneyData {
 
 impl MoneyBalanceReply_TransactionInfo {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(MoneyBalanceReply_TransactionInfo {
             transaction_type: buffer.read_i32::<LittleEndian>()?,
             source_id: {
@@ -28732,9 +27865,7 @@ impl MoneyBalanceReply_TransactionInfo {
 
 impl MoneyBalanceRequest_AgentData {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(MoneyBalanceRequest_AgentData {
             agent_id: {
                 let mut raw = [0u8; 16];
@@ -28752,9 +27883,7 @@ impl MoneyBalanceRequest_AgentData {
 
 impl MoneyBalanceRequest_MoneyData {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(MoneyBalanceRequest_MoneyData {
             transaction_id: {
                 let mut raw = [0u8; 16];
@@ -28767,9 +27896,7 @@ impl MoneyBalanceRequest_MoneyData {
 
 impl MoneyTransferBackend_MoneyData {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(MoneyTransferBackend_MoneyData {
             transaction_id: {
                 let mut raw = [0u8; 16];
@@ -28811,9 +27938,7 @@ impl MoneyTransferBackend_MoneyData {
 
 impl MoneyTransferRequest_AgentData {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(MoneyTransferRequest_AgentData {
             agent_id: {
                 let mut raw = [0u8; 16];
@@ -28831,9 +27956,7 @@ impl MoneyTransferRequest_AgentData {
 
 impl MoneyTransferRequest_MoneyData {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(MoneyTransferRequest_MoneyData {
             source_id: {
                 let mut raw = [0u8; 16];
@@ -28862,9 +27985,7 @@ impl MoneyTransferRequest_MoneyData {
 
 impl MoveInventoryFolder_AgentData {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(MoveInventoryFolder_AgentData {
             agent_id: {
                 let mut raw = [0u8; 16];
@@ -28883,9 +28004,7 @@ impl MoveInventoryFolder_AgentData {
 
 impl MoveInventoryFolder_InventoryData {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(MoveInventoryFolder_InventoryData {
             folder_id: {
                 let mut raw = [0u8; 16];
@@ -28903,9 +28022,7 @@ impl MoveInventoryFolder_InventoryData {
 
 impl MoveInventoryItem_AgentData {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(MoveInventoryItem_AgentData {
             agent_id: {
                 let mut raw = [0u8; 16];
@@ -28924,9 +28041,7 @@ impl MoveInventoryItem_AgentData {
 
 impl MoveInventoryItem_InventoryData {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(MoveInventoryItem_InventoryData {
             item_id: {
                 let mut raw = [0u8; 16];
@@ -28950,9 +28065,7 @@ impl MoveInventoryItem_InventoryData {
 
 impl MoveTaskInventory_AgentData {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(MoveTaskInventory_AgentData {
             agent_id: {
                 let mut raw = [0u8; 16];
@@ -28975,9 +28088,7 @@ impl MoveTaskInventory_AgentData {
 
 impl MoveTaskInventory_InventoryData {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(MoveTaskInventory_InventoryData {
             local_id: buffer.read_u32::<LittleEndian>()?,
             item_id: {
@@ -28991,9 +28102,7 @@ impl MoveTaskInventory_InventoryData {
 
 impl MultipleObjectUpdate_AgentData {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(MultipleObjectUpdate_AgentData {
             agent_id: {
                 let mut raw = [0u8; 16];
@@ -29011,9 +28120,7 @@ impl MultipleObjectUpdate_AgentData {
 
 impl MultipleObjectUpdate_ObjectData {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(MultipleObjectUpdate_ObjectData {
             object_local_id: buffer.read_u32::<LittleEndian>()?,
             type_: buffer.read_u8()?,
@@ -29029,9 +28136,7 @@ impl MultipleObjectUpdate_ObjectData {
 
 impl MuteListRequest_AgentData {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(MuteListRequest_AgentData {
             agent_id: {
                 let mut raw = [0u8; 16];
@@ -29049,9 +28154,7 @@ impl MuteListRequest_AgentData {
 
 impl MuteListRequest_MuteData {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(MuteListRequest_MuteData {
             mute_crc: buffer.read_u32::<LittleEndian>()?,
         })
@@ -29060,9 +28163,7 @@ impl MuteListRequest_MuteData {
 
 impl MuteListUpdate_MuteData {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(MuteListUpdate_MuteData {
             agent_id: {
                 let mut raw = [0u8; 16];
@@ -29081,9 +28182,7 @@ impl MuteListUpdate_MuteData {
 
 impl NameValuePair_TaskData {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(NameValuePair_TaskData {
             id: {
                 let mut raw = [0u8; 16];
@@ -29096,9 +28195,7 @@ impl NameValuePair_TaskData {
 
 impl NameValuePair_NameValueData {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(NameValuePair_NameValueData {
             nv_pair: {
                 let n = buffer.read_u16::<LittleEndian>()? as usize;
@@ -29112,9 +28209,7 @@ impl NameValuePair_NameValueData {
 
 impl NearestLandingRegionReply_LandingRegionData {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(NearestLandingRegionReply_LandingRegionData {
             region_handle: buffer.read_u64::<LittleEndian>()?,
         })
@@ -29123,9 +28218,7 @@ impl NearestLandingRegionReply_LandingRegionData {
 
 impl NearestLandingRegionRequest_RequestingRegionData {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(NearestLandingRegionRequest_RequestingRegionData {
             region_handle: buffer.read_u64::<LittleEndian>()?,
         })
@@ -29134,9 +28227,7 @@ impl NearestLandingRegionRequest_RequestingRegionData {
 
 impl NearestLandingRegionUpdated_RegionData {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(NearestLandingRegionUpdated_RegionData {
             region_handle: buffer.read_u64::<LittleEndian>()?,
         })
@@ -29145,9 +28236,7 @@ impl NearestLandingRegionUpdated_RegionData {
 
 impl NeighborList_NeighborBlock {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(NeighborList_NeighborBlock {
             ip: {
                 let mut raw = [0u8; 4];
@@ -29179,9 +28268,7 @@ impl NeighborList_NeighborBlock {
 
 impl NetTest_NetBlock {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(NetTest_NetBlock {
             port: buffer.read_u16::<LittleEndian>()?,
         })
@@ -29190,9 +28277,7 @@ impl NetTest_NetBlock {
 
 impl ObjectAdd_AgentData {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(ObjectAdd_AgentData {
             agent_id: {
                 let mut raw = [0u8; 16];
@@ -29215,9 +28300,7 @@ impl ObjectAdd_AgentData {
 
 impl ObjectAdd_ObjectData {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(ObjectAdd_ObjectData {
             p_code: buffer.read_u8()?,
             material: buffer.read_u8()?,
@@ -29277,9 +28360,7 @@ impl ObjectAdd_ObjectData {
 
 impl ObjectAttach_AgentData {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(ObjectAttach_AgentData {
             agent_id: {
                 let mut raw = [0u8; 16];
@@ -29298,9 +28379,7 @@ impl ObjectAttach_AgentData {
 
 impl ObjectAttach_ObjectData {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(ObjectAttach_ObjectData {
             object_local_id: buffer.read_u32::<LittleEndian>()?,
             rotation: Quaternion::from_parts(
@@ -29317,9 +28396,7 @@ impl ObjectAttach_ObjectData {
 
 impl ObjectBuy_AgentData {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(ObjectBuy_AgentData {
             agent_id: {
                 let mut raw = [0u8; 16];
@@ -29347,9 +28424,7 @@ impl ObjectBuy_AgentData {
 
 impl ObjectBuy_ObjectData {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(ObjectBuy_ObjectData {
             object_local_id: buffer.read_u32::<LittleEndian>()?,
             sale_type: buffer.read_u8()?,
@@ -29360,9 +28435,7 @@ impl ObjectBuy_ObjectData {
 
 impl ObjectCategory_AgentData {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(ObjectCategory_AgentData {
             agent_id: {
                 let mut raw = [0u8; 16];
@@ -29380,9 +28453,7 @@ impl ObjectCategory_AgentData {
 
 impl ObjectCategory_ObjectData {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(ObjectCategory_ObjectData {
             local_id: buffer.read_u32::<LittleEndian>()?,
             category: buffer.read_u32::<LittleEndian>()?,
@@ -29392,9 +28463,7 @@ impl ObjectCategory_ObjectData {
 
 impl ObjectClickAction_AgentData {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(ObjectClickAction_AgentData {
             agent_id: {
                 let mut raw = [0u8; 16];
@@ -29412,9 +28481,7 @@ impl ObjectClickAction_AgentData {
 
 impl ObjectClickAction_ObjectData {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(ObjectClickAction_ObjectData {
             object_local_id: buffer.read_u32::<LittleEndian>()?,
             click_action: buffer.read_u8()?,
@@ -29424,9 +28491,7 @@ impl ObjectClickAction_ObjectData {
 
 impl ObjectDeGrab_AgentData {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(ObjectDeGrab_AgentData {
             agent_id: {
                 let mut raw = [0u8; 16];
@@ -29444,9 +28509,7 @@ impl ObjectDeGrab_AgentData {
 
 impl ObjectDeGrab_ObjectData {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(ObjectDeGrab_ObjectData {
             local_id: buffer.read_u32::<LittleEndian>()?,
         })
@@ -29455,9 +28518,7 @@ impl ObjectDeGrab_ObjectData {
 
 impl ObjectDeGrab_SurfaceInfo {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(ObjectDeGrab_SurfaceInfo {
             uv_coord: Vector3::new(
                 buffer.read_f32::<LittleEndian>()?,
@@ -29491,9 +28552,7 @@ impl ObjectDeGrab_SurfaceInfo {
 
 impl ObjectDelete_AgentData {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(ObjectDelete_AgentData {
             agent_id: {
                 let mut raw = [0u8; 16];
@@ -29512,9 +28571,7 @@ impl ObjectDelete_AgentData {
 
 impl ObjectDelete_ObjectData {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(ObjectDelete_ObjectData {
             object_local_id: buffer.read_u32::<LittleEndian>()?,
         })
@@ -29523,9 +28580,7 @@ impl ObjectDelete_ObjectData {
 
 impl ObjectDelink_AgentData {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(ObjectDelink_AgentData {
             agent_id: {
                 let mut raw = [0u8; 16];
@@ -29543,9 +28598,7 @@ impl ObjectDelink_AgentData {
 
 impl ObjectDelink_ObjectData {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(ObjectDelink_ObjectData {
             object_local_id: buffer.read_u32::<LittleEndian>()?,
         })
@@ -29554,9 +28607,7 @@ impl ObjectDelink_ObjectData {
 
 impl ObjectDescription_AgentData {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(ObjectDescription_AgentData {
             agent_id: {
                 let mut raw = [0u8; 16];
@@ -29574,9 +28625,7 @@ impl ObjectDescription_AgentData {
 
 impl ObjectDescription_ObjectData {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(ObjectDescription_ObjectData {
             local_id: buffer.read_u32::<LittleEndian>()?,
             description: {
@@ -29591,9 +28640,7 @@ impl ObjectDescription_ObjectData {
 
 impl ObjectDeselect_AgentData {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(ObjectDeselect_AgentData {
             agent_id: {
                 let mut raw = [0u8; 16];
@@ -29611,9 +28658,7 @@ impl ObjectDeselect_AgentData {
 
 impl ObjectDeselect_ObjectData {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(ObjectDeselect_ObjectData {
             object_local_id: buffer.read_u32::<LittleEndian>()?,
         })
@@ -29622,9 +28667,7 @@ impl ObjectDeselect_ObjectData {
 
 impl ObjectDetach_AgentData {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(ObjectDetach_AgentData {
             agent_id: {
                 let mut raw = [0u8; 16];
@@ -29642,9 +28685,7 @@ impl ObjectDetach_AgentData {
 
 impl ObjectDetach_ObjectData {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(ObjectDetach_ObjectData {
             object_local_id: buffer.read_u32::<LittleEndian>()?,
         })
@@ -29653,9 +28694,7 @@ impl ObjectDetach_ObjectData {
 
 impl ObjectDrop_AgentData {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(ObjectDrop_AgentData {
             agent_id: {
                 let mut raw = [0u8; 16];
@@ -29673,9 +28712,7 @@ impl ObjectDrop_AgentData {
 
 impl ObjectDrop_ObjectData {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(ObjectDrop_ObjectData {
             object_local_id: buffer.read_u32::<LittleEndian>()?,
         })
@@ -29684,9 +28721,7 @@ impl ObjectDrop_ObjectData {
 
 impl ObjectDuplicate_AgentData {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(ObjectDuplicate_AgentData {
             agent_id: {
                 let mut raw = [0u8; 16];
@@ -29709,9 +28744,7 @@ impl ObjectDuplicate_AgentData {
 
 impl ObjectDuplicate_SharedData {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(ObjectDuplicate_SharedData {
             offset: Vector3::new(
                 buffer.read_f32::<LittleEndian>()?,
@@ -29725,9 +28758,7 @@ impl ObjectDuplicate_SharedData {
 
 impl ObjectDuplicate_ObjectData {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(ObjectDuplicate_ObjectData {
             object_local_id: buffer.read_u32::<LittleEndian>()?,
         })
@@ -29736,9 +28767,7 @@ impl ObjectDuplicate_ObjectData {
 
 impl ObjectDuplicateOnRay_AgentData {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(ObjectDuplicateOnRay_AgentData {
             agent_id: {
                 let mut raw = [0u8; 16];
@@ -29781,9 +28810,7 @@ impl ObjectDuplicateOnRay_AgentData {
 
 impl ObjectDuplicateOnRay_ObjectData {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(ObjectDuplicateOnRay_ObjectData {
             object_local_id: buffer.read_u32::<LittleEndian>()?,
         })
@@ -29792,9 +28819,7 @@ impl ObjectDuplicateOnRay_ObjectData {
 
 impl ObjectExportSelected_AgentData {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(ObjectExportSelected_AgentData {
             agent_id: {
                 let mut raw = [0u8; 16];
@@ -29813,9 +28838,7 @@ impl ObjectExportSelected_AgentData {
 
 impl ObjectExportSelected_ObjectData {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(ObjectExportSelected_ObjectData {
             object_id: {
                 let mut raw = [0u8; 16];
@@ -29828,9 +28851,7 @@ impl ObjectExportSelected_ObjectData {
 
 impl ObjectExtraParams_AgentData {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(ObjectExtraParams_AgentData {
             agent_id: {
                 let mut raw = [0u8; 16];
@@ -29848,9 +28869,7 @@ impl ObjectExtraParams_AgentData {
 
 impl ObjectExtraParams_ObjectData {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(ObjectExtraParams_ObjectData {
             object_local_id: buffer.read_u32::<LittleEndian>()?,
             param_type: buffer.read_u16::<LittleEndian>()?,
@@ -29868,9 +28887,7 @@ impl ObjectExtraParams_ObjectData {
 
 impl ObjectFlagUpdate_AgentData {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(ObjectFlagUpdate_AgentData {
             agent_id: {
                 let mut raw = [0u8; 16];
@@ -29893,9 +28910,7 @@ impl ObjectFlagUpdate_AgentData {
 
 impl ObjectGrab_AgentData {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(ObjectGrab_AgentData {
             agent_id: {
                 let mut raw = [0u8; 16];
@@ -29913,9 +28928,7 @@ impl ObjectGrab_AgentData {
 
 impl ObjectGrab_ObjectData {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(ObjectGrab_ObjectData {
             local_id: buffer.read_u32::<LittleEndian>()?,
             grab_offset: Vector3::new(
@@ -29929,9 +28942,7 @@ impl ObjectGrab_ObjectData {
 
 impl ObjectGrab_SurfaceInfo {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(ObjectGrab_SurfaceInfo {
             uv_coord: Vector3::new(
                 buffer.read_f32::<LittleEndian>()?,
@@ -29965,9 +28976,7 @@ impl ObjectGrab_SurfaceInfo {
 
 impl ObjectGrabUpdate_AgentData {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(ObjectGrabUpdate_AgentData {
             agent_id: {
                 let mut raw = [0u8; 16];
@@ -29985,9 +28994,7 @@ impl ObjectGrabUpdate_AgentData {
 
 impl ObjectGrabUpdate_ObjectData {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(ObjectGrabUpdate_ObjectData {
             object_id: {
                 let mut raw = [0u8; 16];
@@ -30011,9 +29018,7 @@ impl ObjectGrabUpdate_ObjectData {
 
 impl ObjectGrabUpdate_SurfaceInfo {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(ObjectGrabUpdate_SurfaceInfo {
             uv_coord: Vector3::new(
                 buffer.read_f32::<LittleEndian>()?,
@@ -30047,9 +29052,7 @@ impl ObjectGrabUpdate_SurfaceInfo {
 
 impl ObjectGroup_AgentData {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(ObjectGroup_AgentData {
             agent_id: {
                 let mut raw = [0u8; 16];
@@ -30072,9 +29075,7 @@ impl ObjectGroup_AgentData {
 
 impl ObjectGroup_ObjectData {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(ObjectGroup_ObjectData {
             object_local_id: buffer.read_u32::<LittleEndian>()?,
         })
@@ -30083,9 +29084,7 @@ impl ObjectGroup_ObjectData {
 
 impl ObjectImage_AgentData {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(ObjectImage_AgentData {
             agent_id: {
                 let mut raw = [0u8; 16];
@@ -30103,9 +29102,7 @@ impl ObjectImage_AgentData {
 
 impl ObjectImage_ObjectData {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(ObjectImage_ObjectData {
             object_local_id: buffer.read_u32::<LittleEndian>()?,
             media_url: {
@@ -30126,9 +29123,7 @@ impl ObjectImage_ObjectData {
 
 impl ObjectIncludeInSearch_AgentData {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(ObjectIncludeInSearch_AgentData {
             agent_id: {
                 let mut raw = [0u8; 16];
@@ -30146,9 +29141,7 @@ impl ObjectIncludeInSearch_AgentData {
 
 impl ObjectIncludeInSearch_ObjectData {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(ObjectIncludeInSearch_ObjectData {
             object_local_id: buffer.read_u32::<LittleEndian>()?,
             include_in_search: buffer.read_u8()? == 1,
@@ -30158,9 +29151,7 @@ impl ObjectIncludeInSearch_ObjectData {
 
 impl ObjectLink_AgentData {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(ObjectLink_AgentData {
             agent_id: {
                 let mut raw = [0u8; 16];
@@ -30178,9 +29169,7 @@ impl ObjectLink_AgentData {
 
 impl ObjectLink_ObjectData {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(ObjectLink_ObjectData {
             object_local_id: buffer.read_u32::<LittleEndian>()?,
         })
@@ -30189,9 +29178,7 @@ impl ObjectLink_ObjectData {
 
 impl ObjectMaterial_AgentData {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(ObjectMaterial_AgentData {
             agent_id: {
                 let mut raw = [0u8; 16];
@@ -30209,9 +29196,7 @@ impl ObjectMaterial_AgentData {
 
 impl ObjectMaterial_ObjectData {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(ObjectMaterial_ObjectData {
             object_local_id: buffer.read_u32::<LittleEndian>()?,
             material: buffer.read_u8()?,
@@ -30221,9 +29206,7 @@ impl ObjectMaterial_ObjectData {
 
 impl ObjectName_AgentData {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(ObjectName_AgentData {
             agent_id: {
                 let mut raw = [0u8; 16];
@@ -30241,9 +29224,7 @@ impl ObjectName_AgentData {
 
 impl ObjectName_ObjectData {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(ObjectName_ObjectData {
             local_id: buffer.read_u32::<LittleEndian>()?,
             name: {
@@ -30258,9 +29239,7 @@ impl ObjectName_ObjectData {
 
 impl ObjectOwner_AgentData {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(ObjectOwner_AgentData {
             agent_id: {
                 let mut raw = [0u8; 16];
@@ -30278,9 +29257,7 @@ impl ObjectOwner_AgentData {
 
 impl ObjectOwner_HeaderData {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(ObjectOwner_HeaderData {
             override_: buffer.read_u8()? == 1,
             owner_id: {
@@ -30299,9 +29276,7 @@ impl ObjectOwner_HeaderData {
 
 impl ObjectOwner_ObjectData {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(ObjectOwner_ObjectData {
             object_local_id: buffer.read_u32::<LittleEndian>()?,
         })
@@ -30310,9 +29285,7 @@ impl ObjectOwner_ObjectData {
 
 impl ObjectPermissions_AgentData {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(ObjectPermissions_AgentData {
             agent_id: {
                 let mut raw = [0u8; 16];
@@ -30330,9 +29303,7 @@ impl ObjectPermissions_AgentData {
 
 impl ObjectPermissions_HeaderData {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(ObjectPermissions_HeaderData {
             override_: buffer.read_u8()? == 1,
         })
@@ -30341,9 +29312,7 @@ impl ObjectPermissions_HeaderData {
 
 impl ObjectPermissions_ObjectData {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(ObjectPermissions_ObjectData {
             object_local_id: buffer.read_u32::<LittleEndian>()?,
             field: buffer.read_u8()?,
@@ -30355,9 +29324,7 @@ impl ObjectPermissions_ObjectData {
 
 impl ObjectPosition_AgentData {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(ObjectPosition_AgentData {
             agent_id: {
                 let mut raw = [0u8; 16];
@@ -30375,9 +29342,7 @@ impl ObjectPosition_AgentData {
 
 impl ObjectPosition_ObjectData {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(ObjectPosition_ObjectData {
             object_local_id: buffer.read_u32::<LittleEndian>()?,
             position: Vector3::new(
@@ -30391,9 +29356,7 @@ impl ObjectPosition_ObjectData {
 
 impl ObjectProperties_ObjectData {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(ObjectProperties_ObjectData {
             object_id: {
                 let mut raw = [0u8; 16];
@@ -30485,9 +29448,7 @@ impl ObjectProperties_ObjectData {
 
 impl ObjectPropertiesFamily_ObjectData {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(ObjectPropertiesFamily_ObjectData {
             request_flags: buffer.read_u32::<LittleEndian>()?,
             object_id: {
@@ -30537,9 +29498,7 @@ impl ObjectPropertiesFamily_ObjectData {
 
 impl ObjectRotation_AgentData {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(ObjectRotation_AgentData {
             agent_id: {
                 let mut raw = [0u8; 16];
@@ -30557,9 +29516,7 @@ impl ObjectRotation_AgentData {
 
 impl ObjectRotation_ObjectData {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(ObjectRotation_ObjectData {
             object_local_id: buffer.read_u32::<LittleEndian>()?,
             rotation: Quaternion::from_parts(
@@ -30576,9 +29533,7 @@ impl ObjectRotation_ObjectData {
 
 impl ObjectSaleInfo_AgentData {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(ObjectSaleInfo_AgentData {
             agent_id: {
                 let mut raw = [0u8; 16];
@@ -30596,9 +29551,7 @@ impl ObjectSaleInfo_AgentData {
 
 impl ObjectSaleInfo_ObjectData {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(ObjectSaleInfo_ObjectData {
             local_id: buffer.read_u32::<LittleEndian>()?,
             sale_type: buffer.read_u8()?,
@@ -30609,9 +29562,7 @@ impl ObjectSaleInfo_ObjectData {
 
 impl ObjectScale_AgentData {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(ObjectScale_AgentData {
             agent_id: {
                 let mut raw = [0u8; 16];
@@ -30629,9 +29580,7 @@ impl ObjectScale_AgentData {
 
 impl ObjectScale_ObjectData {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(ObjectScale_ObjectData {
             object_local_id: buffer.read_u32::<LittleEndian>()?,
             scale: Vector3::new(
@@ -30645,9 +29594,7 @@ impl ObjectScale_ObjectData {
 
 impl ObjectSelect_AgentData {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(ObjectSelect_AgentData {
             agent_id: {
                 let mut raw = [0u8; 16];
@@ -30665,9 +29612,7 @@ impl ObjectSelect_AgentData {
 
 impl ObjectSelect_ObjectData {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(ObjectSelect_ObjectData {
             object_local_id: buffer.read_u32::<LittleEndian>()?,
         })
@@ -30676,9 +29621,7 @@ impl ObjectSelect_ObjectData {
 
 impl ObjectShape_AgentData {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(ObjectShape_AgentData {
             agent_id: {
                 let mut raw = [0u8; 16];
@@ -30696,9 +29639,7 @@ impl ObjectShape_AgentData {
 
 impl ObjectShape_ObjectData {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(ObjectShape_ObjectData {
             object_local_id: buffer.read_u32::<LittleEndian>()?,
             path_curve: buffer.read_u8()?,
@@ -30725,9 +29666,7 @@ impl ObjectShape_ObjectData {
 
 impl ObjectSpinStart_AgentData {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(ObjectSpinStart_AgentData {
             agent_id: {
                 let mut raw = [0u8; 16];
@@ -30745,9 +29684,7 @@ impl ObjectSpinStart_AgentData {
 
 impl ObjectSpinStart_ObjectData {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(ObjectSpinStart_ObjectData {
             object_id: {
                 let mut raw = [0u8; 16];
@@ -30760,9 +29697,7 @@ impl ObjectSpinStart_ObjectData {
 
 impl ObjectSpinStop_AgentData {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(ObjectSpinStop_AgentData {
             agent_id: {
                 let mut raw = [0u8; 16];
@@ -30780,9 +29715,7 @@ impl ObjectSpinStop_AgentData {
 
 impl ObjectSpinStop_ObjectData {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(ObjectSpinStop_ObjectData {
             object_id: {
                 let mut raw = [0u8; 16];
@@ -30795,9 +29728,7 @@ impl ObjectSpinStop_ObjectData {
 
 impl ObjectSpinUpdate_AgentData {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(ObjectSpinUpdate_AgentData {
             agent_id: {
                 let mut raw = [0u8; 16];
@@ -30815,9 +29746,7 @@ impl ObjectSpinUpdate_AgentData {
 
 impl ObjectSpinUpdate_ObjectData {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(ObjectSpinUpdate_ObjectData {
             object_id: {
                 let mut raw = [0u8; 16];
@@ -30838,9 +29767,7 @@ impl ObjectSpinUpdate_ObjectData {
 
 impl ObjectUpdate_RegionData {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(ObjectUpdate_RegionData {
             region_handle: buffer.read_u64::<LittleEndian>()?,
             time_dilation: buffer.read_u16::<LittleEndian>()?,
@@ -30850,9 +29777,7 @@ impl ObjectUpdate_RegionData {
 
 impl ObjectUpdate_ObjectData {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(ObjectUpdate_ObjectData {
             id: buffer.read_u32::<LittleEndian>()?,
             state: buffer.read_u8()?,
@@ -30979,9 +29904,7 @@ impl ObjectUpdate_ObjectData {
 
 impl ObjectUpdateCached_RegionData {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(ObjectUpdateCached_RegionData {
             region_handle: buffer.read_u64::<LittleEndian>()?,
             time_dilation: buffer.read_u16::<LittleEndian>()?,
@@ -30991,9 +29914,7 @@ impl ObjectUpdateCached_RegionData {
 
 impl ObjectUpdateCached_ObjectData {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(ObjectUpdateCached_ObjectData {
             id: buffer.read_u32::<LittleEndian>()?,
             crc: buffer.read_u32::<LittleEndian>()?,
@@ -31004,9 +29925,7 @@ impl ObjectUpdateCached_ObjectData {
 
 impl ObjectUpdateCompressed_RegionData {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(ObjectUpdateCompressed_RegionData {
             region_handle: buffer.read_u64::<LittleEndian>()?,
             time_dilation: buffer.read_u16::<LittleEndian>()?,
@@ -31016,9 +29935,7 @@ impl ObjectUpdateCompressed_RegionData {
 
 impl ObjectUpdateCompressed_ObjectData {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(ObjectUpdateCompressed_ObjectData {
             update_flags: buffer.read_u32::<LittleEndian>()?,
             data: {
@@ -31033,9 +29950,7 @@ impl ObjectUpdateCompressed_ObjectData {
 
 impl OfferCallingCard_AgentData {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(OfferCallingCard_AgentData {
             agent_id: {
                 let mut raw = [0u8; 16];
@@ -31053,9 +29968,7 @@ impl OfferCallingCard_AgentData {
 
 impl OfferCallingCard_AgentBlock {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(OfferCallingCard_AgentBlock {
             dest_id: {
                 let mut raw = [0u8; 16];
@@ -31073,9 +29986,7 @@ impl OfferCallingCard_AgentBlock {
 
 impl OfflineNotification_AgentBlock {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(OfflineNotification_AgentBlock {
             agent_id: {
                 let mut raw = [0u8; 16];
@@ -31088,9 +29999,7 @@ impl OfflineNotification_AgentBlock {
 
 impl OnlineNotification_AgentBlock {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(OnlineNotification_AgentBlock {
             agent_id: {
                 let mut raw = [0u8; 16];
@@ -31103,9 +30012,7 @@ impl OnlineNotification_AgentBlock {
 
 impl OpenCircuit_CircuitInfo {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(OpenCircuit_CircuitInfo {
             ip: {
                 let mut raw = [0u8; 4];
@@ -31119,18 +30026,16 @@ impl OpenCircuit_CircuitInfo {
 
 impl PacketAck_Packets {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
-        Ok(PacketAck_Packets { id: buffer.read_u32::<LittleEndian>()? })
+    where R: Read {
+        Ok(PacketAck_Packets {
+            id: buffer.read_u32::<LittleEndian>()?,
+        })
     }
 }
 
 impl ParcelAccessListReply_Data {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(ParcelAccessListReply_Data {
             agent_id: {
                 let mut raw = [0u8; 16];
@@ -31146,9 +30051,7 @@ impl ParcelAccessListReply_Data {
 
 impl ParcelAccessListReply_List {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(ParcelAccessListReply_List {
             id: {
                 let mut raw = [0u8; 16];
@@ -31163,9 +30066,7 @@ impl ParcelAccessListReply_List {
 
 impl ParcelAccessListRequest_AgentData {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(ParcelAccessListRequest_AgentData {
             agent_id: {
                 let mut raw = [0u8; 16];
@@ -31183,9 +30084,7 @@ impl ParcelAccessListRequest_AgentData {
 
 impl ParcelAccessListRequest_Data {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(ParcelAccessListRequest_Data {
             sequence_id: buffer.read_i32::<LittleEndian>()?,
             flags: buffer.read_u32::<LittleEndian>()?,
@@ -31196,9 +30095,7 @@ impl ParcelAccessListRequest_Data {
 
 impl ParcelAccessListUpdate_AgentData {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(ParcelAccessListUpdate_AgentData {
             agent_id: {
                 let mut raw = [0u8; 16];
@@ -31216,9 +30113,7 @@ impl ParcelAccessListUpdate_AgentData {
 
 impl ParcelAccessListUpdate_Data {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(ParcelAccessListUpdate_Data {
             flags: buffer.read_u32::<LittleEndian>()?,
             local_id: buffer.read_i32::<LittleEndian>()?,
@@ -31235,9 +30130,7 @@ impl ParcelAccessListUpdate_Data {
 
 impl ParcelAccessListUpdate_List {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(ParcelAccessListUpdate_List {
             id: {
                 let mut raw = [0u8; 16];
@@ -31252,9 +30145,7 @@ impl ParcelAccessListUpdate_List {
 
 impl ParcelAuctions_ParcelData {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(ParcelAuctions_ParcelData {
             parcel_id: {
                 let mut raw = [0u8; 16];
@@ -31272,9 +30163,7 @@ impl ParcelAuctions_ParcelData {
 
 impl ParcelBuy_AgentData {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(ParcelBuy_AgentData {
             agent_id: {
                 let mut raw = [0u8; 16];
@@ -31292,9 +30181,7 @@ impl ParcelBuy_AgentData {
 
 impl ParcelBuy_Data {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(ParcelBuy_Data {
             group_id: {
                 let mut raw = [0u8; 16];
@@ -31311,9 +30198,7 @@ impl ParcelBuy_Data {
 
 impl ParcelBuy_ParcelData {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(ParcelBuy_ParcelData {
             price: buffer.read_i32::<LittleEndian>()?,
             area: buffer.read_i32::<LittleEndian>()?,
@@ -31323,9 +30208,7 @@ impl ParcelBuy_ParcelData {
 
 impl ParcelBuyPass_AgentData {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(ParcelBuyPass_AgentData {
             agent_id: {
                 let mut raw = [0u8; 16];
@@ -31343,9 +30226,7 @@ impl ParcelBuyPass_AgentData {
 
 impl ParcelBuyPass_ParcelData {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(ParcelBuyPass_ParcelData {
             local_id: buffer.read_i32::<LittleEndian>()?,
         })
@@ -31354,9 +30235,7 @@ impl ParcelBuyPass_ParcelData {
 
 impl ParcelClaim_AgentData {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(ParcelClaim_AgentData {
             agent_id: {
                 let mut raw = [0u8; 16];
@@ -31374,9 +30253,7 @@ impl ParcelClaim_AgentData {
 
 impl ParcelClaim_Data {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(ParcelClaim_Data {
             group_id: {
                 let mut raw = [0u8; 16];
@@ -31391,9 +30268,7 @@ impl ParcelClaim_Data {
 
 impl ParcelClaim_ParcelData {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(ParcelClaim_ParcelData {
             west: buffer.read_f32::<LittleEndian>()?,
             south: buffer.read_f32::<LittleEndian>()?,
@@ -31405,9 +30280,7 @@ impl ParcelClaim_ParcelData {
 
 impl ParcelDeedToGroup_AgentData {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(ParcelDeedToGroup_AgentData {
             agent_id: {
                 let mut raw = [0u8; 16];
@@ -31425,9 +30298,7 @@ impl ParcelDeedToGroup_AgentData {
 
 impl ParcelDeedToGroup_Data {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(ParcelDeedToGroup_Data {
             group_id: {
                 let mut raw = [0u8; 16];
@@ -31441,9 +30312,7 @@ impl ParcelDeedToGroup_Data {
 
 impl ParcelDisableObjects_AgentData {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(ParcelDisableObjects_AgentData {
             agent_id: {
                 let mut raw = [0u8; 16];
@@ -31461,9 +30330,7 @@ impl ParcelDisableObjects_AgentData {
 
 impl ParcelDisableObjects_ParcelData {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(ParcelDisableObjects_ParcelData {
             local_id: buffer.read_i32::<LittleEndian>()?,
             return_type: buffer.read_u32::<LittleEndian>()?,
@@ -31473,9 +30340,7 @@ impl ParcelDisableObjects_ParcelData {
 
 impl ParcelDisableObjects_TaskIDs {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(ParcelDisableObjects_TaskIDs {
             task_id: {
                 let mut raw = [0u8; 16];
@@ -31488,9 +30353,7 @@ impl ParcelDisableObjects_TaskIDs {
 
 impl ParcelDisableObjects_OwnerIDs {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(ParcelDisableObjects_OwnerIDs {
             owner_id: {
                 let mut raw = [0u8; 16];
@@ -31503,9 +30366,7 @@ impl ParcelDisableObjects_OwnerIDs {
 
 impl ParcelDivide_AgentData {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(ParcelDivide_AgentData {
             agent_id: {
                 let mut raw = [0u8; 16];
@@ -31523,9 +30384,7 @@ impl ParcelDivide_AgentData {
 
 impl ParcelDivide_ParcelData {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(ParcelDivide_ParcelData {
             west: buffer.read_f32::<LittleEndian>()?,
             south: buffer.read_f32::<LittleEndian>()?,
@@ -31537,9 +30396,7 @@ impl ParcelDivide_ParcelData {
 
 impl ParcelDwellReply_AgentData {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(ParcelDwellReply_AgentData {
             agent_id: {
                 let mut raw = [0u8; 16];
@@ -31552,9 +30409,7 @@ impl ParcelDwellReply_AgentData {
 
 impl ParcelDwellReply_Data {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(ParcelDwellReply_Data {
             local_id: buffer.read_i32::<LittleEndian>()?,
             parcel_id: {
@@ -31569,9 +30424,7 @@ impl ParcelDwellReply_Data {
 
 impl ParcelDwellRequest_AgentData {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(ParcelDwellRequest_AgentData {
             agent_id: {
                 let mut raw = [0u8; 16];
@@ -31589,9 +30442,7 @@ impl ParcelDwellRequest_AgentData {
 
 impl ParcelDwellRequest_Data {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(ParcelDwellRequest_Data {
             local_id: buffer.read_i32::<LittleEndian>()?,
             parcel_id: {
@@ -31605,9 +30456,7 @@ impl ParcelDwellRequest_Data {
 
 impl ParcelGodForceOwner_AgentData {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(ParcelGodForceOwner_AgentData {
             agent_id: {
                 let mut raw = [0u8; 16];
@@ -31625,9 +30474,7 @@ impl ParcelGodForceOwner_AgentData {
 
 impl ParcelGodForceOwner_Data {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(ParcelGodForceOwner_Data {
             owner_id: {
                 let mut raw = [0u8; 16];
@@ -31641,9 +30488,7 @@ impl ParcelGodForceOwner_Data {
 
 impl ParcelGodMarkAsContent_AgentData {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(ParcelGodMarkAsContent_AgentData {
             agent_id: {
                 let mut raw = [0u8; 16];
@@ -31661,9 +30506,7 @@ impl ParcelGodMarkAsContent_AgentData {
 
 impl ParcelGodMarkAsContent_ParcelData {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(ParcelGodMarkAsContent_ParcelData {
             local_id: buffer.read_i32::<LittleEndian>()?,
         })
@@ -31672,9 +30515,7 @@ impl ParcelGodMarkAsContent_ParcelData {
 
 impl ParcelInfoReply_AgentData {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(ParcelInfoReply_AgentData {
             agent_id: {
                 let mut raw = [0u8; 16];
@@ -31687,9 +30528,7 @@ impl ParcelInfoReply_AgentData {
 
 impl ParcelInfoReply_Data {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(ParcelInfoReply_Data {
             parcel_id: {
                 let mut raw = [0u8; 16];
@@ -31739,9 +30578,7 @@ impl ParcelInfoReply_Data {
 
 impl ParcelInfoRequest_AgentData {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(ParcelInfoRequest_AgentData {
             agent_id: {
                 let mut raw = [0u8; 16];
@@ -31759,9 +30596,7 @@ impl ParcelInfoRequest_AgentData {
 
 impl ParcelInfoRequest_Data {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(ParcelInfoRequest_Data {
             parcel_id: {
                 let mut raw = [0u8; 16];
@@ -31774,9 +30609,7 @@ impl ParcelInfoRequest_Data {
 
 impl ParcelJoin_AgentData {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(ParcelJoin_AgentData {
             agent_id: {
                 let mut raw = [0u8; 16];
@@ -31794,9 +30627,7 @@ impl ParcelJoin_AgentData {
 
 impl ParcelJoin_ParcelData {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(ParcelJoin_ParcelData {
             west: buffer.read_f32::<LittleEndian>()?,
             south: buffer.read_f32::<LittleEndian>()?,
@@ -31808,9 +30639,7 @@ impl ParcelJoin_ParcelData {
 
 impl ParcelMediaCommandMessage_CommandBlock {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(ParcelMediaCommandMessage_CommandBlock {
             flags: buffer.read_u32::<LittleEndian>()?,
             command: buffer.read_u32::<LittleEndian>()?,
@@ -31821,9 +30650,7 @@ impl ParcelMediaCommandMessage_CommandBlock {
 
 impl ParcelMediaUpdate_DataBlock {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(ParcelMediaUpdate_DataBlock {
             media_url: {
                 let n = buffer.read_u8()? as usize;
@@ -31843,9 +30670,7 @@ impl ParcelMediaUpdate_DataBlock {
 
 impl ParcelMediaUpdate_DataBlockExtended {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(ParcelMediaUpdate_DataBlockExtended {
             media_type: {
                 let n = buffer.read_u8()? as usize;
@@ -31868,9 +30693,7 @@ impl ParcelMediaUpdate_DataBlockExtended {
 
 impl ParcelObjectOwnersReply_Data {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(ParcelObjectOwnersReply_Data {
             owner_id: {
                 let mut raw = [0u8; 16];
@@ -31886,9 +30709,7 @@ impl ParcelObjectOwnersReply_Data {
 
 impl ParcelObjectOwnersRequest_AgentData {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(ParcelObjectOwnersRequest_AgentData {
             agent_id: {
                 let mut raw = [0u8; 16];
@@ -31906,9 +30727,7 @@ impl ParcelObjectOwnersRequest_AgentData {
 
 impl ParcelObjectOwnersRequest_ParcelData {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(ParcelObjectOwnersRequest_ParcelData {
             local_id: buffer.read_i32::<LittleEndian>()?,
         })
@@ -31917,9 +30736,7 @@ impl ParcelObjectOwnersRequest_ParcelData {
 
 impl ParcelOverlay_ParcelData {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(ParcelOverlay_ParcelData {
             sequence_id: buffer.read_i32::<LittleEndian>()?,
             data: {
@@ -31934,9 +30751,7 @@ impl ParcelOverlay_ParcelData {
 
 impl ParcelProperties_ParcelData {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(ParcelProperties_ParcelData {
             request_result: buffer.read_i32::<LittleEndian>()?,
             sequence_id: buffer.read_i32::<LittleEndian>()?,
@@ -32054,9 +30869,7 @@ impl ParcelProperties_ParcelData {
 
 impl ParcelProperties_AgeVerificationBlock {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(ParcelProperties_AgeVerificationBlock {
             region_deny_age_unverified: buffer.read_u8()? == 1,
         })
@@ -32065,9 +30878,7 @@ impl ParcelProperties_AgeVerificationBlock {
 
 impl ParcelPropertiesRequest_AgentData {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(ParcelPropertiesRequest_AgentData {
             agent_id: {
                 let mut raw = [0u8; 16];
@@ -32085,9 +30896,7 @@ impl ParcelPropertiesRequest_AgentData {
 
 impl ParcelPropertiesRequest_ParcelData {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(ParcelPropertiesRequest_ParcelData {
             sequence_id: buffer.read_i32::<LittleEndian>()?,
             west: buffer.read_f32::<LittleEndian>()?,
@@ -32101,9 +30910,7 @@ impl ParcelPropertiesRequest_ParcelData {
 
 impl ParcelPropertiesRequestByID_AgentData {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(ParcelPropertiesRequestByID_AgentData {
             agent_id: {
                 let mut raw = [0u8; 16];
@@ -32121,9 +30928,7 @@ impl ParcelPropertiesRequestByID_AgentData {
 
 impl ParcelPropertiesRequestByID_ParcelData {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(ParcelPropertiesRequestByID_ParcelData {
             sequence_id: buffer.read_i32::<LittleEndian>()?,
             local_id: buffer.read_i32::<LittleEndian>()?,
@@ -32133,9 +30938,7 @@ impl ParcelPropertiesRequestByID_ParcelData {
 
 impl ParcelPropertiesUpdate_AgentData {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(ParcelPropertiesUpdate_AgentData {
             agent_id: {
                 let mut raw = [0u8; 16];
@@ -32153,9 +30956,7 @@ impl ParcelPropertiesUpdate_AgentData {
 
 impl ParcelPropertiesUpdate_ParcelData {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(ParcelPropertiesUpdate_ParcelData {
             local_id: buffer.read_i32::<LittleEndian>()?,
             flags: buffer.read_u32::<LittleEndian>()?,
@@ -32226,9 +31027,7 @@ impl ParcelPropertiesUpdate_ParcelData {
 
 impl ParcelReclaim_AgentData {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(ParcelReclaim_AgentData {
             agent_id: {
                 let mut raw = [0u8; 16];
@@ -32246,9 +31045,7 @@ impl ParcelReclaim_AgentData {
 
 impl ParcelReclaim_Data {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(ParcelReclaim_Data {
             local_id: buffer.read_i32::<LittleEndian>()?,
         })
@@ -32257,9 +31054,7 @@ impl ParcelReclaim_Data {
 
 impl ParcelRelease_AgentData {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(ParcelRelease_AgentData {
             agent_id: {
                 let mut raw = [0u8; 16];
@@ -32277,9 +31072,7 @@ impl ParcelRelease_AgentData {
 
 impl ParcelRelease_Data {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(ParcelRelease_Data {
             local_id: buffer.read_i32::<LittleEndian>()?,
         })
@@ -32288,9 +31081,7 @@ impl ParcelRelease_Data {
 
 impl ParcelRename_ParcelData {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(ParcelRename_ParcelData {
             parcel_id: {
                 let mut raw = [0u8; 16];
@@ -32309,9 +31100,7 @@ impl ParcelRename_ParcelData {
 
 impl ParcelReturnObjects_AgentData {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(ParcelReturnObjects_AgentData {
             agent_id: {
                 let mut raw = [0u8; 16];
@@ -32329,9 +31118,7 @@ impl ParcelReturnObjects_AgentData {
 
 impl ParcelReturnObjects_ParcelData {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(ParcelReturnObjects_ParcelData {
             local_id: buffer.read_i32::<LittleEndian>()?,
             return_type: buffer.read_u32::<LittleEndian>()?,
@@ -32341,9 +31128,7 @@ impl ParcelReturnObjects_ParcelData {
 
 impl ParcelReturnObjects_TaskIDs {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(ParcelReturnObjects_TaskIDs {
             task_id: {
                 let mut raw = [0u8; 16];
@@ -32356,9 +31141,7 @@ impl ParcelReturnObjects_TaskIDs {
 
 impl ParcelReturnObjects_OwnerIDs {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(ParcelReturnObjects_OwnerIDs {
             owner_id: {
                 let mut raw = [0u8; 16];
@@ -32371,9 +31154,7 @@ impl ParcelReturnObjects_OwnerIDs {
 
 impl ParcelSales_ParcelData {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(ParcelSales_ParcelData {
             parcel_id: {
                 let mut raw = [0u8; 16];
@@ -32391,9 +31172,7 @@ impl ParcelSales_ParcelData {
 
 impl ParcelSelectObjects_AgentData {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(ParcelSelectObjects_AgentData {
             agent_id: {
                 let mut raw = [0u8; 16];
@@ -32411,9 +31190,7 @@ impl ParcelSelectObjects_AgentData {
 
 impl ParcelSelectObjects_ParcelData {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(ParcelSelectObjects_ParcelData {
             local_id: buffer.read_i32::<LittleEndian>()?,
             return_type: buffer.read_u32::<LittleEndian>()?,
@@ -32423,9 +31200,7 @@ impl ParcelSelectObjects_ParcelData {
 
 impl ParcelSelectObjects_ReturnIDs {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(ParcelSelectObjects_ReturnIDs {
             return_id: {
                 let mut raw = [0u8; 16];
@@ -32438,9 +31213,7 @@ impl ParcelSelectObjects_ReturnIDs {
 
 impl ParcelSetOtherCleanTime_AgentData {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(ParcelSetOtherCleanTime_AgentData {
             agent_id: {
                 let mut raw = [0u8; 16];
@@ -32458,9 +31231,7 @@ impl ParcelSetOtherCleanTime_AgentData {
 
 impl ParcelSetOtherCleanTime_ParcelData {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(ParcelSetOtherCleanTime_ParcelData {
             local_id: buffer.read_i32::<LittleEndian>()?,
             other_clean_time: buffer.read_i32::<LittleEndian>()?,
@@ -32470,9 +31241,7 @@ impl ParcelSetOtherCleanTime_ParcelData {
 
 impl PayPriceReply_ObjectData {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(PayPriceReply_ObjectData {
             object_id: {
                 let mut raw = [0u8; 16];
@@ -32486,9 +31255,7 @@ impl PayPriceReply_ObjectData {
 
 impl PayPriceReply_ButtonData {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(PayPriceReply_ButtonData {
             pay_button: buffer.read_i32::<LittleEndian>()?,
         })
@@ -32497,9 +31264,7 @@ impl PayPriceReply_ButtonData {
 
 impl PickDelete_AgentData {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(PickDelete_AgentData {
             agent_id: {
                 let mut raw = [0u8; 16];
@@ -32517,9 +31282,7 @@ impl PickDelete_AgentData {
 
 impl PickDelete_Data {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(PickDelete_Data {
             pick_id: {
                 let mut raw = [0u8; 16];
@@ -32532,9 +31295,7 @@ impl PickDelete_Data {
 
 impl PickGodDelete_AgentData {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(PickGodDelete_AgentData {
             agent_id: {
                 let mut raw = [0u8; 16];
@@ -32552,9 +31313,7 @@ impl PickGodDelete_AgentData {
 
 impl PickGodDelete_Data {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(PickGodDelete_Data {
             pick_id: {
                 let mut raw = [0u8; 16];
@@ -32572,9 +31331,7 @@ impl PickGodDelete_Data {
 
 impl PickInfoReply_AgentData {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(PickInfoReply_AgentData {
             agent_id: {
                 let mut raw = [0u8; 16];
@@ -32587,9 +31344,7 @@ impl PickInfoReply_AgentData {
 
 impl PickInfoReply_Data {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(PickInfoReply_Data {
             pick_id: {
                 let mut raw = [0u8; 16];
@@ -32655,9 +31410,7 @@ impl PickInfoReply_Data {
 
 impl PickInfoUpdate_AgentData {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(PickInfoUpdate_AgentData {
             agent_id: {
                 let mut raw = [0u8; 16];
@@ -32675,9 +31428,7 @@ impl PickInfoUpdate_AgentData {
 
 impl PickInfoUpdate_Data {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(PickInfoUpdate_Data {
             pick_id: {
                 let mut raw = [0u8; 16];
@@ -32725,9 +31476,7 @@ impl PickInfoUpdate_Data {
 
 impl PlacesQuery_AgentData {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(PlacesQuery_AgentData {
             agent_id: {
                 let mut raw = [0u8; 16];
@@ -32750,9 +31499,7 @@ impl PlacesQuery_AgentData {
 
 impl PlacesQuery_TransactionData {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(PlacesQuery_TransactionData {
             transaction_id: {
                 let mut raw = [0u8; 16];
@@ -32765,9 +31512,7 @@ impl PlacesQuery_TransactionData {
 
 impl PlacesQuery_QueryData {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(PlacesQuery_QueryData {
             query_text: {
                 let n = buffer.read_u8()? as usize;
@@ -32789,9 +31534,7 @@ impl PlacesQuery_QueryData {
 
 impl PlacesReply_AgentData {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(PlacesReply_AgentData {
             agent_id: {
                 let mut raw = [0u8; 16];
@@ -32809,9 +31552,7 @@ impl PlacesReply_AgentData {
 
 impl PlacesReply_TransactionData {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(PlacesReply_TransactionData {
             transaction_id: {
                 let mut raw = [0u8; 16];
@@ -32824,9 +31565,7 @@ impl PlacesReply_TransactionData {
 
 impl PlacesReply_QueryData {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(PlacesReply_QueryData {
             owner_id: {
                 let mut raw = [0u8; 16];
@@ -32870,9 +31609,7 @@ impl PlacesReply_QueryData {
 
 impl PreloadSound_DataBlock {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(PreloadSound_DataBlock {
             object_id: {
                 let mut raw = [0u8; 16];
@@ -32895,9 +31632,7 @@ impl PreloadSound_DataBlock {
 
 impl PurgeInventoryDescendents_AgentData {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(PurgeInventoryDescendents_AgentData {
             agent_id: {
                 let mut raw = [0u8; 16];
@@ -32915,9 +31650,7 @@ impl PurgeInventoryDescendents_AgentData {
 
 impl PurgeInventoryDescendents_InventoryData {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(PurgeInventoryDescendents_InventoryData {
             folder_id: {
                 let mut raw = [0u8; 16];
@@ -32930,9 +31663,7 @@ impl PurgeInventoryDescendents_InventoryData {
 
 impl RebakeAvatarTextures_TextureData {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(RebakeAvatarTextures_TextureData {
             texture_id: {
                 let mut raw = [0u8; 16];
@@ -32945,9 +31676,7 @@ impl RebakeAvatarTextures_TextureData {
 
 impl Redo_AgentData {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(Redo_AgentData {
             agent_id: {
                 let mut raw = [0u8; 16];
@@ -32970,9 +31699,7 @@ impl Redo_AgentData {
 
 impl Redo_ObjectData {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(Redo_ObjectData {
             object_id: {
                 let mut raw = [0u8; 16];
@@ -32985,9 +31712,7 @@ impl Redo_ObjectData {
 
 impl RegionHandleRequest_RequestBlock {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(RegionHandleRequest_RequestBlock {
             region_id: {
                 let mut raw = [0u8; 16];
@@ -33000,9 +31725,7 @@ impl RegionHandleRequest_RequestBlock {
 
 impl RegionHandshake_RegionInfo {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(RegionHandshake_RegionInfo {
             region_flags: buffer.read_u32::<LittleEndian>()?,
             sim_access: buffer.read_u8()?,
@@ -33079,9 +31802,7 @@ impl RegionHandshake_RegionInfo {
 
 impl RegionHandshake_RegionInfo2 {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(RegionHandshake_RegionInfo2 {
             region_id: {
                 let mut raw = [0u8; 16];
@@ -33094,9 +31815,7 @@ impl RegionHandshake_RegionInfo2 {
 
 impl RegionHandshake_RegionInfo3 {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(RegionHandshake_RegionInfo3 {
             cpu_class_id: buffer.read_i32::<LittleEndian>()?,
             cpu_ratio: buffer.read_i32::<LittleEndian>()?,
@@ -33124,9 +31843,7 @@ impl RegionHandshake_RegionInfo3 {
 
 impl RegionHandshakeReply_AgentData {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(RegionHandshakeReply_AgentData {
             agent_id: {
                 let mut raw = [0u8; 16];
@@ -33144,9 +31861,7 @@ impl RegionHandshakeReply_AgentData {
 
 impl RegionHandshakeReply_RegionInfo {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(RegionHandshakeReply_RegionInfo {
             flags: buffer.read_u32::<LittleEndian>()?,
         })
@@ -33155,9 +31870,7 @@ impl RegionHandshakeReply_RegionInfo {
 
 impl RegionIDAndHandleReply_ReplyBlock {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(RegionIDAndHandleReply_ReplyBlock {
             region_id: {
                 let mut raw = [0u8; 16];
@@ -33171,9 +31884,7 @@ impl RegionIDAndHandleReply_ReplyBlock {
 
 impl RegionInfo_AgentData {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(RegionInfo_AgentData {
             agent_id: {
                 let mut raw = [0u8; 16];
@@ -33191,9 +31902,7 @@ impl RegionInfo_AgentData {
 
 impl RegionInfo_RegionInfo {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(RegionInfo_RegionInfo {
             sim_name: {
                 let n = buffer.read_u8()? as usize;
@@ -33222,9 +31931,7 @@ impl RegionInfo_RegionInfo {
 
 impl RegionInfo_RegionInfo2 {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(RegionInfo_RegionInfo2 {
             product_sku: {
                 let n = buffer.read_u8()? as usize;
@@ -33247,9 +31954,7 @@ impl RegionInfo_RegionInfo2 {
 
 impl RegionPresenceRequestByHandle_RegionData {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(RegionPresenceRequestByHandle_RegionData {
             region_handle: buffer.read_u64::<LittleEndian>()?,
         })
@@ -33258,9 +31963,7 @@ impl RegionPresenceRequestByHandle_RegionData {
 
 impl RegionPresenceRequestByRegionID_RegionData {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(RegionPresenceRequestByRegionID_RegionData {
             region_id: {
                 let mut raw = [0u8; 16];
@@ -33273,9 +31976,7 @@ impl RegionPresenceRequestByRegionID_RegionData {
 
 impl RegionPresenceResponse_RegionData {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(RegionPresenceResponse_RegionData {
             region_id: {
                 let mut raw = [0u8; 16];
@@ -33307,9 +32008,7 @@ impl RegionPresenceResponse_RegionData {
 
 impl RemoveAttachment_AgentData {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(RemoveAttachment_AgentData {
             agent_id: {
                 let mut raw = [0u8; 16];
@@ -33327,9 +32026,7 @@ impl RemoveAttachment_AgentData {
 
 impl RemoveAttachment_AttachmentBlock {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(RemoveAttachment_AttachmentBlock {
             attachment_point: buffer.read_u8()?,
             item_id: {
@@ -33343,9 +32040,7 @@ impl RemoveAttachment_AttachmentBlock {
 
 impl RemoveInventoryFolder_AgentData {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(RemoveInventoryFolder_AgentData {
             agent_id: {
                 let mut raw = [0u8; 16];
@@ -33363,9 +32058,7 @@ impl RemoveInventoryFolder_AgentData {
 
 impl RemoveInventoryFolder_FolderData {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(RemoveInventoryFolder_FolderData {
             folder_id: {
                 let mut raw = [0u8; 16];
@@ -33378,9 +32071,7 @@ impl RemoveInventoryFolder_FolderData {
 
 impl RemoveInventoryItem_AgentData {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(RemoveInventoryItem_AgentData {
             agent_id: {
                 let mut raw = [0u8; 16];
@@ -33398,9 +32089,7 @@ impl RemoveInventoryItem_AgentData {
 
 impl RemoveInventoryItem_InventoryData {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(RemoveInventoryItem_InventoryData {
             item_id: {
                 let mut raw = [0u8; 16];
@@ -33413,9 +32102,7 @@ impl RemoveInventoryItem_InventoryData {
 
 impl RemoveInventoryObjects_AgentData {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(RemoveInventoryObjects_AgentData {
             agent_id: {
                 let mut raw = [0u8; 16];
@@ -33433,9 +32120,7 @@ impl RemoveInventoryObjects_AgentData {
 
 impl RemoveInventoryObjects_FolderData {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(RemoveInventoryObjects_FolderData {
             folder_id: {
                 let mut raw = [0u8; 16];
@@ -33448,9 +32133,7 @@ impl RemoveInventoryObjects_FolderData {
 
 impl RemoveInventoryObjects_ItemData {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(RemoveInventoryObjects_ItemData {
             item_id: {
                 let mut raw = [0u8; 16];
@@ -33463,9 +32146,7 @@ impl RemoveInventoryObjects_ItemData {
 
 impl RemoveMuteListEntry_AgentData {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(RemoveMuteListEntry_AgentData {
             agent_id: {
                 let mut raw = [0u8; 16];
@@ -33483,9 +32164,7 @@ impl RemoveMuteListEntry_AgentData {
 
 impl RemoveMuteListEntry_MuteData {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(RemoveMuteListEntry_MuteData {
             mute_id: {
                 let mut raw = [0u8; 16];
@@ -33504,9 +32183,7 @@ impl RemoveMuteListEntry_MuteData {
 
 impl RemoveNameValuePair_TaskData {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(RemoveNameValuePair_TaskData {
             id: {
                 let mut raw = [0u8; 16];
@@ -33519,9 +32196,7 @@ impl RemoveNameValuePair_TaskData {
 
 impl RemoveNameValuePair_NameValueData {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(RemoveNameValuePair_NameValueData {
             nv_pair: {
                 let n = buffer.read_u16::<LittleEndian>()? as usize;
@@ -33535,9 +32210,7 @@ impl RemoveNameValuePair_NameValueData {
 
 impl RemoveParcel_ParcelData {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(RemoveParcel_ParcelData {
             parcel_id: {
                 let mut raw = [0u8; 16];
@@ -33550,9 +32223,7 @@ impl RemoveParcel_ParcelData {
 
 impl RemoveTaskInventory_AgentData {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(RemoveTaskInventory_AgentData {
             agent_id: {
                 let mut raw = [0u8; 16];
@@ -33570,9 +32241,7 @@ impl RemoveTaskInventory_AgentData {
 
 impl RemoveTaskInventory_InventoryData {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(RemoveTaskInventory_InventoryData {
             local_id: buffer.read_u32::<LittleEndian>()?,
             item_id: {
@@ -33586,9 +32255,7 @@ impl RemoveTaskInventory_InventoryData {
 
 impl ReplyTaskInventory_InventoryData {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(ReplyTaskInventory_InventoryData {
             task_id: {
                 let mut raw = [0u8; 16];
@@ -33608,9 +32275,7 @@ impl ReplyTaskInventory_InventoryData {
 
 impl ReportAutosaveCrash_AutosaveData {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(ReportAutosaveCrash_AutosaveData {
             pid: buffer.read_i32::<LittleEndian>()?,
             status: buffer.read_i32::<LittleEndian>()?,
@@ -33620,9 +32285,7 @@ impl ReportAutosaveCrash_AutosaveData {
 
 impl RequestGodlikePowers_AgentData {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(RequestGodlikePowers_AgentData {
             agent_id: {
                 let mut raw = [0u8; 16];
@@ -33640,9 +32303,7 @@ impl RequestGodlikePowers_AgentData {
 
 impl RequestGodlikePowers_RequestBlock {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(RequestGodlikePowers_RequestBlock {
             godlike: buffer.read_u8()? == 1,
             token: {
@@ -33656,9 +32317,7 @@ impl RequestGodlikePowers_RequestBlock {
 
 impl RequestImage_AgentData {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(RequestImage_AgentData {
             agent_id: {
                 let mut raw = [0u8; 16];
@@ -33676,9 +32335,7 @@ impl RequestImage_AgentData {
 
 impl RequestImage_RequestImage {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(RequestImage_RequestImage {
             image: {
                 let mut raw = [0u8; 16];
@@ -33695,9 +32352,7 @@ impl RequestImage_RequestImage {
 
 impl RequestInventoryAsset_QueryData {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(RequestInventoryAsset_QueryData {
             query_id: {
                 let mut raw = [0u8; 16];
@@ -33725,9 +32380,7 @@ impl RequestInventoryAsset_QueryData {
 
 impl RequestMultipleObjects_AgentData {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(RequestMultipleObjects_AgentData {
             agent_id: {
                 let mut raw = [0u8; 16];
@@ -33745,9 +32398,7 @@ impl RequestMultipleObjects_AgentData {
 
 impl RequestMultipleObjects_ObjectData {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(RequestMultipleObjects_ObjectData {
             cache_miss_type: buffer.read_u8()?,
             id: buffer.read_u32::<LittleEndian>()?,
@@ -33757,9 +32408,7 @@ impl RequestMultipleObjects_ObjectData {
 
 impl RequestObjectPropertiesFamily_AgentData {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(RequestObjectPropertiesFamily_AgentData {
             agent_id: {
                 let mut raw = [0u8; 16];
@@ -33777,9 +32426,7 @@ impl RequestObjectPropertiesFamily_AgentData {
 
 impl RequestObjectPropertiesFamily_ObjectData {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(RequestObjectPropertiesFamily_ObjectData {
             request_flags: buffer.read_u32::<LittleEndian>()?,
             object_id: {
@@ -33793,9 +32440,7 @@ impl RequestObjectPropertiesFamily_ObjectData {
 
 impl RequestParcelTransfer_Data {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(RequestParcelTransfer_Data {
             transaction_id: {
                 let mut raw = [0u8; 16];
@@ -33830,9 +32475,7 @@ impl RequestParcelTransfer_Data {
 
 impl RequestParcelTransfer_RegionData {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(RequestParcelTransfer_RegionData {
             region_id: {
                 let mut raw = [0u8; 16];
@@ -33847,9 +32490,7 @@ impl RequestParcelTransfer_RegionData {
 
 impl RequestPayPrice_ObjectData {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(RequestPayPrice_ObjectData {
             object_id: {
                 let mut raw = [0u8; 16];
@@ -33862,9 +32503,7 @@ impl RequestPayPrice_ObjectData {
 
 impl RequestRegionInfo_AgentData {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(RequestRegionInfo_AgentData {
             agent_id: {
                 let mut raw = [0u8; 16];
@@ -33882,9 +32521,7 @@ impl RequestRegionInfo_AgentData {
 
 impl RequestTaskInventory_AgentData {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(RequestTaskInventory_AgentData {
             agent_id: {
                 let mut raw = [0u8; 16];
@@ -33902,9 +32539,7 @@ impl RequestTaskInventory_AgentData {
 
 impl RequestTaskInventory_InventoryData {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(RequestTaskInventory_InventoryData {
             local_id: buffer.read_u32::<LittleEndian>()?,
         })
@@ -33913,9 +32548,7 @@ impl RequestTaskInventory_InventoryData {
 
 impl RequestXfer_XferID {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(RequestXfer_XferID {
             id: buffer.read_u64::<LittleEndian>()?,
             filename: {
@@ -33939,9 +32572,7 @@ impl RequestXfer_XferID {
 
 impl RetrieveInstantMessages_AgentData {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(RetrieveInstantMessages_AgentData {
             agent_id: {
                 let mut raw = [0u8; 16];
@@ -33959,9 +32590,7 @@ impl RetrieveInstantMessages_AgentData {
 
 impl RevokePermissions_AgentData {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(RevokePermissions_AgentData {
             agent_id: {
                 let mut raw = [0u8; 16];
@@ -33979,9 +32608,7 @@ impl RevokePermissions_AgentData {
 
 impl RevokePermissions_Data {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(RevokePermissions_Data {
             object_id: {
                 let mut raw = [0u8; 16];
@@ -33995,9 +32622,7 @@ impl RevokePermissions_Data {
 
 impl RezMultipleAttachmentsFromInv_AgentData {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(RezMultipleAttachmentsFromInv_AgentData {
             agent_id: {
                 let mut raw = [0u8; 16];
@@ -34015,9 +32640,7 @@ impl RezMultipleAttachmentsFromInv_AgentData {
 
 impl RezMultipleAttachmentsFromInv_HeaderData {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(RezMultipleAttachmentsFromInv_HeaderData {
             compound_msg_id: {
                 let mut raw = [0u8; 16];
@@ -34032,9 +32655,7 @@ impl RezMultipleAttachmentsFromInv_HeaderData {
 
 impl RezMultipleAttachmentsFromInv_ObjectData {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(RezMultipleAttachmentsFromInv_ObjectData {
             item_id: {
                 let mut raw = [0u8; 16];
@@ -34069,9 +32690,7 @@ impl RezMultipleAttachmentsFromInv_ObjectData {
 
 impl RezObject_AgentData {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(RezObject_AgentData {
             agent_id: {
                 let mut raw = [0u8; 16];
@@ -34094,9 +32713,7 @@ impl RezObject_AgentData {
 
 impl RezObject_RezData {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(RezObject_RezData {
             from_task_id: {
                 let mut raw = [0u8; 16];
@@ -34132,9 +32749,7 @@ impl RezObject_RezData {
 
 impl RezObject_InventoryData {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(RezObject_InventoryData {
             item_id: {
                 let mut raw = [0u8; 16];
@@ -34197,9 +32812,7 @@ impl RezObject_InventoryData {
 
 impl RezObjectFromNotecard_AgentData {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(RezObjectFromNotecard_AgentData {
             agent_id: {
                 let mut raw = [0u8; 16];
@@ -34222,9 +32835,7 @@ impl RezObjectFromNotecard_AgentData {
 
 impl RezObjectFromNotecard_RezData {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(RezObjectFromNotecard_RezData {
             from_task_id: {
                 let mut raw = [0u8; 16];
@@ -34260,9 +32871,7 @@ impl RezObjectFromNotecard_RezData {
 
 impl RezObjectFromNotecard_NotecardData {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(RezObjectFromNotecard_NotecardData {
             notecard_item_id: {
                 let mut raw = [0u8; 16];
@@ -34280,9 +32889,7 @@ impl RezObjectFromNotecard_NotecardData {
 
 impl RezObjectFromNotecard_InventoryData {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(RezObjectFromNotecard_InventoryData {
             item_id: {
                 let mut raw = [0u8; 16];
@@ -34295,9 +32902,7 @@ impl RezObjectFromNotecard_InventoryData {
 
 impl RezRestoreToWorld_AgentData {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(RezRestoreToWorld_AgentData {
             agent_id: {
                 let mut raw = [0u8; 16];
@@ -34315,9 +32920,7 @@ impl RezRestoreToWorld_AgentData {
 
 impl RezRestoreToWorld_InventoryData {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(RezRestoreToWorld_InventoryData {
             item_id: {
                 let mut raw = [0u8; 16];
@@ -34380,9 +32983,7 @@ impl RezRestoreToWorld_InventoryData {
 
 impl RezScript_AgentData {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(RezScript_AgentData {
             agent_id: {
                 let mut raw = [0u8; 16];
@@ -34405,9 +33006,7 @@ impl RezScript_AgentData {
 
 impl RezScript_UpdateBlock {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(RezScript_UpdateBlock {
             object_local_id: buffer.read_u32::<LittleEndian>()?,
             enabled: buffer.read_u8()? == 1,
@@ -34417,9 +33016,7 @@ impl RezScript_UpdateBlock {
 
 impl RezScript_InventoryBlock {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(RezScript_InventoryBlock {
             item_id: {
                 let mut raw = [0u8; 16];
@@ -34482,9 +33079,7 @@ impl RezScript_InventoryBlock {
 
 impl RezSingleAttachmentFromInv_AgentData {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(RezSingleAttachmentFromInv_AgentData {
             agent_id: {
                 let mut raw = [0u8; 16];
@@ -34502,9 +33097,7 @@ impl RezSingleAttachmentFromInv_AgentData {
 
 impl RezSingleAttachmentFromInv_ObjectData {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(RezSingleAttachmentFromInv_ObjectData {
             item_id: {
                 let mut raw = [0u8; 16];
@@ -34539,9 +33132,7 @@ impl RezSingleAttachmentFromInv_ObjectData {
 
 impl RoutedMoneyBalanceReply_TargetBlock {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(RoutedMoneyBalanceReply_TargetBlock {
             target_ip: {
                 let mut raw = [0u8; 4];
@@ -34555,9 +33146,7 @@ impl RoutedMoneyBalanceReply_TargetBlock {
 
 impl RoutedMoneyBalanceReply_MoneyData {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(RoutedMoneyBalanceReply_MoneyData {
             agent_id: {
                 let mut raw = [0u8; 16];
@@ -34585,9 +33174,7 @@ impl RoutedMoneyBalanceReply_MoneyData {
 
 impl RoutedMoneyBalanceReply_TransactionInfo {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(RoutedMoneyBalanceReply_TransactionInfo {
             transaction_type: buffer.read_i32::<LittleEndian>()?,
             source_id: {
@@ -34615,9 +33202,7 @@ impl RoutedMoneyBalanceReply_TransactionInfo {
 
 impl RpcChannelReply_DataBlock {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(RpcChannelReply_DataBlock {
             task_id: {
                 let mut raw = [0u8; 16];
@@ -34640,9 +33225,7 @@ impl RpcChannelReply_DataBlock {
 
 impl RpcChannelRequest_DataBlock {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(RpcChannelRequest_DataBlock {
             grid_x: buffer.read_u32::<LittleEndian>()?,
             grid_y: buffer.read_u32::<LittleEndian>()?,
@@ -34662,9 +33245,7 @@ impl RpcChannelRequest_DataBlock {
 
 impl RpcScriptReplyInbound_DataBlock {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(RpcScriptReplyInbound_DataBlock {
             task_id: {
                 let mut raw = [0u8; 16];
@@ -34694,9 +33275,7 @@ impl RpcScriptReplyInbound_DataBlock {
 
 impl RpcScriptRequestInbound_TargetBlock {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(RpcScriptRequestInbound_TargetBlock {
             grid_x: buffer.read_u32::<LittleEndian>()?,
             grid_y: buffer.read_u32::<LittleEndian>()?,
@@ -34706,9 +33285,7 @@ impl RpcScriptRequestInbound_TargetBlock {
 
 impl RpcScriptRequestInbound_DataBlock {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(RpcScriptRequestInbound_DataBlock {
             task_id: {
                 let mut raw = [0u8; 16];
@@ -34738,9 +33315,7 @@ impl RpcScriptRequestInbound_DataBlock {
 
 impl RpcScriptRequestInboundForward_DataBlock {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(RpcScriptRequestInboundForward_DataBlock {
             rpc_server_ip: {
                 let mut raw = [0u8; 4];
@@ -34776,9 +33351,7 @@ impl RpcScriptRequestInboundForward_DataBlock {
 
 impl SaveAssetIntoInventory_AgentData {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(SaveAssetIntoInventory_AgentData {
             agent_id: {
                 let mut raw = [0u8; 16];
@@ -34791,9 +33364,7 @@ impl SaveAssetIntoInventory_AgentData {
 
 impl SaveAssetIntoInventory_InventoryData {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(SaveAssetIntoInventory_InventoryData {
             item_id: {
                 let mut raw = [0u8; 16];
@@ -34811,9 +33382,7 @@ impl SaveAssetIntoInventory_InventoryData {
 
 impl ScriptAnswerYes_AgentData {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(ScriptAnswerYes_AgentData {
             agent_id: {
                 let mut raw = [0u8; 16];
@@ -34831,9 +33400,7 @@ impl ScriptAnswerYes_AgentData {
 
 impl ScriptAnswerYes_Data {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(ScriptAnswerYes_Data {
             task_id: {
                 let mut raw = [0u8; 16];
@@ -34852,9 +33419,7 @@ impl ScriptAnswerYes_Data {
 
 impl ScriptControlChange_Data {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(ScriptControlChange_Data {
             take_controls: buffer.read_u8()? == 1,
             controls: buffer.read_u32::<LittleEndian>()?,
@@ -34865,9 +33430,7 @@ impl ScriptControlChange_Data {
 
 impl ScriptDataReply_DataBlock {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(ScriptDataReply_DataBlock {
             hash: buffer.read_u64::<LittleEndian>()?,
             reply: {
@@ -34882,9 +33445,7 @@ impl ScriptDataReply_DataBlock {
 
 impl ScriptDataRequest_DataBlock {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(ScriptDataRequest_DataBlock {
             hash: buffer.read_u64::<LittleEndian>()?,
             request_type: buffer.read_i8()?,
@@ -34900,9 +33461,7 @@ impl ScriptDataRequest_DataBlock {
 
 impl ScriptDialog_Data {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(ScriptDialog_Data {
             object_id: {
                 let mut raw = [0u8; 16];
@@ -34945,9 +33504,7 @@ impl ScriptDialog_Data {
 
 impl ScriptDialog_Buttons {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(ScriptDialog_Buttons {
             button_label: {
                 let n = buffer.read_u8()? as usize;
@@ -34961,9 +33518,7 @@ impl ScriptDialog_Buttons {
 
 impl ScriptDialog_OwnerData {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(ScriptDialog_OwnerData {
             owner_id: {
                 let mut raw = [0u8; 16];
@@ -34976,9 +33531,7 @@ impl ScriptDialog_OwnerData {
 
 impl ScriptDialogReply_AgentData {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(ScriptDialogReply_AgentData {
             agent_id: {
                 let mut raw = [0u8; 16];
@@ -34996,9 +33549,7 @@ impl ScriptDialogReply_AgentData {
 
 impl ScriptDialogReply_Data {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(ScriptDialogReply_Data {
             object_id: {
                 let mut raw = [0u8; 16];
@@ -35019,9 +33570,7 @@ impl ScriptDialogReply_Data {
 
 impl ScriptMailRegistration_DataBlock {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(ScriptMailRegistration_DataBlock {
             target_ip: {
                 let n = buffer.read_u8()? as usize;
@@ -35042,9 +33591,7 @@ impl ScriptMailRegistration_DataBlock {
 
 impl ScriptQuestion_Data {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(ScriptQuestion_Data {
             task_id: {
                 let mut raw = [0u8; 16];
@@ -35075,9 +33622,7 @@ impl ScriptQuestion_Data {
 
 impl ScriptReset_AgentData {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(ScriptReset_AgentData {
             agent_id: {
                 let mut raw = [0u8; 16];
@@ -35095,9 +33640,7 @@ impl ScriptReset_AgentData {
 
 impl ScriptReset_Script {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(ScriptReset_Script {
             object_id: {
                 let mut raw = [0u8; 16];
@@ -35115,9 +33658,7 @@ impl ScriptReset_Script {
 
 impl ScriptRunningReply_Script {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(ScriptRunningReply_Script {
             object_id: {
                 let mut raw = [0u8; 16];
@@ -35136,9 +33677,7 @@ impl ScriptRunningReply_Script {
 
 impl ScriptSensorReply_Requester {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(ScriptSensorReply_Requester {
             source_id: {
                 let mut raw = [0u8; 16];
@@ -35151,9 +33690,7 @@ impl ScriptSensorReply_Requester {
 
 impl ScriptSensorReply_SensedData {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(ScriptSensorReply_SensedData {
             object_id: {
                 let mut raw = [0u8; 16];
@@ -35202,9 +33739,7 @@ impl ScriptSensorReply_SensedData {
 
 impl ScriptSensorRequest_Requester {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(ScriptSensorRequest_Requester {
             source_id: {
                 let mut raw = [0u8; 16];
@@ -35251,9 +33786,7 @@ impl ScriptSensorRequest_Requester {
 
 impl ScriptTeleportRequest_Data {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(ScriptTeleportRequest_Data {
             object_name: {
                 let n = buffer.read_u8()? as usize;
@@ -35283,9 +33816,7 @@ impl ScriptTeleportRequest_Data {
 
 impl SendPostcard_AgentData {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(SendPostcard_AgentData {
             agent_id: {
                 let mut raw = [0u8; 16];
@@ -35345,9 +33876,7 @@ impl SendPostcard_AgentData {
 
 impl SendXferPacket_XferID {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(SendXferPacket_XferID {
             id: buffer.read_u64::<LittleEndian>()?,
             packet: buffer.read_u32::<LittleEndian>()?,
@@ -35357,9 +33886,7 @@ impl SendXferPacket_XferID {
 
 impl SendXferPacket_DataPacket {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(SendXferPacket_DataPacket {
             data: {
                 let n = buffer.read_u16::<LittleEndian>()? as usize;
@@ -35373,9 +33900,7 @@ impl SendXferPacket_DataPacket {
 
 impl SetAlwaysRun_AgentData {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(SetAlwaysRun_AgentData {
             agent_id: {
                 let mut raw = [0u8; 16];
@@ -35394,18 +33919,16 @@ impl SetAlwaysRun_AgentData {
 
 impl SetCPURatio_Data {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
-        Ok(SetCPURatio_Data { ratio: buffer.read_u8()? })
+    where R: Read {
+        Ok(SetCPURatio_Data {
+            ratio: buffer.read_u8()?,
+        })
     }
 }
 
 impl SetFollowCamProperties_ObjectData {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(SetFollowCamProperties_ObjectData {
             object_id: {
                 let mut raw = [0u8; 16];
@@ -35418,9 +33941,7 @@ impl SetFollowCamProperties_ObjectData {
 
 impl SetFollowCamProperties_CameraProperty {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(SetFollowCamProperties_CameraProperty {
             type_: buffer.read_i32::<LittleEndian>()?,
             value: buffer.read_f32::<LittleEndian>()?,
@@ -35430,9 +33951,7 @@ impl SetFollowCamProperties_CameraProperty {
 
 impl SetGroupAcceptNotices_AgentData {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(SetGroupAcceptNotices_AgentData {
             agent_id: {
                 let mut raw = [0u8; 16];
@@ -35450,9 +33969,7 @@ impl SetGroupAcceptNotices_AgentData {
 
 impl SetGroupAcceptNotices_Data {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(SetGroupAcceptNotices_Data {
             group_id: {
                 let mut raw = [0u8; 16];
@@ -35466,9 +33983,7 @@ impl SetGroupAcceptNotices_Data {
 
 impl SetGroupAcceptNotices_NewData {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(SetGroupAcceptNotices_NewData {
             list_in_profile: buffer.read_u8()? == 1,
         })
@@ -35477,9 +33992,7 @@ impl SetGroupAcceptNotices_NewData {
 
 impl SetGroupContribution_AgentData {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(SetGroupContribution_AgentData {
             agent_id: {
                 let mut raw = [0u8; 16];
@@ -35497,9 +34010,7 @@ impl SetGroupContribution_AgentData {
 
 impl SetGroupContribution_Data {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(SetGroupContribution_Data {
             group_id: {
                 let mut raw = [0u8; 16];
@@ -35513,9 +34024,7 @@ impl SetGroupContribution_Data {
 
 impl SetScriptRunning_AgentData {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(SetScriptRunning_AgentData {
             agent_id: {
                 let mut raw = [0u8; 16];
@@ -35533,9 +34042,7 @@ impl SetScriptRunning_AgentData {
 
 impl SetScriptRunning_Script {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(SetScriptRunning_Script {
             object_id: {
                 let mut raw = [0u8; 16];
@@ -35554,9 +34061,7 @@ impl SetScriptRunning_Script {
 
 impl SetSimPresenceInDatabase_SimData {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(SetSimPresenceInDatabase_SimData {
             region_id: {
                 let mut raw = [0u8; 16];
@@ -35586,9 +34091,7 @@ impl SetSimPresenceInDatabase_SimData {
 
 impl SetSimStatusInDatabase_Data {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(SetSimStatusInDatabase_Data {
             region_id: {
                 let mut raw = [0u8; 16];
@@ -35618,9 +34121,7 @@ impl SetSimStatusInDatabase_Data {
 
 impl SetStartLocation_StartLocationData {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(SetStartLocation_StartLocationData {
             agent_id: {
                 let mut raw = [0u8; 16];
@@ -35650,9 +34151,7 @@ impl SetStartLocation_StartLocationData {
 
 impl SetStartLocationRequest_AgentData {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(SetStartLocationRequest_AgentData {
             agent_id: {
                 let mut raw = [0u8; 16];
@@ -35670,9 +34169,7 @@ impl SetStartLocationRequest_AgentData {
 
 impl SetStartLocationRequest_StartLocationData {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(SetStartLocationRequest_StartLocationData {
             sim_name: {
                 let n = buffer.read_u8()? as usize;
@@ -35697,9 +34194,7 @@ impl SetStartLocationRequest_StartLocationData {
 
 impl SimCrashed_Data {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(SimCrashed_Data {
             region_x: buffer.read_u32::<LittleEndian>()?,
             region_y: buffer.read_u32::<LittleEndian>()?,
@@ -35709,9 +34204,7 @@ impl SimCrashed_Data {
 
 impl SimCrashed_Users {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(SimCrashed_Users {
             agent_id: {
                 let mut raw = [0u8; 16];
@@ -35724,9 +34217,7 @@ impl SimCrashed_Users {
 
 impl SimStats_Region {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(SimStats_Region {
             region_x: buffer.read_u32::<LittleEndian>()?,
             region_y: buffer.read_u32::<LittleEndian>()?,
@@ -35738,9 +34229,7 @@ impl SimStats_Region {
 
 impl SimStats_Stat {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(SimStats_Stat {
             stat_id: buffer.read_u32::<LittleEndian>()?,
             stat_value: buffer.read_f32::<LittleEndian>()?,
@@ -35750,18 +34239,16 @@ impl SimStats_Stat {
 
 impl SimStats_PidStat {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
-        Ok(SimStats_PidStat { pid: buffer.read_i32::<LittleEndian>()? })
+    where R: Read {
+        Ok(SimStats_PidStat {
+            pid: buffer.read_i32::<LittleEndian>()?,
+        })
     }
 }
 
 impl SimStatus_SimStatus {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(SimStatus_SimStatus {
             can_accept_agents: buffer.read_u8()? == 1,
             can_accept_tasks: buffer.read_u8()? == 1,
@@ -35771,9 +34258,7 @@ impl SimStatus_SimStatus {
 
 impl SimWideDeletes_AgentData {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(SimWideDeletes_AgentData {
             agent_id: {
                 let mut raw = [0u8; 16];
@@ -35791,9 +34276,7 @@ impl SimWideDeletes_AgentData {
 
 impl SimWideDeletes_DataBlock {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(SimWideDeletes_DataBlock {
             target_id: {
                 let mut raw = [0u8; 16];
@@ -35807,9 +34290,7 @@ impl SimWideDeletes_DataBlock {
 
 impl SimulatorLoad_SimulatorLoad {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(SimulatorLoad_SimulatorLoad {
             time_dilation: buffer.read_f32::<LittleEndian>()?,
             agent_count: buffer.read_i32::<LittleEndian>()?,
@@ -35820,9 +34301,7 @@ impl SimulatorLoad_SimulatorLoad {
 
 impl SimulatorLoad_AgentList {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(SimulatorLoad_AgentList {
             circuit_code: buffer.read_u32::<LittleEndian>()?,
             x: buffer.read_u8()?,
@@ -35833,9 +34312,7 @@ impl SimulatorLoad_AgentList {
 
 impl SimulatorMapUpdate_MapData {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(SimulatorMapUpdate_MapData {
             flags: buffer.read_u32::<LittleEndian>()?,
         })
@@ -35844,9 +34321,7 @@ impl SimulatorMapUpdate_MapData {
 
 impl SimulatorPresentAtLocation_SimulatorPublicHostBlock {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(SimulatorPresentAtLocation_SimulatorPublicHostBlock {
             port: buffer.read_u16::<LittleEndian>()?,
             simulator_ip: {
@@ -35862,9 +34337,7 @@ impl SimulatorPresentAtLocation_SimulatorPublicHostBlock {
 
 impl SimulatorPresentAtLocation_NeighborBlock {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(SimulatorPresentAtLocation_NeighborBlock {
             ip: {
                 let mut raw = [0u8; 4];
@@ -35878,9 +34351,7 @@ impl SimulatorPresentAtLocation_NeighborBlock {
 
 impl SimulatorPresentAtLocation_SimulatorBlock {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(SimulatorPresentAtLocation_SimulatorBlock {
             sim_name: {
                 let n = buffer.read_u8()? as usize;
@@ -35903,9 +34374,7 @@ impl SimulatorPresentAtLocation_SimulatorBlock {
 
 impl SimulatorPresentAtLocation_TelehubBlock {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(SimulatorPresentAtLocation_TelehubBlock {
             has_telehub: buffer.read_u8()? == 1,
             telehub_pos: Vector3::new(
@@ -35919,9 +34388,7 @@ impl SimulatorPresentAtLocation_TelehubBlock {
 
 impl SimulatorReady_SimulatorBlock {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(SimulatorReady_SimulatorBlock {
             sim_name: {
                 let n = buffer.read_u8()? as usize;
@@ -35944,9 +34411,7 @@ impl SimulatorReady_SimulatorBlock {
 
 impl SimulatorReady_TelehubBlock {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(SimulatorReady_TelehubBlock {
             has_telehub: buffer.read_u8()? == 1,
             telehub_pos: Vector3::new(
@@ -35960,9 +34425,7 @@ impl SimulatorReady_TelehubBlock {
 
 impl SimulatorSetMap_MapData {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(SimulatorSetMap_MapData {
             region_handle: buffer.read_u64::<LittleEndian>()?,
             type_: buffer.read_i32::<LittleEndian>()?,
@@ -35977,9 +34440,7 @@ impl SimulatorSetMap_MapData {
 
 impl SimulatorViewerTimeMessage_TimeInfo {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(SimulatorViewerTimeMessage_TimeInfo {
             usec_since_start: buffer.read_u64::<LittleEndian>()?,
             sec_per_day: buffer.read_u32::<LittleEndian>()?,
@@ -36001,9 +34462,7 @@ impl SimulatorViewerTimeMessage_TimeInfo {
 
 impl SoundTrigger_SoundData {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(SoundTrigger_SoundData {
             sound_id: {
                 let mut raw = [0u8; 16];
@@ -36038,9 +34497,7 @@ impl SoundTrigger_SoundData {
 
 impl StartAuction_AgentData {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(StartAuction_AgentData {
             agent_id: {
                 let mut raw = [0u8; 16];
@@ -36053,9 +34510,7 @@ impl StartAuction_AgentData {
 
 impl StartAuction_ParcelData {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(StartAuction_ParcelData {
             parcel_id: {
                 let mut raw = [0u8; 16];
@@ -36079,9 +34534,7 @@ impl StartAuction_ParcelData {
 
 impl StartGroupProposal_AgentData {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(StartGroupProposal_AgentData {
             agent_id: {
                 let mut raw = [0u8; 16];
@@ -36099,9 +34552,7 @@ impl StartGroupProposal_AgentData {
 
 impl StartGroupProposal_ProposalData {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(StartGroupProposal_ProposalData {
             group_id: {
                 let mut raw = [0u8; 16];
@@ -36123,9 +34574,7 @@ impl StartGroupProposal_ProposalData {
 
 impl StartLure_AgentData {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(StartLure_AgentData {
             agent_id: {
                 let mut raw = [0u8; 16];
@@ -36143,9 +34592,7 @@ impl StartLure_AgentData {
 
 impl StartLure_Info {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(StartLure_Info {
             lure_type: buffer.read_u8()?,
             message: {
@@ -36160,9 +34607,7 @@ impl StartLure_Info {
 
 impl StartLure_TargetData {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(StartLure_TargetData {
             target_id: {
                 let mut raw = [0u8; 16];
@@ -36175,9 +34620,7 @@ impl StartLure_TargetData {
 
 impl StartPingCheck_PingID {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(StartPingCheck_PingID {
             ping_id: buffer.read_u8()?,
             oldest_unacked: buffer.read_u32::<LittleEndian>()?,
@@ -36187,9 +34630,7 @@ impl StartPingCheck_PingID {
 
 impl StateSave_AgentData {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(StateSave_AgentData {
             agent_id: {
                 let mut raw = [0u8; 16];
@@ -36207,9 +34648,7 @@ impl StateSave_AgentData {
 
 impl StateSave_DataBlock {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(StateSave_DataBlock {
             filename: {
                 let n = buffer.read_u8()? as usize;
@@ -36223,9 +34662,7 @@ impl StateSave_DataBlock {
 
 impl SystemKickUser_AgentInfo {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(SystemKickUser_AgentInfo {
             agent_id: {
                 let mut raw = [0u8; 16];
@@ -36238,9 +34675,7 @@ impl SystemKickUser_AgentInfo {
 
 impl SystemMessage_MethodData {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(SystemMessage_MethodData {
             method: {
                 let n = buffer.read_u8()? as usize;
@@ -36264,9 +34699,7 @@ impl SystemMessage_MethodData {
 
 impl SystemMessage_ParamList {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(SystemMessage_ParamList {
             parameter: {
                 let n = buffer.read_u8()? as usize;
@@ -36280,9 +34713,7 @@ impl SystemMessage_ParamList {
 
 impl TelehubInfo_TelehubBlock {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(TelehubInfo_TelehubBlock {
             object_id: {
                 let mut raw = [0u8; 16];
@@ -36314,9 +34745,7 @@ impl TelehubInfo_TelehubBlock {
 
 impl TelehubInfo_SpawnPointBlock {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(TelehubInfo_SpawnPointBlock {
             spawn_point_pos: Vector3::new(
                 buffer.read_f32::<LittleEndian>()?,
@@ -36329,9 +34758,7 @@ impl TelehubInfo_SpawnPointBlock {
 
 impl TeleportCancel_Info {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(TeleportCancel_Info {
             agent_id: {
                 let mut raw = [0u8; 16];
@@ -36349,9 +34776,7 @@ impl TeleportCancel_Info {
 
 impl TeleportFailed_Info {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(TeleportFailed_Info {
             agent_id: {
                 let mut raw = [0u8; 16];
@@ -36370,9 +34795,7 @@ impl TeleportFailed_Info {
 
 impl TeleportFailed_AlertInfo {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(TeleportFailed_AlertInfo {
             message: {
                 let n = buffer.read_u8()? as usize;
@@ -36392,9 +34815,7 @@ impl TeleportFailed_AlertInfo {
 
 impl TeleportFinish_Info {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(TeleportFinish_Info {
             agent_id: {
                 let mut raw = [0u8; 16];
@@ -36425,9 +34846,7 @@ impl TeleportFinish_Info {
 
 impl TeleportLandingStatusChanged_RegionData {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(TeleportLandingStatusChanged_RegionData {
             region_handle: buffer.read_u64::<LittleEndian>()?,
         })
@@ -36436,9 +34855,7 @@ impl TeleportLandingStatusChanged_RegionData {
 
 impl TeleportLandmarkRequest_Info {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(TeleportLandmarkRequest_Info {
             agent_id: {
                 let mut raw = [0u8; 16];
@@ -36461,9 +34878,7 @@ impl TeleportLandmarkRequest_Info {
 
 impl TeleportLocal_Info {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(TeleportLocal_Info {
             agent_id: {
                 let mut raw = [0u8; 16];
@@ -36488,9 +34903,7 @@ impl TeleportLocal_Info {
 
 impl TeleportLocationRequest_AgentData {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(TeleportLocationRequest_AgentData {
             agent_id: {
                 let mut raw = [0u8; 16];
@@ -36508,9 +34921,7 @@ impl TeleportLocationRequest_AgentData {
 
 impl TeleportLocationRequest_Info {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(TeleportLocationRequest_Info {
             region_handle: buffer.read_u64::<LittleEndian>()?,
             position: Vector3::new(
@@ -36529,9 +34940,7 @@ impl TeleportLocationRequest_Info {
 
 impl TeleportLureRequest_Info {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(TeleportLureRequest_Info {
             agent_id: {
                 let mut raw = [0u8; 16];
@@ -36555,9 +34964,7 @@ impl TeleportLureRequest_Info {
 
 impl TeleportProgress_AgentData {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(TeleportProgress_AgentData {
             agent_id: {
                 let mut raw = [0u8; 16];
@@ -36570,9 +34977,7 @@ impl TeleportProgress_AgentData {
 
 impl TeleportProgress_Info {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(TeleportProgress_Info {
             teleport_flags: buffer.read_u32::<LittleEndian>()?,
             message: {
@@ -36587,9 +34992,7 @@ impl TeleportProgress_Info {
 
 impl TeleportRequest_AgentData {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(TeleportRequest_AgentData {
             agent_id: {
                 let mut raw = [0u8; 16];
@@ -36607,9 +35010,7 @@ impl TeleportRequest_AgentData {
 
 impl TeleportRequest_Info {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(TeleportRequest_Info {
             region_id: {
                 let mut raw = [0u8; 16];
@@ -36632,9 +35033,7 @@ impl TeleportRequest_Info {
 
 impl TeleportStart_Info {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(TeleportStart_Info {
             teleport_flags: buffer.read_u32::<LittleEndian>()?,
         })
@@ -36643,9 +35042,7 @@ impl TeleportStart_Info {
 
 impl TerminateFriendship_AgentData {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(TerminateFriendship_AgentData {
             agent_id: {
                 let mut raw = [0u8; 16];
@@ -36663,9 +35060,7 @@ impl TerminateFriendship_AgentData {
 
 impl TerminateFriendship_ExBlock {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(TerminateFriendship_ExBlock {
             other_id: {
                 let mut raw = [0u8; 16];
@@ -36678,9 +35073,7 @@ impl TerminateFriendship_ExBlock {
 
 impl TestMessage_TestBlock1 {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(TestMessage_TestBlock1 {
             test1: buffer.read_u32::<LittleEndian>()?,
         })
@@ -36689,9 +35082,7 @@ impl TestMessage_TestBlock1 {
 
 impl TestMessage_NeighborBlock {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(TestMessage_NeighborBlock {
             test0: buffer.read_u32::<LittleEndian>()?,
             test1: buffer.read_u32::<LittleEndian>()?,
@@ -36702,9 +35093,7 @@ impl TestMessage_NeighborBlock {
 
 impl TrackAgent_AgentData {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(TrackAgent_AgentData {
             agent_id: {
                 let mut raw = [0u8; 16];
@@ -36722,9 +35111,7 @@ impl TrackAgent_AgentData {
 
 impl TrackAgent_TargetData {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(TrackAgent_TargetData {
             prey_id: {
                 let mut raw = [0u8; 16];
@@ -36737,9 +35124,7 @@ impl TrackAgent_TargetData {
 
 impl TransferAbort_TransferInfo {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(TransferAbort_TransferInfo {
             transfer_id: {
                 let mut raw = [0u8; 16];
@@ -36753,9 +35138,7 @@ impl TransferAbort_TransferInfo {
 
 impl TransferInfo_TransferInfo {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(TransferInfo_TransferInfo {
             transfer_id: {
                 let mut raw = [0u8; 16];
@@ -36778,9 +35161,7 @@ impl TransferInfo_TransferInfo {
 
 impl TransferInventory_InfoBlock {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(TransferInventory_InfoBlock {
             source_id: {
                 let mut raw = [0u8; 16];
@@ -36803,9 +35184,7 @@ impl TransferInventory_InfoBlock {
 
 impl TransferInventory_InventoryBlock {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(TransferInventory_InventoryBlock {
             inventory_id: {
                 let mut raw = [0u8; 16];
@@ -36819,9 +35198,7 @@ impl TransferInventory_InventoryBlock {
 
 impl TransferInventoryAck_InfoBlock {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(TransferInventoryAck_InfoBlock {
             transaction_id: {
                 let mut raw = [0u8; 16];
@@ -36839,9 +35216,7 @@ impl TransferInventoryAck_InfoBlock {
 
 impl TransferPacket_TransferData {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(TransferPacket_TransferData {
             transfer_id: {
                 let mut raw = [0u8; 16];
@@ -36863,9 +35238,7 @@ impl TransferPacket_TransferData {
 
 impl TransferRequest_TransferInfo {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(TransferRequest_TransferInfo {
             transfer_id: {
                 let mut raw = [0u8; 16];
@@ -36887,9 +35260,7 @@ impl TransferRequest_TransferInfo {
 
 impl UUIDGroupNameReply_UUIDNameBlock {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(UUIDGroupNameReply_UUIDNameBlock {
             id: {
                 let mut raw = [0u8; 16];
@@ -36908,9 +35279,7 @@ impl UUIDGroupNameReply_UUIDNameBlock {
 
 impl UUIDGroupNameRequest_UUIDNameBlock {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(UUIDGroupNameRequest_UUIDNameBlock {
             id: {
                 let mut raw = [0u8; 16];
@@ -36923,9 +35292,7 @@ impl UUIDGroupNameRequest_UUIDNameBlock {
 
 impl UUIDNameReply_UUIDNameBlock {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(UUIDNameReply_UUIDNameBlock {
             id: {
                 let mut raw = [0u8; 16];
@@ -36950,9 +35317,7 @@ impl UUIDNameReply_UUIDNameBlock {
 
 impl UUIDNameRequest_UUIDNameBlock {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(UUIDNameRequest_UUIDNameBlock {
             id: {
                 let mut raw = [0u8; 16];
@@ -36965,9 +35330,7 @@ impl UUIDNameRequest_UUIDNameBlock {
 
 impl Undo_AgentData {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(Undo_AgentData {
             agent_id: {
                 let mut raw = [0u8; 16];
@@ -36990,9 +35353,7 @@ impl Undo_AgentData {
 
 impl Undo_ObjectData {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(Undo_ObjectData {
             object_id: {
                 let mut raw = [0u8; 16];
@@ -37005,9 +35366,7 @@ impl Undo_ObjectData {
 
 impl UndoLand_AgentData {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(UndoLand_AgentData {
             agent_id: {
                 let mut raw = [0u8; 16];
@@ -37025,9 +35384,7 @@ impl UndoLand_AgentData {
 
 impl UpdateAttachment_AgentData {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(UpdateAttachment_AgentData {
             agent_id: {
                 let mut raw = [0u8; 16];
@@ -37045,9 +35402,7 @@ impl UpdateAttachment_AgentData {
 
 impl UpdateAttachment_AttachmentBlock {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(UpdateAttachment_AttachmentBlock {
             attachment_point: buffer.read_u8()?,
         })
@@ -37056,9 +35411,7 @@ impl UpdateAttachment_AttachmentBlock {
 
 impl UpdateAttachment_OperationData {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(UpdateAttachment_OperationData {
             add_item: buffer.read_u8()? == 1,
             use_existing_asset: buffer.read_u8()? == 1,
@@ -37068,9 +35421,7 @@ impl UpdateAttachment_OperationData {
 
 impl UpdateAttachment_InventoryData {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(UpdateAttachment_InventoryData {
             item_id: {
                 let mut raw = [0u8; 16];
@@ -37133,9 +35484,7 @@ impl UpdateAttachment_InventoryData {
 
 impl UpdateCreateInventoryItem_AgentData {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(UpdateCreateInventoryItem_AgentData {
             agent_id: {
                 let mut raw = [0u8; 16];
@@ -37154,9 +35503,7 @@ impl UpdateCreateInventoryItem_AgentData {
 
 impl UpdateCreateInventoryItem_InventoryData {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(UpdateCreateInventoryItem_InventoryData {
             item_id: {
                 let mut raw = [0u8; 16];
@@ -37220,9 +35567,7 @@ impl UpdateCreateInventoryItem_InventoryData {
 
 impl UpdateGroupInfo_AgentData {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(UpdateGroupInfo_AgentData {
             agent_id: {
                 let mut raw = [0u8; 16];
@@ -37240,9 +35585,7 @@ impl UpdateGroupInfo_AgentData {
 
 impl UpdateGroupInfo_GroupData {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(UpdateGroupInfo_GroupData {
             group_id: {
                 let mut raw = [0u8; 16];
@@ -37271,9 +35614,7 @@ impl UpdateGroupInfo_GroupData {
 
 impl UpdateInventoryFolder_AgentData {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(UpdateInventoryFolder_AgentData {
             agent_id: {
                 let mut raw = [0u8; 16];
@@ -37291,9 +35632,7 @@ impl UpdateInventoryFolder_AgentData {
 
 impl UpdateInventoryFolder_FolderData {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(UpdateInventoryFolder_FolderData {
             folder_id: {
                 let mut raw = [0u8; 16];
@@ -37318,9 +35657,7 @@ impl UpdateInventoryFolder_FolderData {
 
 impl UpdateInventoryItem_AgentData {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(UpdateInventoryItem_AgentData {
             agent_id: {
                 let mut raw = [0u8; 16];
@@ -37343,9 +35680,7 @@ impl UpdateInventoryItem_AgentData {
 
 impl UpdateInventoryItem_InventoryData {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(UpdateInventoryItem_InventoryData {
             item_id: {
                 let mut raw = [0u8; 16];
@@ -37409,9 +35744,7 @@ impl UpdateInventoryItem_InventoryData {
 
 impl UpdateMuteListEntry_AgentData {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(UpdateMuteListEntry_AgentData {
             agent_id: {
                 let mut raw = [0u8; 16];
@@ -37429,9 +35762,7 @@ impl UpdateMuteListEntry_AgentData {
 
 impl UpdateMuteListEntry_MuteData {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(UpdateMuteListEntry_MuteData {
             mute_id: {
                 let mut raw = [0u8; 16];
@@ -37452,9 +35783,7 @@ impl UpdateMuteListEntry_MuteData {
 
 impl UpdateParcel_ParcelData {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(UpdateParcel_ParcelData {
             parcel_id: {
                 let mut raw = [0u8; 16];
@@ -37518,9 +35847,7 @@ impl UpdateParcel_ParcelData {
 
 impl UpdateSimulator_SimulatorInfo {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(UpdateSimulator_SimulatorInfo {
             region_id: {
                 let mut raw = [0u8; 16];
@@ -37541,9 +35868,7 @@ impl UpdateSimulator_SimulatorInfo {
 
 impl UpdateTaskInventory_AgentData {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(UpdateTaskInventory_AgentData {
             agent_id: {
                 let mut raw = [0u8; 16];
@@ -37561,9 +35886,7 @@ impl UpdateTaskInventory_AgentData {
 
 impl UpdateTaskInventory_UpdateData {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(UpdateTaskInventory_UpdateData {
             local_id: buffer.read_u32::<LittleEndian>()?,
             key: buffer.read_u8()?,
@@ -37573,9 +35896,7 @@ impl UpdateTaskInventory_UpdateData {
 
 impl UpdateTaskInventory_InventoryData {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(UpdateTaskInventory_InventoryData {
             item_id: {
                 let mut raw = [0u8; 16];
@@ -37638,9 +35959,7 @@ impl UpdateTaskInventory_InventoryData {
 
 impl UpdateUserInfo_AgentData {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(UpdateUserInfo_AgentData {
             agent_id: {
                 let mut raw = [0u8; 16];
@@ -37658,9 +35977,7 @@ impl UpdateUserInfo_AgentData {
 
 impl UpdateUserInfo_UserData {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(UpdateUserInfo_UserData {
             im_via_e_mail: buffer.read_u8()? == 1,
             directory_visibility: {
@@ -37675,9 +35992,7 @@ impl UpdateUserInfo_UserData {
 
 impl UseCachedMuteList_AgentData {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(UseCachedMuteList_AgentData {
             agent_id: {
                 let mut raw = [0u8; 16];
@@ -37690,9 +36005,7 @@ impl UseCachedMuteList_AgentData {
 
 impl UseCircuitCode_CircuitCode {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(UseCircuitCode_CircuitCode {
             code: buffer.read_u32::<LittleEndian>()?,
             session_id: {
@@ -37711,9 +36024,7 @@ impl UseCircuitCode_CircuitCode {
 
 impl UserInfoReply_AgentData {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(UserInfoReply_AgentData {
             agent_id: {
                 let mut raw = [0u8; 16];
@@ -37726,9 +36037,7 @@ impl UserInfoReply_AgentData {
 
 impl UserInfoReply_UserData {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(UserInfoReply_UserData {
             im_via_e_mail: buffer.read_u8()? == 1,
             directory_visibility: {
@@ -37749,9 +36058,7 @@ impl UserInfoReply_UserData {
 
 impl UserInfoRequest_AgentData {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(UserInfoRequest_AgentData {
             agent_id: {
                 let mut raw = [0u8; 16];
@@ -37769,9 +36076,7 @@ impl UserInfoRequest_AgentData {
 
 impl UserReport_AgentData {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(UserReport_AgentData {
             agent_id: {
                 let mut raw = [0u8; 16];
@@ -37789,9 +36094,7 @@ impl UserReport_AgentData {
 
 impl UserReport_ReportData {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(UserReport_ReportData {
             report_type: buffer.read_u8()?,
             category: buffer.read_u8()?,
@@ -37851,9 +36154,7 @@ impl UserReport_ReportData {
 
 impl UserReportInternal_ReportData {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(UserReportInternal_ReportData {
             report_type: buffer.read_u8()?,
             category: buffer.read_u8()?,
@@ -37942,9 +36243,7 @@ impl UserReportInternal_ReportData {
 
 impl VelocityInterpolateOff_AgentData {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(VelocityInterpolateOff_AgentData {
             agent_id: {
                 let mut raw = [0u8; 16];
@@ -37962,9 +36261,7 @@ impl VelocityInterpolateOff_AgentData {
 
 impl VelocityInterpolateOn_AgentData {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(VelocityInterpolateOn_AgentData {
             agent_id: {
                 let mut raw = [0u8; 16];
@@ -37982,9 +36279,7 @@ impl VelocityInterpolateOn_AgentData {
 
 impl ViewerEffect_AgentData {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(ViewerEffect_AgentData {
             agent_id: {
                 let mut raw = [0u8; 16];
@@ -38002,9 +36297,7 @@ impl ViewerEffect_AgentData {
 
 impl ViewerEffect_Effect {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(ViewerEffect_Effect {
             id: {
                 let mut raw = [0u8; 16];
@@ -38035,9 +36328,7 @@ impl ViewerEffect_Effect {
 
 impl ViewerFrozenMessage_FrozenData {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(ViewerFrozenMessage_FrozenData {
             data: buffer.read_u8()? == 1,
         })
@@ -38046,9 +36337,7 @@ impl ViewerFrozenMessage_FrozenData {
 
 impl ViewerStartAuction_AgentData {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(ViewerStartAuction_AgentData {
             agent_id: {
                 let mut raw = [0u8; 16];
@@ -38066,9 +36355,7 @@ impl ViewerStartAuction_AgentData {
 
 impl ViewerStartAuction_ParcelData {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(ViewerStartAuction_ParcelData {
             local_id: buffer.read_i32::<LittleEndian>()?,
             snapshot_id: {
@@ -38082,9 +36369,7 @@ impl ViewerStartAuction_ParcelData {
 
 impl ViewerStats_AgentData {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(ViewerStats_AgentData {
             agent_id: {
                 let mut raw = [0u8; 16];
@@ -38134,9 +36419,7 @@ impl ViewerStats_AgentData {
 
 impl ViewerStats_DownloadTotals {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(ViewerStats_DownloadTotals {
             world: buffer.read_u32::<LittleEndian>()?,
             objects: buffer.read_u32::<LittleEndian>()?,
@@ -38147,9 +36430,7 @@ impl ViewerStats_DownloadTotals {
 
 impl ViewerStats_NetStats {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(ViewerStats_NetStats {
             bytes: buffer.read_u32::<LittleEndian>()?,
             packets: buffer.read_u32::<LittleEndian>()?,
@@ -38161,9 +36442,7 @@ impl ViewerStats_NetStats {
 
 impl ViewerStats_FailStats {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(ViewerStats_FailStats {
             send_packet: buffer.read_u32::<LittleEndian>()?,
             dropped: buffer.read_u32::<LittleEndian>()?,
@@ -38177,9 +36456,7 @@ impl ViewerStats_FailStats {
 
 impl ViewerStats_MiscStats {
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<Self, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(ViewerStats_MiscStats {
             type_: buffer.read_u32::<LittleEndian>()?,
             value: buffer.read_f64::<LittleEndian>()?,
@@ -38195,11 +36472,11 @@ impl ViewerStats_MiscStats {
 
 impl Message for AbortXfer {
     fn write_to<W: ?Sized>(&self, buffer: &mut W) -> WriteMessageResult
-    where
-        W: Write,
-    {
+    where W: Write {
         // Write the message number.
-        buffer.write(&[0xff, 0xff, 0x00, 0x9d])?;
+        buffer.write(&[
+            0xff, 0xff, 0x00, 0x9d
+        ])?;
         // Block XferID
         buffer.write_u64::<LittleEndian>(self.xfer_id.id)?;
         buffer.write_i32::<LittleEndian>(self.xfer_id.result)?;
@@ -38207,9 +36484,7 @@ impl Message for AbortXfer {
     }
 
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         // Block XferID
         let xfer_id = AbortXfer_XferID::read_from(buffer)?;
         Ok(MessageInstance::AbortXfer(AbortXfer { xfer_id: xfer_id }))
@@ -38218,18 +36493,16 @@ impl Message for AbortXfer {
 
 impl Message for AcceptCallingCard {
     fn write_to<W: ?Sized>(&self, buffer: &mut W) -> WriteMessageResult
-    where
-        W: Write,
-    {
+    where W: Write {
         // Write the message number.
-        buffer.write(&[0xff, 0xff, 0x01, 0x2e])?;
+        buffer.write(&[
+            0xff, 0xff, 0x01, 0x2e
+        ])?;
         // Block AgentData
         buffer.write(self.agent_data.agent_id.as_bytes())?;
         buffer.write(self.agent_data.session_id.as_bytes())?;
         // Block TransactionBlock
-        buffer.write(
-            self.transaction_block.transaction_id.as_bytes(),
-        )?;
+        buffer.write(self.transaction_block.transaction_id.as_bytes())?;
         // Block FolderData
         buffer.write_u8(self.folder_data.len() as u8)?;
         for item in &self.folder_data {
@@ -38239,9 +36512,7 @@ impl Message for AcceptCallingCard {
     }
 
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         // Block AgentData
         let agent_data = AcceptCallingCard_AgentData::read_from(buffer)?;
         // Block TransactionBlock
@@ -38262,18 +36533,16 @@ impl Message for AcceptCallingCard {
 
 impl Message for AcceptFriendship {
     fn write_to<W: ?Sized>(&self, buffer: &mut W) -> WriteMessageResult
-    where
-        W: Write,
-    {
+    where W: Write {
         // Write the message number.
-        buffer.write(&[0xff, 0xff, 0x01, 0x29])?;
+        buffer.write(&[
+            0xff, 0xff, 0x01, 0x29
+        ])?;
         // Block AgentData
         buffer.write(self.agent_data.agent_id.as_bytes())?;
         buffer.write(self.agent_data.session_id.as_bytes())?;
         // Block TransactionBlock
-        buffer.write(
-            self.transaction_block.transaction_id.as_bytes(),
-        )?;
+        buffer.write(self.transaction_block.transaction_id.as_bytes())?;
         // Block FolderData
         buffer.write_u8(self.folder_data.len() as u8)?;
         for item in &self.folder_data {
@@ -38283,9 +36552,7 @@ impl Message for AcceptFriendship {
     }
 
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         // Block AgentData
         let agent_data = AcceptFriendship_AgentData::read_from(buffer)?;
         // Block TransactionBlock
@@ -38306,11 +36573,11 @@ impl Message for AcceptFriendship {
 
 impl Message for ActivateGestures {
     fn write_to<W: ?Sized>(&self, buffer: &mut W) -> WriteMessageResult
-    where
-        W: Write,
-    {
+    where W: Write {
         // Write the message number.
-        buffer.write(&[0xff, 0xff, 0x01, 0x3c])?;
+        buffer.write(&[
+            0xff, 0xff, 0x01, 0x3c
+        ])?;
         // Block AgentData
         buffer.write(self.agent_data.agent_id.as_bytes())?;
         buffer.write(self.agent_data.session_id.as_bytes())?;
@@ -38326,9 +36593,7 @@ impl Message for ActivateGestures {
     }
 
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         // Block AgentData
         let agent_data = ActivateGestures_AgentData::read_from(buffer)?;
         // Block Data
@@ -38346,11 +36611,11 @@ impl Message for ActivateGestures {
 
 impl Message for ActivateGroup {
     fn write_to<W: ?Sized>(&self, buffer: &mut W) -> WriteMessageResult
-    where
-        W: Write,
-    {
+    where W: Write {
         // Write the message number.
-        buffer.write(&[0xff, 0xff, 0x01, 0x70])?;
+        buffer.write(&[
+            0xff, 0xff, 0x01, 0x70
+        ])?;
         // Block AgentData
         buffer.write(self.agent_data.agent_id.as_bytes())?;
         buffer.write(self.agent_data.session_id.as_bytes())?;
@@ -38359,24 +36624,22 @@ impl Message for ActivateGroup {
     }
 
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         // Block AgentData
         let agent_data = ActivateGroup_AgentData::read_from(buffer)?;
-        Ok(MessageInstance::ActivateGroup(
-            ActivateGroup { agent_data: agent_data },
-        ))
+        Ok(MessageInstance::ActivateGroup(ActivateGroup {
+            agent_data: agent_data,
+        }))
     }
 }
 
 impl Message for AddCircuitCode {
     fn write_to<W: ?Sized>(&self, buffer: &mut W) -> WriteMessageResult
-    where
-        W: Write,
-    {
+    where W: Write {
         // Write the message number.
-        buffer.write(&[0xff, 0xff, 0x00, 0x02])?;
+        buffer.write(&[
+            0xff, 0xff, 0x00, 0x02
+        ])?;
         // Block CircuitCode
         buffer.write_u32::<LittleEndian>(self.circuit_code.code)?;
         buffer.write(self.circuit_code.session_id.as_bytes())?;
@@ -38385,24 +36648,22 @@ impl Message for AddCircuitCode {
     }
 
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         // Block CircuitCode
         let circuit_code = AddCircuitCode_CircuitCode::read_from(buffer)?;
-        Ok(MessageInstance::AddCircuitCode(
-            AddCircuitCode { circuit_code: circuit_code },
-        ))
+        Ok(MessageInstance::AddCircuitCode(AddCircuitCode {
+            circuit_code: circuit_code,
+        }))
     }
 }
 
 impl Message for AgentAlertMessage {
     fn write_to<W: ?Sized>(&self, buffer: &mut W) -> WriteMessageResult
-    where
-        W: Write,
-    {
+    where W: Write {
         // Write the message number.
-        buffer.write(&[0xff, 0xff, 0x00, 0x87])?;
+        buffer.write(&[
+            0xff, 0xff, 0x00, 0x87
+        ])?;
         // Block AgentData
         buffer.write(self.agent_data.agent_id.as_bytes())?;
         // Block AlertData
@@ -38413,9 +36674,7 @@ impl Message for AgentAlertMessage {
     }
 
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         // Block AgentData
         let agent_data = AgentAlertMessage_AgentData::read_from(buffer)?;
         // Block AlertData
@@ -38429,9 +36688,7 @@ impl Message for AgentAlertMessage {
 
 impl Message for AgentAnimation {
     fn write_to<W: ?Sized>(&self, buffer: &mut W) -> WriteMessageResult
-    where
-        W: Write,
-    {
+    where W: Write {
         // Write the message number.
         buffer.write(&[0x05])?;
         // Block AgentData
@@ -38453,9 +36710,7 @@ impl Message for AgentAnimation {
     }
 
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         // Block AgentData
         let agent_data = AgentAnimation_AgentData::read_from(buffer)?;
         // Block AnimationList
@@ -38480,11 +36735,11 @@ impl Message for AgentAnimation {
 
 impl Message for AgentCachedTexture {
     fn write_to<W: ?Sized>(&self, buffer: &mut W) -> WriteMessageResult
-    where
-        W: Write,
-    {
+    where W: Write {
         // Write the message number.
-        buffer.write(&[0xff, 0xff, 0x01, 0x80])?;
+        buffer.write(&[
+            0xff, 0xff, 0x01, 0x80
+        ])?;
         // Block AgentData
         buffer.write(self.agent_data.agent_id.as_bytes())?;
         buffer.write(self.agent_data.session_id.as_bytes())?;
@@ -38499,9 +36754,7 @@ impl Message for AgentCachedTexture {
     }
 
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         // Block AgentData
         let agent_data = AgentCachedTexture_AgentData::read_from(buffer)?;
         // Block WearableData
@@ -38519,11 +36772,11 @@ impl Message for AgentCachedTexture {
 
 impl Message for AgentCachedTextureResponse {
     fn write_to<W: ?Sized>(&self, buffer: &mut W) -> WriteMessageResult
-    where
-        W: Write,
-    {
+    where W: Write {
         // Write the message number.
-        buffer.write(&[0xff, 0xff, 0x01, 0x81])?;
+        buffer.write(&[
+            0xff, 0xff, 0x01, 0x81
+        ])?;
         // Block AgentData
         buffer.write(self.agent_data.agent_id.as_bytes())?;
         buffer.write(self.agent_data.session_id.as_bytes())?;
@@ -38540,9 +36793,7 @@ impl Message for AgentCachedTextureResponse {
     }
 
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         // Block AgentData
         let agent_data = AgentCachedTextureResponse_AgentData::read_from(buffer)?;
         // Block WearableData
@@ -38562,11 +36813,11 @@ impl Message for AgentCachedTextureResponse {
 
 impl Message for AgentDataUpdate {
     fn write_to<W: ?Sized>(&self, buffer: &mut W) -> WriteMessageResult
-    where
-        W: Write,
-    {
+    where W: Write {
         // Write the message number.
-        buffer.write(&[0xff, 0xff, 0x01, 0x83])?;
+        buffer.write(&[
+            0xff, 0xff, 0x01, 0x83
+        ])?;
         // Block AgentData
         buffer.write(self.agent_data.agent_id.as_bytes())?;
         buffer.write_u8(self.agent_data.first_name.len() as u8)?;
@@ -38576,33 +36827,29 @@ impl Message for AgentDataUpdate {
         buffer.write_u8(self.agent_data.group_title.len() as u8)?;
         buffer.write(&self.agent_data.group_title[..])?;
         buffer.write(self.agent_data.active_group_id.as_bytes())?;
-        buffer.write_u64::<LittleEndian>(
-            self.agent_data.group_powers,
-        )?;
+        buffer.write_u64::<LittleEndian>(self.agent_data.group_powers)?;
         buffer.write_u8(self.agent_data.group_name.len() as u8)?;
         buffer.write(&self.agent_data.group_name[..])?;
         Ok(())
     }
 
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         // Block AgentData
         let agent_data = AgentDataUpdate_AgentData::read_from(buffer)?;
-        Ok(MessageInstance::AgentDataUpdate(
-            AgentDataUpdate { agent_data: agent_data },
-        ))
+        Ok(MessageInstance::AgentDataUpdate(AgentDataUpdate {
+            agent_data: agent_data,
+        }))
     }
 }
 
 impl Message for AgentDataUpdateRequest {
     fn write_to<W: ?Sized>(&self, buffer: &mut W) -> WriteMessageResult
-    where
-        W: Write,
-    {
+    where W: Write {
         // Write the message number.
-        buffer.write(&[0xff, 0xff, 0x01, 0x82])?;
+        buffer.write(&[
+            0xff, 0xff, 0x01, 0x82
+        ])?;
         // Block AgentData
         buffer.write(self.agent_data.agent_id.as_bytes())?;
         buffer.write(self.agent_data.session_id.as_bytes())?;
@@ -38610,24 +36857,24 @@ impl Message for AgentDataUpdateRequest {
     }
 
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         // Block AgentData
         let agent_data = AgentDataUpdateRequest_AgentData::read_from(buffer)?;
         Ok(MessageInstance::AgentDataUpdateRequest(
-            AgentDataUpdateRequest { agent_data: agent_data },
+            AgentDataUpdateRequest {
+                agent_data: agent_data,
+            },
         ))
     }
 }
 
 impl Message for AgentDropGroup {
     fn write_to<W: ?Sized>(&self, buffer: &mut W) -> WriteMessageResult
-    where
-        W: Write,
-    {
+    where W: Write {
         // Write the message number.
-        buffer.write(&[0xff, 0xff, 0x01, 0x86])?;
+        buffer.write(&[
+            0xff, 0xff, 0x01, 0x86
+        ])?;
         // Block AgentData
         buffer.write(self.agent_data.agent_id.as_bytes())?;
         buffer.write(self.agent_data.group_id.as_bytes())?;
@@ -38635,42 +36882,34 @@ impl Message for AgentDropGroup {
     }
 
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         // Block AgentData
         let agent_data = AgentDropGroup_AgentData::read_from(buffer)?;
-        Ok(MessageInstance::AgentDropGroup(
-            AgentDropGroup { agent_data: agent_data },
-        ))
+        Ok(MessageInstance::AgentDropGroup(AgentDropGroup {
+            agent_data: agent_data,
+        }))
     }
 }
 
 impl Message for AgentFOV {
     fn write_to<W: ?Sized>(&self, buffer: &mut W) -> WriteMessageResult
-    where
-        W: Write,
-    {
+    where W: Write {
         // Write the message number.
-        buffer.write(&[0xff, 0xff, 0x00, 0x52])?;
+        buffer.write(&[
+            0xff, 0xff, 0x00, 0x52
+        ])?;
         // Block AgentData
         buffer.write(self.agent_data.agent_id.as_bytes())?;
         buffer.write(self.agent_data.session_id.as_bytes())?;
-        buffer.write_u32::<LittleEndian>(
-            self.agent_data.circuit_code,
-        )?;
+        buffer.write_u32::<LittleEndian>(self.agent_data.circuit_code)?;
         // Block FOVBlock
         buffer.write_u32::<LittleEndian>(self.fov_block.gen_counter)?;
-        buffer.write_f32::<LittleEndian>(
-            self.fov_block.vertical_angle,
-        )?;
+        buffer.write_f32::<LittleEndian>(self.fov_block.vertical_angle)?;
         Ok(())
     }
 
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         // Block AgentData
         let agent_data = AgentFOV_AgentData::read_from(buffer)?;
         // Block FOVBlock
@@ -38684,11 +36923,11 @@ impl Message for AgentFOV {
 
 impl Message for AgentGroupDataUpdate {
     fn write_to<W: ?Sized>(&self, buffer: &mut W) -> WriteMessageResult
-    where
-        W: Write,
-    {
+    where W: Write {
         // Write the message number.
-        buffer.write(&[0xff, 0xff, 0x01, 0x85])?;
+        buffer.write(&[
+            0xff, 0xff, 0x01, 0x85
+        ])?;
         // Block AgentData
         buffer.write(self.agent_data.agent_id.as_bytes())?;
         // Block GroupData
@@ -38706,9 +36945,7 @@ impl Message for AgentGroupDataUpdate {
     }
 
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         // Block AgentData
         let agent_data = AgentGroupDataUpdate_AgentData::read_from(buffer)?;
         // Block GroupData
@@ -38728,34 +36965,24 @@ impl Message for AgentGroupDataUpdate {
 
 impl Message for AgentHeightWidth {
     fn write_to<W: ?Sized>(&self, buffer: &mut W) -> WriteMessageResult
-    where
-        W: Write,
-    {
+    where W: Write {
         // Write the message number.
-        buffer.write(&[0xff, 0xff, 0x00, 0x53])?;
+        buffer.write(&[
+            0xff, 0xff, 0x00, 0x53
+        ])?;
         // Block AgentData
         buffer.write(self.agent_data.agent_id.as_bytes())?;
         buffer.write(self.agent_data.session_id.as_bytes())?;
-        buffer.write_u32::<LittleEndian>(
-            self.agent_data.circuit_code,
-        )?;
+        buffer.write_u32::<LittleEndian>(self.agent_data.circuit_code)?;
         // Block HeightWidthBlock
-        buffer.write_u32::<LittleEndian>(
-            self.height_width_block.gen_counter,
-        )?;
-        buffer.write_u16::<LittleEndian>(
-            self.height_width_block.height,
-        )?;
-        buffer.write_u16::<LittleEndian>(
-            self.height_width_block.width,
-        )?;
+        buffer.write_u32::<LittleEndian>(self.height_width_block.gen_counter)?;
+        buffer.write_u16::<LittleEndian>(self.height_width_block.height)?;
+        buffer.write_u16::<LittleEndian>(self.height_width_block.width)?;
         Ok(())
     }
 
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         // Block AgentData
         let agent_data = AgentHeightWidth_AgentData::read_from(buffer)?;
         // Block HeightWidthBlock
@@ -38769,11 +36996,11 @@ impl Message for AgentHeightWidth {
 
 impl Message for AgentIsNowWearing {
     fn write_to<W: ?Sized>(&self, buffer: &mut W) -> WriteMessageResult
-    where
-        W: Write,
-    {
+    where W: Write {
         // Write the message number.
-        buffer.write(&[0xff, 0xff, 0x01, 0x7f])?;
+        buffer.write(&[
+            0xff, 0xff, 0x01, 0x7f
+        ])?;
         // Block AgentData
         buffer.write(self.agent_data.agent_id.as_bytes())?;
         buffer.write(self.agent_data.session_id.as_bytes())?;
@@ -38787,9 +37014,7 @@ impl Message for AgentIsNowWearing {
     }
 
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         // Block AgentData
         let agent_data = AgentIsNowWearing_AgentData::read_from(buffer)?;
         // Block WearableData
@@ -38807,11 +37032,11 @@ impl Message for AgentIsNowWearing {
 
 impl Message for AgentMovementComplete {
     fn write_to<W: ?Sized>(&self, buffer: &mut W) -> WriteMessageResult
-    where
-        W: Write,
-    {
+    where W: Write {
         // Write the message number.
-        buffer.write(&[0xff, 0xff, 0x00, 0xfa])?;
+        buffer.write(&[
+            0xff, 0xff, 0x00, 0xfa
+        ])?;
         // Block AgentData
         buffer.write(self.agent_data.agent_id.as_bytes())?;
         buffer.write(self.agent_data.session_id.as_bytes())?;
@@ -38829,17 +37054,13 @@ impl Message for AgentMovementComplete {
         buffer.write_u64::<LittleEndian>(self.data.region_handle)?;
         buffer.write_u32::<LittleEndian>(self.data.timestamp)?;
         // Block SimData
-        buffer.write_u16::<LittleEndian>(
-            self.sim_data.channel_version.len() as u16,
-        )?;
+        buffer.write_u16::<LittleEndian>(self.sim_data.channel_version.len() as u16)?;
         buffer.write(&self.sim_data.channel_version[..])?;
         Ok(())
     }
 
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         // Block AgentData
         let agent_data = AgentMovementComplete_AgentData::read_from(buffer)?;
         // Block Data
@@ -38858,11 +37079,11 @@ impl Message for AgentMovementComplete {
 
 impl Message for AgentPause {
     fn write_to<W: ?Sized>(&self, buffer: &mut W) -> WriteMessageResult
-    where
-        W: Write,
-    {
+    where W: Write {
         // Write the message number.
-        buffer.write(&[0xff, 0xff, 0x00, 0x4e])?;
+        buffer.write(&[
+            0xff, 0xff, 0x00, 0x4e
+        ])?;
         // Block AgentData
         buffer.write(self.agent_data.agent_id.as_bytes())?;
         buffer.write(self.agent_data.session_id.as_bytes())?;
@@ -38871,38 +37092,32 @@ impl Message for AgentPause {
     }
 
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         // Block AgentData
         let agent_data = AgentPause_AgentData::read_from(buffer)?;
-        Ok(MessageInstance::AgentPause(
-            AgentPause { agent_data: agent_data },
-        ))
+        Ok(MessageInstance::AgentPause(AgentPause {
+            agent_data: agent_data,
+        }))
     }
 }
 
 impl Message for AgentQuitCopy {
     fn write_to<W: ?Sized>(&self, buffer: &mut W) -> WriteMessageResult
-    where
-        W: Write,
-    {
+    where W: Write {
         // Write the message number.
-        buffer.write(&[0xff, 0xff, 0x00, 0x55])?;
+        buffer.write(&[
+            0xff, 0xff, 0x00, 0x55
+        ])?;
         // Block AgentData
         buffer.write(self.agent_data.agent_id.as_bytes())?;
         buffer.write(self.agent_data.session_id.as_bytes())?;
         // Block FuseBlock
-        buffer.write_u32::<LittleEndian>(
-            self.fuse_block.viewer_circuit_code,
-        )?;
+        buffer.write_u32::<LittleEndian>(self.fuse_block.viewer_circuit_code)?;
         Ok(())
     }
 
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         // Block AgentData
         let agent_data = AgentQuitCopy_AgentData::read_from(buffer)?;
         // Block FuseBlock
@@ -38916,9 +37131,7 @@ impl Message for AgentQuitCopy {
 
 impl Message for AgentRequestSit {
     fn write_to<W: ?Sized>(&self, buffer: &mut W) -> WriteMessageResult
-    where
-        W: Write,
-    {
+    where W: Write {
         // Write the message number.
         buffer.write(&[0x06])?;
         // Block AgentData
@@ -38926,24 +37139,16 @@ impl Message for AgentRequestSit {
         buffer.write(self.agent_data.session_id.as_bytes())?;
         // Block TargetObject
         buffer.write(self.target_object.target_id.as_bytes())?;
-        buffer.write_f32::<LittleEndian>(
-            self.target_object.offset.x,
-        )?;
+        buffer.write_f32::<LittleEndian>(self.target_object.offset.x)?;
 
-        buffer.write_f32::<LittleEndian>(
-            self.target_object.offset.y,
-        )?;
+        buffer.write_f32::<LittleEndian>(self.target_object.offset.y)?;
 
-        buffer.write_f32::<LittleEndian>(
-            self.target_object.offset.z,
-        )?;
+        buffer.write_f32::<LittleEndian>(self.target_object.offset.z)?;
         Ok(())
     }
 
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         // Block AgentData
         let agent_data = AgentRequestSit_AgentData::read_from(buffer)?;
         // Block TargetObject
@@ -38957,11 +37162,11 @@ impl Message for AgentRequestSit {
 
 impl Message for AgentResume {
     fn write_to<W: ?Sized>(&self, buffer: &mut W) -> WriteMessageResult
-    where
-        W: Write,
-    {
+    where W: Write {
         // Write the message number.
-        buffer.write(&[0xff, 0xff, 0x00, 0x4f])?;
+        buffer.write(&[
+            0xff, 0xff, 0x00, 0x4f
+        ])?;
         // Block AgentData
         buffer.write(self.agent_data.agent_id.as_bytes())?;
         buffer.write(self.agent_data.session_id.as_bytes())?;
@@ -38970,24 +37175,22 @@ impl Message for AgentResume {
     }
 
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         // Block AgentData
         let agent_data = AgentResume_AgentData::read_from(buffer)?;
-        Ok(MessageInstance::AgentResume(
-            AgentResume { agent_data: agent_data },
-        ))
+        Ok(MessageInstance::AgentResume(AgentResume {
+            agent_data: agent_data,
+        }))
     }
 }
 
 impl Message for AgentSetAppearance {
     fn write_to<W: ?Sized>(&self, buffer: &mut W) -> WriteMessageResult
-    where
-        W: Write,
-    {
+    where W: Write {
         // Write the message number.
-        buffer.write(&[0xff, 0xff, 0x00, 0x54])?;
+        buffer.write(&[
+            0xff, 0xff, 0x00, 0x54
+        ])?;
         // Block AgentData
         buffer.write(self.agent_data.agent_id.as_bytes())?;
         buffer.write(self.agent_data.session_id.as_bytes())?;
@@ -39004,9 +37207,7 @@ impl Message for AgentSetAppearance {
             buffer.write_u8(item.texture_index)?;
         }
         // Block ObjectData
-        buffer.write_u16::<LittleEndian>(
-            self.object_data.texture_entry.len() as u16,
-        )?;
+        buffer.write_u16::<LittleEndian>(self.object_data.texture_entry.len() as u16)?;
         buffer.write(&self.object_data.texture_entry[..])?;
         // Block VisualParam
         buffer.write_u8(self.visual_param.len() as u8)?;
@@ -39017,9 +37218,7 @@ impl Message for AgentSetAppearance {
     }
 
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         // Block AgentData
         let agent_data = AgentSetAppearance_AgentData::read_from(buffer)?;
         // Block WearableData
@@ -39047,9 +37246,7 @@ impl Message for AgentSetAppearance {
 
 impl Message for AgentSit {
     fn write_to<W: ?Sized>(&self, buffer: &mut W) -> WriteMessageResult
-    where
-        W: Write,
-    {
+    where W: Write {
         // Write the message number.
         buffer.write(&[0x07])?;
         // Block AgentData
@@ -39059,30 +37256,26 @@ impl Message for AgentSit {
     }
 
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         // Block AgentData
         let agent_data = AgentSit_AgentData::read_from(buffer)?;
-        Ok(MessageInstance::AgentSit(
-            AgentSit { agent_data: agent_data },
-        ))
+        Ok(MessageInstance::AgentSit(AgentSit {
+            agent_data: agent_data,
+        }))
     }
 }
 
 impl Message for AgentThrottle {
     fn write_to<W: ?Sized>(&self, buffer: &mut W) -> WriteMessageResult
-    where
-        W: Write,
-    {
+    where W: Write {
         // Write the message number.
-        buffer.write(&[0xff, 0xff, 0x00, 0x51])?;
+        buffer.write(&[
+            0xff, 0xff, 0x00, 0x51
+        ])?;
         // Block AgentData
         buffer.write(self.agent_data.agent_id.as_bytes())?;
         buffer.write(self.agent_data.session_id.as_bytes())?;
-        buffer.write_u32::<LittleEndian>(
-            self.agent_data.circuit_code,
-        )?;
+        buffer.write_u32::<LittleEndian>(self.agent_data.circuit_code)?;
         // Block Throttle
         buffer.write_u32::<LittleEndian>(self.throttle.gen_counter)?;
         buffer.write_u8(self.throttle.throttles.len() as u8)?;
@@ -39091,9 +37284,7 @@ impl Message for AgentThrottle {
     }
 
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         // Block AgentData
         let agent_data = AgentThrottle_AgentData::read_from(buffer)?;
         // Block Throttle
@@ -39107,9 +37298,7 @@ impl Message for AgentThrottle {
 
 impl Message for AgentUpdate {
     fn write_to<W: ?Sized>(&self, buffer: &mut W) -> WriteMessageResult
-    where
-        W: Write,
-    {
+    where W: Write {
         // Write the message number.
         buffer.write(&[0x04])?;
         // Block AgentData
@@ -39130,77 +37319,49 @@ impl Message for AgentUpdate {
 
         buffer.write_f32::<LittleEndian>(normed_head_rotation.k)?;
         buffer.write_u8(self.agent_data.state)?;
-        buffer.write_f32::<LittleEndian>(
-            self.agent_data.camera_center.x,
-        )?;
+        buffer.write_f32::<LittleEndian>(self.agent_data.camera_center.x)?;
 
-        buffer.write_f32::<LittleEndian>(
-            self.agent_data.camera_center.y,
-        )?;
+        buffer.write_f32::<LittleEndian>(self.agent_data.camera_center.y)?;
 
-        buffer.write_f32::<LittleEndian>(
-            self.agent_data.camera_center.z,
-        )?;
-        buffer.write_f32::<LittleEndian>(
-            self.agent_data.camera_at_axis.x,
-        )?;
+        buffer.write_f32::<LittleEndian>(self.agent_data.camera_center.z)?;
+        buffer.write_f32::<LittleEndian>(self.agent_data.camera_at_axis.x)?;
 
-        buffer.write_f32::<LittleEndian>(
-            self.agent_data.camera_at_axis.y,
-        )?;
+        buffer.write_f32::<LittleEndian>(self.agent_data.camera_at_axis.y)?;
 
-        buffer.write_f32::<LittleEndian>(
-            self.agent_data.camera_at_axis.z,
-        )?;
-        buffer.write_f32::<LittleEndian>(
-            self.agent_data.camera_left_axis.x,
-        )?;
+        buffer.write_f32::<LittleEndian>(self.agent_data.camera_at_axis.z)?;
+        buffer.write_f32::<LittleEndian>(self.agent_data.camera_left_axis.x)?;
 
-        buffer.write_f32::<LittleEndian>(
-            self.agent_data.camera_left_axis.y,
-        )?;
+        buffer.write_f32::<LittleEndian>(self.agent_data.camera_left_axis.y)?;
 
-        buffer.write_f32::<LittleEndian>(
-            self.agent_data.camera_left_axis.z,
-        )?;
-        buffer.write_f32::<LittleEndian>(
-            self.agent_data.camera_up_axis.x,
-        )?;
+        buffer.write_f32::<LittleEndian>(self.agent_data.camera_left_axis.z)?;
+        buffer.write_f32::<LittleEndian>(self.agent_data.camera_up_axis.x)?;
 
-        buffer.write_f32::<LittleEndian>(
-            self.agent_data.camera_up_axis.y,
-        )?;
+        buffer.write_f32::<LittleEndian>(self.agent_data.camera_up_axis.y)?;
 
-        buffer.write_f32::<LittleEndian>(
-            self.agent_data.camera_up_axis.z,
-        )?;
+        buffer.write_f32::<LittleEndian>(self.agent_data.camera_up_axis.z)?;
         buffer.write_f32::<LittleEndian>(self.agent_data.far)?;
-        buffer.write_u32::<LittleEndian>(
-            self.agent_data.control_flags,
-        )?;
+        buffer.write_u32::<LittleEndian>(self.agent_data.control_flags)?;
         buffer.write_u8(self.agent_data.flags)?;
         Ok(())
     }
 
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         // Block AgentData
         let agent_data = AgentUpdate_AgentData::read_from(buffer)?;
-        Ok(MessageInstance::AgentUpdate(
-            AgentUpdate { agent_data: agent_data },
-        ))
+        Ok(MessageInstance::AgentUpdate(AgentUpdate {
+            agent_data: agent_data,
+        }))
     }
 }
 
 impl Message for AgentWearablesRequest {
     fn write_to<W: ?Sized>(&self, buffer: &mut W) -> WriteMessageResult
-    where
-        W: Write,
-    {
+    where W: Write {
         // Write the message number.
-        buffer.write(&[0xff, 0xff, 0x01, 0x7d])?;
+        buffer.write(&[
+            0xff, 0xff, 0x01, 0x7d
+        ])?;
         // Block AgentData
         buffer.write(self.agent_data.agent_id.as_bytes())?;
         buffer.write(self.agent_data.session_id.as_bytes())?;
@@ -39208,24 +37369,24 @@ impl Message for AgentWearablesRequest {
     }
 
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         // Block AgentData
         let agent_data = AgentWearablesRequest_AgentData::read_from(buffer)?;
         Ok(MessageInstance::AgentWearablesRequest(
-            AgentWearablesRequest { agent_data: agent_data },
+            AgentWearablesRequest {
+                agent_data: agent_data,
+            },
         ))
     }
 }
 
 impl Message for AgentWearablesUpdate {
     fn write_to<W: ?Sized>(&self, buffer: &mut W) -> WriteMessageResult
-    where
-        W: Write,
-    {
+    where W: Write {
         // Write the message number.
-        buffer.write(&[0xff, 0xff, 0x01, 0x7e])?;
+        buffer.write(&[
+            0xff, 0xff, 0x01, 0x7e
+        ])?;
         // Block AgentData
         buffer.write(self.agent_data.agent_id.as_bytes())?;
         buffer.write(self.agent_data.session_id.as_bytes())?;
@@ -39241,9 +37402,7 @@ impl Message for AgentWearablesUpdate {
     }
 
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         // Block AgentData
         let agent_data = AgentWearablesUpdate_AgentData::read_from(buffer)?;
         // Block WearableData
@@ -39263,11 +37422,11 @@ impl Message for AgentWearablesUpdate {
 
 impl Message for AlertMessage {
     fn write_to<W: ?Sized>(&self, buffer: &mut W) -> WriteMessageResult
-    where
-        W: Write,
-    {
+    where W: Write {
         // Write the message number.
-        buffer.write(&[0xff, 0xff, 0x00, 0x86])?;
+        buffer.write(&[
+            0xff, 0xff, 0x00, 0x86
+        ])?;
         // Block AlertData
         buffer.write_u8(self.alert_data.message.len() as u8)?;
         buffer.write(&self.alert_data.message[..])?;
@@ -39283,9 +37442,7 @@ impl Message for AlertMessage {
     }
 
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         // Block AlertData
         let alert_data = AlertMessage_AlertData::read_from(buffer)?;
         // Block AlertInfo
@@ -39303,11 +37460,11 @@ impl Message for AlertMessage {
 
 impl Message for AssetUploadComplete {
     fn write_to<W: ?Sized>(&self, buffer: &mut W) -> WriteMessageResult
-    where
-        W: Write,
-    {
+    where W: Write {
         // Write the message number.
-        buffer.write(&[0xff, 0xff, 0x01, 0x4e])?;
+        buffer.write(&[
+            0xff, 0xff, 0x01, 0x4e
+        ])?;
         // Block AssetBlock
         buffer.write(self.asset_block.uuid.as_bytes())?;
         buffer.write_i8(self.asset_block.type_)?;
@@ -39316,53 +37473,45 @@ impl Message for AssetUploadComplete {
     }
 
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         // Block AssetBlock
         let asset_block = AssetUploadComplete_AssetBlock::read_from(buffer)?;
-        Ok(MessageInstance::AssetUploadComplete(
-            AssetUploadComplete { asset_block: asset_block },
-        ))
+        Ok(MessageInstance::AssetUploadComplete(AssetUploadComplete {
+            asset_block: asset_block,
+        }))
     }
 }
 
 impl Message for AssetUploadRequest {
     fn write_to<W: ?Sized>(&self, buffer: &mut W) -> WriteMessageResult
-    where
-        W: Write,
-    {
+    where W: Write {
         // Write the message number.
-        buffer.write(&[0xff, 0xff, 0x01, 0x4d])?;
+        buffer.write(&[
+            0xff, 0xff, 0x01, 0x4d
+        ])?;
         // Block AssetBlock
         buffer.write(self.asset_block.transaction_id.as_bytes())?;
         buffer.write_i8(self.asset_block.type_)?;
         buffer.write_u8(self.asset_block.tempfile as u8)?;
         buffer.write_u8(self.asset_block.store_local as u8)?;
-        buffer.write_u16::<LittleEndian>(
-            self.asset_block.asset_data.len() as u16,
-        )?;
+        buffer.write_u16::<LittleEndian>(self.asset_block.asset_data.len() as u16)?;
         buffer.write(&self.asset_block.asset_data[..])?;
         Ok(())
     }
 
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         // Block AssetBlock
         let asset_block = AssetUploadRequest_AssetBlock::read_from(buffer)?;
-        Ok(MessageInstance::AssetUploadRequest(
-            AssetUploadRequest { asset_block: asset_block },
-        ))
+        Ok(MessageInstance::AssetUploadRequest(AssetUploadRequest {
+            asset_block: asset_block,
+        }))
     }
 }
 
 impl Message for AtomicPassObject {
     fn write_to<W: ?Sized>(&self, buffer: &mut W) -> WriteMessageResult
-    where
-        W: Write,
-    {
+    where W: Write {
         // Write the message number.
         buffer.write(&[0x1c])?;
         // Block TaskData
@@ -39372,22 +37521,18 @@ impl Message for AtomicPassObject {
     }
 
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         // Block TaskData
         let task_data = AtomicPassObject_TaskData::read_from(buffer)?;
-        Ok(MessageInstance::AtomicPassObject(
-            AtomicPassObject { task_data: task_data },
-        ))
+        Ok(MessageInstance::AtomicPassObject(AtomicPassObject {
+            task_data: task_data,
+        }))
     }
 }
 
 impl Message for AttachedSound {
     fn write_to<W: ?Sized>(&self, buffer: &mut W) -> WriteMessageResult
-    where
-        W: Write,
-    {
+    where W: Write {
         // Write the message number.
         buffer.write(&[0xff, 0x0d])?;
         // Block DataBlock
@@ -39400,22 +37545,18 @@ impl Message for AttachedSound {
     }
 
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         // Block DataBlock
         let data_block = AttachedSound_DataBlock::read_from(buffer)?;
-        Ok(MessageInstance::AttachedSound(
-            AttachedSound { data_block: data_block },
-        ))
+        Ok(MessageInstance::AttachedSound(AttachedSound {
+            data_block: data_block,
+        }))
     }
 }
 
 impl Message for AttachedSoundGainChange {
     fn write_to<W: ?Sized>(&self, buffer: &mut W) -> WriteMessageResult
-    where
-        W: Write,
-    {
+    where W: Write {
         // Write the message number.
         buffer.write(&[0xff, 0x0e])?;
         // Block DataBlock
@@ -39425,22 +37566,20 @@ impl Message for AttachedSoundGainChange {
     }
 
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         // Block DataBlock
         let data_block = AttachedSoundGainChange_DataBlock::read_from(buffer)?;
         Ok(MessageInstance::AttachedSoundGainChange(
-            AttachedSoundGainChange { data_block: data_block },
+            AttachedSoundGainChange {
+                data_block: data_block,
+            },
         ))
     }
 }
 
 impl Message for AvatarAnimation {
     fn write_to<W: ?Sized>(&self, buffer: &mut W) -> WriteMessageResult
-    where
-        W: Write,
-    {
+    where W: Write {
         // Write the message number.
         buffer.write(&[0x14])?;
         // Block Sender
@@ -39466,9 +37605,7 @@ impl Message for AvatarAnimation {
     }
 
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         // Block Sender
         let sender = AvatarAnimation_Sender::read_from(buffer)?;
         // Block AnimationList
@@ -39500,18 +37637,16 @@ impl Message for AvatarAnimation {
 
 impl Message for AvatarAppearance {
     fn write_to<W: ?Sized>(&self, buffer: &mut W) -> WriteMessageResult
-    where
-        W: Write,
-    {
+    where W: Write {
         // Write the message number.
-        buffer.write(&[0xff, 0xff, 0x00, 0x9e])?;
+        buffer.write(&[
+            0xff, 0xff, 0x00, 0x9e
+        ])?;
         // Block Sender
         buffer.write(self.sender.id.as_bytes())?;
         buffer.write_u8(self.sender.is_trial as u8)?;
         // Block ObjectData
-        buffer.write_u16::<LittleEndian>(
-            self.object_data.texture_entry.len() as u16,
-        )?;
+        buffer.write_u16::<LittleEndian>(self.object_data.texture_entry.len() as u16)?;
         buffer.write(&self.object_data.texture_entry[..])?;
         // Block VisualParam
         buffer.write_u8(self.visual_param.len() as u8)?;
@@ -39522,9 +37657,7 @@ impl Message for AvatarAppearance {
     }
 
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         // Block Sender
         let sender = AvatarAppearance_Sender::read_from(buffer)?;
         // Block ObjectData
@@ -39545,11 +37678,11 @@ impl Message for AvatarAppearance {
 
 impl Message for AvatarClassifiedReply {
     fn write_to<W: ?Sized>(&self, buffer: &mut W) -> WriteMessageResult
-    where
-        W: Write,
-    {
+    where W: Write {
         // Write the message number.
-        buffer.write(&[0xff, 0xff, 0x00, 0x2a])?;
+        buffer.write(&[
+            0xff, 0xff, 0x00, 0x2a
+        ])?;
         // Block AgentData
         buffer.write(self.agent_data.agent_id.as_bytes())?;
         buffer.write(self.agent_data.target_id.as_bytes())?;
@@ -39564,9 +37697,7 @@ impl Message for AvatarClassifiedReply {
     }
 
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         // Block AgentData
         let agent_data = AvatarClassifiedReply_AgentData::read_from(buffer)?;
         // Block Data
@@ -39586,11 +37717,11 @@ impl Message for AvatarClassifiedReply {
 
 impl Message for AvatarGroupsReply {
     fn write_to<W: ?Sized>(&self, buffer: &mut W) -> WriteMessageResult
-    where
-        W: Write,
-    {
+    where W: Write {
         // Write the message number.
-        buffer.write(&[0xff, 0xff, 0x00, 0xad])?;
+        buffer.write(&[
+            0xff, 0xff, 0x00, 0xad
+        ])?;
         // Block AgentData
         buffer.write(self.agent_data.agent_id.as_bytes())?;
         buffer.write(self.agent_data.avatar_id.as_bytes())?;
@@ -39612,9 +37743,7 @@ impl Message for AvatarGroupsReply {
     }
 
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         // Block AgentData
         let agent_data = AvatarGroupsReply_AgentData::read_from(buffer)?;
         // Block GroupData
@@ -39635,40 +37764,28 @@ impl Message for AvatarGroupsReply {
 
 impl Message for AvatarInterestsReply {
     fn write_to<W: ?Sized>(&self, buffer: &mut W) -> WriteMessageResult
-    where
-        W: Write,
-    {
+    where W: Write {
         // Write the message number.
-        buffer.write(&[0xff, 0xff, 0x00, 0xac])?;
+        buffer.write(&[
+            0xff, 0xff, 0x00, 0xac
+        ])?;
         // Block AgentData
         buffer.write(self.agent_data.agent_id.as_bytes())?;
         buffer.write(self.agent_data.avatar_id.as_bytes())?;
         // Block PropertiesData
-        buffer.write_u32::<LittleEndian>(
-            self.properties_data.want_to_mask,
-        )?;
-        buffer.write_u8(
-            self.properties_data.want_to_text.len() as u8,
-        )?;
+        buffer.write_u32::<LittleEndian>(self.properties_data.want_to_mask)?;
+        buffer.write_u8(self.properties_data.want_to_text.len() as u8)?;
         buffer.write(&self.properties_data.want_to_text[..])?;
-        buffer.write_u32::<LittleEndian>(
-            self.properties_data.skills_mask,
-        )?;
-        buffer.write_u8(
-            self.properties_data.skills_text.len() as u8,
-        )?;
+        buffer.write_u32::<LittleEndian>(self.properties_data.skills_mask)?;
+        buffer.write_u8(self.properties_data.skills_text.len() as u8)?;
         buffer.write(&self.properties_data.skills_text[..])?;
-        buffer.write_u8(
-            self.properties_data.languages_text.len() as u8,
-        )?;
+        buffer.write_u8(self.properties_data.languages_text.len() as u8)?;
         buffer.write(&self.properties_data.languages_text[..])?;
         Ok(())
     }
 
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         // Block AgentData
         let agent_data = AvatarInterestsReply_AgentData::read_from(buffer)?;
         // Block PropertiesData
@@ -39684,40 +37801,28 @@ impl Message for AvatarInterestsReply {
 
 impl Message for AvatarInterestsUpdate {
     fn write_to<W: ?Sized>(&self, buffer: &mut W) -> WriteMessageResult
-    where
-        W: Write,
-    {
+    where W: Write {
         // Write the message number.
-        buffer.write(&[0xff, 0xff, 0x00, 0xaf])?;
+        buffer.write(&[
+            0xff, 0xff, 0x00, 0xaf
+        ])?;
         // Block AgentData
         buffer.write(self.agent_data.agent_id.as_bytes())?;
         buffer.write(self.agent_data.session_id.as_bytes())?;
         // Block PropertiesData
-        buffer.write_u32::<LittleEndian>(
-            self.properties_data.want_to_mask,
-        )?;
-        buffer.write_u8(
-            self.properties_data.want_to_text.len() as u8,
-        )?;
+        buffer.write_u32::<LittleEndian>(self.properties_data.want_to_mask)?;
+        buffer.write_u8(self.properties_data.want_to_text.len() as u8)?;
         buffer.write(&self.properties_data.want_to_text[..])?;
-        buffer.write_u32::<LittleEndian>(
-            self.properties_data.skills_mask,
-        )?;
-        buffer.write_u8(
-            self.properties_data.skills_text.len() as u8,
-        )?;
+        buffer.write_u32::<LittleEndian>(self.properties_data.skills_mask)?;
+        buffer.write_u8(self.properties_data.skills_text.len() as u8)?;
         buffer.write(&self.properties_data.skills_text[..])?;
-        buffer.write_u8(
-            self.properties_data.languages_text.len() as u8,
-        )?;
+        buffer.write_u8(self.properties_data.languages_text.len() as u8)?;
         buffer.write(&self.properties_data.languages_text[..])?;
         Ok(())
     }
 
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         // Block AgentData
         let agent_data = AvatarInterestsUpdate_AgentData::read_from(buffer)?;
         // Block PropertiesData
@@ -39733,26 +37838,22 @@ impl Message for AvatarInterestsUpdate {
 
 impl Message for AvatarNotesReply {
     fn write_to<W: ?Sized>(&self, buffer: &mut W) -> WriteMessageResult
-    where
-        W: Write,
-    {
+    where W: Write {
         // Write the message number.
-        buffer.write(&[0xff, 0xff, 0x00, 0xb0])?;
+        buffer.write(&[
+            0xff, 0xff, 0x00, 0xb0
+        ])?;
         // Block AgentData
         buffer.write(self.agent_data.agent_id.as_bytes())?;
         // Block Data
         buffer.write(self.data.target_id.as_bytes())?;
-        buffer.write_u16::<LittleEndian>(
-            self.data.notes.len() as u16,
-        )?;
+        buffer.write_u16::<LittleEndian>(self.data.notes.len() as u16)?;
         buffer.write(&self.data.notes[..])?;
         Ok(())
     }
 
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         // Block AgentData
         let agent_data = AvatarNotesReply_AgentData::read_from(buffer)?;
         // Block Data
@@ -39766,27 +37867,23 @@ impl Message for AvatarNotesReply {
 
 impl Message for AvatarNotesUpdate {
     fn write_to<W: ?Sized>(&self, buffer: &mut W) -> WriteMessageResult
-    where
-        W: Write,
-    {
+    where W: Write {
         // Write the message number.
-        buffer.write(&[0xff, 0xff, 0x00, 0xb1])?;
+        buffer.write(&[
+            0xff, 0xff, 0x00, 0xb1
+        ])?;
         // Block AgentData
         buffer.write(self.agent_data.agent_id.as_bytes())?;
         buffer.write(self.agent_data.session_id.as_bytes())?;
         // Block Data
         buffer.write(self.data.target_id.as_bytes())?;
-        buffer.write_u16::<LittleEndian>(
-            self.data.notes.len() as u16,
-        )?;
+        buffer.write_u16::<LittleEndian>(self.data.notes.len() as u16)?;
         buffer.write(&self.data.notes[..])?;
         Ok(())
     }
 
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         // Block AgentData
         let agent_data = AvatarNotesUpdate_AgentData::read_from(buffer)?;
         // Block Data
@@ -39800,11 +37897,11 @@ impl Message for AvatarNotesUpdate {
 
 impl Message for AvatarPickerReply {
     fn write_to<W: ?Sized>(&self, buffer: &mut W) -> WriteMessageResult
-    where
-        W: Write,
-    {
+    where W: Write {
         // Write the message number.
-        buffer.write(&[0xff, 0xff, 0x00, 0x1c])?;
+        buffer.write(&[
+            0xff, 0xff, 0x00, 0x1c
+        ])?;
         // Block AgentData
         buffer.write(self.agent_data.agent_id.as_bytes())?;
         buffer.write(self.agent_data.query_id.as_bytes())?;
@@ -39821,9 +37918,7 @@ impl Message for AvatarPickerReply {
     }
 
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         // Block AgentData
         let agent_data = AvatarPickerReply_AgentData::read_from(buffer)?;
         // Block Data
@@ -39841,11 +37936,11 @@ impl Message for AvatarPickerReply {
 
 impl Message for AvatarPickerRequest {
     fn write_to<W: ?Sized>(&self, buffer: &mut W) -> WriteMessageResult
-    where
-        W: Write,
-    {
+    where W: Write {
         // Write the message number.
-        buffer.write(&[0xff, 0xff, 0x00, 0x1a])?;
+        buffer.write(&[
+            0xff, 0xff, 0x00, 0x1a
+        ])?;
         // Block AgentData
         buffer.write(self.agent_data.agent_id.as_bytes())?;
         buffer.write(self.agent_data.session_id.as_bytes())?;
@@ -39857,9 +37952,7 @@ impl Message for AvatarPickerRequest {
     }
 
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         // Block AgentData
         let agent_data = AvatarPickerRequest_AgentData::read_from(buffer)?;
         // Block Data
@@ -39873,11 +37966,11 @@ impl Message for AvatarPickerRequest {
 
 impl Message for AvatarPickerRequestBackend {
     fn write_to<W: ?Sized>(&self, buffer: &mut W) -> WriteMessageResult
-    where
-        W: Write,
-    {
+    where W: Write {
         // Write the message number.
-        buffer.write(&[0xff, 0xff, 0x00, 0x1b])?;
+        buffer.write(&[
+            0xff, 0xff, 0x00, 0x1b
+        ])?;
         // Block AgentData
         buffer.write(self.agent_data.agent_id.as_bytes())?;
         buffer.write(self.agent_data.session_id.as_bytes())?;
@@ -39890,9 +37983,7 @@ impl Message for AvatarPickerRequestBackend {
     }
 
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         // Block AgentData
         let agent_data = AvatarPickerRequestBackend_AgentData::read_from(buffer)?;
         // Block Data
@@ -39908,11 +37999,11 @@ impl Message for AvatarPickerRequestBackend {
 
 impl Message for AvatarPicksReply {
     fn write_to<W: ?Sized>(&self, buffer: &mut W) -> WriteMessageResult
-    where
-        W: Write,
-    {
+    where W: Write {
         // Write the message number.
-        buffer.write(&[0xff, 0xff, 0x00, 0xb2])?;
+        buffer.write(&[
+            0xff, 0xff, 0x00, 0xb2
+        ])?;
         // Block AgentData
         buffer.write(self.agent_data.agent_id.as_bytes())?;
         buffer.write(self.agent_data.target_id.as_bytes())?;
@@ -39927,9 +38018,7 @@ impl Message for AvatarPicksReply {
     }
 
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         // Block AgentData
         let agent_data = AvatarPicksReply_AgentData::read_from(buffer)?;
         // Block Data
@@ -39947,11 +38036,11 @@ impl Message for AvatarPicksReply {
 
 impl Message for AvatarPropertiesReply {
     fn write_to<W: ?Sized>(&self, buffer: &mut W) -> WriteMessageResult
-    where
-        W: Write,
-    {
+    where W: Write {
         // Write the message number.
-        buffer.write(&[0xff, 0xff, 0x00, 0xab])?;
+        buffer.write(&[
+            0xff, 0xff, 0x00, 0xab
+        ])?;
         // Block AgentData
         buffer.write(self.agent_data.agent_id.as_bytes())?;
         buffer.write(self.agent_data.avatar_id.as_bytes())?;
@@ -39959,32 +38048,22 @@ impl Message for AvatarPropertiesReply {
         buffer.write(self.properties_data.image_id.as_bytes())?;
         buffer.write(self.properties_data.fl_image_id.as_bytes())?;
         buffer.write(self.properties_data.partner_id.as_bytes())?;
-        buffer.write_u16::<LittleEndian>(
-            self.properties_data.about_text.len() as u16,
-        )?;
+        buffer.write_u16::<LittleEndian>(self.properties_data.about_text.len() as u16)?;
         buffer.write(&self.properties_data.about_text[..])?;
-        buffer.write_u8(
-            self.properties_data.fl_about_text.len() as u8,
-        )?;
+        buffer.write_u8(self.properties_data.fl_about_text.len() as u8)?;
         buffer.write(&self.properties_data.fl_about_text[..])?;
         buffer.write_u8(self.properties_data.born_on.len() as u8)?;
         buffer.write(&self.properties_data.born_on[..])?;
-        buffer.write_u8(
-            self.properties_data.profile_url.len() as u8,
-        )?;
+        buffer.write_u8(self.properties_data.profile_url.len() as u8)?;
         buffer.write(&self.properties_data.profile_url[..])?;
-        buffer.write_u8(
-            self.properties_data.charter_member.len() as u8,
-        )?;
+        buffer.write_u8(self.properties_data.charter_member.len() as u8)?;
         buffer.write(&self.properties_data.charter_member[..])?;
         buffer.write_u32::<LittleEndian>(self.properties_data.flags)?;
         Ok(())
     }
 
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         // Block AgentData
         let agent_data = AvatarPropertiesReply_AgentData::read_from(buffer)?;
         // Block PropertiesData
@@ -40000,11 +38079,11 @@ impl Message for AvatarPropertiesReply {
 
 impl Message for AvatarPropertiesRequest {
     fn write_to<W: ?Sized>(&self, buffer: &mut W) -> WriteMessageResult
-    where
-        W: Write,
-    {
+    where W: Write {
         // Write the message number.
-        buffer.write(&[0xff, 0xff, 0x00, 0xa9])?;
+        buffer.write(&[
+            0xff, 0xff, 0x00, 0xa9
+        ])?;
         // Block AgentData
         buffer.write(self.agent_data.agent_id.as_bytes())?;
         buffer.write(self.agent_data.session_id.as_bytes())?;
@@ -40013,24 +38092,24 @@ impl Message for AvatarPropertiesRequest {
     }
 
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         // Block AgentData
         let agent_data = AvatarPropertiesRequest_AgentData::read_from(buffer)?;
         Ok(MessageInstance::AvatarPropertiesRequest(
-            AvatarPropertiesRequest { agent_data: agent_data },
+            AvatarPropertiesRequest {
+                agent_data: agent_data,
+            },
         ))
     }
 }
 
 impl Message for AvatarPropertiesRequestBackend {
     fn write_to<W: ?Sized>(&self, buffer: &mut W) -> WriteMessageResult
-    where
-        W: Write,
-    {
+    where W: Write {
         // Write the message number.
-        buffer.write(&[0xff, 0xff, 0x00, 0xaa])?;
+        buffer.write(&[
+            0xff, 0xff, 0x00, 0xaa
+        ])?;
         // Block AgentData
         buffer.write(self.agent_data.agent_id.as_bytes())?;
         buffer.write(self.agent_data.avatar_id.as_bytes())?;
@@ -40040,51 +38119,43 @@ impl Message for AvatarPropertiesRequestBackend {
     }
 
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         // Block AgentData
         let agent_data = AvatarPropertiesRequestBackend_AgentData::read_from(buffer)?;
         Ok(MessageInstance::AvatarPropertiesRequestBackend(
-            AvatarPropertiesRequestBackend { agent_data: agent_data },
+            AvatarPropertiesRequestBackend {
+                agent_data: agent_data,
+            },
         ))
     }
 }
 
 impl Message for AvatarPropertiesUpdate {
     fn write_to<W: ?Sized>(&self, buffer: &mut W) -> WriteMessageResult
-    where
-        W: Write,
-    {
+    where W: Write {
         // Write the message number.
-        buffer.write(&[0xff, 0xff, 0x00, 0xae])?;
+        buffer.write(&[
+            0xff, 0xff, 0x00, 0xae
+        ])?;
         // Block AgentData
         buffer.write(self.agent_data.agent_id.as_bytes())?;
         buffer.write(self.agent_data.session_id.as_bytes())?;
         // Block PropertiesData
         buffer.write(self.properties_data.image_id.as_bytes())?;
         buffer.write(self.properties_data.fl_image_id.as_bytes())?;
-        buffer.write_u16::<LittleEndian>(
-            self.properties_data.about_text.len() as u16,
-        )?;
+        buffer.write_u16::<LittleEndian>(self.properties_data.about_text.len() as u16)?;
         buffer.write(&self.properties_data.about_text[..])?;
-        buffer.write_u8(
-            self.properties_data.fl_about_text.len() as u8,
-        )?;
+        buffer.write_u8(self.properties_data.fl_about_text.len() as u8)?;
         buffer.write(&self.properties_data.fl_about_text[..])?;
         buffer.write_u8(self.properties_data.allow_publish as u8)?;
         buffer.write_u8(self.properties_data.mature_publish as u8)?;
-        buffer.write_u8(
-            self.properties_data.profile_url.len() as u8,
-        )?;
+        buffer.write_u8(self.properties_data.profile_url.len() as u8)?;
         buffer.write(&self.properties_data.profile_url[..])?;
         Ok(())
     }
 
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         // Block AgentData
         let agent_data = AvatarPropertiesUpdate_AgentData::read_from(buffer)?;
         // Block PropertiesData
@@ -40100,26 +38171,18 @@ impl Message for AvatarPropertiesUpdate {
 
 impl Message for AvatarSitResponse {
     fn write_to<W: ?Sized>(&self, buffer: &mut W) -> WriteMessageResult
-    where
-        W: Write,
-    {
+    where W: Write {
         // Write the message number.
         buffer.write(&[0x15])?;
         // Block SitObject
         buffer.write(self.sit_object.id.as_bytes())?;
         // Block SitTransform
         buffer.write_u8(self.sit_transform.auto_pilot as u8)?;
-        buffer.write_f32::<LittleEndian>(
-            self.sit_transform.sit_position.x,
-        )?;
+        buffer.write_f32::<LittleEndian>(self.sit_transform.sit_position.x)?;
 
-        buffer.write_f32::<LittleEndian>(
-            self.sit_transform.sit_position.y,
-        )?;
+        buffer.write_f32::<LittleEndian>(self.sit_transform.sit_position.y)?;
 
-        buffer.write_f32::<LittleEndian>(
-            self.sit_transform.sit_position.z,
-        )?;
+        buffer.write_f32::<LittleEndian>(self.sit_transform.sit_position.z)?;
         let normed_sit_rotation = UnitQuaternion::new(&self.sit_transform.sit_rotation).unwrap();
 
         buffer.write_f32::<LittleEndian>(normed_sit_rotation.i)?;
@@ -40127,36 +38190,22 @@ impl Message for AvatarSitResponse {
         buffer.write_f32::<LittleEndian>(normed_sit_rotation.j)?;
 
         buffer.write_f32::<LittleEndian>(normed_sit_rotation.k)?;
-        buffer.write_f32::<LittleEndian>(
-            self.sit_transform.camera_eye_offset.x,
-        )?;
+        buffer.write_f32::<LittleEndian>(self.sit_transform.camera_eye_offset.x)?;
 
-        buffer.write_f32::<LittleEndian>(
-            self.sit_transform.camera_eye_offset.y,
-        )?;
+        buffer.write_f32::<LittleEndian>(self.sit_transform.camera_eye_offset.y)?;
 
-        buffer.write_f32::<LittleEndian>(
-            self.sit_transform.camera_eye_offset.z,
-        )?;
-        buffer.write_f32::<LittleEndian>(
-            self.sit_transform.camera_at_offset.x,
-        )?;
+        buffer.write_f32::<LittleEndian>(self.sit_transform.camera_eye_offset.z)?;
+        buffer.write_f32::<LittleEndian>(self.sit_transform.camera_at_offset.x)?;
 
-        buffer.write_f32::<LittleEndian>(
-            self.sit_transform.camera_at_offset.y,
-        )?;
+        buffer.write_f32::<LittleEndian>(self.sit_transform.camera_at_offset.y)?;
 
-        buffer.write_f32::<LittleEndian>(
-            self.sit_transform.camera_at_offset.z,
-        )?;
+        buffer.write_f32::<LittleEndian>(self.sit_transform.camera_at_offset.z)?;
         buffer.write_u8(self.sit_transform.force_mouselook as u8)?;
         Ok(())
     }
 
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         // Block SitObject
         let sit_object = AvatarSitResponse_SitObject::read_from(buffer)?;
         // Block SitTransform
@@ -40170,11 +38219,11 @@ impl Message for AvatarSitResponse {
 
 impl Message for AvatarTextureUpdate {
     fn write_to<W: ?Sized>(&self, buffer: &mut W) -> WriteMessageResult
-    where
-        W: Write,
-    {
+    where W: Write {
         // Write the message number.
-        buffer.write(&[0xff, 0xff, 0x00, 0x04])?;
+        buffer.write(&[
+            0xff, 0xff, 0x00, 0x04
+        ])?;
         // Block AgentData
         buffer.write(self.agent_data.agent_id.as_bytes())?;
         buffer.write_u8(self.agent_data.textures_changed as u8)?;
@@ -40195,9 +38244,7 @@ impl Message for AvatarTextureUpdate {
     }
 
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         // Block AgentData
         let agent_data = AvatarTextureUpdate_AgentData::read_from(buffer)?;
         // Block WearableData
@@ -40222,11 +38269,11 @@ impl Message for AvatarTextureUpdate {
 
 impl Message for BulkUpdateInventory {
     fn write_to<W: ?Sized>(&self, buffer: &mut W) -> WriteMessageResult
-    where
-        W: Write,
-    {
+    where W: Write {
         // Write the message number.
-        buffer.write(&[0xff, 0xff, 0x01, 0x19])?;
+        buffer.write(&[
+            0xff, 0xff, 0x01, 0x19
+        ])?;
         // Block AgentData
         buffer.write(self.agent_data.agent_id.as_bytes())?;
         buffer.write(self.agent_data.transaction_id.as_bytes())?;
@@ -40271,9 +38318,7 @@ impl Message for BulkUpdateInventory {
     }
 
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         // Block AgentData
         let agent_data = BulkUpdateInventory_AgentData::read_from(buffer)?;
         // Block FolderData
@@ -40298,11 +38343,11 @@ impl Message for BulkUpdateInventory {
 
 impl Message for BuyObjectInventory {
     fn write_to<W: ?Sized>(&self, buffer: &mut W) -> WriteMessageResult
-    where
-        W: Write,
-    {
+    where W: Write {
         // Write the message number.
-        buffer.write(&[0xff, 0xff, 0x00, 0x67])?;
+        buffer.write(&[
+            0xff, 0xff, 0x00, 0x67
+        ])?;
         // Block AgentData
         buffer.write(self.agent_data.agent_id.as_bytes())?;
         buffer.write(self.agent_data.session_id.as_bytes())?;
@@ -40314,9 +38359,7 @@ impl Message for BuyObjectInventory {
     }
 
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         // Block AgentData
         let agent_data = BuyObjectInventory_AgentData::read_from(buffer)?;
         // Block Data
@@ -40330,34 +38373,22 @@ impl Message for BuyObjectInventory {
 
 impl Message for CameraConstraint {
     fn write_to<W: ?Sized>(&self, buffer: &mut W) -> WriteMessageResult
-    where
-        W: Write,
-    {
+    where W: Write {
         // Write the message number.
         buffer.write(&[0x16])?;
         // Block CameraCollidePlane
-        buffer.write_f32::<LittleEndian>(
-            self.camera_collide_plane.plane.x,
-        )?;
+        buffer.write_f32::<LittleEndian>(self.camera_collide_plane.plane.x)?;
 
-        buffer.write_f32::<LittleEndian>(
-            self.camera_collide_plane.plane.y,
-        )?;
+        buffer.write_f32::<LittleEndian>(self.camera_collide_plane.plane.y)?;
 
-        buffer.write_f32::<LittleEndian>(
-            self.camera_collide_plane.plane.z,
-        )?;
+        buffer.write_f32::<LittleEndian>(self.camera_collide_plane.plane.z)?;
 
-        buffer.write_f32::<LittleEndian>(
-            self.camera_collide_plane.plane.w,
-        )?;
+        buffer.write_f32::<LittleEndian>(self.camera_collide_plane.plane.w)?;
         Ok(())
     }
 
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         // Block CameraCollidePlane
         let camera_collide_plane = CameraConstraint_CameraCollidePlane::read_from(buffer)?;
         Ok(MessageInstance::CameraConstraint(CameraConstraint {
@@ -40368,11 +38399,11 @@ impl Message for CameraConstraint {
 
 impl Message for CancelAuction {
     fn write_to<W: ?Sized>(&self, buffer: &mut W) -> WriteMessageResult
-    where
-        W: Write,
-    {
+    where W: Write {
         // Write the message number.
-        buffer.write(&[0xff, 0xff, 0x00, 0xe8])?;
+        buffer.write(&[
+            0xff, 0xff, 0x00, 0xe8
+        ])?;
         // Block ParcelData
         buffer.write_u8(self.parcel_data.len() as u8)?;
         for item in &self.parcel_data {
@@ -40382,28 +38413,26 @@ impl Message for CancelAuction {
     }
 
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         // Block ParcelData
         let mut parcel_data = Vec::new();
         let _parcel_data_count = buffer.read_u8()?;
         for _ in 0.._parcel_data_count {
             parcel_data.push(CancelAuction_ParcelData::read_from(buffer)?);
         }
-        Ok(MessageInstance::CancelAuction(
-            CancelAuction { parcel_data: parcel_data },
-        ))
+        Ok(MessageInstance::CancelAuction(CancelAuction {
+            parcel_data: parcel_data,
+        }))
     }
 }
 
 impl Message for ChangeInventoryItemFlags {
     fn write_to<W: ?Sized>(&self, buffer: &mut W) -> WriteMessageResult
-    where
-        W: Write,
-    {
+    where W: Write {
         // Write the message number.
-        buffer.write(&[0xff, 0xff, 0x01, 0x0f])?;
+        buffer.write(&[
+            0xff, 0xff, 0x01, 0x0f
+        ])?;
         // Block AgentData
         buffer.write(self.agent_data.agent_id.as_bytes())?;
         buffer.write(self.agent_data.session_id.as_bytes())?;
@@ -40417,9 +38446,7 @@ impl Message for ChangeInventoryItemFlags {
     }
 
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         // Block AgentData
         let agent_data = ChangeInventoryItemFlags_AgentData::read_from(buffer)?;
         // Block InventoryData
@@ -40439,11 +38466,11 @@ impl Message for ChangeInventoryItemFlags {
 
 impl Message for ChangeUserRights {
     fn write_to<W: ?Sized>(&self, buffer: &mut W) -> WriteMessageResult
-    where
-        W: Write,
-    {
+    where W: Write {
         // Write the message number.
-        buffer.write(&[0xff, 0xff, 0x01, 0x41])?;
+        buffer.write(&[
+            0xff, 0xff, 0x01, 0x41
+        ])?;
         // Block AgentData
         buffer.write(self.agent_data.agent_id.as_bytes())?;
         // Block Rights
@@ -40456,9 +38483,7 @@ impl Message for ChangeUserRights {
     }
 
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         // Block AgentData
         let agent_data = ChangeUserRights_AgentData::read_from(buffer)?;
         // Block Rights
@@ -40476,11 +38501,11 @@ impl Message for ChangeUserRights {
 
 impl Message for ChatFromSimulator {
     fn write_to<W: ?Sized>(&self, buffer: &mut W) -> WriteMessageResult
-    where
-        W: Write,
-    {
+    where W: Write {
         // Write the message number.
-        buffer.write(&[0xff, 0xff, 0x00, 0x8b])?;
+        buffer.write(&[
+            0xff, 0xff, 0x00, 0x8b
+        ])?;
         // Block ChatData
         buffer.write_u8(self.chat_data.from_name.len() as u8)?;
         buffer.write(&self.chat_data.from_name[..])?;
@@ -40494,39 +38519,33 @@ impl Message for ChatFromSimulator {
         buffer.write_f32::<LittleEndian>(self.chat_data.position.y)?;
 
         buffer.write_f32::<LittleEndian>(self.chat_data.position.z)?;
-        buffer.write_u16::<LittleEndian>(
-            self.chat_data.message.len() as u16,
-        )?;
+        buffer.write_u16::<LittleEndian>(self.chat_data.message.len() as u16)?;
         buffer.write(&self.chat_data.message[..])?;
         Ok(())
     }
 
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         // Block ChatData
         let chat_data = ChatFromSimulator_ChatData::read_from(buffer)?;
-        Ok(MessageInstance::ChatFromSimulator(
-            ChatFromSimulator { chat_data: chat_data },
-        ))
+        Ok(MessageInstance::ChatFromSimulator(ChatFromSimulator {
+            chat_data: chat_data,
+        }))
     }
 }
 
 impl Message for ChatFromViewer {
     fn write_to<W: ?Sized>(&self, buffer: &mut W) -> WriteMessageResult
-    where
-        W: Write,
-    {
+    where W: Write {
         // Write the message number.
-        buffer.write(&[0xff, 0xff, 0x00, 0x50])?;
+        buffer.write(&[
+            0xff, 0xff, 0x00, 0x50
+        ])?;
         // Block AgentData
         buffer.write(self.agent_data.agent_id.as_bytes())?;
         buffer.write(self.agent_data.session_id.as_bytes())?;
         // Block ChatData
-        buffer.write_u16::<LittleEndian>(
-            self.chat_data.message.len() as u16,
-        )?;
+        buffer.write_u16::<LittleEndian>(self.chat_data.message.len() as u16)?;
         buffer.write(&self.chat_data.message[..])?;
         buffer.write_u8(self.chat_data.type_)?;
         buffer.write_i32::<LittleEndian>(self.chat_data.channel)?;
@@ -40534,9 +38553,7 @@ impl Message for ChatFromViewer {
     }
 
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         // Block AgentData
         let agent_data = ChatFromViewer_AgentData::read_from(buffer)?;
         // Block ChatData
@@ -40550,11 +38567,11 @@ impl Message for ChatFromViewer {
 
 impl Message for ChatPass {
     fn write_to<W: ?Sized>(&self, buffer: &mut W) -> WriteMessageResult
-    where
-        W: Write,
-    {
+    where W: Write {
         // Write the message number.
-        buffer.write(&[0xff, 0xff, 0x00, 0xef])?;
+        buffer.write(&[
+            0xff, 0xff, 0x00, 0xef
+        ])?;
         // Block ChatData
         buffer.write_i32::<LittleEndian>(self.chat_data.channel)?;
         buffer.write_f32::<LittleEndian>(self.chat_data.position.x)?;
@@ -40570,30 +38587,28 @@ impl Message for ChatPass {
         buffer.write_u8(self.chat_data.type_)?;
         buffer.write_f32::<LittleEndian>(self.chat_data.radius)?;
         buffer.write_u8(self.chat_data.sim_access)?;
-        buffer.write_u16::<LittleEndian>(
-            self.chat_data.message.len() as u16,
-        )?;
+        buffer.write_u16::<LittleEndian>(self.chat_data.message.len() as u16)?;
         buffer.write(&self.chat_data.message[..])?;
         Ok(())
     }
 
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         // Block ChatData
         let chat_data = ChatPass_ChatData::read_from(buffer)?;
-        Ok(MessageInstance::ChatPass(ChatPass { chat_data: chat_data }))
+        Ok(MessageInstance::ChatPass(ChatPass {
+            chat_data: chat_data,
+        }))
     }
 }
 
 impl Message for CheckParcelAuctions {
     fn write_to<W: ?Sized>(&self, buffer: &mut W) -> WriteMessageResult
-    where
-        W: Write,
-    {
+    where W: Write {
         // Write the message number.
-        buffer.write(&[0xff, 0xff, 0x00, 0xe9])?;
+        buffer.write(&[
+            0xff, 0xff, 0x00, 0xe9
+        ])?;
         // Block RegionData
         buffer.write_u8(self.region_data.len() as u8)?;
         for item in &self.region_data {
@@ -40603,28 +38618,26 @@ impl Message for CheckParcelAuctions {
     }
 
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         // Block RegionData
         let mut region_data = Vec::new();
         let _region_data_count = buffer.read_u8()?;
         for _ in 0.._region_data_count {
             region_data.push(CheckParcelAuctions_RegionData::read_from(buffer)?);
         }
-        Ok(MessageInstance::CheckParcelAuctions(
-            CheckParcelAuctions { region_data: region_data },
-        ))
+        Ok(MessageInstance::CheckParcelAuctions(CheckParcelAuctions {
+            region_data: region_data,
+        }))
     }
 }
 
 impl Message for CheckParcelSales {
     fn write_to<W: ?Sized>(&self, buffer: &mut W) -> WriteMessageResult
-    where
-        W: Write,
-    {
+    where W: Write {
         // Write the message number.
-        buffer.write(&[0xff, 0xff, 0x00, 0xe1])?;
+        buffer.write(&[
+            0xff, 0xff, 0x00, 0xe1
+        ])?;
         // Block RegionData
         buffer.write_u8(self.region_data.len() as u8)?;
         for item in &self.region_data {
@@ -40634,59 +38647,49 @@ impl Message for CheckParcelSales {
     }
 
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         // Block RegionData
         let mut region_data = Vec::new();
         let _region_data_count = buffer.read_u8()?;
         for _ in 0.._region_data_count {
             region_data.push(CheckParcelSales_RegionData::read_from(buffer)?);
         }
-        Ok(MessageInstance::CheckParcelSales(
-            CheckParcelSales { region_data: region_data },
-        ))
+        Ok(MessageInstance::CheckParcelSales(CheckParcelSales {
+            region_data: region_data,
+        }))
     }
 }
 
 impl Message for ChildAgentAlive {
     fn write_to<W: ?Sized>(&self, buffer: &mut W) -> WriteMessageResult
-    where
-        W: Write,
-    {
+    where W: Write {
         // Write the message number.
         buffer.write(&[0x1a])?;
         // Block AgentData
-        buffer.write_u64::<LittleEndian>(
-            self.agent_data.region_handle,
-        )?;
-        buffer.write_u32::<LittleEndian>(
-            self.agent_data.viewer_circuit_code,
-        )?;
+        buffer.write_u64::<LittleEndian>(self.agent_data.region_handle)?;
+        buffer.write_u32::<LittleEndian>(self.agent_data.viewer_circuit_code)?;
         buffer.write(self.agent_data.agent_id.as_bytes())?;
         buffer.write(self.agent_data.session_id.as_bytes())?;
         Ok(())
     }
 
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         // Block AgentData
         let agent_data = ChildAgentAlive_AgentData::read_from(buffer)?;
-        Ok(MessageInstance::ChildAgentAlive(
-            ChildAgentAlive { agent_data: agent_data },
-        ))
+        Ok(MessageInstance::ChildAgentAlive(ChildAgentAlive {
+            agent_data: agent_data,
+        }))
     }
 }
 
 impl Message for ChildAgentDying {
     fn write_to<W: ?Sized>(&self, buffer: &mut W) -> WriteMessageResult
-    where
-        W: Write,
-    {
+    where W: Write {
         // Write the message number.
-        buffer.write(&[0xff, 0xff, 0x00, 0xf0])?;
+        buffer.write(&[
+            0xff, 0xff, 0x00, 0xf0
+        ])?;
         // Block AgentData
         buffer.write(self.agent_data.agent_id.as_bytes())?;
         buffer.write(self.agent_data.session_id.as_bytes())?;
@@ -40694,55 +38697,35 @@ impl Message for ChildAgentDying {
     }
 
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         // Block AgentData
         let agent_data = ChildAgentDying_AgentData::read_from(buffer)?;
-        Ok(MessageInstance::ChildAgentDying(
-            ChildAgentDying { agent_data: agent_data },
-        ))
+        Ok(MessageInstance::ChildAgentDying(ChildAgentDying {
+            agent_data: agent_data,
+        }))
     }
 }
 
 impl Message for ChildAgentPositionUpdate {
     fn write_to<W: ?Sized>(&self, buffer: &mut W) -> WriteMessageResult
-    where
-        W: Write,
-    {
+    where W: Write {
         // Write the message number.
         buffer.write(&[0x1b])?;
         // Block AgentData
-        buffer.write_u64::<LittleEndian>(
-            self.agent_data.region_handle,
-        )?;
-        buffer.write_u32::<LittleEndian>(
-            self.agent_data.viewer_circuit_code,
-        )?;
+        buffer.write_u64::<LittleEndian>(self.agent_data.region_handle)?;
+        buffer.write_u32::<LittleEndian>(self.agent_data.viewer_circuit_code)?;
         buffer.write(self.agent_data.agent_id.as_bytes())?;
         buffer.write(self.agent_data.session_id.as_bytes())?;
-        buffer.write_f32::<LittleEndian>(
-            self.agent_data.agent_pos.x,
-        )?;
+        buffer.write_f32::<LittleEndian>(self.agent_data.agent_pos.x)?;
 
-        buffer.write_f32::<LittleEndian>(
-            self.agent_data.agent_pos.y,
-        )?;
+        buffer.write_f32::<LittleEndian>(self.agent_data.agent_pos.y)?;
 
-        buffer.write_f32::<LittleEndian>(
-            self.agent_data.agent_pos.z,
-        )?;
-        buffer.write_f32::<LittleEndian>(
-            self.agent_data.agent_vel.x,
-        )?;
+        buffer.write_f32::<LittleEndian>(self.agent_data.agent_pos.z)?;
+        buffer.write_f32::<LittleEndian>(self.agent_data.agent_vel.x)?;
 
-        buffer.write_f32::<LittleEndian>(
-            self.agent_data.agent_vel.y,
-        )?;
+        buffer.write_f32::<LittleEndian>(self.agent_data.agent_vel.y)?;
 
-        buffer.write_f32::<LittleEndian>(
-            self.agent_data.agent_vel.z,
-        )?;
+        buffer.write_f32::<LittleEndian>(self.agent_data.agent_vel.z)?;
         buffer.write_f32::<LittleEndian>(self.agent_data.center.x)?;
 
         buffer.write_f32::<LittleEndian>(self.agent_data.center.y)?;
@@ -40758,17 +38741,11 @@ impl Message for ChildAgentPositionUpdate {
         buffer.write_f32::<LittleEndian>(self.agent_data.at_axis.y)?;
 
         buffer.write_f32::<LittleEndian>(self.agent_data.at_axis.z)?;
-        buffer.write_f32::<LittleEndian>(
-            self.agent_data.left_axis.x,
-        )?;
+        buffer.write_f32::<LittleEndian>(self.agent_data.left_axis.x)?;
 
-        buffer.write_f32::<LittleEndian>(
-            self.agent_data.left_axis.y,
-        )?;
+        buffer.write_f32::<LittleEndian>(self.agent_data.left_axis.y)?;
 
-        buffer.write_f32::<LittleEndian>(
-            self.agent_data.left_axis.z,
-        )?;
+        buffer.write_f32::<LittleEndian>(self.agent_data.left_axis.z)?;
         buffer.write_f32::<LittleEndian>(self.agent_data.up_axis.x)?;
 
         buffer.write_f32::<LittleEndian>(self.agent_data.up_axis.y)?;
@@ -40779,24 +38756,24 @@ impl Message for ChildAgentPositionUpdate {
     }
 
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         // Block AgentData
         let agent_data = ChildAgentPositionUpdate_AgentData::read_from(buffer)?;
         Ok(MessageInstance::ChildAgentPositionUpdate(
-            ChildAgentPositionUpdate { agent_data: agent_data },
+            ChildAgentPositionUpdate {
+                agent_data: agent_data,
+            },
         ))
     }
 }
 
 impl Message for ChildAgentUnknown {
     fn write_to<W: ?Sized>(&self, buffer: &mut W) -> WriteMessageResult
-    where
-        W: Write,
-    {
+    where W: Write {
         // Write the message number.
-        buffer.write(&[0xff, 0xff, 0x00, 0xf1])?;
+        buffer.write(&[
+            0xff, 0xff, 0x00, 0xf1
+        ])?;
         // Block AgentData
         buffer.write(self.agent_data.agent_id.as_bytes())?;
         buffer.write(self.agent_data.session_id.as_bytes())?;
@@ -40804,55 +38781,35 @@ impl Message for ChildAgentUnknown {
     }
 
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         // Block AgentData
         let agent_data = ChildAgentUnknown_AgentData::read_from(buffer)?;
-        Ok(MessageInstance::ChildAgentUnknown(
-            ChildAgentUnknown { agent_data: agent_data },
-        ))
+        Ok(MessageInstance::ChildAgentUnknown(ChildAgentUnknown {
+            agent_data: agent_data,
+        }))
     }
 }
 
 impl Message for ChildAgentUpdate {
     fn write_to<W: ?Sized>(&self, buffer: &mut W) -> WriteMessageResult
-    where
-        W: Write,
-    {
+    where W: Write {
         // Write the message number.
         buffer.write(&[0x19])?;
         // Block AgentData
-        buffer.write_u64::<LittleEndian>(
-            self.agent_data.region_handle,
-        )?;
-        buffer.write_u32::<LittleEndian>(
-            self.agent_data.viewer_circuit_code,
-        )?;
+        buffer.write_u64::<LittleEndian>(self.agent_data.region_handle)?;
+        buffer.write_u32::<LittleEndian>(self.agent_data.viewer_circuit_code)?;
         buffer.write(self.agent_data.agent_id.as_bytes())?;
         buffer.write(self.agent_data.session_id.as_bytes())?;
-        buffer.write_f32::<LittleEndian>(
-            self.agent_data.agent_pos.x,
-        )?;
+        buffer.write_f32::<LittleEndian>(self.agent_data.agent_pos.x)?;
 
-        buffer.write_f32::<LittleEndian>(
-            self.agent_data.agent_pos.y,
-        )?;
+        buffer.write_f32::<LittleEndian>(self.agent_data.agent_pos.y)?;
 
-        buffer.write_f32::<LittleEndian>(
-            self.agent_data.agent_pos.z,
-        )?;
-        buffer.write_f32::<LittleEndian>(
-            self.agent_data.agent_vel.x,
-        )?;
+        buffer.write_f32::<LittleEndian>(self.agent_data.agent_pos.z)?;
+        buffer.write_f32::<LittleEndian>(self.agent_data.agent_vel.x)?;
 
-        buffer.write_f32::<LittleEndian>(
-            self.agent_data.agent_vel.y,
-        )?;
+        buffer.write_f32::<LittleEndian>(self.agent_data.agent_vel.y)?;
 
-        buffer.write_f32::<LittleEndian>(
-            self.agent_data.agent_vel.z,
-        )?;
+        buffer.write_f32::<LittleEndian>(self.agent_data.agent_vel.z)?;
         buffer.write_f32::<LittleEndian>(self.agent_data.center.x)?;
 
         buffer.write_f32::<LittleEndian>(self.agent_data.center.y)?;
@@ -40868,17 +38825,11 @@ impl Message for ChildAgentUpdate {
         buffer.write_f32::<LittleEndian>(self.agent_data.at_axis.y)?;
 
         buffer.write_f32::<LittleEndian>(self.agent_data.at_axis.z)?;
-        buffer.write_f32::<LittleEndian>(
-            self.agent_data.left_axis.x,
-        )?;
+        buffer.write_f32::<LittleEndian>(self.agent_data.left_axis.x)?;
 
-        buffer.write_f32::<LittleEndian>(
-            self.agent_data.left_axis.y,
-        )?;
+        buffer.write_f32::<LittleEndian>(self.agent_data.left_axis.y)?;
 
-        buffer.write_f32::<LittleEndian>(
-            self.agent_data.left_axis.z,
-        )?;
+        buffer.write_f32::<LittleEndian>(self.agent_data.left_axis.z)?;
         buffer.write_f32::<LittleEndian>(self.agent_data.up_axis.x)?;
 
         buffer.write_f32::<LittleEndian>(self.agent_data.up_axis.y)?;
@@ -40889,9 +38840,7 @@ impl Message for ChildAgentUpdate {
         buffer.write_f32::<LittleEndian>(self.agent_data.aspect)?;
         buffer.write_u8(self.agent_data.throttles.len() as u8)?;
         buffer.write(&self.agent_data.throttles[..])?;
-        buffer.write_u32::<LittleEndian>(
-            self.agent_data.locomotion_state,
-        )?;
+        buffer.write_u32::<LittleEndian>(self.agent_data.locomotion_state)?;
         let normed_head_rotation = UnitQuaternion::new(&self.agent_data.head_rotation).unwrap();
 
         buffer.write_f32::<LittleEndian>(normed_head_rotation.i)?;
@@ -40906,19 +38855,13 @@ impl Message for ChildAgentUpdate {
         buffer.write_f32::<LittleEndian>(normed_body_rotation.j)?;
 
         buffer.write_f32::<LittleEndian>(normed_body_rotation.k)?;
-        buffer.write_u32::<LittleEndian>(
-            self.agent_data.control_flags,
-        )?;
-        buffer.write_f32::<LittleEndian>(
-            self.agent_data.energy_level,
-        )?;
+        buffer.write_u32::<LittleEndian>(self.agent_data.control_flags)?;
+        buffer.write_f32::<LittleEndian>(self.agent_data.energy_level)?;
         buffer.write_u8(self.agent_data.god_level)?;
         buffer.write_u8(self.agent_data.always_run as u8)?;
         buffer.write(self.agent_data.prey_agent.as_bytes())?;
         buffer.write_u8(self.agent_data.agent_access)?;
-        buffer.write_u16::<LittleEndian>(
-            self.agent_data.agent_textures.len() as u16,
-        )?;
+        buffer.write_u16::<LittleEndian>(self.agent_data.agent_textures.len() as u16)?;
         buffer.write(&self.agent_data.agent_textures[..])?;
         buffer.write(self.agent_data.active_group_id.as_bytes())?;
         // Block GroupData
@@ -40965,9 +38908,7 @@ impl Message for ChildAgentUpdate {
     }
 
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         // Block AgentData
         let agent_data = ChildAgentUpdate_AgentData::read_from(buffer)?;
         // Block GroupData
@@ -41027,11 +38968,11 @@ impl Message for ChildAgentUpdate {
 
 impl Message for ClassifiedDelete {
     fn write_to<W: ?Sized>(&self, buffer: &mut W) -> WriteMessageResult
-    where
-        W: Write,
-    {
+    where W: Write {
         // Write the message number.
-        buffer.write(&[0xff, 0xff, 0x00, 0x2e])?;
+        buffer.write(&[
+            0xff, 0xff, 0x00, 0x2e
+        ])?;
         // Block AgentData
         buffer.write(self.agent_data.agent_id.as_bytes())?;
         buffer.write(self.agent_data.session_id.as_bytes())?;
@@ -41041,9 +38982,7 @@ impl Message for ClassifiedDelete {
     }
 
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         // Block AgentData
         let agent_data = ClassifiedDelete_AgentData::read_from(buffer)?;
         // Block Data
@@ -41057,11 +38996,11 @@ impl Message for ClassifiedDelete {
 
 impl Message for ClassifiedGodDelete {
     fn write_to<W: ?Sized>(&self, buffer: &mut W) -> WriteMessageResult
-    where
-        W: Write,
-    {
+    where W: Write {
         // Write the message number.
-        buffer.write(&[0xff, 0xff, 0x00, 0x2f])?;
+        buffer.write(&[
+            0xff, 0xff, 0x00, 0x2f
+        ])?;
         // Block AgentData
         buffer.write(self.agent_data.agent_id.as_bytes())?;
         buffer.write(self.agent_data.session_id.as_bytes())?;
@@ -41072,9 +39011,7 @@ impl Message for ClassifiedGodDelete {
     }
 
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         // Block AgentData
         let agent_data = ClassifiedGodDelete_AgentData::read_from(buffer)?;
         // Block Data
@@ -41088,11 +39025,11 @@ impl Message for ClassifiedGodDelete {
 
 impl Message for ClassifiedInfoReply {
     fn write_to<W: ?Sized>(&self, buffer: &mut W) -> WriteMessageResult
-    where
-        W: Write,
-    {
+    where W: Write {
         // Write the message number.
-        buffer.write(&[0xff, 0xff, 0x00, 0x2c])?;
+        buffer.write(&[
+            0xff, 0xff, 0x00, 0x2c
+        ])?;
         // Block AgentData
         buffer.write(self.agent_data.agent_id.as_bytes())?;
         // Block Data
@@ -41103,9 +39040,7 @@ impl Message for ClassifiedInfoReply {
         buffer.write_u32::<LittleEndian>(self.data.category)?;
         buffer.write_u8(self.data.name.len() as u8)?;
         buffer.write(&self.data.name[..])?;
-        buffer.write_u16::<LittleEndian>(
-            self.data.desc.len() as u16,
-        )?;
+        buffer.write_u16::<LittleEndian>(self.data.desc.len() as u16)?;
         buffer.write(&self.data.desc[..])?;
         buffer.write(self.data.parcel_id.as_bytes())?;
         buffer.write_u32::<LittleEndian>(self.data.parent_estate)?;
@@ -41120,16 +39055,12 @@ impl Message for ClassifiedInfoReply {
         buffer.write_u8(self.data.parcel_name.len() as u8)?;
         buffer.write(&self.data.parcel_name[..])?;
         buffer.write_u8(self.data.classified_flags)?;
-        buffer.write_i32::<LittleEndian>(
-            self.data.price_for_listing,
-        )?;
+        buffer.write_i32::<LittleEndian>(self.data.price_for_listing)?;
         Ok(())
     }
 
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         // Block AgentData
         let agent_data = ClassifiedInfoReply_AgentData::read_from(buffer)?;
         // Block Data
@@ -41143,11 +39074,11 @@ impl Message for ClassifiedInfoReply {
 
 impl Message for ClassifiedInfoRequest {
     fn write_to<W: ?Sized>(&self, buffer: &mut W) -> WriteMessageResult
-    where
-        W: Write,
-    {
+    where W: Write {
         // Write the message number.
-        buffer.write(&[0xff, 0xff, 0x00, 0x2b])?;
+        buffer.write(&[
+            0xff, 0xff, 0x00, 0x2b
+        ])?;
         // Block AgentData
         buffer.write(self.agent_data.agent_id.as_bytes())?;
         buffer.write(self.agent_data.session_id.as_bytes())?;
@@ -41157,9 +39088,7 @@ impl Message for ClassifiedInfoRequest {
     }
 
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         // Block AgentData
         let agent_data = ClassifiedInfoRequest_AgentData::read_from(buffer)?;
         // Block Data
@@ -41175,11 +39104,11 @@ impl Message for ClassifiedInfoRequest {
 
 impl Message for ClassifiedInfoUpdate {
     fn write_to<W: ?Sized>(&self, buffer: &mut W) -> WriteMessageResult
-    where
-        W: Write,
-    {
+    where W: Write {
         // Write the message number.
-        buffer.write(&[0xff, 0xff, 0x00, 0x2d])?;
+        buffer.write(&[
+            0xff, 0xff, 0x00, 0x2d
+        ])?;
         // Block AgentData
         buffer.write(self.agent_data.agent_id.as_bytes())?;
         buffer.write(self.agent_data.session_id.as_bytes())?;
@@ -41188,9 +39117,7 @@ impl Message for ClassifiedInfoUpdate {
         buffer.write_u32::<LittleEndian>(self.data.category)?;
         buffer.write_u8(self.data.name.len() as u8)?;
         buffer.write(&self.data.name[..])?;
-        buffer.write_u16::<LittleEndian>(
-            self.data.desc.len() as u16,
-        )?;
+        buffer.write_u16::<LittleEndian>(self.data.desc.len() as u16)?;
         buffer.write(&self.data.desc[..])?;
         buffer.write(self.data.parcel_id.as_bytes())?;
         buffer.write_u32::<LittleEndian>(self.data.parent_estate)?;
@@ -41201,16 +39128,12 @@ impl Message for ClassifiedInfoUpdate {
 
         buffer.write_f64::<LittleEndian>(self.data.pos_global.z)?;
         buffer.write_u8(self.data.classified_flags)?;
-        buffer.write_i32::<LittleEndian>(
-            self.data.price_for_listing,
-        )?;
+        buffer.write_i32::<LittleEndian>(self.data.price_for_listing)?;
         Ok(())
     }
 
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         // Block AgentData
         let agent_data = ClassifiedInfoUpdate_AgentData::read_from(buffer)?;
         // Block Data
@@ -41226,51 +39149,47 @@ impl Message for ClassifiedInfoUpdate {
 
 impl Message for ClearFollowCamProperties {
     fn write_to<W: ?Sized>(&self, buffer: &mut W) -> WriteMessageResult
-    where
-        W: Write,
-    {
+    where W: Write {
         // Write the message number.
-        buffer.write(&[0xff, 0xff, 0x00, 0xa0])?;
+        buffer.write(&[
+            0xff, 0xff, 0x00, 0xa0
+        ])?;
         // Block ObjectData
         buffer.write(self.object_data.object_id.as_bytes())?;
         Ok(())
     }
 
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         // Block ObjectData
         let object_data = ClearFollowCamProperties_ObjectData::read_from(buffer)?;
         Ok(MessageInstance::ClearFollowCamProperties(
-            ClearFollowCamProperties { object_data: object_data },
+            ClearFollowCamProperties {
+                object_data: object_data,
+            },
         ))
     }
 }
 
 impl Message for CloseCircuit {
     fn write_to<W: ?Sized>(&self, buffer: &mut W) -> WriteMessageResult
-    where
-        W: Write,
-    {
+    where W: Write {
         // Write the message number.
-        buffer.write(&[0xff, 0xff, 0xff, 0xFD])?;
+        buffer.write(&[
+            0xff, 0xff, 0xff, 0xFD
+        ])?;
         Ok(())
     }
 
     fn read_from<R: ?Sized>(_: &mut R) -> Result<MessageInstance, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(MessageInstance::CloseCircuit(CloseCircuit {}))
     }
 }
 
 impl Message for CoarseLocationUpdate {
     fn write_to<W: ?Sized>(&self, buffer: &mut W) -> WriteMessageResult
-    where
-        W: Write,
-    {
+    where W: Write {
         // Write the message number.
         buffer.write(&[0xff, 0x06])?;
         // Block Location
@@ -41292,9 +39211,7 @@ impl Message for CoarseLocationUpdate {
     }
 
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         // Block Location
         let mut location = Vec::new();
         let _location_count = buffer.read_u8()?;
@@ -41321,39 +39238,37 @@ impl Message for CoarseLocationUpdate {
 
 impl Message for CompleteAgentMovement {
     fn write_to<W: ?Sized>(&self, buffer: &mut W) -> WriteMessageResult
-    where
-        W: Write,
-    {
+    where W: Write {
         // Write the message number.
-        buffer.write(&[0xff, 0xff, 0x00, 0xf9])?;
+        buffer.write(&[
+            0xff, 0xff, 0x00, 0xf9
+        ])?;
         // Block AgentData
         buffer.write(self.agent_data.agent_id.as_bytes())?;
         buffer.write(self.agent_data.session_id.as_bytes())?;
-        buffer.write_u32::<LittleEndian>(
-            self.agent_data.circuit_code,
-        )?;
+        buffer.write_u32::<LittleEndian>(self.agent_data.circuit_code)?;
         Ok(())
     }
 
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         // Block AgentData
         let agent_data = CompleteAgentMovement_AgentData::read_from(buffer)?;
         Ok(MessageInstance::CompleteAgentMovement(
-            CompleteAgentMovement { agent_data: agent_data },
+            CompleteAgentMovement {
+                agent_data: agent_data,
+            },
         ))
     }
 }
 
 impl Message for CompleteAuction {
     fn write_to<W: ?Sized>(&self, buffer: &mut W) -> WriteMessageResult
-    where
-        W: Write,
-    {
+    where W: Write {
         // Write the message number.
-        buffer.write(&[0xff, 0xff, 0x00, 0xe7])?;
+        buffer.write(&[
+            0xff, 0xff, 0x00, 0xe7
+        ])?;
         // Block ParcelData
         buffer.write_u8(self.parcel_data.len() as u8)?;
         for item in &self.parcel_data {
@@ -41363,26 +39278,22 @@ impl Message for CompleteAuction {
     }
 
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         // Block ParcelData
         let mut parcel_data = Vec::new();
         let _parcel_data_count = buffer.read_u8()?;
         for _ in 0.._parcel_data_count {
             parcel_data.push(CompleteAuction_ParcelData::read_from(buffer)?);
         }
-        Ok(MessageInstance::CompleteAuction(
-            CompleteAuction { parcel_data: parcel_data },
-        ))
+        Ok(MessageInstance::CompleteAuction(CompleteAuction {
+            parcel_data: parcel_data,
+        }))
     }
 }
 
 impl Message for CompletePingCheck {
     fn write_to<W: ?Sized>(&self, buffer: &mut W) -> WriteMessageResult
-    where
-        W: Write,
-    {
+    where W: Write {
         // Write the message number.
         buffer.write(&[0x02])?;
         // Block PingID
@@ -41391,9 +39302,7 @@ impl Message for CompletePingCheck {
     }
 
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         // Block PingID
         let ping_id = CompletePingCheck_PingID::read_from(buffer)?;
         Ok(MessageInstance::CompletePingCheck(
@@ -41404,36 +39313,30 @@ impl Message for CompletePingCheck {
 
 impl Message for ConfirmAuctionStart {
     fn write_to<W: ?Sized>(&self, buffer: &mut W) -> WriteMessageResult
-    where
-        W: Write,
-    {
+    where W: Write {
         // Write the message number.
-        buffer.write(&[0xff, 0xff, 0x00, 0xe6])?;
+        buffer.write(&[
+            0xff, 0xff, 0x00, 0xe6
+        ])?;
         // Block AuctionData
         buffer.write(self.auction_data.parcel_id.as_bytes())?;
-        buffer.write_u32::<LittleEndian>(
-            self.auction_data.auction_id,
-        )?;
+        buffer.write_u32::<LittleEndian>(self.auction_data.auction_id)?;
         Ok(())
     }
 
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         // Block AuctionData
         let auction_data = ConfirmAuctionStart_AuctionData::read_from(buffer)?;
-        Ok(MessageInstance::ConfirmAuctionStart(
-            ConfirmAuctionStart { auction_data: auction_data },
-        ))
+        Ok(MessageInstance::ConfirmAuctionStart(ConfirmAuctionStart {
+            auction_data: auction_data,
+        }))
     }
 }
 
 impl Message for ConfirmEnableSimulator {
     fn write_to<W: ?Sized>(&self, buffer: &mut W) -> WriteMessageResult
-    where
-        W: Write,
-    {
+    where W: Write {
         // Write the message number.
         buffer.write(&[0xff, 0x08])?;
         // Block AgentData
@@ -41443,22 +39346,20 @@ impl Message for ConfirmEnableSimulator {
     }
 
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         // Block AgentData
         let agent_data = ConfirmEnableSimulator_AgentData::read_from(buffer)?;
         Ok(MessageInstance::ConfirmEnableSimulator(
-            ConfirmEnableSimulator { agent_data: agent_data },
+            ConfirmEnableSimulator {
+                agent_data: agent_data,
+            },
         ))
     }
 }
 
 impl Message for ConfirmXferPacket {
     fn write_to<W: ?Sized>(&self, buffer: &mut W) -> WriteMessageResult
-    where
-        W: Write,
-    {
+    where W: Write {
         // Write the message number.
         buffer.write(&[0x13])?;
         // Block XferID
@@ -41468,9 +39369,7 @@ impl Message for ConfirmXferPacket {
     }
 
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         // Block XferID
         let xfer_id = ConfirmXferPacket_XferID::read_from(buffer)?;
         Ok(MessageInstance::ConfirmXferPacket(
@@ -41481,11 +39380,11 @@ impl Message for ConfirmXferPacket {
 
 impl Message for CopyInventoryFromNotecard {
     fn write_to<W: ?Sized>(&self, buffer: &mut W) -> WriteMessageResult
-    where
-        W: Write,
-    {
+    where W: Write {
         // Write the message number.
-        buffer.write(&[0xff, 0xff, 0x01, 0x09])?;
+        buffer.write(&[
+            0xff, 0xff, 0x01, 0x09
+        ])?;
         // Block AgentData
         buffer.write(self.agent_data.agent_id.as_bytes())?;
         buffer.write(self.agent_data.session_id.as_bytes())?;
@@ -41502,9 +39401,7 @@ impl Message for CopyInventoryFromNotecard {
     }
 
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         // Block AgentData
         let agent_data = CopyInventoryFromNotecard_AgentData::read_from(buffer)?;
         // Block NotecardData
@@ -41527,11 +39424,11 @@ impl Message for CopyInventoryFromNotecard {
 
 impl Message for CopyInventoryItem {
     fn write_to<W: ?Sized>(&self, buffer: &mut W) -> WriteMessageResult
-    where
-        W: Write,
-    {
+    where W: Write {
         // Write the message number.
-        buffer.write(&[0xff, 0xff, 0x01, 0x0d])?;
+        buffer.write(&[
+            0xff, 0xff, 0x01, 0x0d
+        ])?;
         // Block AgentData
         buffer.write(self.agent_data.agent_id.as_bytes())?;
         buffer.write(self.agent_data.session_id.as_bytes())?;
@@ -41549,9 +39446,7 @@ impl Message for CopyInventoryItem {
     }
 
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         // Block AgentData
         let agent_data = CopyInventoryItem_AgentData::read_from(buffer)?;
         // Block InventoryData
@@ -41569,11 +39464,11 @@ impl Message for CopyInventoryItem {
 
 impl Message for CreateGroupReply {
     fn write_to<W: ?Sized>(&self, buffer: &mut W) -> WriteMessageResult
-    where
-        W: Write,
-    {
+    where W: Write {
         // Write the message number.
-        buffer.write(&[0xff, 0xff, 0x01, 0x54])?;
+        buffer.write(&[
+            0xff, 0xff, 0x01, 0x54
+        ])?;
         // Block AgentData
         buffer.write(self.agent_data.agent_id.as_bytes())?;
         // Block ReplyData
@@ -41585,9 +39480,7 @@ impl Message for CreateGroupReply {
     }
 
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         // Block AgentData
         let agent_data = CreateGroupReply_AgentData::read_from(buffer)?;
         // Block ReplyData
@@ -41601,26 +39494,22 @@ impl Message for CreateGroupReply {
 
 impl Message for CreateGroupRequest {
     fn write_to<W: ?Sized>(&self, buffer: &mut W) -> WriteMessageResult
-    where
-        W: Write,
-    {
+    where W: Write {
         // Write the message number.
-        buffer.write(&[0xff, 0xff, 0x01, 0x53])?;
+        buffer.write(&[
+            0xff, 0xff, 0x01, 0x53
+        ])?;
         // Block AgentData
         buffer.write(self.agent_data.agent_id.as_bytes())?;
         buffer.write(self.agent_data.session_id.as_bytes())?;
         // Block GroupData
         buffer.write_u8(self.group_data.name.len() as u8)?;
         buffer.write(&self.group_data.name[..])?;
-        buffer.write_u16::<LittleEndian>(
-            self.group_data.charter.len() as u16,
-        )?;
+        buffer.write_u16::<LittleEndian>(self.group_data.charter.len() as u16)?;
         buffer.write(&self.group_data.charter[..])?;
         buffer.write_u8(self.group_data.show_in_list as u8)?;
         buffer.write(self.group_data.insignia_id.as_bytes())?;
-        buffer.write_i32::<LittleEndian>(
-            self.group_data.membership_fee,
-        )?;
+        buffer.write_i32::<LittleEndian>(self.group_data.membership_fee)?;
         buffer.write_u8(self.group_data.open_enrollment as u8)?;
         buffer.write_u8(self.group_data.allow_publish as u8)?;
         buffer.write_u8(self.group_data.mature_publish as u8)?;
@@ -41628,9 +39517,7 @@ impl Message for CreateGroupRequest {
     }
 
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         // Block AgentData
         let agent_data = CreateGroupRequest_AgentData::read_from(buffer)?;
         // Block GroupData
@@ -41644,11 +39531,11 @@ impl Message for CreateGroupRequest {
 
 impl Message for CreateInventoryFolder {
     fn write_to<W: ?Sized>(&self, buffer: &mut W) -> WriteMessageResult
-    where
-        W: Write,
-    {
+    where W: Write {
         // Write the message number.
-        buffer.write(&[0xff, 0xff, 0x01, 0x11])?;
+        buffer.write(&[
+            0xff, 0xff, 0x01, 0x11
+        ])?;
         // Block AgentData
         buffer.write(self.agent_data.agent_id.as_bytes())?;
         buffer.write(self.agent_data.session_id.as_bytes())?;
@@ -41662,9 +39549,7 @@ impl Message for CreateInventoryFolder {
     }
 
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         // Block AgentData
         let agent_data = CreateInventoryFolder_AgentData::read_from(buffer)?;
         // Block FolderData
@@ -41680,39 +39565,31 @@ impl Message for CreateInventoryFolder {
 
 impl Message for CreateInventoryItem {
     fn write_to<W: ?Sized>(&self, buffer: &mut W) -> WriteMessageResult
-    where
-        W: Write,
-    {
+    where W: Write {
         // Write the message number.
-        buffer.write(&[0xff, 0xff, 0x01, 0x31])?;
+        buffer.write(&[
+            0xff, 0xff, 0x01, 0x31
+        ])?;
         // Block AgentData
         buffer.write(self.agent_data.agent_id.as_bytes())?;
         buffer.write(self.agent_data.session_id.as_bytes())?;
         // Block InventoryBlock
-        buffer.write_u32::<LittleEndian>(
-            self.inventory_block.callback_id,
-        )?;
+        buffer.write_u32::<LittleEndian>(self.inventory_block.callback_id)?;
         buffer.write(self.inventory_block.folder_id.as_bytes())?;
         buffer.write(self.inventory_block.transaction_id.as_bytes())?;
-        buffer.write_u32::<LittleEndian>(
-            self.inventory_block.next_owner_mask,
-        )?;
+        buffer.write_u32::<LittleEndian>(self.inventory_block.next_owner_mask)?;
         buffer.write_i8(self.inventory_block.type_)?;
         buffer.write_i8(self.inventory_block.inv_type)?;
         buffer.write_u8(self.inventory_block.wearable_type)?;
         buffer.write_u8(self.inventory_block.name.len() as u8)?;
         buffer.write(&self.inventory_block.name[..])?;
-        buffer.write_u8(
-            self.inventory_block.description.len() as u8,
-        )?;
+        buffer.write_u8(self.inventory_block.description.len() as u8)?;
         buffer.write(&self.inventory_block.description[..])?;
         Ok(())
     }
 
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         // Block AgentData
         let agent_data = CreateInventoryItem_AgentData::read_from(buffer)?;
         // Block InventoryBlock
@@ -41726,11 +39603,11 @@ impl Message for CreateInventoryItem {
 
 impl Message for CreateLandmarkForEvent {
     fn write_to<W: ?Sized>(&self, buffer: &mut W) -> WriteMessageResult
-    where
-        W: Write,
-    {
+    where W: Write {
         // Write the message number.
-        buffer.write(&[0xff, 0xff, 0x01, 0x32])?;
+        buffer.write(&[
+            0xff, 0xff, 0x01, 0x32
+        ])?;
         // Block AgentData
         buffer.write(self.agent_data.agent_id.as_bytes())?;
         buffer.write(self.agent_data.session_id.as_bytes())?;
@@ -41744,9 +39621,7 @@ impl Message for CreateLandmarkForEvent {
     }
 
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         // Block AgentData
         let agent_data = CreateLandmarkForEvent_AgentData::read_from(buffer)?;
         // Block EventData
@@ -41765,11 +39640,11 @@ impl Message for CreateLandmarkForEvent {
 
 impl Message for CreateNewOutfitAttachments {
     fn write_to<W: ?Sized>(&self, buffer: &mut W) -> WriteMessageResult
-    where
-        W: Write,
-    {
+    where W: Write {
         // Write the message number.
-        buffer.write(&[0xff, 0xff, 0x01, 0x8e])?;
+        buffer.write(&[
+            0xff, 0xff, 0x01, 0x8e
+        ])?;
         // Block AgentData
         buffer.write(self.agent_data.agent_id.as_bytes())?;
         buffer.write(self.agent_data.session_id.as_bytes())?;
@@ -41785,9 +39660,7 @@ impl Message for CreateNewOutfitAttachments {
     }
 
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         // Block AgentData
         let agent_data = CreateNewOutfitAttachments_AgentData::read_from(buffer)?;
         // Block HeaderData
@@ -41810,11 +39683,11 @@ impl Message for CreateNewOutfitAttachments {
 
 impl Message for CreateTrustedCircuit {
     fn write_to<W: ?Sized>(&self, buffer: &mut W) -> WriteMessageResult
-    where
-        W: Write,
-    {
+    where W: Write {
         // Write the message number.
-        buffer.write(&[0xff, 0xff, 0x01, 0x88])?;
+        buffer.write(&[
+            0xff, 0xff, 0x01, 0x88
+        ])?;
         // Block DataBlock
         buffer.write(self.data_block.end_point_id.as_bytes())?;
         buffer.write(&self.data_block.digest)?;
@@ -41822,22 +39695,20 @@ impl Message for CreateTrustedCircuit {
     }
 
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         // Block DataBlock
         let data_block = CreateTrustedCircuit_DataBlock::read_from(buffer)?;
         Ok(MessageInstance::CreateTrustedCircuit(
-            CreateTrustedCircuit { data_block: data_block },
+            CreateTrustedCircuit {
+                data_block: data_block,
+            },
         ))
     }
 }
 
 impl Message for CrossedRegion {
     fn write_to<W: ?Sized>(&self, buffer: &mut W) -> WriteMessageResult
-    where
-        W: Write,
-    {
+    where W: Write {
         // Write the message number.
         buffer.write(&[0xff, 0x07])?;
         // Block AgentData
@@ -41846,12 +39717,8 @@ impl Message for CrossedRegion {
         // Block RegionData
         buffer.write(&self.region_data.sim_ip.octets())?;
         buffer.write_u16::<LittleEndian>(self.region_data.sim_port)?;
-        buffer.write_u64::<LittleEndian>(
-            self.region_data.region_handle,
-        )?;
-        buffer.write_u16::<LittleEndian>(
-            self.region_data.seed_capability.len() as u16,
-        )?;
+        buffer.write_u64::<LittleEndian>(self.region_data.region_handle)?;
+        buffer.write_u16::<LittleEndian>(self.region_data.seed_capability.len() as u16)?;
         buffer.write(&self.region_data.seed_capability[..])?;
         // Block Info
         buffer.write_f32::<LittleEndian>(self.info.position.x)?;
@@ -41868,9 +39735,7 @@ impl Message for CrossedRegion {
     }
 
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         // Block AgentData
         let agent_data = CrossedRegion_AgentData::read_from(buffer)?;
         // Block RegionData
@@ -41887,11 +39752,11 @@ impl Message for CrossedRegion {
 
 impl Message for DataHomeLocationReply {
     fn write_to<W: ?Sized>(&self, buffer: &mut W) -> WriteMessageResult
-    where
-        W: Write,
-    {
+    where W: Write {
         // Write the message number.
-        buffer.write(&[0xff, 0xff, 0x00, 0x44])?;
+        buffer.write(&[
+            0xff, 0xff, 0x00, 0x44
+        ])?;
         // Block Info
         buffer.write(self.info.agent_id.as_bytes())?;
         buffer.write_u64::<LittleEndian>(self.info.region_handle)?;
@@ -41909,9 +39774,7 @@ impl Message for DataHomeLocationReply {
     }
 
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         // Block Info
         let info = DataHomeLocationReply_Info::read_from(buffer)?;
         Ok(MessageInstance::DataHomeLocationReply(
@@ -41922,27 +39785,21 @@ impl Message for DataHomeLocationReply {
 
 impl Message for DataHomeLocationRequest {
     fn write_to<W: ?Sized>(&self, buffer: &mut W) -> WriteMessageResult
-    where
-        W: Write,
-    {
+    where W: Write {
         // Write the message number.
-        buffer.write(&[0xff, 0xff, 0x00, 0x43])?;
+        buffer.write(&[
+            0xff, 0xff, 0x00, 0x43
+        ])?;
         // Block Info
         buffer.write(self.info.agent_id.as_bytes())?;
-        buffer.write_u32::<LittleEndian>(
-            self.info.kicked_from_estate_id,
-        )?;
+        buffer.write_u32::<LittleEndian>(self.info.kicked_from_estate_id)?;
         // Block AgentInfo
-        buffer.write_u32::<LittleEndian>(
-            self.agent_info.agent_effective_maturity,
-        )?;
+        buffer.write_u32::<LittleEndian>(self.agent_info.agent_effective_maturity)?;
         Ok(())
     }
 
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         // Block Info
         let info = DataHomeLocationRequest_Info::read_from(buffer)?;
         // Block AgentInfo
@@ -41958,11 +39815,11 @@ impl Message for DataHomeLocationRequest {
 
 impl Message for DataServerLogout {
     fn write_to<W: ?Sized>(&self, buffer: &mut W) -> WriteMessageResult
-    where
-        W: Write,
-    {
+    where W: Write {
         // Write the message number.
-        buffer.write(&[0xff, 0xff, 0x00, 0xfb])?;
+        buffer.write(&[
+            0xff, 0xff, 0x00, 0xfb
+        ])?;
         // Block UserData
         buffer.write(self.user_data.agent_id.as_bytes())?;
         buffer.write(&self.user_data.viewer_ip.octets())?;
@@ -41972,51 +39829,45 @@ impl Message for DataServerLogout {
     }
 
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         // Block UserData
         let user_data = DataServerLogout_UserData::read_from(buffer)?;
-        Ok(MessageInstance::DataServerLogout(
-            DataServerLogout { user_data: user_data },
-        ))
+        Ok(MessageInstance::DataServerLogout(DataServerLogout {
+            user_data: user_data,
+        }))
     }
 }
 
 impl Message for DeRezAck {
     fn write_to<W: ?Sized>(&self, buffer: &mut W) -> WriteMessageResult
-    where
-        W: Write,
-    {
+    where W: Write {
         // Write the message number.
-        buffer.write(&[0xff, 0xff, 0x01, 0x24])?;
+        buffer.write(&[
+            0xff, 0xff, 0x01, 0x24
+        ])?;
         // Block TransactionData
-        buffer.write(
-            self.transaction_data.transaction_id.as_bytes(),
-        )?;
+        buffer.write(self.transaction_data.transaction_id.as_bytes())?;
         buffer.write_u8(self.transaction_data.success as u8)?;
         Ok(())
     }
 
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         // Block TransactionData
         let transaction_data = DeRezAck_TransactionData::read_from(buffer)?;
-        Ok(MessageInstance::DeRezAck(
-            DeRezAck { transaction_data: transaction_data },
-        ))
+        Ok(MessageInstance::DeRezAck(DeRezAck {
+            transaction_data: transaction_data,
+        }))
     }
 }
 
 impl Message for DeRezObject {
     fn write_to<W: ?Sized>(&self, buffer: &mut W) -> WriteMessageResult
-    where
-        W: Write,
-    {
+    where W: Write {
         // Write the message number.
-        buffer.write(&[0xff, 0xff, 0x01, 0x23])?;
+        buffer.write(&[
+            0xff, 0xff, 0x01, 0x23
+        ])?;
         // Block AgentData
         buffer.write(self.agent_data.agent_id.as_bytes())?;
         buffer.write(self.agent_data.session_id.as_bytes())?;
@@ -42036,9 +39887,7 @@ impl Message for DeRezObject {
     }
 
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         // Block AgentData
         let agent_data = DeRezObject_AgentData::read_from(buffer)?;
         // Block AgentBlock
@@ -42059,11 +39908,11 @@ impl Message for DeRezObject {
 
 impl Message for DeactivateGestures {
     fn write_to<W: ?Sized>(&self, buffer: &mut W) -> WriteMessageResult
-    where
-        W: Write,
-    {
+    where W: Write {
         // Write the message number.
-        buffer.write(&[0xff, 0xff, 0x01, 0x3d])?;
+        buffer.write(&[
+            0xff, 0xff, 0x01, 0x3d
+        ])?;
         // Block AgentData
         buffer.write(self.agent_data.agent_id.as_bytes())?;
         buffer.write(self.agent_data.session_id.as_bytes())?;
@@ -42078,9 +39927,7 @@ impl Message for DeactivateGestures {
     }
 
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         // Block AgentData
         let agent_data = DeactivateGestures_AgentData::read_from(buffer)?;
         // Block Data
@@ -42098,25 +39945,21 @@ impl Message for DeactivateGestures {
 
 impl Message for DeclineCallingCard {
     fn write_to<W: ?Sized>(&self, buffer: &mut W) -> WriteMessageResult
-    where
-        W: Write,
-    {
+    where W: Write {
         // Write the message number.
-        buffer.write(&[0xff, 0xff, 0x01, 0x2f])?;
+        buffer.write(&[
+            0xff, 0xff, 0x01, 0x2f
+        ])?;
         // Block AgentData
         buffer.write(self.agent_data.agent_id.as_bytes())?;
         buffer.write(self.agent_data.session_id.as_bytes())?;
         // Block TransactionBlock
-        buffer.write(
-            self.transaction_block.transaction_id.as_bytes(),
-        )?;
+        buffer.write(self.transaction_block.transaction_id.as_bytes())?;
         Ok(())
     }
 
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         // Block AgentData
         let agent_data = DeclineCallingCard_AgentData::read_from(buffer)?;
         // Block TransactionBlock
@@ -42130,25 +39973,21 @@ impl Message for DeclineCallingCard {
 
 impl Message for DeclineFriendship {
     fn write_to<W: ?Sized>(&self, buffer: &mut W) -> WriteMessageResult
-    where
-        W: Write,
-    {
+    where W: Write {
         // Write the message number.
-        buffer.write(&[0xff, 0xff, 0x01, 0x2a])?;
+        buffer.write(&[
+            0xff, 0xff, 0x01, 0x2a
+        ])?;
         // Block AgentData
         buffer.write(self.agent_data.agent_id.as_bytes())?;
         buffer.write(self.agent_data.session_id.as_bytes())?;
         // Block TransactionBlock
-        buffer.write(
-            self.transaction_block.transaction_id.as_bytes(),
-        )?;
+        buffer.write(self.transaction_block.transaction_id.as_bytes())?;
         Ok(())
     }
 
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         // Block AgentData
         let agent_data = DeclineFriendship_AgentData::read_from(buffer)?;
         // Block TransactionBlock
@@ -42162,35 +40001,33 @@ impl Message for DeclineFriendship {
 
 impl Message for DenyTrustedCircuit {
     fn write_to<W: ?Sized>(&self, buffer: &mut W) -> WriteMessageResult
-    where
-        W: Write,
-    {
+    where W: Write {
         // Write the message number.
-        buffer.write(&[0xff, 0xff, 0x01, 0x89])?;
+        buffer.write(&[
+            0xff, 0xff, 0x01, 0x89
+        ])?;
         // Block DataBlock
         buffer.write(self.data_block.end_point_id.as_bytes())?;
         Ok(())
     }
 
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         // Block DataBlock
         let data_block = DenyTrustedCircuit_DataBlock::read_from(buffer)?;
-        Ok(MessageInstance::DenyTrustedCircuit(
-            DenyTrustedCircuit { data_block: data_block },
-        ))
+        Ok(MessageInstance::DenyTrustedCircuit(DenyTrustedCircuit {
+            data_block: data_block,
+        }))
     }
 }
 
 impl Message for DerezContainer {
     fn write_to<W: ?Sized>(&self, buffer: &mut W) -> WriteMessageResult
-    where
-        W: Write,
-    {
+    where W: Write {
         // Write the message number.
-        buffer.write(&[0xff, 0xff, 0x00, 0x68])?;
+        buffer.write(&[
+            0xff, 0xff, 0x00, 0x68
+        ])?;
         // Block Data
         buffer.write(self.data.object_id.as_bytes())?;
         buffer.write_u8(self.data.delete as u8)?;
@@ -42198,9 +40035,7 @@ impl Message for DerezContainer {
     }
 
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         // Block Data
         let data = DerezContainer_Data::read_from(buffer)?;
         Ok(MessageInstance::DerezContainer(
@@ -42211,11 +40046,11 @@ impl Message for DerezContainer {
 
 impl Message for DetachAttachmentIntoInv {
     fn write_to<W: ?Sized>(&self, buffer: &mut W) -> WriteMessageResult
-    where
-        W: Write,
-    {
+    where W: Write {
         // Write the message number.
-        buffer.write(&[0xff, 0xff, 0x01, 0x8d])?;
+        buffer.write(&[
+            0xff, 0xff, 0x01, 0x8d
+        ])?;
         // Block ObjectData
         buffer.write(self.object_data.agent_id.as_bytes())?;
         buffer.write(self.object_data.item_id.as_bytes())?;
@@ -42223,24 +40058,24 @@ impl Message for DetachAttachmentIntoInv {
     }
 
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         // Block ObjectData
         let object_data = DetachAttachmentIntoInv_ObjectData::read_from(buffer)?;
         Ok(MessageInstance::DetachAttachmentIntoInv(
-            DetachAttachmentIntoInv { object_data: object_data },
+            DetachAttachmentIntoInv {
+                object_data: object_data,
+            },
         ))
     }
 }
 
 impl Message for DirClassifiedQuery {
     fn write_to<W: ?Sized>(&self, buffer: &mut W) -> WriteMessageResult
-    where
-        W: Write,
-    {
+    where W: Write {
         // Write the message number.
-        buffer.write(&[0xff, 0xff, 0x00, 0x27])?;
+        buffer.write(&[
+            0xff, 0xff, 0x00, 0x27
+        ])?;
         // Block AgentData
         buffer.write(self.agent_data.agent_id.as_bytes())?;
         buffer.write(self.agent_data.session_id.as_bytes())?;
@@ -42248,20 +40083,14 @@ impl Message for DirClassifiedQuery {
         buffer.write(self.query_data.query_id.as_bytes())?;
         buffer.write_u8(self.query_data.query_text.len() as u8)?;
         buffer.write(&self.query_data.query_text[..])?;
-        buffer.write_u32::<LittleEndian>(
-            self.query_data.query_flags,
-        )?;
+        buffer.write_u32::<LittleEndian>(self.query_data.query_flags)?;
         buffer.write_u32::<LittleEndian>(self.query_data.category)?;
-        buffer.write_i32::<LittleEndian>(
-            self.query_data.query_start,
-        )?;
+        buffer.write_i32::<LittleEndian>(self.query_data.query_start)?;
         Ok(())
     }
 
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         // Block AgentData
         let agent_data = DirClassifiedQuery_AgentData::read_from(buffer)?;
         // Block QueryData
@@ -42275,33 +40104,27 @@ impl Message for DirClassifiedQuery {
 
 impl Message for DirClassifiedQueryBackend {
     fn write_to<W: ?Sized>(&self, buffer: &mut W) -> WriteMessageResult
-    where
-        W: Write,
-    {
+    where W: Write {
         // Write the message number.
-        buffer.write(&[0xff, 0xff, 0x00, 0x28])?;
+        buffer.write(&[
+            0xff, 0xff, 0x00, 0x28
+        ])?;
         // Block AgentData
         buffer.write(self.agent_data.agent_id.as_bytes())?;
         // Block QueryData
         buffer.write(self.query_data.query_id.as_bytes())?;
         buffer.write_u8(self.query_data.query_text.len() as u8)?;
         buffer.write(&self.query_data.query_text[..])?;
-        buffer.write_u32::<LittleEndian>(
-            self.query_data.query_flags,
-        )?;
+        buffer.write_u32::<LittleEndian>(self.query_data.query_flags)?;
         buffer.write_u32::<LittleEndian>(self.query_data.category)?;
         buffer.write_u32::<LittleEndian>(self.query_data.estate_id)?;
         buffer.write_u8(self.query_data.godlike as u8)?;
-        buffer.write_i32::<LittleEndian>(
-            self.query_data.query_start,
-        )?;
+        buffer.write_i32::<LittleEndian>(self.query_data.query_start)?;
         Ok(())
     }
 
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         // Block AgentData
         let agent_data = DirClassifiedQueryBackend_AgentData::read_from(buffer)?;
         // Block QueryData
@@ -42317,11 +40140,11 @@ impl Message for DirClassifiedQueryBackend {
 
 impl Message for DirClassifiedReply {
     fn write_to<W: ?Sized>(&self, buffer: &mut W) -> WriteMessageResult
-    where
-        W: Write,
-    {
+    where W: Write {
         // Write the message number.
-        buffer.write(&[0xff, 0xff, 0x00, 0x29])?;
+        buffer.write(&[
+            0xff, 0xff, 0x00, 0x29
+        ])?;
         // Block AgentData
         buffer.write(self.agent_data.agent_id.as_bytes())?;
         // Block QueryData
@@ -42346,9 +40169,7 @@ impl Message for DirClassifiedReply {
     }
 
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         // Block AgentData
         let agent_data = DirClassifiedReply_AgentData::read_from(buffer)?;
         // Block QueryData
@@ -42376,11 +40197,11 @@ impl Message for DirClassifiedReply {
 
 impl Message for DirEventsReply {
     fn write_to<W: ?Sized>(&self, buffer: &mut W) -> WriteMessageResult
-    where
-        W: Write,
-    {
+    where W: Write {
         // Write the message number.
-        buffer.write(&[0xff, 0xff, 0x00, 0x25])?;
+        buffer.write(&[
+            0xff, 0xff, 0x00, 0x25
+        ])?;
         // Block AgentData
         buffer.write(self.agent_data.agent_id.as_bytes())?;
         // Block QueryData
@@ -42406,9 +40227,7 @@ impl Message for DirEventsReply {
     }
 
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         // Block AgentData
         let agent_data = DirEventsReply_AgentData::read_from(buffer)?;
         // Block QueryData
@@ -42436,11 +40255,11 @@ impl Message for DirEventsReply {
 
 impl Message for DirFindQuery {
     fn write_to<W: ?Sized>(&self, buffer: &mut W) -> WriteMessageResult
-    where
-        W: Write,
-    {
+    where W: Write {
         // Write the message number.
-        buffer.write(&[0xff, 0xff, 0x00, 0x1f])?;
+        buffer.write(&[
+            0xff, 0xff, 0x00, 0x1f
+        ])?;
         // Block AgentData
         buffer.write(self.agent_data.agent_id.as_bytes())?;
         buffer.write(self.agent_data.session_id.as_bytes())?;
@@ -42448,19 +40267,13 @@ impl Message for DirFindQuery {
         buffer.write(self.query_data.query_id.as_bytes())?;
         buffer.write_u8(self.query_data.query_text.len() as u8)?;
         buffer.write(&self.query_data.query_text[..])?;
-        buffer.write_u32::<LittleEndian>(
-            self.query_data.query_flags,
-        )?;
-        buffer.write_i32::<LittleEndian>(
-            self.query_data.query_start,
-        )?;
+        buffer.write_u32::<LittleEndian>(self.query_data.query_flags)?;
+        buffer.write_i32::<LittleEndian>(self.query_data.query_start)?;
         Ok(())
     }
 
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         // Block AgentData
         let agent_data = DirFindQuery_AgentData::read_from(buffer)?;
         // Block QueryData
@@ -42474,32 +40287,26 @@ impl Message for DirFindQuery {
 
 impl Message for DirFindQueryBackend {
     fn write_to<W: ?Sized>(&self, buffer: &mut W) -> WriteMessageResult
-    where
-        W: Write,
-    {
+    where W: Write {
         // Write the message number.
-        buffer.write(&[0xff, 0xff, 0x00, 0x20])?;
+        buffer.write(&[
+            0xff, 0xff, 0x00, 0x20
+        ])?;
         // Block AgentData
         buffer.write(self.agent_data.agent_id.as_bytes())?;
         // Block QueryData
         buffer.write(self.query_data.query_id.as_bytes())?;
         buffer.write_u8(self.query_data.query_text.len() as u8)?;
         buffer.write(&self.query_data.query_text[..])?;
-        buffer.write_u32::<LittleEndian>(
-            self.query_data.query_flags,
-        )?;
-        buffer.write_i32::<LittleEndian>(
-            self.query_data.query_start,
-        )?;
+        buffer.write_u32::<LittleEndian>(self.query_data.query_flags)?;
+        buffer.write_i32::<LittleEndian>(self.query_data.query_start)?;
         buffer.write_u32::<LittleEndian>(self.query_data.estate_id)?;
         buffer.write_u8(self.query_data.godlike as u8)?;
         Ok(())
     }
 
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         // Block AgentData
         let agent_data = DirFindQueryBackend_AgentData::read_from(buffer)?;
         // Block QueryData
@@ -42513,11 +40320,11 @@ impl Message for DirFindQueryBackend {
 
 impl Message for DirGroupsReply {
     fn write_to<W: ?Sized>(&self, buffer: &mut W) -> WriteMessageResult
-    where
-        W: Write,
-    {
+    where W: Write {
         // Write the message number.
-        buffer.write(&[0xff, 0xff, 0x00, 0x26])?;
+        buffer.write(&[
+            0xff, 0xff, 0x00, 0x26
+        ])?;
         // Block AgentData
         buffer.write(self.agent_data.agent_id.as_bytes())?;
         // Block QueryData
@@ -42535,9 +40342,7 @@ impl Message for DirGroupsReply {
     }
 
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         // Block AgentData
         let agent_data = DirGroupsReply_AgentData::read_from(buffer)?;
         // Block QueryData
@@ -42558,34 +40363,26 @@ impl Message for DirGroupsReply {
 
 impl Message for DirLandQuery {
     fn write_to<W: ?Sized>(&self, buffer: &mut W) -> WriteMessageResult
-    where
-        W: Write,
-    {
+    where W: Write {
         // Write the message number.
-        buffer.write(&[0xff, 0xff, 0x00, 0x30])?;
+        buffer.write(&[
+            0xff, 0xff, 0x00, 0x30
+        ])?;
         // Block AgentData
         buffer.write(self.agent_data.agent_id.as_bytes())?;
         buffer.write(self.agent_data.session_id.as_bytes())?;
         // Block QueryData
         buffer.write(self.query_data.query_id.as_bytes())?;
-        buffer.write_u32::<LittleEndian>(
-            self.query_data.query_flags,
-        )?;
-        buffer.write_u32::<LittleEndian>(
-            self.query_data.search_type,
-        )?;
+        buffer.write_u32::<LittleEndian>(self.query_data.query_flags)?;
+        buffer.write_u32::<LittleEndian>(self.query_data.search_type)?;
         buffer.write_i32::<LittleEndian>(self.query_data.price)?;
         buffer.write_i32::<LittleEndian>(self.query_data.area)?;
-        buffer.write_i32::<LittleEndian>(
-            self.query_data.query_start,
-        )?;
+        buffer.write_i32::<LittleEndian>(self.query_data.query_start)?;
         Ok(())
     }
 
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         // Block AgentData
         let agent_data = DirLandQuery_AgentData::read_from(buffer)?;
         // Block QueryData
@@ -42599,35 +40396,27 @@ impl Message for DirLandQuery {
 
 impl Message for DirLandQueryBackend {
     fn write_to<W: ?Sized>(&self, buffer: &mut W) -> WriteMessageResult
-    where
-        W: Write,
-    {
+    where W: Write {
         // Write the message number.
-        buffer.write(&[0xff, 0xff, 0x00, 0x31])?;
+        buffer.write(&[
+            0xff, 0xff, 0x00, 0x31
+        ])?;
         // Block AgentData
         buffer.write(self.agent_data.agent_id.as_bytes())?;
         // Block QueryData
         buffer.write(self.query_data.query_id.as_bytes())?;
-        buffer.write_u32::<LittleEndian>(
-            self.query_data.query_flags,
-        )?;
-        buffer.write_u32::<LittleEndian>(
-            self.query_data.search_type,
-        )?;
+        buffer.write_u32::<LittleEndian>(self.query_data.query_flags)?;
+        buffer.write_u32::<LittleEndian>(self.query_data.search_type)?;
         buffer.write_i32::<LittleEndian>(self.query_data.price)?;
         buffer.write_i32::<LittleEndian>(self.query_data.area)?;
-        buffer.write_i32::<LittleEndian>(
-            self.query_data.query_start,
-        )?;
+        buffer.write_i32::<LittleEndian>(self.query_data.query_start)?;
         buffer.write_u32::<LittleEndian>(self.query_data.estate_id)?;
         buffer.write_u8(self.query_data.godlike as u8)?;
         Ok(())
     }
 
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         // Block AgentData
         let agent_data = DirLandQueryBackend_AgentData::read_from(buffer)?;
         // Block QueryData
@@ -42641,11 +40430,11 @@ impl Message for DirLandQueryBackend {
 
 impl Message for DirLandReply {
     fn write_to<W: ?Sized>(&self, buffer: &mut W) -> WriteMessageResult
-    where
-        W: Write,
-    {
+    where W: Write {
         // Write the message number.
-        buffer.write(&[0xff, 0xff, 0x00, 0x32])?;
+        buffer.write(&[
+            0xff, 0xff, 0x00, 0x32
+        ])?;
         // Block AgentData
         buffer.write(self.agent_data.agent_id.as_bytes())?;
         // Block QueryData
@@ -42665,9 +40454,7 @@ impl Message for DirLandReply {
     }
 
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         // Block AgentData
         let agent_data = DirLandReply_AgentData::read_from(buffer)?;
         // Block QueryData
@@ -42688,11 +40475,11 @@ impl Message for DirLandReply {
 
 impl Message for DirPeopleReply {
     fn write_to<W: ?Sized>(&self, buffer: &mut W) -> WriteMessageResult
-    where
-        W: Write,
-    {
+    where W: Write {
         // Write the message number.
-        buffer.write(&[0xff, 0xff, 0x00, 0x24])?;
+        buffer.write(&[
+            0xff, 0xff, 0x00, 0x24
+        ])?;
         // Block AgentData
         buffer.write(self.agent_data.agent_id.as_bytes())?;
         // Block QueryData
@@ -42714,9 +40501,7 @@ impl Message for DirPeopleReply {
     }
 
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         // Block AgentData
         let agent_data = DirPeopleReply_AgentData::read_from(buffer)?;
         // Block QueryData
@@ -42737,11 +40522,11 @@ impl Message for DirPeopleReply {
 
 impl Message for DirPlacesQuery {
     fn write_to<W: ?Sized>(&self, buffer: &mut W) -> WriteMessageResult
-    where
-        W: Write,
-    {
+    where W: Write {
         // Write the message number.
-        buffer.write(&[0xff, 0xff, 0x00, 0x21])?;
+        buffer.write(&[
+            0xff, 0xff, 0x00, 0x21
+        ])?;
         // Block AgentData
         buffer.write(self.agent_data.agent_id.as_bytes())?;
         buffer.write(self.agent_data.session_id.as_bytes())?;
@@ -42749,22 +40534,16 @@ impl Message for DirPlacesQuery {
         buffer.write(self.query_data.query_id.as_bytes())?;
         buffer.write_u8(self.query_data.query_text.len() as u8)?;
         buffer.write(&self.query_data.query_text[..])?;
-        buffer.write_u32::<LittleEndian>(
-            self.query_data.query_flags,
-        )?;
+        buffer.write_u32::<LittleEndian>(self.query_data.query_flags)?;
         buffer.write_i8(self.query_data.category)?;
         buffer.write_u8(self.query_data.sim_name.len() as u8)?;
         buffer.write(&self.query_data.sim_name[..])?;
-        buffer.write_i32::<LittleEndian>(
-            self.query_data.query_start,
-        )?;
+        buffer.write_i32::<LittleEndian>(self.query_data.query_start)?;
         Ok(())
     }
 
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         // Block AgentData
         let agent_data = DirPlacesQuery_AgentData::read_from(buffer)?;
         // Block QueryData
@@ -42778,35 +40557,29 @@ impl Message for DirPlacesQuery {
 
 impl Message for DirPlacesQueryBackend {
     fn write_to<W: ?Sized>(&self, buffer: &mut W) -> WriteMessageResult
-    where
-        W: Write,
-    {
+    where W: Write {
         // Write the message number.
-        buffer.write(&[0xff, 0xff, 0x00, 0x22])?;
+        buffer.write(&[
+            0xff, 0xff, 0x00, 0x22
+        ])?;
         // Block AgentData
         buffer.write(self.agent_data.agent_id.as_bytes())?;
         // Block QueryData
         buffer.write(self.query_data.query_id.as_bytes())?;
         buffer.write_u8(self.query_data.query_text.len() as u8)?;
         buffer.write(&self.query_data.query_text[..])?;
-        buffer.write_u32::<LittleEndian>(
-            self.query_data.query_flags,
-        )?;
+        buffer.write_u32::<LittleEndian>(self.query_data.query_flags)?;
         buffer.write_i8(self.query_data.category)?;
         buffer.write_u8(self.query_data.sim_name.len() as u8)?;
         buffer.write(&self.query_data.sim_name[..])?;
         buffer.write_u32::<LittleEndian>(self.query_data.estate_id)?;
         buffer.write_u8(self.query_data.godlike as u8)?;
-        buffer.write_i32::<LittleEndian>(
-            self.query_data.query_start,
-        )?;
+        buffer.write_i32::<LittleEndian>(self.query_data.query_start)?;
         Ok(())
     }
 
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         // Block AgentData
         let agent_data = DirPlacesQueryBackend_AgentData::read_from(buffer)?;
         // Block QueryData
@@ -42822,11 +40595,11 @@ impl Message for DirPlacesQueryBackend {
 
 impl Message for DirPlacesReply {
     fn write_to<W: ?Sized>(&self, buffer: &mut W) -> WriteMessageResult
-    where
-        W: Write,
-    {
+    where W: Write {
         // Write the message number.
-        buffer.write(&[0xff, 0xff, 0x00, 0x23])?;
+        buffer.write(&[
+            0xff, 0xff, 0x00, 0x23
+        ])?;
         // Block AgentData
         buffer.write(self.agent_data.agent_id.as_bytes())?;
         // Block QueryData
@@ -42853,9 +40626,7 @@ impl Message for DirPlacesReply {
     }
 
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         // Block AgentData
         let agent_data = DirPlacesReply_AgentData::read_from(buffer)?;
         // Block QueryData
@@ -42887,26 +40658,22 @@ impl Message for DirPlacesReply {
 
 impl Message for DirPopularQuery {
     fn write_to<W: ?Sized>(&self, buffer: &mut W) -> WriteMessageResult
-    where
-        W: Write,
-    {
+    where W: Write {
         // Write the message number.
-        buffer.write(&[0xff, 0xff, 0x00, 0x33])?;
+        buffer.write(&[
+            0xff, 0xff, 0x00, 0x33
+        ])?;
         // Block AgentData
         buffer.write(self.agent_data.agent_id.as_bytes())?;
         buffer.write(self.agent_data.session_id.as_bytes())?;
         // Block QueryData
         buffer.write(self.query_data.query_id.as_bytes())?;
-        buffer.write_u32::<LittleEndian>(
-            self.query_data.query_flags,
-        )?;
+        buffer.write_u32::<LittleEndian>(self.query_data.query_flags)?;
         Ok(())
     }
 
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         // Block AgentData
         let agent_data = DirPopularQuery_AgentData::read_from(buffer)?;
         // Block QueryData
@@ -42920,27 +40687,23 @@ impl Message for DirPopularQuery {
 
 impl Message for DirPopularQueryBackend {
     fn write_to<W: ?Sized>(&self, buffer: &mut W) -> WriteMessageResult
-    where
-        W: Write,
-    {
+    where W: Write {
         // Write the message number.
-        buffer.write(&[0xff, 0xff, 0x00, 0x34])?;
+        buffer.write(&[
+            0xff, 0xff, 0x00, 0x34
+        ])?;
         // Block AgentData
         buffer.write(self.agent_data.agent_id.as_bytes())?;
         // Block QueryData
         buffer.write(self.query_data.query_id.as_bytes())?;
-        buffer.write_u32::<LittleEndian>(
-            self.query_data.query_flags,
-        )?;
+        buffer.write_u32::<LittleEndian>(self.query_data.query_flags)?;
         buffer.write_u32::<LittleEndian>(self.query_data.estate_id)?;
         buffer.write_u8(self.query_data.godlike as u8)?;
         Ok(())
     }
 
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         // Block AgentData
         let agent_data = DirPopularQueryBackend_AgentData::read_from(buffer)?;
         // Block QueryData
@@ -42956,11 +40719,11 @@ impl Message for DirPopularQueryBackend {
 
 impl Message for DirPopularReply {
     fn write_to<W: ?Sized>(&self, buffer: &mut W) -> WriteMessageResult
-    where
-        W: Write,
-    {
+    where W: Write {
         // Write the message number.
-        buffer.write(&[0xff, 0xff, 0x00, 0x35])?;
+        buffer.write(&[
+            0xff, 0xff, 0x00, 0x35
+        ])?;
         // Block AgentData
         buffer.write(self.agent_data.agent_id.as_bytes())?;
         // Block QueryData
@@ -42977,9 +40740,7 @@ impl Message for DirPopularReply {
     }
 
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         // Block AgentData
         let agent_data = DirPopularReply_AgentData::read_from(buffer)?;
         // Block QueryData
@@ -43000,80 +40761,50 @@ impl Message for DirPopularReply {
 
 impl Message for DisableSimulator {
     fn write_to<W: ?Sized>(&self, buffer: &mut W) -> WriteMessageResult
-    where
-        W: Write,
-    {
+    where W: Write {
         // Write the message number.
-        buffer.write(&[0xff, 0xff, 0x00, 0x98])?;
+        buffer.write(&[
+            0xff, 0xff, 0x00, 0x98
+        ])?;
         Ok(())
     }
 
     fn read_from<R: ?Sized>(_: &mut R) -> Result<MessageInstance, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(MessageInstance::DisableSimulator(DisableSimulator {}))
     }
 }
 
 impl Message for EconomyData {
     fn write_to<W: ?Sized>(&self, buffer: &mut W) -> WriteMessageResult
-    where
-        W: Write,
-    {
+    where W: Write {
         // Write the message number.
-        buffer.write(&[0xff, 0xff, 0x00, 0x19])?;
+        buffer.write(&[
+            0xff, 0xff, 0x00, 0x19
+        ])?;
         // Block Info
         buffer.write_i32::<LittleEndian>(self.info.object_capacity)?;
         buffer.write_i32::<LittleEndian>(self.info.object_count)?;
-        buffer.write_i32::<LittleEndian>(
-            self.info.price_energy_unit,
-        )?;
-        buffer.write_i32::<LittleEndian>(
-            self.info.price_object_claim,
-        )?;
-        buffer.write_i32::<LittleEndian>(
-            self.info.price_public_object_decay,
-        )?;
-        buffer.write_i32::<LittleEndian>(
-            self.info.price_public_object_delete,
-        )?;
-        buffer.write_i32::<LittleEndian>(
-            self.info.price_parcel_claim,
-        )?;
-        buffer.write_f32::<LittleEndian>(
-            self.info.price_parcel_claim_factor,
-        )?;
+        buffer.write_i32::<LittleEndian>(self.info.price_energy_unit)?;
+        buffer.write_i32::<LittleEndian>(self.info.price_object_claim)?;
+        buffer.write_i32::<LittleEndian>(self.info.price_public_object_decay)?;
+        buffer.write_i32::<LittleEndian>(self.info.price_public_object_delete)?;
+        buffer.write_i32::<LittleEndian>(self.info.price_parcel_claim)?;
+        buffer.write_f32::<LittleEndian>(self.info.price_parcel_claim_factor)?;
         buffer.write_i32::<LittleEndian>(self.info.price_upload)?;
         buffer.write_i32::<LittleEndian>(self.info.price_rent_light)?;
-        buffer.write_i32::<LittleEndian>(
-            self.info.teleport_min_price,
-        )?;
-        buffer.write_f32::<LittleEndian>(
-            self.info.teleport_price_exponent,
-        )?;
-        buffer.write_f32::<LittleEndian>(
-            self.info.energy_efficiency,
-        )?;
-        buffer.write_f32::<LittleEndian>(
-            self.info.price_object_rent,
-        )?;
-        buffer.write_f32::<LittleEndian>(
-            self.info.price_object_scale_factor,
-        )?;
-        buffer.write_i32::<LittleEndian>(
-            self.info.price_parcel_rent,
-        )?;
-        buffer.write_i32::<LittleEndian>(
-            self.info.price_group_create,
-        )?;
+        buffer.write_i32::<LittleEndian>(self.info.teleport_min_price)?;
+        buffer.write_f32::<LittleEndian>(self.info.teleport_price_exponent)?;
+        buffer.write_f32::<LittleEndian>(self.info.energy_efficiency)?;
+        buffer.write_f32::<LittleEndian>(self.info.price_object_rent)?;
+        buffer.write_f32::<LittleEndian>(self.info.price_object_scale_factor)?;
+        buffer.write_i32::<LittleEndian>(self.info.price_parcel_rent)?;
+        buffer.write_i32::<LittleEndian>(self.info.price_group_create)?;
         Ok(())
     }
 
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         // Block Info
         let info = EconomyData_Info::read_from(buffer)?;
         Ok(MessageInstance::EconomyData(EconomyData { info: info }))
@@ -43082,58 +40813,50 @@ impl Message for EconomyData {
 
 impl Message for EconomyDataRequest {
     fn write_to<W: ?Sized>(&self, buffer: &mut W) -> WriteMessageResult
-    where
-        W: Write,
-    {
+    where W: Write {
         // Write the message number.
-        buffer.write(&[0xff, 0xff, 0x00, 0x18])?;
+        buffer.write(&[
+            0xff, 0xff, 0x00, 0x18
+        ])?;
         Ok(())
     }
 
     fn read_from<R: ?Sized>(_: &mut R) -> Result<MessageInstance, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(MessageInstance::EconomyDataRequest(EconomyDataRequest {}))
     }
 }
 
 impl Message for EdgeDataPacket {
     fn write_to<W: ?Sized>(&self, buffer: &mut W) -> WriteMessageResult
-    where
-        W: Write,
-    {
+    where W: Write {
         // Write the message number.
         buffer.write(&[0x18])?;
         // Block EdgeData
         buffer.write_u8(self.edge_data.layer_type)?;
         buffer.write_u8(self.edge_data.direction)?;
-        buffer.write_u16::<LittleEndian>(
-            self.edge_data.layer_data.len() as u16,
-        )?;
+        buffer.write_u16::<LittleEndian>(self.edge_data.layer_data.len() as u16)?;
         buffer.write(&self.edge_data.layer_data[..])?;
         Ok(())
     }
 
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         // Block EdgeData
         let edge_data = EdgeDataPacket_EdgeData::read_from(buffer)?;
-        Ok(MessageInstance::EdgeDataPacket(
-            EdgeDataPacket { edge_data: edge_data },
-        ))
+        Ok(MessageInstance::EdgeDataPacket(EdgeDataPacket {
+            edge_data: edge_data,
+        }))
     }
 }
 
 impl Message for EjectGroupMemberReply {
     fn write_to<W: ?Sized>(&self, buffer: &mut W) -> WriteMessageResult
-    where
-        W: Write,
-    {
+    where W: Write {
         // Write the message number.
-        buffer.write(&[0xff, 0xff, 0x01, 0x5a])?;
+        buffer.write(&[
+            0xff, 0xff, 0x01, 0x5a
+        ])?;
         // Block AgentData
         buffer.write(self.agent_data.agent_id.as_bytes())?;
         // Block GroupData
@@ -43144,9 +40867,7 @@ impl Message for EjectGroupMemberReply {
     }
 
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         // Block AgentData
         let agent_data = EjectGroupMemberReply_AgentData::read_from(buffer)?;
         // Block GroupData
@@ -43165,11 +40886,11 @@ impl Message for EjectGroupMemberReply {
 
 impl Message for EjectGroupMemberRequest {
     fn write_to<W: ?Sized>(&self, buffer: &mut W) -> WriteMessageResult
-    where
-        W: Write,
-    {
+    where W: Write {
         // Write the message number.
-        buffer.write(&[0xff, 0xff, 0x01, 0x59])?;
+        buffer.write(&[
+            0xff, 0xff, 0x01, 0x59
+        ])?;
         // Block AgentData
         buffer.write(self.agent_data.agent_id.as_bytes())?;
         buffer.write(self.agent_data.session_id.as_bytes())?;
@@ -43184,9 +40905,7 @@ impl Message for EjectGroupMemberRequest {
     }
 
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         // Block AgentData
         let agent_data = EjectGroupMemberRequest_AgentData::read_from(buffer)?;
         // Block GroupData
@@ -43209,11 +40928,11 @@ impl Message for EjectGroupMemberRequest {
 
 impl Message for EjectUser {
     fn write_to<W: ?Sized>(&self, buffer: &mut W) -> WriteMessageResult
-    where
-        W: Write,
-    {
+    where W: Write {
         // Write the message number.
-        buffer.write(&[0xff, 0xff, 0x00, 0xa7])?;
+        buffer.write(&[
+            0xff, 0xff, 0x00, 0xa7
+        ])?;
         // Block AgentData
         buffer.write(self.agent_data.agent_id.as_bytes())?;
         buffer.write(self.agent_data.session_id.as_bytes())?;
@@ -43224,9 +40943,7 @@ impl Message for EjectUser {
     }
 
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         // Block AgentData
         let agent_data = EjectUser_AgentData::read_from(buffer)?;
         // Block Data
@@ -43240,11 +40957,11 @@ impl Message for EjectUser {
 
 impl Message for EmailMessageReply {
     fn write_to<W: ?Sized>(&self, buffer: &mut W) -> WriteMessageResult
-    where
-        W: Write,
-    {
+    where W: Write {
         // Write the message number.
-        buffer.write(&[0xff, 0xff, 0x01, 0x50])?;
+        buffer.write(&[
+            0xff, 0xff, 0x01, 0x50
+        ])?;
         // Block DataBlock
         buffer.write(self.data_block.object_id.as_bytes())?;
         buffer.write_u32::<LittleEndian>(self.data_block.more)?;
@@ -43253,9 +40970,7 @@ impl Message for EmailMessageReply {
         buffer.write(&self.data_block.from_address[..])?;
         buffer.write_u8(self.data_block.subject.len() as u8)?;
         buffer.write(&self.data_block.subject[..])?;
-        buffer.write_u16::<LittleEndian>(
-            self.data_block.data.len() as u16,
-        )?;
+        buffer.write_u16::<LittleEndian>(self.data_block.data.len() as u16)?;
         buffer.write(&self.data_block.data[..])?;
         buffer.write_u8(self.data_block.mail_filter.len() as u8)?;
         buffer.write(&self.data_block.mail_filter[..])?;
@@ -43263,24 +40978,22 @@ impl Message for EmailMessageReply {
     }
 
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         // Block DataBlock
         let data_block = EmailMessageReply_DataBlock::read_from(buffer)?;
-        Ok(MessageInstance::EmailMessageReply(
-            EmailMessageReply { data_block: data_block },
-        ))
+        Ok(MessageInstance::EmailMessageReply(EmailMessageReply {
+            data_block: data_block,
+        }))
     }
 }
 
 impl Message for EmailMessageRequest {
     fn write_to<W: ?Sized>(&self, buffer: &mut W) -> WriteMessageResult
-    where
-        W: Write,
-    {
+    where W: Write {
         // Write the message number.
-        buffer.write(&[0xff, 0xff, 0x01, 0x4f])?;
+        buffer.write(&[
+            0xff, 0xff, 0x01, 0x4f
+        ])?;
         // Block DataBlock
         buffer.write(self.data_block.object_id.as_bytes())?;
         buffer.write_u8(self.data_block.from_address.len() as u8)?;
@@ -43291,24 +41004,22 @@ impl Message for EmailMessageRequest {
     }
 
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         // Block DataBlock
         let data_block = EmailMessageRequest_DataBlock::read_from(buffer)?;
-        Ok(MessageInstance::EmailMessageRequest(
-            EmailMessageRequest { data_block: data_block },
-        ))
+        Ok(MessageInstance::EmailMessageRequest(EmailMessageRequest {
+            data_block: data_block,
+        }))
     }
 }
 
 impl Message for EnableSimulator {
     fn write_to<W: ?Sized>(&self, buffer: &mut W) -> WriteMessageResult
-    where
-        W: Write,
-    {
+    where W: Write {
         // Write the message number.
-        buffer.write(&[0xff, 0xff, 0x00, 0x97])?;
+        buffer.write(&[
+            0xff, 0xff, 0x00, 0x97
+        ])?;
         // Block SimulatorInfo
         buffer.write_u64::<LittleEndian>(self.simulator_info.handle)?;
         buffer.write(&self.simulator_info.ip.octets())?;
@@ -43317,24 +41028,22 @@ impl Message for EnableSimulator {
     }
 
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         // Block SimulatorInfo
         let simulator_info = EnableSimulator_SimulatorInfo::read_from(buffer)?;
-        Ok(MessageInstance::EnableSimulator(
-            EnableSimulator { simulator_info: simulator_info },
-        ))
+        Ok(MessageInstance::EnableSimulator(EnableSimulator {
+            simulator_info: simulator_info,
+        }))
     }
 }
 
 impl Message for Error {
     fn write_to<W: ?Sized>(&self, buffer: &mut W) -> WriteMessageResult
-    where
-        W: Write,
-    {
+    where W: Write {
         // Write the message number.
-        buffer.write(&[0xff, 0xff, 0x01, 0xa7])?;
+        buffer.write(&[
+            0xff, 0xff, 0x01, 0xa7
+        ])?;
         // Block AgentData
         buffer.write(self.agent_data.agent_id.as_bytes())?;
         // Block Data
@@ -43344,21 +41053,15 @@ impl Message for Error {
         buffer.write(self.data.id.as_bytes())?;
         buffer.write_u8(self.data.system.len() as u8)?;
         buffer.write(&self.data.system[..])?;
-        buffer.write_u16::<LittleEndian>(
-            self.data.message.len() as u16,
-        )?;
+        buffer.write_u16::<LittleEndian>(self.data.message.len() as u16)?;
         buffer.write(&self.data.message[..])?;
-        buffer.write_u16::<LittleEndian>(
-            self.data.data.len() as u16,
-        )?;
+        buffer.write_u16::<LittleEndian>(self.data.data.len() as u16)?;
         buffer.write(&self.data.data[..])?;
         Ok(())
     }
 
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         // Block AgentData
         let agent_data = Error_AgentData::read_from(buffer)?;
         // Block Data
@@ -43372,16 +41075,14 @@ impl Message for Error {
 
 impl Message for EstateCovenantReply {
     fn write_to<W: ?Sized>(&self, buffer: &mut W) -> WriteMessageResult
-    where
-        W: Write,
-    {
+    where W: Write {
         // Write the message number.
-        buffer.write(&[0xff, 0xff, 0x00, 0xcc])?;
+        buffer.write(&[
+            0xff, 0xff, 0x00, 0xcc
+        ])?;
         // Block Data
         buffer.write(self.data.covenant_id.as_bytes())?;
-        buffer.write_u32::<LittleEndian>(
-            self.data.covenant_timestamp,
-        )?;
+        buffer.write_u32::<LittleEndian>(self.data.covenant_timestamp)?;
         buffer.write_u8(self.data.estate_name.len() as u8)?;
         buffer.write(&self.data.estate_name[..])?;
         buffer.write(self.data.estate_owner_id.as_bytes())?;
@@ -43389,9 +41090,7 @@ impl Message for EstateCovenantReply {
     }
 
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         // Block Data
         let data = EstateCovenantReply_Data::read_from(buffer)?;
         Ok(MessageInstance::EstateCovenantReply(
@@ -43402,11 +41101,11 @@ impl Message for EstateCovenantReply {
 
 impl Message for EstateCovenantRequest {
     fn write_to<W: ?Sized>(&self, buffer: &mut W) -> WriteMessageResult
-    where
-        W: Write,
-    {
+    where W: Write {
         // Write the message number.
-        buffer.write(&[0xff, 0xff, 0x00, 0xcb])?;
+        buffer.write(&[
+            0xff, 0xff, 0x00, 0xcb
+        ])?;
         // Block AgentData
         buffer.write(self.agent_data.agent_id.as_bytes())?;
         buffer.write(self.agent_data.session_id.as_bytes())?;
@@ -43414,24 +41113,24 @@ impl Message for EstateCovenantRequest {
     }
 
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         // Block AgentData
         let agent_data = EstateCovenantRequest_AgentData::read_from(buffer)?;
         Ok(MessageInstance::EstateCovenantRequest(
-            EstateCovenantRequest { agent_data: agent_data },
+            EstateCovenantRequest {
+                agent_data: agent_data,
+            },
         ))
     }
 }
 
 impl Message for EstateOwnerMessage {
     fn write_to<W: ?Sized>(&self, buffer: &mut W) -> WriteMessageResult
-    where
-        W: Write,
-    {
+    where W: Write {
         // Write the message number.
-        buffer.write(&[0xff, 0xff, 0x01, 0x04])?;
+        buffer.write(&[
+            0xff, 0xff, 0x01, 0x04
+        ])?;
         // Block AgentData
         buffer.write(self.agent_data.agent_id.as_bytes())?;
         buffer.write(self.agent_data.session_id.as_bytes())?;
@@ -43450,9 +41149,7 @@ impl Message for EstateOwnerMessage {
     }
 
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         // Block AgentData
         let agent_data = EstateOwnerMessage_AgentData::read_from(buffer)?;
         // Block MethodData
@@ -43473,11 +41170,11 @@ impl Message for EstateOwnerMessage {
 
 impl Message for EventGodDelete {
     fn write_to<W: ?Sized>(&self, buffer: &mut W) -> WriteMessageResult
-    where
-        W: Write,
-    {
+    where W: Write {
         // Write the message number.
-        buffer.write(&[0xff, 0xff, 0x00, 0xb7])?;
+        buffer.write(&[
+            0xff, 0xff, 0x00, 0xb7
+        ])?;
         // Block AgentData
         buffer.write(self.agent_data.agent_id.as_bytes())?;
         buffer.write(self.agent_data.session_id.as_bytes())?;
@@ -43487,19 +41184,13 @@ impl Message for EventGodDelete {
         buffer.write(self.query_data.query_id.as_bytes())?;
         buffer.write_u8(self.query_data.query_text.len() as u8)?;
         buffer.write(&self.query_data.query_text[..])?;
-        buffer.write_u32::<LittleEndian>(
-            self.query_data.query_flags,
-        )?;
-        buffer.write_i32::<LittleEndian>(
-            self.query_data.query_start,
-        )?;
+        buffer.write_u32::<LittleEndian>(self.query_data.query_flags)?;
+        buffer.write_i32::<LittleEndian>(self.query_data.query_start)?;
         Ok(())
     }
 
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         // Block AgentData
         let agent_data = EventGodDelete_AgentData::read_from(buffer)?;
         // Block EventData
@@ -43516,11 +41207,11 @@ impl Message for EventGodDelete {
 
 impl Message for EventInfoReply {
     fn write_to<W: ?Sized>(&self, buffer: &mut W) -> WriteMessageResult
-    where
-        W: Write,
-    {
+    where W: Write {
         // Write the message number.
-        buffer.write(&[0xff, 0xff, 0x00, 0xb4])?;
+        buffer.write(&[
+            0xff, 0xff, 0x00, 0xb4
+        ])?;
         // Block AgentData
         buffer.write(self.agent_data.agent_id.as_bytes())?;
         // Block EventData
@@ -43531,9 +41222,7 @@ impl Message for EventInfoReply {
         buffer.write(&self.event_data.name[..])?;
         buffer.write_u8(self.event_data.category.len() as u8)?;
         buffer.write(&self.event_data.category[..])?;
-        buffer.write_u16::<LittleEndian>(
-            self.event_data.desc.len() as u16,
-        )?;
+        buffer.write_u16::<LittleEndian>(self.event_data.desc.len() as u16)?;
         buffer.write(&self.event_data.desc[..])?;
         buffer.write_u8(self.event_data.date.len() as u8)?;
         buffer.write(&self.event_data.date[..])?;
@@ -43543,27 +41232,17 @@ impl Message for EventInfoReply {
         buffer.write_u32::<LittleEndian>(self.event_data.amount)?;
         buffer.write_u8(self.event_data.sim_name.len() as u8)?;
         buffer.write(&self.event_data.sim_name[..])?;
-        buffer.write_f64::<LittleEndian>(
-            self.event_data.global_pos.x,
-        )?;
+        buffer.write_f64::<LittleEndian>(self.event_data.global_pos.x)?;
 
-        buffer.write_f64::<LittleEndian>(
-            self.event_data.global_pos.y,
-        )?;
+        buffer.write_f64::<LittleEndian>(self.event_data.global_pos.y)?;
 
-        buffer.write_f64::<LittleEndian>(
-            self.event_data.global_pos.z,
-        )?;
-        buffer.write_u32::<LittleEndian>(
-            self.event_data.event_flags,
-        )?;
+        buffer.write_f64::<LittleEndian>(self.event_data.global_pos.z)?;
+        buffer.write_u32::<LittleEndian>(self.event_data.event_flags)?;
         Ok(())
     }
 
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         // Block AgentData
         let agent_data = EventInfoReply_AgentData::read_from(buffer)?;
         // Block EventData
@@ -43577,11 +41256,11 @@ impl Message for EventInfoReply {
 
 impl Message for EventInfoRequest {
     fn write_to<W: ?Sized>(&self, buffer: &mut W) -> WriteMessageResult
-    where
-        W: Write,
-    {
+    where W: Write {
         // Write the message number.
-        buffer.write(&[0xff, 0xff, 0x00, 0xb3])?;
+        buffer.write(&[
+            0xff, 0xff, 0x00, 0xb3
+        ])?;
         // Block AgentData
         buffer.write(self.agent_data.agent_id.as_bytes())?;
         buffer.write(self.agent_data.session_id.as_bytes())?;
@@ -43591,9 +41270,7 @@ impl Message for EventInfoRequest {
     }
 
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         // Block AgentData
         let agent_data = EventInfoRequest_AgentData::read_from(buffer)?;
         // Block EventData
@@ -43607,34 +41284,26 @@ impl Message for EventInfoRequest {
 
 impl Message for EventLocationReply {
     fn write_to<W: ?Sized>(&self, buffer: &mut W) -> WriteMessageResult
-    where
-        W: Write,
-    {
+    where W: Write {
         // Write the message number.
-        buffer.write(&[0xff, 0xff, 0x01, 0x34])?;
+        buffer.write(&[
+            0xff, 0xff, 0x01, 0x34
+        ])?;
         // Block QueryData
         buffer.write(self.query_data.query_id.as_bytes())?;
         // Block EventData
         buffer.write_u8(self.event_data.success as u8)?;
         buffer.write(self.event_data.region_id.as_bytes())?;
-        buffer.write_f32::<LittleEndian>(
-            self.event_data.region_pos.x,
-        )?;
+        buffer.write_f32::<LittleEndian>(self.event_data.region_pos.x)?;
 
-        buffer.write_f32::<LittleEndian>(
-            self.event_data.region_pos.y,
-        )?;
+        buffer.write_f32::<LittleEndian>(self.event_data.region_pos.y)?;
 
-        buffer.write_f32::<LittleEndian>(
-            self.event_data.region_pos.z,
-        )?;
+        buffer.write_f32::<LittleEndian>(self.event_data.region_pos.z)?;
         Ok(())
     }
 
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         // Block QueryData
         let query_data = EventLocationReply_QueryData::read_from(buffer)?;
         // Block EventData
@@ -43648,11 +41317,11 @@ impl Message for EventLocationReply {
 
 impl Message for EventLocationRequest {
     fn write_to<W: ?Sized>(&self, buffer: &mut W) -> WriteMessageResult
-    where
-        W: Write,
-    {
+    where W: Write {
         // Write the message number.
-        buffer.write(&[0xff, 0xff, 0x01, 0x33])?;
+        buffer.write(&[
+            0xff, 0xff, 0x01, 0x33
+        ])?;
         // Block QueryData
         buffer.write(self.query_data.query_id.as_bytes())?;
         // Block EventData
@@ -43661,9 +41330,7 @@ impl Message for EventLocationRequest {
     }
 
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         // Block QueryData
         let query_data = EventLocationRequest_QueryData::read_from(buffer)?;
         // Block EventData
@@ -43679,11 +41346,11 @@ impl Message for EventLocationRequest {
 
 impl Message for EventNotificationAddRequest {
     fn write_to<W: ?Sized>(&self, buffer: &mut W) -> WriteMessageResult
-    where
-        W: Write,
-    {
+    where W: Write {
         // Write the message number.
-        buffer.write(&[0xff, 0xff, 0x00, 0xb5])?;
+        buffer.write(&[
+            0xff, 0xff, 0x00, 0xb5
+        ])?;
         // Block AgentData
         buffer.write(self.agent_data.agent_id.as_bytes())?;
         buffer.write(self.agent_data.session_id.as_bytes())?;
@@ -43693,9 +41360,7 @@ impl Message for EventNotificationAddRequest {
     }
 
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         // Block AgentData
         let agent_data = EventNotificationAddRequest_AgentData::read_from(buffer)?;
         // Block EventData
@@ -43711,11 +41376,11 @@ impl Message for EventNotificationAddRequest {
 
 impl Message for EventNotificationRemoveRequest {
     fn write_to<W: ?Sized>(&self, buffer: &mut W) -> WriteMessageResult
-    where
-        W: Write,
-    {
+    where W: Write {
         // Write the message number.
-        buffer.write(&[0xff, 0xff, 0x00, 0xb6])?;
+        buffer.write(&[
+            0xff, 0xff, 0x00, 0xb6
+        ])?;
         // Block AgentData
         buffer.write(self.agent_data.agent_id.as_bytes())?;
         buffer.write(self.agent_data.session_id.as_bytes())?;
@@ -43725,9 +41390,7 @@ impl Message for EventNotificationRemoveRequest {
     }
 
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         // Block AgentData
         let agent_data = EventNotificationRemoveRequest_AgentData::read_from(buffer)?;
         // Block EventData
@@ -43743,11 +41406,11 @@ impl Message for EventNotificationRemoveRequest {
 
 impl Message for FeatureDisabled {
     fn write_to<W: ?Sized>(&self, buffer: &mut W) -> WriteMessageResult
-    where
-        W: Write,
-    {
+    where W: Write {
         // Write the message number.
-        buffer.write(&[0xff, 0xff, 0x00, 0x13])?;
+        buffer.write(&[
+            0xff, 0xff, 0x00, 0x13
+        ])?;
         // Block FailureInfo
         buffer.write_u8(self.failure_info.error_message.len() as u8)?;
         buffer.write(&self.failure_info.error_message[..])?;
@@ -43757,24 +41420,22 @@ impl Message for FeatureDisabled {
     }
 
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         // Block FailureInfo
         let failure_info = FeatureDisabled_FailureInfo::read_from(buffer)?;
-        Ok(MessageInstance::FeatureDisabled(
-            FeatureDisabled { failure_info: failure_info },
-        ))
+        Ok(MessageInstance::FeatureDisabled(FeatureDisabled {
+            failure_info: failure_info,
+        }))
     }
 }
 
 impl Message for FetchInventory {
     fn write_to<W: ?Sized>(&self, buffer: &mut W) -> WriteMessageResult
-    where
-        W: Write,
-    {
+    where W: Write {
         // Write the message number.
-        buffer.write(&[0xff, 0xff, 0x01, 0x17])?;
+        buffer.write(&[
+            0xff, 0xff, 0x01, 0x17
+        ])?;
         // Block AgentData
         buffer.write(self.agent_data.agent_id.as_bytes())?;
         buffer.write(self.agent_data.session_id.as_bytes())?;
@@ -43788,9 +41449,7 @@ impl Message for FetchInventory {
     }
 
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         // Block AgentData
         let agent_data = FetchInventory_AgentData::read_from(buffer)?;
         // Block InventoryData
@@ -43808,29 +41467,25 @@ impl Message for FetchInventory {
 
 impl Message for FetchInventoryDescendents {
     fn write_to<W: ?Sized>(&self, buffer: &mut W) -> WriteMessageResult
-    where
-        W: Write,
-    {
+    where W: Write {
         // Write the message number.
-        buffer.write(&[0xff, 0xff, 0x01, 0x15])?;
+        buffer.write(&[
+            0xff, 0xff, 0x01, 0x15
+        ])?;
         // Block AgentData
         buffer.write(self.agent_data.agent_id.as_bytes())?;
         buffer.write(self.agent_data.session_id.as_bytes())?;
         // Block InventoryData
         buffer.write(self.inventory_data.folder_id.as_bytes())?;
         buffer.write(self.inventory_data.owner_id.as_bytes())?;
-        buffer.write_i32::<LittleEndian>(
-            self.inventory_data.sort_order,
-        )?;
+        buffer.write_i32::<LittleEndian>(self.inventory_data.sort_order)?;
         buffer.write_u8(self.inventory_data.fetch_folders as u8)?;
         buffer.write_u8(self.inventory_data.fetch_items as u8)?;
         Ok(())
     }
 
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         // Block AgentData
         let agent_data = FetchInventoryDescendents_AgentData::read_from(buffer)?;
         // Block InventoryData
@@ -43846,11 +41501,11 @@ impl Message for FetchInventoryDescendents {
 
 impl Message for FetchInventoryReply {
     fn write_to<W: ?Sized>(&self, buffer: &mut W) -> WriteMessageResult
-    where
-        W: Write,
-    {
+    where W: Write {
         // Write the message number.
-        buffer.write(&[0xff, 0xff, 0x01, 0x18])?;
+        buffer.write(&[
+            0xff, 0xff, 0x01, 0x18
+        ])?;
         // Block AgentData
         buffer.write(self.agent_data.agent_id.as_bytes())?;
         // Block InventoryData
@@ -43884,9 +41539,7 @@ impl Message for FetchInventoryReply {
     }
 
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         // Block AgentData
         let agent_data = FetchInventoryReply_AgentData::read_from(buffer)?;
         // Block InventoryData
@@ -43904,11 +41557,11 @@ impl Message for FetchInventoryReply {
 
 impl Message for FindAgent {
     fn write_to<W: ?Sized>(&self, buffer: &mut W) -> WriteMessageResult
-    where
-        W: Write,
-    {
+    where W: Write {
         // Write the message number.
-        buffer.write(&[0xff, 0xff, 0x01, 0x00])?;
+        buffer.write(&[
+            0xff, 0xff, 0x01, 0x00
+        ])?;
         // Block AgentBlock
         buffer.write(self.agent_block.hunter.as_bytes())?;
         buffer.write(self.agent_block.prey.as_bytes())?;
@@ -43923,9 +41576,7 @@ impl Message for FindAgent {
     }
 
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         // Block AgentBlock
         let agent_block = FindAgent_AgentBlock::read_from(buffer)?;
         // Block LocationBlock
@@ -43943,11 +41594,11 @@ impl Message for FindAgent {
 
 impl Message for ForceObjectSelect {
     fn write_to<W: ?Sized>(&self, buffer: &mut W) -> WriteMessageResult
-    where
-        W: Write,
-    {
+    where W: Write {
         // Write the message number.
-        buffer.write(&[0xff, 0xff, 0x00, 0xcd])?;
+        buffer.write(&[
+            0xff, 0xff, 0x00, 0xcd
+        ])?;
         // Block Header
         buffer.write_u8(self.header.reset_list as u8)?;
         // Block Data
@@ -43959,9 +41610,7 @@ impl Message for ForceObjectSelect {
     }
 
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         // Block Header
         let header = ForceObjectSelect_Header::read_from(buffer)?;
         // Block Data
@@ -43979,11 +41628,11 @@ impl Message for ForceObjectSelect {
 
 impl Message for ForceScriptControlRelease {
     fn write_to<W: ?Sized>(&self, buffer: &mut W) -> WriteMessageResult
-    where
-        W: Write,
-    {
+    where W: Write {
         // Write the message number.
-        buffer.write(&[0xff, 0xff, 0x00, 0xc0])?;
+        buffer.write(&[
+            0xff, 0xff, 0x00, 0xc0
+        ])?;
         // Block AgentData
         buffer.write(self.agent_data.agent_id.as_bytes())?;
         buffer.write(self.agent_data.session_id.as_bytes())?;
@@ -43991,24 +41640,24 @@ impl Message for ForceScriptControlRelease {
     }
 
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         // Block AgentData
         let agent_data = ForceScriptControlRelease_AgentData::read_from(buffer)?;
         Ok(MessageInstance::ForceScriptControlRelease(
-            ForceScriptControlRelease { agent_data: agent_data },
+            ForceScriptControlRelease {
+                agent_data: agent_data,
+            },
         ))
     }
 }
 
 impl Message for FormFriendship {
     fn write_to<W: ?Sized>(&self, buffer: &mut W) -> WriteMessageResult
-    where
-        W: Write,
-    {
+    where W: Write {
         // Write the message number.
-        buffer.write(&[0xff, 0xff, 0x01, 0x2b])?;
+        buffer.write(&[
+            0xff, 0xff, 0x01, 0x2b
+        ])?;
         // Block AgentBlock
         buffer.write(self.agent_block.source_id.as_bytes())?;
         buffer.write(self.agent_block.dest_id.as_bytes())?;
@@ -44016,24 +41665,22 @@ impl Message for FormFriendship {
     }
 
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         // Block AgentBlock
         let agent_block = FormFriendship_AgentBlock::read_from(buffer)?;
-        Ok(MessageInstance::FormFriendship(
-            FormFriendship { agent_block: agent_block },
-        ))
+        Ok(MessageInstance::FormFriendship(FormFriendship {
+            agent_block: agent_block,
+        }))
     }
 }
 
 impl Message for FreezeUser {
     fn write_to<W: ?Sized>(&self, buffer: &mut W) -> WriteMessageResult
-    where
-        W: Write,
-    {
+    where W: Write {
         // Write the message number.
-        buffer.write(&[0xff, 0xff, 0x00, 0xa8])?;
+        buffer.write(&[
+            0xff, 0xff, 0x00, 0xa8
+        ])?;
         // Block AgentData
         buffer.write(self.agent_data.agent_id.as_bytes())?;
         buffer.write(self.agent_data.session_id.as_bytes())?;
@@ -44044,9 +41691,7 @@ impl Message for FreezeUser {
     }
 
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         // Block AgentData
         let agent_data = FreezeUser_AgentData::read_from(buffer)?;
         // Block Data
@@ -44060,11 +41705,11 @@ impl Message for FreezeUser {
 
 impl Message for GenericMessage {
     fn write_to<W: ?Sized>(&self, buffer: &mut W) -> WriteMessageResult
-    where
-        W: Write,
-    {
+    where W: Write {
         // Write the message number.
-        buffer.write(&[0xff, 0xff, 0x01, 0x05])?;
+        buffer.write(&[
+            0xff, 0xff, 0x01, 0x05
+        ])?;
         // Block AgentData
         buffer.write(self.agent_data.agent_id.as_bytes())?;
         buffer.write(self.agent_data.session_id.as_bytes())?;
@@ -44083,9 +41728,7 @@ impl Message for GenericMessage {
     }
 
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         // Block AgentData
         let agent_data = GenericMessage_AgentData::read_from(buffer)?;
         // Block MethodData
@@ -44106,11 +41749,11 @@ impl Message for GenericMessage {
 
 impl Message for GetScriptRunning {
     fn write_to<W: ?Sized>(&self, buffer: &mut W) -> WriteMessageResult
-    where
-        W: Write,
-    {
+    where W: Write {
         // Write the message number.
-        buffer.write(&[0xff, 0xff, 0x00, 0xf3])?;
+        buffer.write(&[
+            0xff, 0xff, 0x00, 0xf3
+        ])?;
         // Block Script
         buffer.write(self.script.object_id.as_bytes())?;
         buffer.write(self.script.item_id.as_bytes())?;
@@ -44118,9 +41761,7 @@ impl Message for GetScriptRunning {
     }
 
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         // Block Script
         let script = GetScriptRunning_Script::read_from(buffer)?;
         Ok(MessageInstance::GetScriptRunning(
@@ -44131,42 +41772,38 @@ impl Message for GetScriptRunning {
 
 impl Message for GodKickUser {
     fn write_to<W: ?Sized>(&self, buffer: &mut W) -> WriteMessageResult
-    where
-        W: Write,
-    {
+    where W: Write {
         // Write the message number.
-        buffer.write(&[0xff, 0xff, 0x00, 0xa5])?;
+        buffer.write(&[
+            0xff, 0xff, 0x00, 0xa5
+        ])?;
         // Block UserInfo
         buffer.write(self.user_info.god_id.as_bytes())?;
         buffer.write(self.user_info.god_session_id.as_bytes())?;
         buffer.write(self.user_info.agent_id.as_bytes())?;
         buffer.write_u32::<LittleEndian>(self.user_info.kick_flags)?;
-        buffer.write_u16::<LittleEndian>(
-            self.user_info.reason.len() as u16,
-        )?;
+        buffer.write_u16::<LittleEndian>(self.user_info.reason.len() as u16)?;
         buffer.write(&self.user_info.reason[..])?;
         Ok(())
     }
 
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         // Block UserInfo
         let user_info = GodKickUser_UserInfo::read_from(buffer)?;
-        Ok(MessageInstance::GodKickUser(
-            GodKickUser { user_info: user_info },
-        ))
+        Ok(MessageInstance::GodKickUser(GodKickUser {
+            user_info: user_info,
+        }))
     }
 }
 
 impl Message for GodUpdateRegionInfo {
     fn write_to<W: ?Sized>(&self, buffer: &mut W) -> WriteMessageResult
-    where
-        W: Write,
-    {
+    where W: Write {
         // Write the message number.
-        buffer.write(&[0xff, 0xff, 0x00, 0x8f])?;
+        buffer.write(&[
+            0xff, 0xff, 0x00, 0x8f
+        ])?;
         // Block AgentData
         buffer.write(self.agent_data.agent_id.as_bytes())?;
         buffer.write(self.agent_data.session_id.as_bytes())?;
@@ -44174,31 +41811,17 @@ impl Message for GodUpdateRegionInfo {
         buffer.write_u8(self.region_info.sim_name.len() as u8)?;
         buffer.write(&self.region_info.sim_name[..])?;
         buffer.write_u32::<LittleEndian>(self.region_info.estate_id)?;
-        buffer.write_u32::<LittleEndian>(
-            self.region_info.parent_estate_id,
-        )?;
-        buffer.write_u32::<LittleEndian>(
-            self.region_info.region_flags,
-        )?;
-        buffer.write_f32::<LittleEndian>(
-            self.region_info.billable_factor,
-        )?;
-        buffer.write_i32::<LittleEndian>(
-            self.region_info.price_per_meter,
-        )?;
-        buffer.write_i32::<LittleEndian>(
-            self.region_info.redirect_grid_x,
-        )?;
-        buffer.write_i32::<LittleEndian>(
-            self.region_info.redirect_grid_y,
-        )?;
+        buffer.write_u32::<LittleEndian>(self.region_info.parent_estate_id)?;
+        buffer.write_u32::<LittleEndian>(self.region_info.region_flags)?;
+        buffer.write_f32::<LittleEndian>(self.region_info.billable_factor)?;
+        buffer.write_i32::<LittleEndian>(self.region_info.price_per_meter)?;
+        buffer.write_i32::<LittleEndian>(self.region_info.redirect_grid_x)?;
+        buffer.write_i32::<LittleEndian>(self.region_info.redirect_grid_y)?;
         Ok(())
     }
 
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         // Block AgentData
         let agent_data = GodUpdateRegionInfo_AgentData::read_from(buffer)?;
         // Block RegionInfo
@@ -44212,11 +41835,11 @@ impl Message for GodUpdateRegionInfo {
 
 impl Message for GodlikeMessage {
     fn write_to<W: ?Sized>(&self, buffer: &mut W) -> WriteMessageResult
-    where
-        W: Write,
-    {
+    where W: Write {
         // Write the message number.
-        buffer.write(&[0xff, 0xff, 0x01, 0x03])?;
+        buffer.write(&[
+            0xff, 0xff, 0x01, 0x03
+        ])?;
         // Block AgentData
         buffer.write(self.agent_data.agent_id.as_bytes())?;
         buffer.write(self.agent_data.session_id.as_bytes())?;
@@ -44235,9 +41858,7 @@ impl Message for GodlikeMessage {
     }
 
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         // Block AgentData
         let agent_data = GodlikeMessage_AgentData::read_from(buffer)?;
         // Block MethodData
@@ -44258,11 +41879,11 @@ impl Message for GodlikeMessage {
 
 impl Message for GrantGodlikePowers {
     fn write_to<W: ?Sized>(&self, buffer: &mut W) -> WriteMessageResult
-    where
-        W: Write,
-    {
+    where W: Write {
         // Write the message number.
-        buffer.write(&[0xff, 0xff, 0x01, 0x02])?;
+        buffer.write(&[
+            0xff, 0xff, 0x01, 0x02
+        ])?;
         // Block AgentData
         buffer.write(self.agent_data.agent_id.as_bytes())?;
         buffer.write(self.agent_data.session_id.as_bytes())?;
@@ -44273,9 +41894,7 @@ impl Message for GrantGodlikePowers {
     }
 
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         // Block AgentData
         let agent_data = GrantGodlikePowers_AgentData::read_from(buffer)?;
         // Block GrantData
@@ -44289,11 +41908,11 @@ impl Message for GrantGodlikePowers {
 
 impl Message for GrantUserRights {
     fn write_to<W: ?Sized>(&self, buffer: &mut W) -> WriteMessageResult
-    where
-        W: Write,
-    {
+    where W: Write {
         // Write the message number.
-        buffer.write(&[0xff, 0xff, 0x01, 0x40])?;
+        buffer.write(&[
+            0xff, 0xff, 0x01, 0x40
+        ])?;
         // Block AgentData
         buffer.write(self.agent_data.agent_id.as_bytes())?;
         buffer.write(self.agent_data.session_id.as_bytes())?;
@@ -44307,9 +41926,7 @@ impl Message for GrantUserRights {
     }
 
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         // Block AgentData
         let agent_data = GrantUserRights_AgentData::read_from(buffer)?;
         // Block Rights
@@ -44327,22 +41944,18 @@ impl Message for GrantUserRights {
 
 impl Message for GroupAccountDetailsReply {
     fn write_to<W: ?Sized>(&self, buffer: &mut W) -> WriteMessageResult
-    where
-        W: Write,
-    {
+    where W: Write {
         // Write the message number.
-        buffer.write(&[0xff, 0xff, 0x01, 0x64])?;
+        buffer.write(&[
+            0xff, 0xff, 0x01, 0x64
+        ])?;
         // Block AgentData
         buffer.write(self.agent_data.agent_id.as_bytes())?;
         buffer.write(self.agent_data.group_id.as_bytes())?;
         // Block MoneyData
         buffer.write(self.money_data.request_id.as_bytes())?;
-        buffer.write_i32::<LittleEndian>(
-            self.money_data.interval_days,
-        )?;
-        buffer.write_i32::<LittleEndian>(
-            self.money_data.current_interval,
-        )?;
+        buffer.write_i32::<LittleEndian>(self.money_data.interval_days)?;
+        buffer.write_i32::<LittleEndian>(self.money_data.current_interval)?;
         buffer.write_u8(self.money_data.start_date.len() as u8)?;
         buffer.write(&self.money_data.start_date[..])?;
         // Block HistoryData
@@ -44356,9 +41969,7 @@ impl Message for GroupAccountDetailsReply {
     }
 
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         // Block AgentData
         let agent_data = GroupAccountDetailsReply_AgentData::read_from(buffer)?;
         // Block MoneyData
@@ -44381,30 +41992,24 @@ impl Message for GroupAccountDetailsReply {
 
 impl Message for GroupAccountDetailsRequest {
     fn write_to<W: ?Sized>(&self, buffer: &mut W) -> WriteMessageResult
-    where
-        W: Write,
-    {
+    where W: Write {
         // Write the message number.
-        buffer.write(&[0xff, 0xff, 0x01, 0x63])?;
+        buffer.write(&[
+            0xff, 0xff, 0x01, 0x63
+        ])?;
         // Block AgentData
         buffer.write(self.agent_data.agent_id.as_bytes())?;
         buffer.write(self.agent_data.session_id.as_bytes())?;
         buffer.write(self.agent_data.group_id.as_bytes())?;
         // Block MoneyData
         buffer.write(self.money_data.request_id.as_bytes())?;
-        buffer.write_i32::<LittleEndian>(
-            self.money_data.interval_days,
-        )?;
-        buffer.write_i32::<LittleEndian>(
-            self.money_data.current_interval,
-        )?;
+        buffer.write_i32::<LittleEndian>(self.money_data.interval_days)?;
+        buffer.write_i32::<LittleEndian>(self.money_data.current_interval)?;
         Ok(())
     }
 
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         // Block AgentData
         let agent_data = GroupAccountDetailsRequest_AgentData::read_from(buffer)?;
         // Block MoneyData
@@ -44420,64 +42025,34 @@ impl Message for GroupAccountDetailsRequest {
 
 impl Message for GroupAccountSummaryReply {
     fn write_to<W: ?Sized>(&self, buffer: &mut W) -> WriteMessageResult
-    where
-        W: Write,
-    {
+    where W: Write {
         // Write the message number.
-        buffer.write(&[0xff, 0xff, 0x01, 0x62])?;
+        buffer.write(&[
+            0xff, 0xff, 0x01, 0x62
+        ])?;
         // Block AgentData
         buffer.write(self.agent_data.agent_id.as_bytes())?;
         buffer.write(self.agent_data.group_id.as_bytes())?;
         // Block MoneyData
         buffer.write(self.money_data.request_id.as_bytes())?;
-        buffer.write_i32::<LittleEndian>(
-            self.money_data.interval_days,
-        )?;
-        buffer.write_i32::<LittleEndian>(
-            self.money_data.current_interval,
-        )?;
+        buffer.write_i32::<LittleEndian>(self.money_data.interval_days)?;
+        buffer.write_i32::<LittleEndian>(self.money_data.current_interval)?;
         buffer.write_u8(self.money_data.start_date.len() as u8)?;
         buffer.write(&self.money_data.start_date[..])?;
         buffer.write_i32::<LittleEndian>(self.money_data.balance)?;
-        buffer.write_i32::<LittleEndian>(
-            self.money_data.total_credits,
-        )?;
-        buffer.write_i32::<LittleEndian>(
-            self.money_data.total_debits,
-        )?;
-        buffer.write_i32::<LittleEndian>(
-            self.money_data.object_tax_current,
-        )?;
-        buffer.write_i32::<LittleEndian>(
-            self.money_data.light_tax_current,
-        )?;
-        buffer.write_i32::<LittleEndian>(
-            self.money_data.land_tax_current,
-        )?;
-        buffer.write_i32::<LittleEndian>(
-            self.money_data.group_tax_current,
-        )?;
-        buffer.write_i32::<LittleEndian>(
-            self.money_data.parcel_dir_fee_current,
-        )?;
-        buffer.write_i32::<LittleEndian>(
-            self.money_data.object_tax_estimate,
-        )?;
-        buffer.write_i32::<LittleEndian>(
-            self.money_data.light_tax_estimate,
-        )?;
-        buffer.write_i32::<LittleEndian>(
-            self.money_data.land_tax_estimate,
-        )?;
-        buffer.write_i32::<LittleEndian>(
-            self.money_data.group_tax_estimate,
-        )?;
-        buffer.write_i32::<LittleEndian>(
-            self.money_data.parcel_dir_fee_estimate,
-        )?;
-        buffer.write_i32::<LittleEndian>(
-            self.money_data.non_exempt_members,
-        )?;
+        buffer.write_i32::<LittleEndian>(self.money_data.total_credits)?;
+        buffer.write_i32::<LittleEndian>(self.money_data.total_debits)?;
+        buffer.write_i32::<LittleEndian>(self.money_data.object_tax_current)?;
+        buffer.write_i32::<LittleEndian>(self.money_data.light_tax_current)?;
+        buffer.write_i32::<LittleEndian>(self.money_data.land_tax_current)?;
+        buffer.write_i32::<LittleEndian>(self.money_data.group_tax_current)?;
+        buffer.write_i32::<LittleEndian>(self.money_data.parcel_dir_fee_current)?;
+        buffer.write_i32::<LittleEndian>(self.money_data.object_tax_estimate)?;
+        buffer.write_i32::<LittleEndian>(self.money_data.light_tax_estimate)?;
+        buffer.write_i32::<LittleEndian>(self.money_data.land_tax_estimate)?;
+        buffer.write_i32::<LittleEndian>(self.money_data.group_tax_estimate)?;
+        buffer.write_i32::<LittleEndian>(self.money_data.parcel_dir_fee_estimate)?;
+        buffer.write_i32::<LittleEndian>(self.money_data.non_exempt_members)?;
         buffer.write_u8(self.money_data.last_tax_date.len() as u8)?;
         buffer.write(&self.money_data.last_tax_date[..])?;
         buffer.write_u8(self.money_data.tax_date.len() as u8)?;
@@ -44486,9 +42061,7 @@ impl Message for GroupAccountSummaryReply {
     }
 
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         // Block AgentData
         let agent_data = GroupAccountSummaryReply_AgentData::read_from(buffer)?;
         // Block MoneyData
@@ -44504,30 +42077,24 @@ impl Message for GroupAccountSummaryReply {
 
 impl Message for GroupAccountSummaryRequest {
     fn write_to<W: ?Sized>(&self, buffer: &mut W) -> WriteMessageResult
-    where
-        W: Write,
-    {
+    where W: Write {
         // Write the message number.
-        buffer.write(&[0xff, 0xff, 0x01, 0x61])?;
+        buffer.write(&[
+            0xff, 0xff, 0x01, 0x61
+        ])?;
         // Block AgentData
         buffer.write(self.agent_data.agent_id.as_bytes())?;
         buffer.write(self.agent_data.session_id.as_bytes())?;
         buffer.write(self.agent_data.group_id.as_bytes())?;
         // Block MoneyData
         buffer.write(self.money_data.request_id.as_bytes())?;
-        buffer.write_i32::<LittleEndian>(
-            self.money_data.interval_days,
-        )?;
-        buffer.write_i32::<LittleEndian>(
-            self.money_data.current_interval,
-        )?;
+        buffer.write_i32::<LittleEndian>(self.money_data.interval_days)?;
+        buffer.write_i32::<LittleEndian>(self.money_data.current_interval)?;
         Ok(())
     }
 
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         // Block AgentData
         let agent_data = GroupAccountSummaryRequest_AgentData::read_from(buffer)?;
         // Block MoneyData
@@ -44543,22 +42110,18 @@ impl Message for GroupAccountSummaryRequest {
 
 impl Message for GroupAccountTransactionsReply {
     fn write_to<W: ?Sized>(&self, buffer: &mut W) -> WriteMessageResult
-    where
-        W: Write,
-    {
+    where W: Write {
         // Write the message number.
-        buffer.write(&[0xff, 0xff, 0x01, 0x66])?;
+        buffer.write(&[
+            0xff, 0xff, 0x01, 0x66
+        ])?;
         // Block AgentData
         buffer.write(self.agent_data.agent_id.as_bytes())?;
         buffer.write(self.agent_data.group_id.as_bytes())?;
         // Block MoneyData
         buffer.write(self.money_data.request_id.as_bytes())?;
-        buffer.write_i32::<LittleEndian>(
-            self.money_data.interval_days,
-        )?;
-        buffer.write_i32::<LittleEndian>(
-            self.money_data.current_interval,
-        )?;
+        buffer.write_i32::<LittleEndian>(self.money_data.interval_days)?;
+        buffer.write_i32::<LittleEndian>(self.money_data.current_interval)?;
         buffer.write_u8(self.money_data.start_date.len() as u8)?;
         buffer.write(&self.money_data.start_date[..])?;
         // Block HistoryData
@@ -44577,9 +42140,7 @@ impl Message for GroupAccountTransactionsReply {
     }
 
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         // Block AgentData
         let agent_data = GroupAccountTransactionsReply_AgentData::read_from(buffer)?;
         // Block MoneyData
@@ -44604,30 +42165,24 @@ impl Message for GroupAccountTransactionsReply {
 
 impl Message for GroupAccountTransactionsRequest {
     fn write_to<W: ?Sized>(&self, buffer: &mut W) -> WriteMessageResult
-    where
-        W: Write,
-    {
+    where W: Write {
         // Write the message number.
-        buffer.write(&[0xff, 0xff, 0x01, 0x65])?;
+        buffer.write(&[
+            0xff, 0xff, 0x01, 0x65
+        ])?;
         // Block AgentData
         buffer.write(self.agent_data.agent_id.as_bytes())?;
         buffer.write(self.agent_data.session_id.as_bytes())?;
         buffer.write(self.agent_data.group_id.as_bytes())?;
         // Block MoneyData
         buffer.write(self.money_data.request_id.as_bytes())?;
-        buffer.write_i32::<LittleEndian>(
-            self.money_data.interval_days,
-        )?;
-        buffer.write_i32::<LittleEndian>(
-            self.money_data.current_interval,
-        )?;
+        buffer.write_i32::<LittleEndian>(self.money_data.interval_days)?;
+        buffer.write_i32::<LittleEndian>(self.money_data.current_interval)?;
         Ok(())
     }
 
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         // Block AgentData
         let agent_data = GroupAccountTransactionsRequest_AgentData::read_from(buffer)?;
         // Block MoneyData
@@ -44643,21 +42198,17 @@ impl Message for GroupAccountTransactionsRequest {
 
 impl Message for GroupActiveProposalItemReply {
     fn write_to<W: ?Sized>(&self, buffer: &mut W) -> WriteMessageResult
-    where
-        W: Write,
-    {
+    where W: Write {
         // Write the message number.
-        buffer.write(&[0xff, 0xff, 0x01, 0x68])?;
+        buffer.write(&[
+            0xff, 0xff, 0x01, 0x68
+        ])?;
         // Block AgentData
         buffer.write(self.agent_data.agent_id.as_bytes())?;
         buffer.write(self.agent_data.group_id.as_bytes())?;
         // Block TransactionData
-        buffer.write(
-            self.transaction_data.transaction_id.as_bytes(),
-        )?;
-        buffer.write_u32::<LittleEndian>(
-            self.transaction_data.total_num_items,
-        )?;
+        buffer.write(self.transaction_data.transaction_id.as_bytes())?;
+        buffer.write_u32::<LittleEndian>(self.transaction_data.total_num_items)?;
         // Block ProposalData
         buffer.write_u8(self.proposal_data.len() as u8)?;
         for item in &self.proposal_data {
@@ -44681,9 +42232,7 @@ impl Message for GroupActiveProposalItemReply {
     }
 
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         // Block AgentData
         let agent_data = GroupActiveProposalItemReply_AgentData::read_from(buffer)?;
         // Block TransactionData
@@ -44708,27 +42257,23 @@ impl Message for GroupActiveProposalItemReply {
 
 impl Message for GroupActiveProposalsRequest {
     fn write_to<W: ?Sized>(&self, buffer: &mut W) -> WriteMessageResult
-    where
-        W: Write,
-    {
+    where W: Write {
         // Write the message number.
-        buffer.write(&[0xff, 0xff, 0x01, 0x67])?;
+        buffer.write(&[
+            0xff, 0xff, 0x01, 0x67
+        ])?;
         // Block AgentData
         buffer.write(self.agent_data.agent_id.as_bytes())?;
         buffer.write(self.agent_data.session_id.as_bytes())?;
         // Block GroupData
         buffer.write(self.group_data.group_id.as_bytes())?;
         // Block TransactionData
-        buffer.write(
-            self.transaction_data.transaction_id.as_bytes(),
-        )?;
+        buffer.write(self.transaction_data.transaction_id.as_bytes())?;
         Ok(())
     }
 
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         // Block AgentData
         let agent_data = GroupActiveProposalsRequest_AgentData::read_from(buffer)?;
         // Block GroupData
@@ -44747,11 +42292,11 @@ impl Message for GroupActiveProposalsRequest {
 
 impl Message for GroupDataUpdate {
     fn write_to<W: ?Sized>(&self, buffer: &mut W) -> WriteMessageResult
-    where
-        W: Write,
-    {
+    where W: Write {
         // Write the message number.
-        buffer.write(&[0xff, 0xff, 0x01, 0x84])?;
+        buffer.write(&[
+            0xff, 0xff, 0x01, 0x84
+        ])?;
         // Block AgentGroupData
         buffer.write_u8(self.agent_group_data.len() as u8)?;
         for item in &self.agent_group_data {
@@ -44765,36 +42310,32 @@ impl Message for GroupDataUpdate {
     }
 
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         // Block AgentGroupData
         let mut agent_group_data = Vec::new();
         let _agent_group_data_count = buffer.read_u8()?;
         for _ in 0.._agent_group_data_count {
             agent_group_data.push(GroupDataUpdate_AgentGroupData::read_from(buffer)?);
         }
-        Ok(MessageInstance::GroupDataUpdate(
-            GroupDataUpdate { agent_group_data: agent_group_data },
-        ))
+        Ok(MessageInstance::GroupDataUpdate(GroupDataUpdate {
+            agent_group_data: agent_group_data,
+        }))
     }
 }
 
 impl Message for GroupMembersReply {
     fn write_to<W: ?Sized>(&self, buffer: &mut W) -> WriteMessageResult
-    where
-        W: Write,
-    {
+    where W: Write {
         // Write the message number.
-        buffer.write(&[0xff, 0xff, 0x01, 0x6f])?;
+        buffer.write(&[
+            0xff, 0xff, 0x01, 0x6f
+        ])?;
         // Block AgentData
         buffer.write(self.agent_data.agent_id.as_bytes())?;
         // Block GroupData
         buffer.write(self.group_data.group_id.as_bytes())?;
         buffer.write(self.group_data.request_id.as_bytes())?;
-        buffer.write_i32::<LittleEndian>(
-            self.group_data.member_count,
-        )?;
+        buffer.write_i32::<LittleEndian>(self.group_data.member_count)?;
         // Block MemberData
         buffer.write_u8(self.member_data.len() as u8)?;
         for item in &self.member_data {
@@ -44811,9 +42352,7 @@ impl Message for GroupMembersReply {
     }
 
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         // Block AgentData
         let agent_data = GroupMembersReply_AgentData::read_from(buffer)?;
         // Block GroupData
@@ -44834,11 +42373,11 @@ impl Message for GroupMembersReply {
 
 impl Message for GroupMembersRequest {
     fn write_to<W: ?Sized>(&self, buffer: &mut W) -> WriteMessageResult
-    where
-        W: Write,
-    {
+    where W: Write {
         // Write the message number.
-        buffer.write(&[0xff, 0xff, 0x01, 0x6e])?;
+        buffer.write(&[
+            0xff, 0xff, 0x01, 0x6e
+        ])?;
         // Block AgentData
         buffer.write(self.agent_data.agent_id.as_bytes())?;
         buffer.write(self.agent_data.session_id.as_bytes())?;
@@ -44849,9 +42388,7 @@ impl Message for GroupMembersRequest {
     }
 
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         // Block AgentData
         let agent_data = GroupMembersRequest_AgentData::read_from(buffer)?;
         // Block GroupData
@@ -44865,36 +42402,28 @@ impl Message for GroupMembersRequest {
 
 impl Message for GroupNoticeAdd {
     fn write_to<W: ?Sized>(&self, buffer: &mut W) -> WriteMessageResult
-    where
-        W: Write,
-    {
+    where W: Write {
         // Write the message number.
-        buffer.write(&[0xff, 0xff, 0x00, 0x3d])?;
+        buffer.write(&[
+            0xff, 0xff, 0x00, 0x3d
+        ])?;
         // Block AgentData
         buffer.write(self.agent_data.agent_id.as_bytes())?;
         // Block MessageBlock
         buffer.write(self.message_block.to_group_id.as_bytes())?;
         buffer.write(self.message_block.id.as_bytes())?;
         buffer.write_u8(self.message_block.dialog)?;
-        buffer.write_u8(
-            self.message_block.from_agent_name.len() as u8,
-        )?;
+        buffer.write_u8(self.message_block.from_agent_name.len() as u8)?;
         buffer.write(&self.message_block.from_agent_name[..])?;
-        buffer.write_u16::<LittleEndian>(
-            self.message_block.message.len() as u16,
-        )?;
+        buffer.write_u16::<LittleEndian>(self.message_block.message.len() as u16)?;
         buffer.write(&self.message_block.message[..])?;
-        buffer.write_u16::<LittleEndian>(
-            self.message_block.binary_bucket.len() as u16,
-        )?;
+        buffer.write_u16::<LittleEndian>(self.message_block.binary_bucket.len() as u16)?;
         buffer.write(&self.message_block.binary_bucket[..])?;
         Ok(())
     }
 
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         // Block AgentData
         let agent_data = GroupNoticeAdd_AgentData::read_from(buffer)?;
         // Block MessageBlock
@@ -44908,11 +42437,11 @@ impl Message for GroupNoticeAdd {
 
 impl Message for GroupNoticeRequest {
     fn write_to<W: ?Sized>(&self, buffer: &mut W) -> WriteMessageResult
-    where
-        W: Write,
-    {
+    where W: Write {
         // Write the message number.
-        buffer.write(&[0xff, 0xff, 0x00, 0x3c])?;
+        buffer.write(&[
+            0xff, 0xff, 0x00, 0x3c
+        ])?;
         // Block AgentData
         buffer.write(self.agent_data.agent_id.as_bytes())?;
         buffer.write(self.agent_data.session_id.as_bytes())?;
@@ -44922,9 +42451,7 @@ impl Message for GroupNoticeRequest {
     }
 
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         // Block AgentData
         let agent_data = GroupNoticeRequest_AgentData::read_from(buffer)?;
         // Block Data
@@ -44938,11 +42465,11 @@ impl Message for GroupNoticeRequest {
 
 impl Message for GroupNoticesListReply {
     fn write_to<W: ?Sized>(&self, buffer: &mut W) -> WriteMessageResult
-    where
-        W: Write,
-    {
+    where W: Write {
         // Write the message number.
-        buffer.write(&[0xff, 0xff, 0x00, 0x3b])?;
+        buffer.write(&[
+            0xff, 0xff, 0x00, 0x3b
+        ])?;
         // Block AgentData
         buffer.write(self.agent_data.agent_id.as_bytes())?;
         buffer.write(self.agent_data.group_id.as_bytes())?;
@@ -44951,9 +42478,7 @@ impl Message for GroupNoticesListReply {
         for item in &self.data {
             buffer.write(item.notice_id.as_bytes())?;
             buffer.write_u32::<LittleEndian>(item.timestamp)?;
-            buffer.write_u16::<LittleEndian>(
-                item.from_name.len() as u16,
-            )?;
+            buffer.write_u16::<LittleEndian>(item.from_name.len() as u16)?;
             buffer.write(&item.from_name[..])?;
             buffer.write_u16::<LittleEndian>(item.subject.len() as u16)?;
             buffer.write(&item.subject[..])?;
@@ -44964,9 +42489,7 @@ impl Message for GroupNoticesListReply {
     }
 
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         // Block AgentData
         let agent_data = GroupNoticesListReply_AgentData::read_from(buffer)?;
         // Block Data
@@ -44986,11 +42509,11 @@ impl Message for GroupNoticesListReply {
 
 impl Message for GroupNoticesListRequest {
     fn write_to<W: ?Sized>(&self, buffer: &mut W) -> WriteMessageResult
-    where
-        W: Write,
-    {
+    where W: Write {
         // Write the message number.
-        buffer.write(&[0xff, 0xff, 0x00, 0x3a])?;
+        buffer.write(&[
+            0xff, 0xff, 0x00, 0x3a
+        ])?;
         // Block AgentData
         buffer.write(self.agent_data.agent_id.as_bytes())?;
         buffer.write(self.agent_data.session_id.as_bytes())?;
@@ -45000,9 +42523,7 @@ impl Message for GroupNoticesListRequest {
     }
 
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         // Block AgentData
         let agent_data = GroupNoticesListRequest_AgentData::read_from(buffer)?;
         // Block Data
@@ -45018,40 +42539,30 @@ impl Message for GroupNoticesListRequest {
 
 impl Message for GroupProfileReply {
     fn write_to<W: ?Sized>(&self, buffer: &mut W) -> WriteMessageResult
-    where
-        W: Write,
-    {
+    where W: Write {
         // Write the message number.
-        buffer.write(&[0xff, 0xff, 0x01, 0x60])?;
+        buffer.write(&[
+            0xff, 0xff, 0x01, 0x60
+        ])?;
         // Block AgentData
         buffer.write(self.agent_data.agent_id.as_bytes())?;
         // Block GroupData
         buffer.write(self.group_data.group_id.as_bytes())?;
         buffer.write_u8(self.group_data.name.len() as u8)?;
         buffer.write(&self.group_data.name[..])?;
-        buffer.write_u16::<LittleEndian>(
-            self.group_data.charter.len() as u16,
-        )?;
+        buffer.write_u16::<LittleEndian>(self.group_data.charter.len() as u16)?;
         buffer.write(&self.group_data.charter[..])?;
         buffer.write_u8(self.group_data.show_in_list as u8)?;
         buffer.write_u8(self.group_data.member_title.len() as u8)?;
         buffer.write(&self.group_data.member_title[..])?;
-        buffer.write_u64::<LittleEndian>(
-            self.group_data.powers_mask,
-        )?;
+        buffer.write_u64::<LittleEndian>(self.group_data.powers_mask)?;
         buffer.write(self.group_data.insignia_id.as_bytes())?;
         buffer.write(self.group_data.founder_id.as_bytes())?;
-        buffer.write_i32::<LittleEndian>(
-            self.group_data.membership_fee,
-        )?;
+        buffer.write_i32::<LittleEndian>(self.group_data.membership_fee)?;
         buffer.write_u8(self.group_data.open_enrollment as u8)?;
         buffer.write_i32::<LittleEndian>(self.group_data.money)?;
-        buffer.write_i32::<LittleEndian>(
-            self.group_data.group_membership_count,
-        )?;
-        buffer.write_i32::<LittleEndian>(
-            self.group_data.group_roles_count,
-        )?;
+        buffer.write_i32::<LittleEndian>(self.group_data.group_membership_count)?;
+        buffer.write_i32::<LittleEndian>(self.group_data.group_roles_count)?;
         buffer.write_u8(self.group_data.allow_publish as u8)?;
         buffer.write_u8(self.group_data.mature_publish as u8)?;
         buffer.write(self.group_data.owner_role.as_bytes())?;
@@ -45059,9 +42570,7 @@ impl Message for GroupProfileReply {
     }
 
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         // Block AgentData
         let agent_data = GroupProfileReply_AgentData::read_from(buffer)?;
         // Block GroupData
@@ -45075,11 +42584,11 @@ impl Message for GroupProfileReply {
 
 impl Message for GroupProfileRequest {
     fn write_to<W: ?Sized>(&self, buffer: &mut W) -> WriteMessageResult
-    where
-        W: Write,
-    {
+    where W: Write {
         // Write the message number.
-        buffer.write(&[0xff, 0xff, 0x01, 0x5f])?;
+        buffer.write(&[
+            0xff, 0xff, 0x01, 0x5f
+        ])?;
         // Block AgentData
         buffer.write(self.agent_data.agent_id.as_bytes())?;
         buffer.write(self.agent_data.session_id.as_bytes())?;
@@ -45089,9 +42598,7 @@ impl Message for GroupProfileRequest {
     }
 
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         // Block AgentData
         let agent_data = GroupProfileRequest_AgentData::read_from(buffer)?;
         // Block GroupData
@@ -45105,11 +42612,11 @@ impl Message for GroupProfileRequest {
 
 impl Message for GroupProposalBallot {
     fn write_to<W: ?Sized>(&self, buffer: &mut W) -> WriteMessageResult
-    where
-        W: Write,
-    {
+    where W: Write {
         // Write the message number.
-        buffer.write(&[0xff, 0xff, 0x01, 0x6c])?;
+        buffer.write(&[
+            0xff, 0xff, 0x01, 0x6c
+        ])?;
         // Block AgentData
         buffer.write(self.agent_data.agent_id.as_bytes())?;
         buffer.write(self.agent_data.session_id.as_bytes())?;
@@ -45122,9 +42629,7 @@ impl Message for GroupProposalBallot {
     }
 
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         // Block AgentData
         let agent_data = GroupProposalBallot_AgentData::read_from(buffer)?;
         // Block ProposalData
@@ -45138,11 +42643,11 @@ impl Message for GroupProposalBallot {
 
 impl Message for GroupRoleChanges {
     fn write_to<W: ?Sized>(&self, buffer: &mut W) -> WriteMessageResult
-    where
-        W: Write,
-    {
+    where W: Write {
         // Write the message number.
-        buffer.write(&[0xff, 0xff, 0x01, 0x56])?;
+        buffer.write(&[
+            0xff, 0xff, 0x01, 0x56
+        ])?;
         // Block AgentData
         buffer.write(self.agent_data.agent_id.as_bytes())?;
         buffer.write(self.agent_data.session_id.as_bytes())?;
@@ -45158,9 +42663,7 @@ impl Message for GroupRoleChanges {
     }
 
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         // Block AgentData
         let agent_data = GroupRoleChanges_AgentData::read_from(buffer)?;
         // Block RoleChange
@@ -45178,11 +42681,11 @@ impl Message for GroupRoleChanges {
 
 impl Message for GroupRoleDataReply {
     fn write_to<W: ?Sized>(&self, buffer: &mut W) -> WriteMessageResult
-    where
-        W: Write,
-    {
+    where W: Write {
         // Write the message number.
-        buffer.write(&[0xff, 0xff, 0x01, 0x74])?;
+        buffer.write(&[
+            0xff, 0xff, 0x01, 0x74
+        ])?;
         // Block AgentData
         buffer.write(self.agent_data.agent_id.as_bytes())?;
         // Block GroupData
@@ -45206,9 +42709,7 @@ impl Message for GroupRoleDataReply {
     }
 
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         // Block AgentData
         let agent_data = GroupRoleDataReply_AgentData::read_from(buffer)?;
         // Block GroupData
@@ -45229,11 +42730,11 @@ impl Message for GroupRoleDataReply {
 
 impl Message for GroupRoleDataRequest {
     fn write_to<W: ?Sized>(&self, buffer: &mut W) -> WriteMessageResult
-    where
-        W: Write,
-    {
+    where W: Write {
         // Write the message number.
-        buffer.write(&[0xff, 0xff, 0x01, 0x73])?;
+        buffer.write(&[
+            0xff, 0xff, 0x01, 0x73
+        ])?;
         // Block AgentData
         buffer.write(self.agent_data.agent_id.as_bytes())?;
         buffer.write(self.agent_data.session_id.as_bytes())?;
@@ -45244,9 +42745,7 @@ impl Message for GroupRoleDataRequest {
     }
 
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         // Block AgentData
         let agent_data = GroupRoleDataRequest_AgentData::read_from(buffer)?;
         // Block GroupData
@@ -45262,18 +42761,16 @@ impl Message for GroupRoleDataRequest {
 
 impl Message for GroupRoleMembersReply {
     fn write_to<W: ?Sized>(&self, buffer: &mut W) -> WriteMessageResult
-    where
-        W: Write,
-    {
+    where W: Write {
         // Write the message number.
-        buffer.write(&[0xff, 0xff, 0x01, 0x76])?;
+        buffer.write(&[
+            0xff, 0xff, 0x01, 0x76
+        ])?;
         // Block AgentData
         buffer.write(self.agent_data.agent_id.as_bytes())?;
         buffer.write(self.agent_data.group_id.as_bytes())?;
         buffer.write(self.agent_data.request_id.as_bytes())?;
-        buffer.write_u32::<LittleEndian>(
-            self.agent_data.total_pairs,
-        )?;
+        buffer.write_u32::<LittleEndian>(self.agent_data.total_pairs)?;
         // Block MemberData
         buffer.write_u8(self.member_data.len() as u8)?;
         for item in &self.member_data {
@@ -45284,9 +42781,7 @@ impl Message for GroupRoleMembersReply {
     }
 
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         // Block AgentData
         let agent_data = GroupRoleMembersReply_AgentData::read_from(buffer)?;
         // Block MemberData
@@ -45306,11 +42801,11 @@ impl Message for GroupRoleMembersReply {
 
 impl Message for GroupRoleMembersRequest {
     fn write_to<W: ?Sized>(&self, buffer: &mut W) -> WriteMessageResult
-    where
-        W: Write,
-    {
+    where W: Write {
         // Write the message number.
-        buffer.write(&[0xff, 0xff, 0x01, 0x75])?;
+        buffer.write(&[
+            0xff, 0xff, 0x01, 0x75
+        ])?;
         // Block AgentData
         buffer.write(self.agent_data.agent_id.as_bytes())?;
         buffer.write(self.agent_data.session_id.as_bytes())?;
@@ -45321,9 +42816,7 @@ impl Message for GroupRoleMembersRequest {
     }
 
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         // Block AgentData
         let agent_data = GroupRoleMembersRequest_AgentData::read_from(buffer)?;
         // Block GroupData
@@ -45339,11 +42832,11 @@ impl Message for GroupRoleMembersRequest {
 
 impl Message for GroupRoleUpdate {
     fn write_to<W: ?Sized>(&self, buffer: &mut W) -> WriteMessageResult
-    where
-        W: Write,
-    {
+    where W: Write {
         // Write the message number.
-        buffer.write(&[0xff, 0xff, 0x01, 0x7a])?;
+        buffer.write(&[
+            0xff, 0xff, 0x01, 0x7a
+        ])?;
         // Block AgentData
         buffer.write(self.agent_data.agent_id.as_bytes())?;
         buffer.write(self.agent_data.session_id.as_bytes())?;
@@ -45365,9 +42858,7 @@ impl Message for GroupRoleUpdate {
     }
 
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         // Block AgentData
         let agent_data = GroupRoleUpdate_AgentData::read_from(buffer)?;
         // Block RoleData
@@ -45385,11 +42876,11 @@ impl Message for GroupRoleUpdate {
 
 impl Message for GroupTitleUpdate {
     fn write_to<W: ?Sized>(&self, buffer: &mut W) -> WriteMessageResult
-    where
-        W: Write,
-    {
+    where W: Write {
         // Write the message number.
-        buffer.write(&[0xff, 0xff, 0x01, 0x79])?;
+        buffer.write(&[
+            0xff, 0xff, 0x01, 0x79
+        ])?;
         // Block AgentData
         buffer.write(self.agent_data.agent_id.as_bytes())?;
         buffer.write(self.agent_data.session_id.as_bytes())?;
@@ -45399,24 +42890,22 @@ impl Message for GroupTitleUpdate {
     }
 
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         // Block AgentData
         let agent_data = GroupTitleUpdate_AgentData::read_from(buffer)?;
-        Ok(MessageInstance::GroupTitleUpdate(
-            GroupTitleUpdate { agent_data: agent_data },
-        ))
+        Ok(MessageInstance::GroupTitleUpdate(GroupTitleUpdate {
+            agent_data: agent_data,
+        }))
     }
 }
 
 impl Message for GroupTitlesReply {
     fn write_to<W: ?Sized>(&self, buffer: &mut W) -> WriteMessageResult
-    where
-        W: Write,
-    {
+    where W: Write {
         // Write the message number.
-        buffer.write(&[0xff, 0xff, 0x01, 0x78])?;
+        buffer.write(&[
+            0xff, 0xff, 0x01, 0x78
+        ])?;
         // Block AgentData
         buffer.write(self.agent_data.agent_id.as_bytes())?;
         buffer.write(self.agent_data.group_id.as_bytes())?;
@@ -45433,9 +42922,7 @@ impl Message for GroupTitlesReply {
     }
 
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         // Block AgentData
         let agent_data = GroupTitlesReply_AgentData::read_from(buffer)?;
         // Block GroupData
@@ -45453,11 +42940,11 @@ impl Message for GroupTitlesReply {
 
 impl Message for GroupTitlesRequest {
     fn write_to<W: ?Sized>(&self, buffer: &mut W) -> WriteMessageResult
-    where
-        W: Write,
-    {
+    where W: Write {
         // Write the message number.
-        buffer.write(&[0xff, 0xff, 0x01, 0x77])?;
+        buffer.write(&[
+            0xff, 0xff, 0x01, 0x77
+        ])?;
         // Block AgentData
         buffer.write(self.agent_data.agent_id.as_bytes())?;
         buffer.write(self.agent_data.session_id.as_bytes())?;
@@ -45467,68 +42954,44 @@ impl Message for GroupTitlesRequest {
     }
 
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         // Block AgentData
         let agent_data = GroupTitlesRequest_AgentData::read_from(buffer)?;
-        Ok(MessageInstance::GroupTitlesRequest(
-            GroupTitlesRequest { agent_data: agent_data },
-        ))
+        Ok(MessageInstance::GroupTitlesRequest(GroupTitlesRequest {
+            agent_data: agent_data,
+        }))
     }
 }
 
 impl Message for GroupVoteHistoryItemReply {
     fn write_to<W: ?Sized>(&self, buffer: &mut W) -> WriteMessageResult
-    where
-        W: Write,
-    {
+    where W: Write {
         // Write the message number.
-        buffer.write(&[0xff, 0xff, 0x01, 0x6a])?;
+        buffer.write(&[
+            0xff, 0xff, 0x01, 0x6a
+        ])?;
         // Block AgentData
         buffer.write(self.agent_data.agent_id.as_bytes())?;
         buffer.write(self.agent_data.group_id.as_bytes())?;
         // Block TransactionData
-        buffer.write(
-            self.transaction_data.transaction_id.as_bytes(),
-        )?;
-        buffer.write_u32::<LittleEndian>(
-            self.transaction_data.total_num_items,
-        )?;
+        buffer.write(self.transaction_data.transaction_id.as_bytes())?;
+        buffer.write_u32::<LittleEndian>(self.transaction_data.total_num_items)?;
         // Block HistoryItemData
         buffer.write(self.history_item_data.vote_id.as_bytes())?;
-        buffer.write_u8(
-            self.history_item_data.terse_date_id.len() as u8,
-        )?;
+        buffer.write_u8(self.history_item_data.terse_date_id.len() as u8)?;
         buffer.write(&self.history_item_data.terse_date_id[..])?;
-        buffer.write_u8(
-            self.history_item_data.start_date_time.len() as u8,
-        )?;
+        buffer.write_u8(self.history_item_data.start_date_time.len() as u8)?;
         buffer.write(&self.history_item_data.start_date_time[..])?;
-        buffer.write_u8(
-            self.history_item_data.end_date_time.len() as u8,
-        )?;
+        buffer.write_u8(self.history_item_data.end_date_time.len() as u8)?;
         buffer.write(&self.history_item_data.end_date_time[..])?;
-        buffer.write(
-            self.history_item_data.vote_initiator.as_bytes(),
-        )?;
-        buffer.write_u8(
-            self.history_item_data.vote_type.len() as u8,
-        )?;
+        buffer.write(self.history_item_data.vote_initiator.as_bytes())?;
+        buffer.write_u8(self.history_item_data.vote_type.len() as u8)?;
         buffer.write(&self.history_item_data.vote_type[..])?;
-        buffer.write_u8(
-            self.history_item_data.vote_result.len() as u8,
-        )?;
+        buffer.write_u8(self.history_item_data.vote_result.len() as u8)?;
         buffer.write(&self.history_item_data.vote_result[..])?;
-        buffer.write_f32::<LittleEndian>(
-            self.history_item_data.majority,
-        )?;
-        buffer.write_i32::<LittleEndian>(
-            self.history_item_data.quorum,
-        )?;
-        buffer.write_u16::<LittleEndian>(
-            self.history_item_data.proposal_text.len() as u16,
-        )?;
+        buffer.write_f32::<LittleEndian>(self.history_item_data.majority)?;
+        buffer.write_i32::<LittleEndian>(self.history_item_data.quorum)?;
+        buffer.write_u16::<LittleEndian>(self.history_item_data.proposal_text.len() as u16)?;
         buffer.write(&self.history_item_data.proposal_text[..])?;
         // Block VoteItem
         buffer.write_u8(self.vote_item.len() as u8)?;
@@ -45542,9 +43005,7 @@ impl Message for GroupVoteHistoryItemReply {
     }
 
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         // Block AgentData
         let agent_data = GroupVoteHistoryItemReply_AgentData::read_from(buffer)?;
         // Block TransactionData
@@ -45570,27 +43031,23 @@ impl Message for GroupVoteHistoryItemReply {
 
 impl Message for GroupVoteHistoryRequest {
     fn write_to<W: ?Sized>(&self, buffer: &mut W) -> WriteMessageResult
-    where
-        W: Write,
-    {
+    where W: Write {
         // Write the message number.
-        buffer.write(&[0xff, 0xff, 0x01, 0x69])?;
+        buffer.write(&[
+            0xff, 0xff, 0x01, 0x69
+        ])?;
         // Block AgentData
         buffer.write(self.agent_data.agent_id.as_bytes())?;
         buffer.write(self.agent_data.session_id.as_bytes())?;
         // Block GroupData
         buffer.write(self.group_data.group_id.as_bytes())?;
         // Block TransactionData
-        buffer.write(
-            self.transaction_data.transaction_id.as_bytes(),
-        )?;
+        buffer.write(self.transaction_data.transaction_id.as_bytes())?;
         Ok(())
     }
 
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         // Block AgentData
         let agent_data = GroupVoteHistoryRequest_AgentData::read_from(buffer)?;
         // Block GroupData
@@ -45609,33 +43066,29 @@ impl Message for GroupVoteHistoryRequest {
 
 impl Message for HealthMessage {
     fn write_to<W: ?Sized>(&self, buffer: &mut W) -> WriteMessageResult
-    where
-        W: Write,
-    {
+    where W: Write {
         // Write the message number.
-        buffer.write(&[0xff, 0xff, 0x00, 0x8a])?;
+        buffer.write(&[
+            0xff, 0xff, 0x00, 0x8a
+        ])?;
         // Block HealthData
         buffer.write_f32::<LittleEndian>(self.health_data.health)?;
         Ok(())
     }
 
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         // Block HealthData
         let health_data = HealthMessage_HealthData::read_from(buffer)?;
-        Ok(MessageInstance::HealthMessage(
-            HealthMessage { health_data: health_data },
-        ))
+        Ok(MessageInstance::HealthMessage(HealthMessage {
+            health_data: health_data,
+        }))
     }
 }
 
 impl Message for ImageData {
     fn write_to<W: ?Sized>(&self, buffer: &mut W) -> WriteMessageResult
-    where
-        W: Write,
-    {
+    where W: Write {
         // Write the message number.
         buffer.write(&[0x09])?;
         // Block ImageID
@@ -45644,17 +43097,13 @@ impl Message for ImageData {
         buffer.write_u32::<LittleEndian>(self.image_id.size)?;
         buffer.write_u16::<LittleEndian>(self.image_id.packets)?;
         // Block ImageData
-        buffer.write_u16::<LittleEndian>(
-            self.image_data.data.len() as u16,
-        )?;
+        buffer.write_u16::<LittleEndian>(self.image_data.data.len() as u16)?;
         buffer.write(&self.image_data.data[..])?;
         Ok(())
     }
 
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         // Block ImageID
         let image_id = ImageData_ImageID::read_from(buffer)?;
         // Block ImageData
@@ -45668,20 +43117,18 @@ impl Message for ImageData {
 
 impl Message for ImageNotInDatabase {
     fn write_to<W: ?Sized>(&self, buffer: &mut W) -> WriteMessageResult
-    where
-        W: Write,
-    {
+    where W: Write {
         // Write the message number.
-        buffer.write(&[0xff, 0xff, 0x00, 0x56])?;
+        buffer.write(&[
+            0xff, 0xff, 0x00, 0x56
+        ])?;
         // Block ImageID
         buffer.write(self.image_id.id.as_bytes())?;
         Ok(())
     }
 
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         // Block ImageID
         let image_id = ImageNotInDatabase_ImageID::read_from(buffer)?;
         Ok(MessageInstance::ImageNotInDatabase(
@@ -45692,26 +43139,20 @@ impl Message for ImageNotInDatabase {
 
 impl Message for ImagePacket {
     fn write_to<W: ?Sized>(&self, buffer: &mut W) -> WriteMessageResult
-    where
-        W: Write,
-    {
+    where W: Write {
         // Write the message number.
         buffer.write(&[0x0a])?;
         // Block ImageID
         buffer.write(self.image_id.id.as_bytes())?;
         buffer.write_u16::<LittleEndian>(self.image_id.packet)?;
         // Block ImageData
-        buffer.write_u16::<LittleEndian>(
-            self.image_data.data.len() as u16,
-        )?;
+        buffer.write_u16::<LittleEndian>(self.image_data.data.len() as u16)?;
         buffer.write(&self.image_data.data[..])?;
         Ok(())
     }
 
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         // Block ImageID
         let image_id = ImagePacket_ImageID::read_from(buffer)?;
         // Block ImageData
@@ -45725,57 +43166,39 @@ impl Message for ImagePacket {
 
 impl Message for ImprovedInstantMessage {
     fn write_to<W: ?Sized>(&self, buffer: &mut W) -> WriteMessageResult
-    where
-        W: Write,
-    {
+    where W: Write {
         // Write the message number.
-        buffer.write(&[0xff, 0xff, 0x00, 0xfe])?;
+        buffer.write(&[
+            0xff, 0xff, 0x00, 0xfe
+        ])?;
         // Block AgentData
         buffer.write(self.agent_data.agent_id.as_bytes())?;
         buffer.write(self.agent_data.session_id.as_bytes())?;
         // Block MessageBlock
         buffer.write_u8(self.message_block.from_group as u8)?;
         buffer.write(self.message_block.to_agent_id.as_bytes())?;
-        buffer.write_u32::<LittleEndian>(
-            self.message_block.parent_estate_id,
-        )?;
+        buffer.write_u32::<LittleEndian>(self.message_block.parent_estate_id)?;
         buffer.write(self.message_block.region_id.as_bytes())?;
-        buffer.write_f32::<LittleEndian>(
-            self.message_block.position.x,
-        )?;
+        buffer.write_f32::<LittleEndian>(self.message_block.position.x)?;
 
-        buffer.write_f32::<LittleEndian>(
-            self.message_block.position.y,
-        )?;
+        buffer.write_f32::<LittleEndian>(self.message_block.position.y)?;
 
-        buffer.write_f32::<LittleEndian>(
-            self.message_block.position.z,
-        )?;
+        buffer.write_f32::<LittleEndian>(self.message_block.position.z)?;
         buffer.write_u8(self.message_block.offline)?;
         buffer.write_u8(self.message_block.dialog)?;
         buffer.write(self.message_block.id.as_bytes())?;
-        buffer.write_u32::<LittleEndian>(
-            self.message_block.timestamp,
-        )?;
-        buffer.write_u8(
-            self.message_block.from_agent_name.len() as u8,
-        )?;
+        buffer.write_u32::<LittleEndian>(self.message_block.timestamp)?;
+        buffer.write_u8(self.message_block.from_agent_name.len() as u8)?;
         buffer.write(&self.message_block.from_agent_name[..])?;
-        buffer.write_u16::<LittleEndian>(
-            self.message_block.message.len() as u16,
-        )?;
+        buffer.write_u16::<LittleEndian>(self.message_block.message.len() as u16)?;
         buffer.write(&self.message_block.message[..])?;
-        buffer.write_u16::<LittleEndian>(
-            self.message_block.binary_bucket.len() as u16,
-        )?;
+        buffer.write_u16::<LittleEndian>(self.message_block.binary_bucket.len() as u16)?;
         buffer.write(&self.message_block.binary_bucket[..])?;
         Ok(())
     }
 
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         // Block AgentData
         let agent_data = ImprovedInstantMessage_AgentData::read_from(buffer)?;
         // Block MessageBlock
@@ -45791,35 +43214,25 @@ impl Message for ImprovedInstantMessage {
 
 impl Message for ImprovedTerseObjectUpdate {
     fn write_to<W: ?Sized>(&self, buffer: &mut W) -> WriteMessageResult
-    where
-        W: Write,
-    {
+    where W: Write {
         // Write the message number.
         buffer.write(&[0x0f])?;
         // Block RegionData
-        buffer.write_u64::<LittleEndian>(
-            self.region_data.region_handle,
-        )?;
-        buffer.write_u16::<LittleEndian>(
-            self.region_data.time_dilation,
-        )?;
+        buffer.write_u64::<LittleEndian>(self.region_data.region_handle)?;
+        buffer.write_u16::<LittleEndian>(self.region_data.time_dilation)?;
         // Block ObjectData
         buffer.write_u8(self.object_data.len() as u8)?;
         for item in &self.object_data {
             buffer.write_u8(item.data.len() as u8)?;
             buffer.write(&item.data[..])?;
-            buffer.write_u16::<LittleEndian>(
-                item.texture_entry.len() as u16,
-            )?;
+            buffer.write_u16::<LittleEndian>(item.texture_entry.len() as u16)?;
             buffer.write(&item.texture_entry[..])?;
         }
         Ok(())
     }
 
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         // Block RegionData
         let region_data = ImprovedTerseObjectUpdate_RegionData::read_from(buffer)?;
         // Block ObjectData
@@ -45839,11 +43252,11 @@ impl Message for ImprovedTerseObjectUpdate {
 
 impl Message for InitiateDownload {
     fn write_to<W: ?Sized>(&self, buffer: &mut W) -> WriteMessageResult
-    where
-        W: Write,
-    {
+    where W: Write {
         // Write the message number.
-        buffer.write(&[0xff, 0xff, 0x01, 0x93])?;
+        buffer.write(&[
+            0xff, 0xff, 0x01, 0x93
+        ])?;
         // Block AgentData
         buffer.write(self.agent_data.agent_id.as_bytes())?;
         // Block FileData
@@ -45855,9 +43268,7 @@ impl Message for InitiateDownload {
     }
 
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         // Block AgentData
         let agent_data = InitiateDownload_AgentData::read_from(buffer)?;
         // Block FileData
@@ -45871,9 +43282,7 @@ impl Message for InitiateDownload {
 
 impl Message for InternalScriptMail {
     fn write_to<W: ?Sized>(&self, buffer: &mut W) -> WriteMessageResult
-    where
-        W: Write,
-    {
+    where W: Write {
         // Write the message number.
         buffer.write(&[0xff, 0x10])?;
         // Block DataBlock
@@ -45882,32 +43291,28 @@ impl Message for InternalScriptMail {
         buffer.write(self.data_block.to.as_bytes())?;
         buffer.write_u8(self.data_block.subject.len() as u8)?;
         buffer.write(&self.data_block.subject[..])?;
-        buffer.write_u16::<LittleEndian>(
-            self.data_block.body.len() as u16,
-        )?;
+        buffer.write_u16::<LittleEndian>(self.data_block.body.len() as u16)?;
         buffer.write(&self.data_block.body[..])?;
         Ok(())
     }
 
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         // Block DataBlock
         let data_block = InternalScriptMail_DataBlock::read_from(buffer)?;
-        Ok(MessageInstance::InternalScriptMail(
-            InternalScriptMail { data_block: data_block },
-        ))
+        Ok(MessageInstance::InternalScriptMail(InternalScriptMail {
+            data_block: data_block,
+        }))
     }
 }
 
 impl Message for InventoryAssetResponse {
     fn write_to<W: ?Sized>(&self, buffer: &mut W) -> WriteMessageResult
-    where
-        W: Write,
-    {
+    where W: Write {
         // Write the message number.
-        buffer.write(&[0xff, 0xff, 0x01, 0x1b])?;
+        buffer.write(&[
+            0xff, 0xff, 0x01, 0x1b
+        ])?;
         // Block QueryData
         buffer.write(self.query_data.query_id.as_bytes())?;
         buffer.write(self.query_data.asset_id.as_bytes())?;
@@ -45916,32 +43321,30 @@ impl Message for InventoryAssetResponse {
     }
 
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         // Block QueryData
         let query_data = InventoryAssetResponse_QueryData::read_from(buffer)?;
         Ok(MessageInstance::InventoryAssetResponse(
-            InventoryAssetResponse { query_data: query_data },
+            InventoryAssetResponse {
+                query_data: query_data,
+            },
         ))
     }
 }
 
 impl Message for InventoryDescendents {
     fn write_to<W: ?Sized>(&self, buffer: &mut W) -> WriteMessageResult
-    where
-        W: Write,
-    {
+    where W: Write {
         // Write the message number.
-        buffer.write(&[0xff, 0xff, 0x01, 0x16])?;
+        buffer.write(&[
+            0xff, 0xff, 0x01, 0x16
+        ])?;
         // Block AgentData
         buffer.write(self.agent_data.agent_id.as_bytes())?;
         buffer.write(self.agent_data.folder_id.as_bytes())?;
         buffer.write(self.agent_data.owner_id.as_bytes())?;
         buffer.write_i32::<LittleEndian>(self.agent_data.version)?;
-        buffer.write_i32::<LittleEndian>(
-            self.agent_data.descendents,
-        )?;
+        buffer.write_i32::<LittleEndian>(self.agent_data.descendents)?;
         // Block FolderData
         buffer.write_u8(self.folder_data.len() as u8)?;
         for item in &self.folder_data {
@@ -45982,9 +43385,7 @@ impl Message for InventoryDescendents {
     }
 
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         // Block AgentData
         let agent_data = InventoryDescendents_AgentData::read_from(buffer)?;
         // Block FolderData
@@ -46011,11 +43412,11 @@ impl Message for InventoryDescendents {
 
 impl Message for InviteGroupRequest {
     fn write_to<W: ?Sized>(&self, buffer: &mut W) -> WriteMessageResult
-    where
-        W: Write,
-    {
+    where W: Write {
         // Write the message number.
-        buffer.write(&[0xff, 0xff, 0x01, 0x5d])?;
+        buffer.write(&[
+            0xff, 0xff, 0x01, 0x5d
+        ])?;
         // Block AgentData
         buffer.write(self.agent_data.agent_id.as_bytes())?;
         buffer.write(self.agent_data.session_id.as_bytes())?;
@@ -46031,9 +43432,7 @@ impl Message for InviteGroupRequest {
     }
 
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         // Block AgentData
         let agent_data = InviteGroupRequest_AgentData::read_from(buffer)?;
         // Block GroupData
@@ -46054,41 +43453,37 @@ impl Message for InviteGroupRequest {
 
 impl Message for InviteGroupResponse {
     fn write_to<W: ?Sized>(&self, buffer: &mut W) -> WriteMessageResult
-    where
-        W: Write,
-    {
+    where W: Write {
         // Write the message number.
-        buffer.write(&[0xff, 0xff, 0x01, 0x5e])?;
+        buffer.write(&[
+            0xff, 0xff, 0x01, 0x5e
+        ])?;
         // Block InviteData
         buffer.write(self.invite_data.agent_id.as_bytes())?;
         buffer.write(self.invite_data.invitee_id.as_bytes())?;
         buffer.write(self.invite_data.group_id.as_bytes())?;
         buffer.write(self.invite_data.role_id.as_bytes())?;
-        buffer.write_i32::<LittleEndian>(
-            self.invite_data.membership_fee,
-        )?;
+        buffer.write_i32::<LittleEndian>(self.invite_data.membership_fee)?;
         Ok(())
     }
 
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         // Block InviteData
         let invite_data = InviteGroupResponse_InviteData::read_from(buffer)?;
-        Ok(MessageInstance::InviteGroupResponse(
-            InviteGroupResponse { invite_data: invite_data },
-        ))
+        Ok(MessageInstance::InviteGroupResponse(InviteGroupResponse {
+            invite_data: invite_data,
+        }))
     }
 }
 
 impl Message for JoinGroupReply {
     fn write_to<W: ?Sized>(&self, buffer: &mut W) -> WriteMessageResult
-    where
-        W: Write,
-    {
+    where W: Write {
         // Write the message number.
-        buffer.write(&[0xff, 0xff, 0x01, 0x58])?;
+        buffer.write(&[
+            0xff, 0xff, 0x01, 0x58
+        ])?;
         // Block AgentData
         buffer.write(self.agent_data.agent_id.as_bytes())?;
         // Block GroupData
@@ -46098,9 +43493,7 @@ impl Message for JoinGroupReply {
     }
 
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         // Block AgentData
         let agent_data = JoinGroupReply_AgentData::read_from(buffer)?;
         // Block GroupData
@@ -46114,11 +43507,11 @@ impl Message for JoinGroupReply {
 
 impl Message for JoinGroupRequest {
     fn write_to<W: ?Sized>(&self, buffer: &mut W) -> WriteMessageResult
-    where
-        W: Write,
-    {
+    where W: Write {
         // Write the message number.
-        buffer.write(&[0xff, 0xff, 0x01, 0x57])?;
+        buffer.write(&[
+            0xff, 0xff, 0x01, 0x57
+        ])?;
         // Block AgentData
         buffer.write(self.agent_data.agent_id.as_bytes())?;
         buffer.write(self.agent_data.session_id.as_bytes())?;
@@ -46128,9 +43521,7 @@ impl Message for JoinGroupRequest {
     }
 
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         // Block AgentData
         let agent_data = JoinGroupRequest_AgentData::read_from(buffer)?;
         // Block GroupData
@@ -46144,30 +43535,24 @@ impl Message for JoinGroupRequest {
 
 impl Message for KickUser {
     fn write_to<W: ?Sized>(&self, buffer: &mut W) -> WriteMessageResult
-    where
-        W: Write,
-    {
+    where W: Write {
         // Write the message number.
-        buffer.write(&[0xff, 0xff, 0x00, 0xa3])?;
+        buffer.write(&[
+            0xff, 0xff, 0x00, 0xa3
+        ])?;
         // Block TargetBlock
         buffer.write(&self.target_block.target_ip.octets())?;
-        buffer.write_u16::<LittleEndian>(
-            self.target_block.target_port,
-        )?;
+        buffer.write_u16::<LittleEndian>(self.target_block.target_port)?;
         // Block UserInfo
         buffer.write(self.user_info.agent_id.as_bytes())?;
         buffer.write(self.user_info.session_id.as_bytes())?;
-        buffer.write_u16::<LittleEndian>(
-            self.user_info.reason.len() as u16,
-        )?;
+        buffer.write_u16::<LittleEndian>(self.user_info.reason.len() as u16)?;
         buffer.write(&self.user_info.reason[..])?;
         Ok(())
     }
 
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         // Block TargetBlock
         let target_block = KickUser_TargetBlock::read_from(buffer)?;
         // Block UserInfo
@@ -46181,11 +43566,11 @@ impl Message for KickUser {
 
 impl Message for KickUserAck {
     fn write_to<W: ?Sized>(&self, buffer: &mut W) -> WriteMessageResult
-    where
-        W: Write,
-    {
+    where W: Write {
         // Write the message number.
-        buffer.write(&[0xff, 0xff, 0x00, 0xa4])?;
+        buffer.write(&[
+            0xff, 0xff, 0x00, 0xa4
+        ])?;
         // Block UserInfo
         buffer.write(self.user_info.session_id.as_bytes())?;
         buffer.write_u32::<LittleEndian>(self.user_info.flags)?;
@@ -46193,33 +43578,29 @@ impl Message for KickUserAck {
     }
 
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         // Block UserInfo
         let user_info = KickUserAck_UserInfo::read_from(buffer)?;
-        Ok(MessageInstance::KickUserAck(
-            KickUserAck { user_info: user_info },
-        ))
+        Ok(MessageInstance::KickUserAck(KickUserAck {
+            user_info: user_info,
+        }))
     }
 }
 
 impl Message for KillChildAgents {
     fn write_to<W: ?Sized>(&self, buffer: &mut W) -> WriteMessageResult
-    where
-        W: Write,
-    {
+    where W: Write {
         // Write the message number.
-        buffer.write(&[0xff, 0xff, 0x00, 0xf2])?;
+        buffer.write(&[
+            0xff, 0xff, 0x00, 0xf2
+        ])?;
         // Block IDBlock
         buffer.write(self.id_block.agent_id.as_bytes())?;
         Ok(())
     }
 
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         // Block IDBlock
         let id_block = KillChildAgents_IDBlock::read_from(buffer)?;
         Ok(MessageInstance::KillChildAgents(
@@ -46230,9 +43611,7 @@ impl Message for KillChildAgents {
 
 impl Message for KillObject {
     fn write_to<W: ?Sized>(&self, buffer: &mut W) -> WriteMessageResult
-    where
-        W: Write,
-    {
+    where W: Write {
         // Write the message number.
         buffer.write(&[0x10])?;
         // Block ObjectData
@@ -46244,38 +43623,30 @@ impl Message for KillObject {
     }
 
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         // Block ObjectData
         let mut object_data = Vec::new();
         let _object_data_count = buffer.read_u8()?;
         for _ in 0.._object_data_count {
             object_data.push(KillObject_ObjectData::read_from(buffer)?);
         }
-        Ok(MessageInstance::KillObject(
-            KillObject { object_data: object_data },
-        ))
+        Ok(MessageInstance::KillObject(KillObject {
+            object_data: object_data,
+        }))
     }
 }
 
 impl Message for LandStatReply {
     fn write_to<W: ?Sized>(&self, buffer: &mut W) -> WriteMessageResult
-    where
-        W: Write,
-    {
+    where W: Write {
         // Write the message number.
-        buffer.write(&[0xff, 0xff, 0x01, 0xa6])?;
+        buffer.write(&[
+            0xff, 0xff, 0x01, 0xa6
+        ])?;
         // Block RequestData
-        buffer.write_u32::<LittleEndian>(
-            self.request_data.report_type,
-        )?;
-        buffer.write_u32::<LittleEndian>(
-            self.request_data.request_flags,
-        )?;
-        buffer.write_u32::<LittleEndian>(
-            self.request_data.total_object_count,
-        )?;
+        buffer.write_u32::<LittleEndian>(self.request_data.report_type)?;
+        buffer.write_u32::<LittleEndian>(self.request_data.request_flags)?;
+        buffer.write_u32::<LittleEndian>(self.request_data.total_object_count)?;
         // Block ReportData
         buffer.write_u8(self.report_data.len() as u8)?;
         for item in &self.report_data {
@@ -46294,9 +43665,7 @@ impl Message for LandStatReply {
     }
 
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         // Block RequestData
         let request_data = LandStatReply_RequestData::read_from(buffer)?;
         // Block ReportData
@@ -46314,33 +43683,25 @@ impl Message for LandStatReply {
 
 impl Message for LandStatRequest {
     fn write_to<W: ?Sized>(&self, buffer: &mut W) -> WriteMessageResult
-    where
-        W: Write,
-    {
+    where W: Write {
         // Write the message number.
-        buffer.write(&[0xff, 0xff, 0x01, 0xa5])?;
+        buffer.write(&[
+            0xff, 0xff, 0x01, 0xa5
+        ])?;
         // Block AgentData
         buffer.write(self.agent_data.agent_id.as_bytes())?;
         buffer.write(self.agent_data.session_id.as_bytes())?;
         // Block RequestData
-        buffer.write_u32::<LittleEndian>(
-            self.request_data.report_type,
-        )?;
-        buffer.write_u32::<LittleEndian>(
-            self.request_data.request_flags,
-        )?;
+        buffer.write_u32::<LittleEndian>(self.request_data.report_type)?;
+        buffer.write_u32::<LittleEndian>(self.request_data.request_flags)?;
         buffer.write_u8(self.request_data.filter.len() as u8)?;
         buffer.write(&self.request_data.filter[..])?;
-        buffer.write_i32::<LittleEndian>(
-            self.request_data.parcel_local_id,
-        )?;
+        buffer.write_i32::<LittleEndian>(self.request_data.parcel_local_id)?;
         Ok(())
     }
 
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         // Block AgentData
         let agent_data = LandStatRequest_AgentData::read_from(buffer)?;
         // Block RequestData
@@ -46354,25 +43715,19 @@ impl Message for LandStatRequest {
 
 impl Message for LayerData {
     fn write_to<W: ?Sized>(&self, buffer: &mut W) -> WriteMessageResult
-    where
-        W: Write,
-    {
+    where W: Write {
         // Write the message number.
         buffer.write(&[0x0b])?;
         // Block LayerID
         buffer.write_u8(self.layer_id.type_)?;
         // Block LayerData
-        buffer.write_u16::<LittleEndian>(
-            self.layer_data.data.len() as u16,
-        )?;
+        buffer.write_u16::<LittleEndian>(self.layer_data.data.len() as u16)?;
         buffer.write(&self.layer_data.data[..])?;
         Ok(())
     }
 
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         // Block LayerID
         let layer_id = LayerData_LayerID::read_from(buffer)?;
         // Block LayerData
@@ -46386,11 +43741,11 @@ impl Message for LayerData {
 
 impl Message for LeaveGroupReply {
     fn write_to<W: ?Sized>(&self, buffer: &mut W) -> WriteMessageResult
-    where
-        W: Write,
-    {
+    where W: Write {
         // Write the message number.
-        buffer.write(&[0xff, 0xff, 0x01, 0x5c])?;
+        buffer.write(&[
+            0xff, 0xff, 0x01, 0x5c
+        ])?;
         // Block AgentData
         buffer.write(self.agent_data.agent_id.as_bytes())?;
         // Block GroupData
@@ -46400,9 +43755,7 @@ impl Message for LeaveGroupReply {
     }
 
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         // Block AgentData
         let agent_data = LeaveGroupReply_AgentData::read_from(buffer)?;
         // Block GroupData
@@ -46416,11 +43769,11 @@ impl Message for LeaveGroupReply {
 
 impl Message for LeaveGroupRequest {
     fn write_to<W: ?Sized>(&self, buffer: &mut W) -> WriteMessageResult
-    where
-        W: Write,
-    {
+    where W: Write {
         // Write the message number.
-        buffer.write(&[0xff, 0xff, 0x01, 0x5b])?;
+        buffer.write(&[
+            0xff, 0xff, 0x01, 0x5b
+        ])?;
         // Block AgentData
         buffer.write(self.agent_data.agent_id.as_bytes())?;
         buffer.write(self.agent_data.session_id.as_bytes())?;
@@ -46430,9 +43783,7 @@ impl Message for LeaveGroupRequest {
     }
 
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         // Block AgentData
         let agent_data = LeaveGroupRequest_AgentData::read_from(buffer)?;
         // Block GroupData
@@ -46446,18 +43797,16 @@ impl Message for LeaveGroupRequest {
 
 impl Message for LinkInventoryItem {
     fn write_to<W: ?Sized>(&self, buffer: &mut W) -> WriteMessageResult
-    where
-        W: Write,
-    {
+    where W: Write {
         // Write the message number.
-        buffer.write(&[0xff, 0xff, 0x01, 0xaa])?;
+        buffer.write(&[
+            0xff, 0xff, 0x01, 0xaa
+        ])?;
         // Block AgentData
         buffer.write(self.agent_data.agent_id.as_bytes())?;
         buffer.write(self.agent_data.session_id.as_bytes())?;
         // Block InventoryBlock
-        buffer.write_u32::<LittleEndian>(
-            self.inventory_block.callback_id,
-        )?;
+        buffer.write_u32::<LittleEndian>(self.inventory_block.callback_id)?;
         buffer.write(self.inventory_block.folder_id.as_bytes())?;
         buffer.write(self.inventory_block.transaction_id.as_bytes())?;
         buffer.write(self.inventory_block.old_item_id.as_bytes())?;
@@ -46465,17 +43814,13 @@ impl Message for LinkInventoryItem {
         buffer.write_i8(self.inventory_block.inv_type)?;
         buffer.write_u8(self.inventory_block.name.len() as u8)?;
         buffer.write(&self.inventory_block.name[..])?;
-        buffer.write_u8(
-            self.inventory_block.description.len() as u8,
-        )?;
+        buffer.write_u8(self.inventory_block.description.len() as u8)?;
         buffer.write(&self.inventory_block.description[..])?;
         Ok(())
     }
 
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         // Block AgentData
         let agent_data = LinkInventoryItem_AgentData::read_from(buffer)?;
         // Block InventoryBlock
@@ -46489,11 +43834,11 @@ impl Message for LinkInventoryItem {
 
 impl Message for LiveHelpGroupReply {
     fn write_to<W: ?Sized>(&self, buffer: &mut W) -> WriteMessageResult
-    where
-        W: Write,
-    {
+    where W: Write {
         // Write the message number.
-        buffer.write(&[0xff, 0xff, 0x01, 0x7c])?;
+        buffer.write(&[
+            0xff, 0xff, 0x01, 0x7c
+        ])?;
         // Block ReplyData
         buffer.write(self.reply_data.request_id.as_bytes())?;
         buffer.write(self.reply_data.group_id.as_bytes())?;
@@ -46503,24 +43848,22 @@ impl Message for LiveHelpGroupReply {
     }
 
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         // Block ReplyData
         let reply_data = LiveHelpGroupReply_ReplyData::read_from(buffer)?;
-        Ok(MessageInstance::LiveHelpGroupReply(
-            LiveHelpGroupReply { reply_data: reply_data },
-        ))
+        Ok(MessageInstance::LiveHelpGroupReply(LiveHelpGroupReply {
+            reply_data: reply_data,
+        }))
     }
 }
 
 impl Message for LiveHelpGroupRequest {
     fn write_to<W: ?Sized>(&self, buffer: &mut W) -> WriteMessageResult
-    where
-        W: Write,
-    {
+    where W: Write {
         // Write the message number.
-        buffer.write(&[0xff, 0xff, 0x01, 0x7b])?;
+        buffer.write(&[
+            0xff, 0xff, 0x01, 0x7b
+        ])?;
         // Block RequestData
         buffer.write(self.request_data.request_id.as_bytes())?;
         buffer.write(self.request_data.agent_id.as_bytes())?;
@@ -46528,24 +43871,24 @@ impl Message for LiveHelpGroupRequest {
     }
 
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         // Block RequestData
         let request_data = LiveHelpGroupRequest_RequestData::read_from(buffer)?;
         Ok(MessageInstance::LiveHelpGroupRequest(
-            LiveHelpGroupRequest { request_data: request_data },
+            LiveHelpGroupRequest {
+                request_data: request_data,
+            },
         ))
     }
 }
 
 impl Message for LoadURL {
     fn write_to<W: ?Sized>(&self, buffer: &mut W) -> WriteMessageResult
-    where
-        W: Write,
-    {
+    where W: Write {
         // Write the message number.
-        buffer.write(&[0xff, 0xff, 0x00, 0xc2])?;
+        buffer.write(&[
+            0xff, 0xff, 0x00, 0xc2
+        ])?;
         // Block Data
         buffer.write_u8(self.data.object_name.len() as u8)?;
         buffer.write(&self.data.object_name[..])?;
@@ -46560,9 +43903,7 @@ impl Message for LoadURL {
     }
 
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         // Block Data
         let data = LoadURL_Data::read_from(buffer)?;
         Ok(MessageInstance::LoadURL(LoadURL { data: data }))
@@ -46571,11 +43912,11 @@ impl Message for LoadURL {
 
 impl Message for LogDwellTime {
     fn write_to<W: ?Sized>(&self, buffer: &mut W) -> WriteMessageResult
-    where
-        W: Write,
-    {
+    where W: Write {
         // Write the message number.
-        buffer.write(&[0xff, 0xff, 0x00, 0x12])?;
+        buffer.write(&[
+            0xff, 0xff, 0x00, 0x12
+        ])?;
         // Block DwellInfo
         buffer.write(self.dwell_info.agent_id.as_bytes())?;
         buffer.write(self.dwell_info.session_id.as_bytes())?;
@@ -46590,55 +43931,39 @@ impl Message for LogDwellTime {
     }
 
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         // Block DwellInfo
         let dwell_info = LogDwellTime_DwellInfo::read_from(buffer)?;
-        Ok(MessageInstance::LogDwellTime(
-            LogDwellTime { dwell_info: dwell_info },
-        ))
+        Ok(MessageInstance::LogDwellTime(LogDwellTime {
+            dwell_info: dwell_info,
+        }))
     }
 }
 
 impl Message for LogFailedMoneyTransaction {
     fn write_to<W: ?Sized>(&self, buffer: &mut W) -> WriteMessageResult
-    where
-        W: Write,
-    {
+    where W: Write {
         // Write the message number.
-        buffer.write(&[0xff, 0xff, 0x00, 0x14])?;
+        buffer.write(&[
+            0xff, 0xff, 0x00, 0x14
+        ])?;
         // Block TransactionData
-        buffer.write(
-            self.transaction_data.transaction_id.as_bytes(),
-        )?;
-        buffer.write_u32::<LittleEndian>(
-            self.transaction_data.transaction_time,
-        )?;
-        buffer.write_i32::<LittleEndian>(
-            self.transaction_data.transaction_type,
-        )?;
+        buffer.write(self.transaction_data.transaction_id.as_bytes())?;
+        buffer.write_u32::<LittleEndian>(self.transaction_data.transaction_time)?;
+        buffer.write_i32::<LittleEndian>(self.transaction_data.transaction_type)?;
         buffer.write(self.transaction_data.source_id.as_bytes())?;
         buffer.write(self.transaction_data.dest_id.as_bytes())?;
         buffer.write_u8(self.transaction_data.flags)?;
-        buffer.write_i32::<LittleEndian>(
-            self.transaction_data.amount,
-        )?;
+        buffer.write_i32::<LittleEndian>(self.transaction_data.amount)?;
         buffer.write(&self.transaction_data.simulator_ip.octets())?;
-        buffer.write_u32::<LittleEndian>(
-            self.transaction_data.grid_x,
-        )?;
-        buffer.write_u32::<LittleEndian>(
-            self.transaction_data.grid_y,
-        )?;
+        buffer.write_u32::<LittleEndian>(self.transaction_data.grid_x)?;
+        buffer.write_u32::<LittleEndian>(self.transaction_data.grid_y)?;
         buffer.write_u8(self.transaction_data.failure_type)?;
         Ok(())
     }
 
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         // Block TransactionData
         let transaction_data = LogFailedMoneyTransaction_TransactionData::read_from(buffer)?;
         Ok(MessageInstance::LogFailedMoneyTransaction(
@@ -46651,17 +43976,15 @@ impl Message for LogFailedMoneyTransaction {
 
 impl Message for LogParcelChanges {
     fn write_to<W: ?Sized>(&self, buffer: &mut W) -> WriteMessageResult
-    where
-        W: Write,
-    {
+    where W: Write {
         // Write the message number.
-        buffer.write(&[0xff, 0xff, 0x00, 0xe0])?;
+        buffer.write(&[
+            0xff, 0xff, 0x00, 0xe0
+        ])?;
         // Block AgentData
         buffer.write(self.agent_data.agent_id.as_bytes())?;
         // Block RegionData
-        buffer.write_u64::<LittleEndian>(
-            self.region_data.region_handle,
-        )?;
+        buffer.write_u64::<LittleEndian>(self.region_data.region_handle)?;
         // Block ParcelData
         buffer.write_u8(self.parcel_data.len() as u8)?;
         for item in &self.parcel_data {
@@ -46676,9 +43999,7 @@ impl Message for LogParcelChanges {
     }
 
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         // Block AgentData
         let agent_data = LogParcelChanges_AgentData::read_from(buffer)?;
         // Block RegionData
@@ -46699,11 +44020,11 @@ impl Message for LogParcelChanges {
 
 impl Message for LogTextMessage {
     fn write_to<W: ?Sized>(&self, buffer: &mut W) -> WriteMessageResult
-    where
-        W: Write,
-    {
+    where W: Write {
         // Write the message number.
-        buffer.write(&[0xff, 0xff, 0x01, 0x87])?;
+        buffer.write(&[
+            0xff, 0xff, 0x01, 0x87
+        ])?;
         // Block DataBlock
         buffer.write_u8(self.data_block.len() as u8)?;
         for item in &self.data_block {
@@ -46719,28 +44040,26 @@ impl Message for LogTextMessage {
     }
 
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         // Block DataBlock
         let mut data_block = Vec::new();
         let _data_block_count = buffer.read_u8()?;
         for _ in 0.._data_block_count {
             data_block.push(LogTextMessage_DataBlock::read_from(buffer)?);
         }
-        Ok(MessageInstance::LogTextMessage(
-            LogTextMessage { data_block: data_block },
-        ))
+        Ok(MessageInstance::LogTextMessage(LogTextMessage {
+            data_block: data_block,
+        }))
     }
 }
 
 impl Message for LogoutReply {
     fn write_to<W: ?Sized>(&self, buffer: &mut W) -> WriteMessageResult
-    where
-        W: Write,
-    {
+    where W: Write {
         // Write the message number.
-        buffer.write(&[0xff, 0xff, 0x00, 0xfd])?;
+        buffer.write(&[
+            0xff, 0xff, 0x00, 0xfd
+        ])?;
         // Block AgentData
         buffer.write(self.agent_data.agent_id.as_bytes())?;
         buffer.write(self.agent_data.session_id.as_bytes())?;
@@ -46753,9 +44072,7 @@ impl Message for LogoutReply {
     }
 
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         // Block AgentData
         let agent_data = LogoutReply_AgentData::read_from(buffer)?;
         // Block InventoryData
@@ -46773,11 +44090,11 @@ impl Message for LogoutReply {
 
 impl Message for LogoutRequest {
     fn write_to<W: ?Sized>(&self, buffer: &mut W) -> WriteMessageResult
-    where
-        W: Write,
-    {
+    where W: Write {
         // Write the message number.
-        buffer.write(&[0xff, 0xff, 0x00, 0xfc])?;
+        buffer.write(&[
+            0xff, 0xff, 0x00, 0xfc
+        ])?;
         // Block AgentData
         buffer.write(self.agent_data.agent_id.as_bytes())?;
         buffer.write(self.agent_data.session_id.as_bytes())?;
@@ -46785,24 +44102,22 @@ impl Message for LogoutRequest {
     }
 
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         // Block AgentData
         let agent_data = LogoutRequest_AgentData::read_from(buffer)?;
-        Ok(MessageInstance::LogoutRequest(
-            LogoutRequest { agent_data: agent_data },
-        ))
+        Ok(MessageInstance::LogoutRequest(LogoutRequest {
+            agent_data: agent_data,
+        }))
     }
 }
 
 impl Message for MapBlockReply {
     fn write_to<W: ?Sized>(&self, buffer: &mut W) -> WriteMessageResult
-    where
-        W: Write,
-    {
+    where W: Write {
         // Write the message number.
-        buffer.write(&[0xff, 0xff, 0x01, 0x99])?;
+        buffer.write(&[
+            0xff, 0xff, 0x01, 0x99
+        ])?;
         // Block AgentData
         buffer.write(self.agent_data.agent_id.as_bytes())?;
         buffer.write_u32::<LittleEndian>(self.agent_data.flags)?;
@@ -46823,9 +44138,7 @@ impl Message for MapBlockReply {
     }
 
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         // Block AgentData
         let agent_data = MapBlockReply_AgentData::read_from(buffer)?;
         // Block Data
@@ -46843,11 +44156,11 @@ impl Message for MapBlockReply {
 
 impl Message for MapBlockRequest {
     fn write_to<W: ?Sized>(&self, buffer: &mut W) -> WriteMessageResult
-    where
-        W: Write,
-    {
+    where W: Write {
         // Write the message number.
-        buffer.write(&[0xff, 0xff, 0x01, 0x97])?;
+        buffer.write(&[
+            0xff, 0xff, 0x01, 0x97
+        ])?;
         // Block AgentData
         buffer.write(self.agent_data.agent_id.as_bytes())?;
         buffer.write(self.agent_data.session_id.as_bytes())?;
@@ -46863,9 +44176,7 @@ impl Message for MapBlockRequest {
     }
 
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         // Block AgentData
         let agent_data = MapBlockRequest_AgentData::read_from(buffer)?;
         // Block PositionData
@@ -46879,18 +44190,16 @@ impl Message for MapBlockRequest {
 
 impl Message for MapItemReply {
     fn write_to<W: ?Sized>(&self, buffer: &mut W) -> WriteMessageResult
-    where
-        W: Write,
-    {
+    where W: Write {
         // Write the message number.
-        buffer.write(&[0xff, 0xff, 0x01, 0x9b])?;
+        buffer.write(&[
+            0xff, 0xff, 0x01, 0x9b
+        ])?;
         // Block AgentData
         buffer.write(self.agent_data.agent_id.as_bytes())?;
         buffer.write_u32::<LittleEndian>(self.agent_data.flags)?;
         // Block RequestData
-        buffer.write_u32::<LittleEndian>(
-            self.request_data.item_type,
-        )?;
+        buffer.write_u32::<LittleEndian>(self.request_data.item_type)?;
         // Block Data
         buffer.write_u8(self.data.len() as u8)?;
         for item in &self.data {
@@ -46906,9 +44215,7 @@ impl Message for MapItemReply {
     }
 
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         // Block AgentData
         let agent_data = MapItemReply_AgentData::read_from(buffer)?;
         // Block RequestData
@@ -46929,11 +44236,11 @@ impl Message for MapItemReply {
 
 impl Message for MapItemRequest {
     fn write_to<W: ?Sized>(&self, buffer: &mut W) -> WriteMessageResult
-    where
-        W: Write,
-    {
+    where W: Write {
         // Write the message number.
-        buffer.write(&[0xff, 0xff, 0x01, 0x9a])?;
+        buffer.write(&[
+            0xff, 0xff, 0x01, 0x9a
+        ])?;
         // Block AgentData
         buffer.write(self.agent_data.agent_id.as_bytes())?;
         buffer.write(self.agent_data.session_id.as_bytes())?;
@@ -46941,19 +44248,13 @@ impl Message for MapItemRequest {
         buffer.write_u32::<LittleEndian>(self.agent_data.estate_id)?;
         buffer.write_u8(self.agent_data.godlike as u8)?;
         // Block RequestData
-        buffer.write_u32::<LittleEndian>(
-            self.request_data.item_type,
-        )?;
-        buffer.write_u64::<LittleEndian>(
-            self.request_data.region_handle,
-        )?;
+        buffer.write_u32::<LittleEndian>(self.request_data.item_type)?;
+        buffer.write_u64::<LittleEndian>(self.request_data.region_handle)?;
         Ok(())
     }
 
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         // Block AgentData
         let agent_data = MapItemRequest_AgentData::read_from(buffer)?;
         // Block RequestData
@@ -46967,11 +44268,11 @@ impl Message for MapItemRequest {
 
 impl Message for MapLayerReply {
     fn write_to<W: ?Sized>(&self, buffer: &mut W) -> WriteMessageResult
-    where
-        W: Write,
-    {
+    where W: Write {
         // Write the message number.
-        buffer.write(&[0xff, 0xff, 0x01, 0x96])?;
+        buffer.write(&[
+            0xff, 0xff, 0x01, 0x96
+        ])?;
         // Block AgentData
         buffer.write(self.agent_data.agent_id.as_bytes())?;
         buffer.write_u32::<LittleEndian>(self.agent_data.flags)?;
@@ -46988,9 +44289,7 @@ impl Message for MapLayerReply {
     }
 
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         // Block AgentData
         let agent_data = MapLayerReply_AgentData::read_from(buffer)?;
         // Block LayerData
@@ -47008,11 +44307,11 @@ impl Message for MapLayerReply {
 
 impl Message for MapLayerRequest {
     fn write_to<W: ?Sized>(&self, buffer: &mut W) -> WriteMessageResult
-    where
-        W: Write,
-    {
+    where W: Write {
         // Write the message number.
-        buffer.write(&[0xff, 0xff, 0x01, 0x95])?;
+        buffer.write(&[
+            0xff, 0xff, 0x01, 0x95
+        ])?;
         // Block AgentData
         buffer.write(self.agent_data.agent_id.as_bytes())?;
         buffer.write(self.agent_data.session_id.as_bytes())?;
@@ -47023,24 +44322,22 @@ impl Message for MapLayerRequest {
     }
 
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         // Block AgentData
         let agent_data = MapLayerRequest_AgentData::read_from(buffer)?;
-        Ok(MessageInstance::MapLayerRequest(
-            MapLayerRequest { agent_data: agent_data },
-        ))
+        Ok(MessageInstance::MapLayerRequest(MapLayerRequest {
+            agent_data: agent_data,
+        }))
     }
 }
 
 impl Message for MapNameRequest {
     fn write_to<W: ?Sized>(&self, buffer: &mut W) -> WriteMessageResult
-    where
-        W: Write,
-    {
+    where W: Write {
         // Write the message number.
-        buffer.write(&[0xff, 0xff, 0x01, 0x98])?;
+        buffer.write(&[
+            0xff, 0xff, 0x01, 0x98
+        ])?;
         // Block AgentData
         buffer.write(self.agent_data.agent_id.as_bytes())?;
         buffer.write(self.agent_data.session_id.as_bytes())?;
@@ -47054,9 +44351,7 @@ impl Message for MapNameRequest {
     }
 
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         // Block AgentData
         let agent_data = MapNameRequest_AgentData::read_from(buffer)?;
         // Block NameData
@@ -47070,11 +44365,11 @@ impl Message for MapNameRequest {
 
 impl Message for MeanCollisionAlert {
     fn write_to<W: ?Sized>(&self, buffer: &mut W) -> WriteMessageResult
-    where
-        W: Write,
-    {
+    where W: Write {
         // Write the message number.
-        buffer.write(&[0xff, 0xff, 0x00, 0x88])?;
+        buffer.write(&[
+            0xff, 0xff, 0x00, 0x88
+        ])?;
         // Block MeanCollision
         buffer.write_u8(self.mean_collision.len() as u8)?;
         for item in &self.mean_collision {
@@ -47088,28 +44383,26 @@ impl Message for MeanCollisionAlert {
     }
 
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         // Block MeanCollision
         let mut mean_collision = Vec::new();
         let _mean_collision_count = buffer.read_u8()?;
         for _ in 0.._mean_collision_count {
             mean_collision.push(MeanCollisionAlert_MeanCollision::read_from(buffer)?);
         }
-        Ok(MessageInstance::MeanCollisionAlert(
-            MeanCollisionAlert { mean_collision: mean_collision },
-        ))
+        Ok(MessageInstance::MeanCollisionAlert(MeanCollisionAlert {
+            mean_collision: mean_collision,
+        }))
     }
 }
 
 impl Message for MergeParcel {
     fn write_to<W: ?Sized>(&self, buffer: &mut W) -> WriteMessageResult
-    where
-        W: Write,
-    {
+    where W: Write {
         // Write the message number.
-        buffer.write(&[0xff, 0xff, 0x00, 0xdf])?;
+        buffer.write(&[
+            0xff, 0xff, 0x00, 0xdf
+        ])?;
         // Block MasterParcelData
         buffer.write(self.master_parcel_data.master_id.as_bytes())?;
         // Block SlaveParcelData
@@ -47121,9 +44414,7 @@ impl Message for MergeParcel {
     }
 
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         // Block MasterParcelData
         let master_parcel_data = MergeParcel_MasterParcelData::read_from(buffer)?;
         // Block SlaveParcelData
@@ -47141,11 +44432,11 @@ impl Message for MergeParcel {
 
 impl Message for ModifyLand {
     fn write_to<W: ?Sized>(&self, buffer: &mut W) -> WriteMessageResult
-    where
-        W: Write,
-    {
+    where W: Write {
         // Write the message number.
-        buffer.write(&[0xff, 0xff, 0x00, 0x7c])?;
+        buffer.write(&[
+            0xff, 0xff, 0x00, 0x7c
+        ])?;
         // Block AgentData
         buffer.write(self.agent_data.agent_id.as_bytes())?;
         buffer.write(self.agent_data.session_id.as_bytes())?;
@@ -47172,9 +44463,7 @@ impl Message for ModifyLand {
     }
 
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         // Block AgentData
         let agent_data = ModifyLand_AgentData::read_from(buffer)?;
         // Block ModifyBlock
@@ -47202,48 +44491,34 @@ impl Message for ModifyLand {
 
 impl Message for MoneyBalanceReply {
     fn write_to<W: ?Sized>(&self, buffer: &mut W) -> WriteMessageResult
-    where
-        W: Write,
-    {
+    where W: Write {
         // Write the message number.
-        buffer.write(&[0xff, 0xff, 0x01, 0x3a])?;
+        buffer.write(&[
+            0xff, 0xff, 0x01, 0x3a
+        ])?;
         // Block MoneyData
         buffer.write(self.money_data.agent_id.as_bytes())?;
         buffer.write(self.money_data.transaction_id.as_bytes())?;
         buffer.write_u8(self.money_data.transaction_success as u8)?;
-        buffer.write_i32::<LittleEndian>(
-            self.money_data.money_balance,
-        )?;
-        buffer.write_i32::<LittleEndian>(
-            self.money_data.square_meters_credit,
-        )?;
-        buffer.write_i32::<LittleEndian>(
-            self.money_data.square_meters_committed,
-        )?;
+        buffer.write_i32::<LittleEndian>(self.money_data.money_balance)?;
+        buffer.write_i32::<LittleEndian>(self.money_data.square_meters_credit)?;
+        buffer.write_i32::<LittleEndian>(self.money_data.square_meters_committed)?;
         buffer.write_u8(self.money_data.description.len() as u8)?;
         buffer.write(&self.money_data.description[..])?;
         // Block TransactionInfo
-        buffer.write_i32::<LittleEndian>(
-            self.transaction_info.transaction_type,
-        )?;
+        buffer.write_i32::<LittleEndian>(self.transaction_info.transaction_type)?;
         buffer.write(self.transaction_info.source_id.as_bytes())?;
         buffer.write_u8(self.transaction_info.is_source_group as u8)?;
         buffer.write(self.transaction_info.dest_id.as_bytes())?;
         buffer.write_u8(self.transaction_info.is_dest_group as u8)?;
-        buffer.write_i32::<LittleEndian>(
-            self.transaction_info.amount,
-        )?;
-        buffer.write_u8(
-            self.transaction_info.item_description.len() as u8,
-        )?;
+        buffer.write_i32::<LittleEndian>(self.transaction_info.amount)?;
+        buffer.write_u8(self.transaction_info.item_description.len() as u8)?;
         buffer.write(&self.transaction_info.item_description[..])?;
         Ok(())
     }
 
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         // Block MoneyData
         let money_data = MoneyBalanceReply_MoneyData::read_from(buffer)?;
         // Block TransactionInfo
@@ -47257,11 +44532,11 @@ impl Message for MoneyBalanceReply {
 
 impl Message for MoneyBalanceRequest {
     fn write_to<W: ?Sized>(&self, buffer: &mut W) -> WriteMessageResult
-    where
-        W: Write,
-    {
+    where W: Write {
         // Write the message number.
-        buffer.write(&[0xff, 0xff, 0x01, 0x39])?;
+        buffer.write(&[
+            0xff, 0xff, 0x01, 0x39
+        ])?;
         // Block AgentData
         buffer.write(self.agent_data.agent_id.as_bytes())?;
         buffer.write(self.agent_data.session_id.as_bytes())?;
@@ -47271,9 +44546,7 @@ impl Message for MoneyBalanceRequest {
     }
 
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         // Block AgentData
         let agent_data = MoneyBalanceRequest_AgentData::read_from(buffer)?;
         // Block MoneyData
@@ -47287,25 +44560,21 @@ impl Message for MoneyBalanceRequest {
 
 impl Message for MoneyTransferBackend {
     fn write_to<W: ?Sized>(&self, buffer: &mut W) -> WriteMessageResult
-    where
-        W: Write,
-    {
+    where W: Write {
         // Write the message number.
-        buffer.write(&[0xff, 0xff, 0x01, 0x38])?;
+        buffer.write(&[
+            0xff, 0xff, 0x01, 0x38
+        ])?;
         // Block MoneyData
         buffer.write(self.money_data.transaction_id.as_bytes())?;
-        buffer.write_u32::<LittleEndian>(
-            self.money_data.transaction_time,
-        )?;
+        buffer.write_u32::<LittleEndian>(self.money_data.transaction_time)?;
         buffer.write(self.money_data.source_id.as_bytes())?;
         buffer.write(self.money_data.dest_id.as_bytes())?;
         buffer.write_u8(self.money_data.flags)?;
         buffer.write_i32::<LittleEndian>(self.money_data.amount)?;
         buffer.write_u8(self.money_data.aggregate_perm_next_owner)?;
         buffer.write_u8(self.money_data.aggregate_perm_inventory)?;
-        buffer.write_i32::<LittleEndian>(
-            self.money_data.transaction_type,
-        )?;
+        buffer.write_i32::<LittleEndian>(self.money_data.transaction_type)?;
         buffer.write(self.money_data.region_id.as_bytes())?;
         buffer.write_u32::<LittleEndian>(self.money_data.grid_x)?;
         buffer.write_u32::<LittleEndian>(self.money_data.grid_y)?;
@@ -47315,24 +44584,24 @@ impl Message for MoneyTransferBackend {
     }
 
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         // Block MoneyData
         let money_data = MoneyTransferBackend_MoneyData::read_from(buffer)?;
         Ok(MessageInstance::MoneyTransferBackend(
-            MoneyTransferBackend { money_data: money_data },
+            MoneyTransferBackend {
+                money_data: money_data,
+            },
         ))
     }
 }
 
 impl Message for MoneyTransferRequest {
     fn write_to<W: ?Sized>(&self, buffer: &mut W) -> WriteMessageResult
-    where
-        W: Write,
-    {
+    where W: Write {
         // Write the message number.
-        buffer.write(&[0xff, 0xff, 0x01, 0x37])?;
+        buffer.write(&[
+            0xff, 0xff, 0x01, 0x37
+        ])?;
         // Block AgentData
         buffer.write(self.agent_data.agent_id.as_bytes())?;
         buffer.write(self.agent_data.session_id.as_bytes())?;
@@ -47343,18 +44612,14 @@ impl Message for MoneyTransferRequest {
         buffer.write_i32::<LittleEndian>(self.money_data.amount)?;
         buffer.write_u8(self.money_data.aggregate_perm_next_owner)?;
         buffer.write_u8(self.money_data.aggregate_perm_inventory)?;
-        buffer.write_i32::<LittleEndian>(
-            self.money_data.transaction_type,
-        )?;
+        buffer.write_i32::<LittleEndian>(self.money_data.transaction_type)?;
         buffer.write_u8(self.money_data.description.len() as u8)?;
         buffer.write(&self.money_data.description[..])?;
         Ok(())
     }
 
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         // Block AgentData
         let agent_data = MoneyTransferRequest_AgentData::read_from(buffer)?;
         // Block MoneyData
@@ -47370,11 +44635,11 @@ impl Message for MoneyTransferRequest {
 
 impl Message for MoveInventoryFolder {
     fn write_to<W: ?Sized>(&self, buffer: &mut W) -> WriteMessageResult
-    where
-        W: Write,
-    {
+    where W: Write {
         // Write the message number.
-        buffer.write(&[0xff, 0xff, 0x01, 0x13])?;
+        buffer.write(&[
+            0xff, 0xff, 0x01, 0x13
+        ])?;
         // Block AgentData
         buffer.write(self.agent_data.agent_id.as_bytes())?;
         buffer.write(self.agent_data.session_id.as_bytes())?;
@@ -47389,9 +44654,7 @@ impl Message for MoveInventoryFolder {
     }
 
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         // Block AgentData
         let agent_data = MoveInventoryFolder_AgentData::read_from(buffer)?;
         // Block InventoryData
@@ -47409,11 +44672,11 @@ impl Message for MoveInventoryFolder {
 
 impl Message for MoveInventoryItem {
     fn write_to<W: ?Sized>(&self, buffer: &mut W) -> WriteMessageResult
-    where
-        W: Write,
-    {
+    where W: Write {
         // Write the message number.
-        buffer.write(&[0xff, 0xff, 0x01, 0x0c])?;
+        buffer.write(&[
+            0xff, 0xff, 0x01, 0x0c
+        ])?;
         // Block AgentData
         buffer.write(self.agent_data.agent_id.as_bytes())?;
         buffer.write(self.agent_data.session_id.as_bytes())?;
@@ -47430,9 +44693,7 @@ impl Message for MoveInventoryItem {
     }
 
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         // Block AgentData
         let agent_data = MoveInventoryItem_AgentData::read_from(buffer)?;
         // Block InventoryData
@@ -47450,27 +44711,23 @@ impl Message for MoveInventoryItem {
 
 impl Message for MoveTaskInventory {
     fn write_to<W: ?Sized>(&self, buffer: &mut W) -> WriteMessageResult
-    where
-        W: Write,
-    {
+    where W: Write {
         // Write the message number.
-        buffer.write(&[0xff, 0xff, 0x01, 0x20])?;
+        buffer.write(&[
+            0xff, 0xff, 0x01, 0x20
+        ])?;
         // Block AgentData
         buffer.write(self.agent_data.agent_id.as_bytes())?;
         buffer.write(self.agent_data.session_id.as_bytes())?;
         buffer.write(self.agent_data.folder_id.as_bytes())?;
         // Block InventoryData
-        buffer.write_u32::<LittleEndian>(
-            self.inventory_data.local_id,
-        )?;
+        buffer.write_u32::<LittleEndian>(self.inventory_data.local_id)?;
         buffer.write(self.inventory_data.item_id.as_bytes())?;
         Ok(())
     }
 
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         // Block AgentData
         let agent_data = MoveTaskInventory_AgentData::read_from(buffer)?;
         // Block InventoryData
@@ -47484,9 +44741,7 @@ impl Message for MoveTaskInventory {
 
 impl Message for MultipleObjectUpdate {
     fn write_to<W: ?Sized>(&self, buffer: &mut W) -> WriteMessageResult
-    where
-        W: Write,
-    {
+    where W: Write {
         // Write the message number.
         buffer.write(&[0xff, 0x02])?;
         // Block AgentData
@@ -47504,9 +44759,7 @@ impl Message for MultipleObjectUpdate {
     }
 
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         // Block AgentData
         let agent_data = MultipleObjectUpdate_AgentData::read_from(buffer)?;
         // Block ObjectData
@@ -47526,11 +44779,11 @@ impl Message for MultipleObjectUpdate {
 
 impl Message for MuteListRequest {
     fn write_to<W: ?Sized>(&self, buffer: &mut W) -> WriteMessageResult
-    where
-        W: Write,
-    {
+    where W: Write {
         // Write the message number.
-        buffer.write(&[0xff, 0xff, 0x01, 0x06])?;
+        buffer.write(&[
+            0xff, 0xff, 0x01, 0x06
+        ])?;
         // Block AgentData
         buffer.write(self.agent_data.agent_id.as_bytes())?;
         buffer.write(self.agent_data.session_id.as_bytes())?;
@@ -47540,9 +44793,7 @@ impl Message for MuteListRequest {
     }
 
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         // Block AgentData
         let agent_data = MuteListRequest_AgentData::read_from(buffer)?;
         // Block MuteData
@@ -47556,11 +44807,11 @@ impl Message for MuteListRequest {
 
 impl Message for MuteListUpdate {
     fn write_to<W: ?Sized>(&self, buffer: &mut W) -> WriteMessageResult
-    where
-        W: Write,
-    {
+    where W: Write {
         // Write the message number.
-        buffer.write(&[0xff, 0xff, 0x01, 0x3e])?;
+        buffer.write(&[
+            0xff, 0xff, 0x01, 0x3e
+        ])?;
         // Block MuteData
         buffer.write(self.mute_data.agent_id.as_bytes())?;
         buffer.write_u8(self.mute_data.filename.len() as u8)?;
@@ -47569,24 +44820,22 @@ impl Message for MuteListUpdate {
     }
 
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         // Block MuteData
         let mute_data = MuteListUpdate_MuteData::read_from(buffer)?;
-        Ok(MessageInstance::MuteListUpdate(
-            MuteListUpdate { mute_data: mute_data },
-        ))
+        Ok(MessageInstance::MuteListUpdate(MuteListUpdate {
+            mute_data: mute_data,
+        }))
     }
 }
 
 impl Message for NameValuePair {
     fn write_to<W: ?Sized>(&self, buffer: &mut W) -> WriteMessageResult
-    where
-        W: Write,
-    {
+    where W: Write {
         // Write the message number.
-        buffer.write(&[0xff, 0xff, 0x01, 0x49])?;
+        buffer.write(&[
+            0xff, 0xff, 0x01, 0x49
+        ])?;
         // Block TaskData
         buffer.write(self.task_data.id.as_bytes())?;
         // Block NameValueData
@@ -47599,9 +44848,7 @@ impl Message for NameValuePair {
     }
 
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         // Block TaskData
         let task_data = NameValuePair_TaskData::read_from(buffer)?;
         // Block NameValueData
@@ -47619,22 +44866,18 @@ impl Message for NameValuePair {
 
 impl Message for NearestLandingRegionReply {
     fn write_to<W: ?Sized>(&self, buffer: &mut W) -> WriteMessageResult
-    where
-        W: Write,
-    {
+    where W: Write {
         // Write the message number.
-        buffer.write(&[0xff, 0xff, 0x00, 0x91])?;
+        buffer.write(&[
+            0xff, 0xff, 0x00, 0x91
+        ])?;
         // Block LandingRegionData
-        buffer.write_u64::<LittleEndian>(
-            self.landing_region_data.region_handle,
-        )?;
+        buffer.write_u64::<LittleEndian>(self.landing_region_data.region_handle)?;
         Ok(())
     }
 
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         // Block LandingRegionData
         let landing_region_data = NearestLandingRegionReply_LandingRegionData::read_from(buffer)?;
         Ok(MessageInstance::NearestLandingRegionReply(
@@ -47647,22 +44890,18 @@ impl Message for NearestLandingRegionReply {
 
 impl Message for NearestLandingRegionRequest {
     fn write_to<W: ?Sized>(&self, buffer: &mut W) -> WriteMessageResult
-    where
-        W: Write,
-    {
+    where W: Write {
         // Write the message number.
-        buffer.write(&[0xff, 0xff, 0x00, 0x90])?;
+        buffer.write(&[
+            0xff, 0xff, 0x00, 0x90
+        ])?;
         // Block RequestingRegionData
-        buffer.write_u64::<LittleEndian>(
-            self.requesting_region_data.region_handle,
-        )?;
+        buffer.write_u64::<LittleEndian>(self.requesting_region_data.region_handle)?;
         Ok(())
     }
 
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         // Block RequestingRegionData
         let requesting_region_data = NearestLandingRegionRequest_RequestingRegionData::read_from(buffer)?;
         Ok(MessageInstance::NearestLandingRegionRequest(
@@ -47675,47 +44914,39 @@ impl Message for NearestLandingRegionRequest {
 
 impl Message for NearestLandingRegionUpdated {
     fn write_to<W: ?Sized>(&self, buffer: &mut W) -> WriteMessageResult
-    where
-        W: Write,
-    {
+    where W: Write {
         // Write the message number.
-        buffer.write(&[0xff, 0xff, 0x00, 0x92])?;
+        buffer.write(&[
+            0xff, 0xff, 0x00, 0x92
+        ])?;
         // Block RegionData
-        buffer.write_u64::<LittleEndian>(
-            self.region_data.region_handle,
-        )?;
+        buffer.write_u64::<LittleEndian>(self.region_data.region_handle)?;
         Ok(())
     }
 
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         // Block RegionData
         let region_data = NearestLandingRegionUpdated_RegionData::read_from(buffer)?;
         Ok(MessageInstance::NearestLandingRegionUpdated(
-            NearestLandingRegionUpdated { region_data: region_data },
+            NearestLandingRegionUpdated {
+                region_data: region_data,
+            },
         ))
     }
 }
 
 impl Message for NeighborList {
     fn write_to<W: ?Sized>(&self, buffer: &mut W) -> WriteMessageResult
-    where
-        W: Write,
-    {
+    where W: Write {
         // Write the message number.
         buffer.write(&[0x03])?;
         // Block NeighborBlock
         for i in 0..4 {
             buffer.write(&self.neighbor_block[i].ip.octets())?;
-            buffer.write_u16::<LittleEndian>(
-                self.neighbor_block[i].port,
-            )?;
+            buffer.write_u16::<LittleEndian>(self.neighbor_block[i].port)?;
             buffer.write(&self.neighbor_block[i].public_ip.octets())?;
-            buffer.write_u16::<LittleEndian>(
-                self.neighbor_block[i].public_port,
-            )?;
+            buffer.write_u16::<LittleEndian>(self.neighbor_block[i].public_port)?;
             buffer.write(self.neighbor_block[i].region_id.as_bytes())?;
             buffer.write_u8(self.neighbor_block[i].name.len() as u8)?;
             buffer.write(&self.neighbor_block[i].name[..])?;
@@ -47725,51 +44956,43 @@ impl Message for NeighborList {
     }
 
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         // Block NeighborBlock
-        let neighbor_block = ArrayVec::from(
-            [
-                NeighborList_NeighborBlock::read_from(buffer)?,
-                NeighborList_NeighborBlock::read_from(buffer)?,
-                NeighborList_NeighborBlock::read_from(buffer)?,
-                NeighborList_NeighborBlock::read_from(buffer)?,
-            ],
-        );
-        Ok(MessageInstance::NeighborList(
-            NeighborList { neighbor_block: neighbor_block },
-        ))
+        let neighbor_block = ArrayVec::from([
+            NeighborList_NeighborBlock::read_from(buffer)?, NeighborList_NeighborBlock::read_from(buffer)?,
+            NeighborList_NeighborBlock::read_from(buffer)?, NeighborList_NeighborBlock::read_from(buffer)?,
+        ]);
+        Ok(MessageInstance::NeighborList(NeighborList {
+            neighbor_block: neighbor_block,
+        }))
     }
 }
 
 impl Message for NetTest {
     fn write_to<W: ?Sized>(&self, buffer: &mut W) -> WriteMessageResult
-    where
-        W: Write,
-    {
+    where W: Write {
         // Write the message number.
-        buffer.write(&[0xff, 0xff, 0x01, 0x46])?;
+        buffer.write(&[
+            0xff, 0xff, 0x01, 0x46
+        ])?;
         // Block NetBlock
         buffer.write_u16::<LittleEndian>(self.net_block.port)?;
         Ok(())
     }
 
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         // Block NetBlock
         let net_block = NetTest_NetBlock::read_from(buffer)?;
-        Ok(MessageInstance::NetTest(NetTest { net_block: net_block }))
+        Ok(MessageInstance::NetTest(NetTest {
+            net_block: net_block,
+        }))
     }
 }
 
 impl Message for ObjectAdd {
     fn write_to<W: ?Sized>(&self, buffer: &mut W) -> WriteMessageResult
-    where
-        W: Write,
-    {
+    where W: Write {
         // Write the message number.
         buffer.write(&[0xff, 0x01])?;
         // Block AgentData
@@ -47782,9 +45005,7 @@ impl Message for ObjectAdd {
         buffer.write_u32::<LittleEndian>(self.object_data.add_flags)?;
         buffer.write_u8(self.object_data.path_curve)?;
         buffer.write_u8(self.object_data.profile_curve)?;
-        buffer.write_u16::<LittleEndian>(
-            self.object_data.path_begin,
-        )?;
+        buffer.write_u16::<LittleEndian>(self.object_data.path_begin)?;
         buffer.write_u16::<LittleEndian>(self.object_data.path_end)?;
         buffer.write_u8(self.object_data.path_scale_x)?;
         buffer.write_u8(self.object_data.path_scale_y)?;
@@ -47797,27 +45018,15 @@ impl Message for ObjectAdd {
         buffer.write_i8(self.object_data.path_taper_y)?;
         buffer.write_u8(self.object_data.path_revolutions)?;
         buffer.write_i8(self.object_data.path_skew)?;
-        buffer.write_u16::<LittleEndian>(
-            self.object_data.profile_begin,
-        )?;
-        buffer.write_u16::<LittleEndian>(
-            self.object_data.profile_end,
-        )?;
-        buffer.write_u16::<LittleEndian>(
-            self.object_data.profile_hollow,
-        )?;
+        buffer.write_u16::<LittleEndian>(self.object_data.profile_begin)?;
+        buffer.write_u16::<LittleEndian>(self.object_data.profile_end)?;
+        buffer.write_u16::<LittleEndian>(self.object_data.profile_hollow)?;
         buffer.write_u8(self.object_data.bypass_raycast)?;
-        buffer.write_f32::<LittleEndian>(
-            self.object_data.ray_start.x,
-        )?;
+        buffer.write_f32::<LittleEndian>(self.object_data.ray_start.x)?;
 
-        buffer.write_f32::<LittleEndian>(
-            self.object_data.ray_start.y,
-        )?;
+        buffer.write_f32::<LittleEndian>(self.object_data.ray_start.y)?;
 
-        buffer.write_f32::<LittleEndian>(
-            self.object_data.ray_start.z,
-        )?;
+        buffer.write_f32::<LittleEndian>(self.object_data.ray_start.z)?;
         buffer.write_f32::<LittleEndian>(self.object_data.ray_end.x)?;
 
         buffer.write_f32::<LittleEndian>(self.object_data.ray_end.y)?;
@@ -47842,9 +45051,7 @@ impl Message for ObjectAdd {
     }
 
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         // Block AgentData
         let agent_data = ObjectAdd_AgentData::read_from(buffer)?;
         // Block ObjectData
@@ -47858,11 +45065,11 @@ impl Message for ObjectAdd {
 
 impl Message for ObjectAttach {
     fn write_to<W: ?Sized>(&self, buffer: &mut W) -> WriteMessageResult
-    where
-        W: Write,
-    {
+    where W: Write {
         // Write the message number.
-        buffer.write(&[0xff, 0xff, 0x00, 0x70])?;
+        buffer.write(&[
+            0xff, 0xff, 0x00, 0x70
+        ])?;
         // Block AgentData
         buffer.write(self.agent_data.agent_id.as_bytes())?;
         buffer.write(self.agent_data.session_id.as_bytes())?;
@@ -47883,9 +45090,7 @@ impl Message for ObjectAttach {
     }
 
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         // Block AgentData
         let agent_data = ObjectAttach_AgentData::read_from(buffer)?;
         // Block ObjectData
@@ -47903,11 +45108,11 @@ impl Message for ObjectAttach {
 
 impl Message for ObjectBuy {
     fn write_to<W: ?Sized>(&self, buffer: &mut W) -> WriteMessageResult
-    where
-        W: Write,
-    {
+    where W: Write {
         // Write the message number.
-        buffer.write(&[0xff, 0xff, 0x00, 0x66])?;
+        buffer.write(&[
+            0xff, 0xff, 0x00, 0x66
+        ])?;
         // Block AgentData
         buffer.write(self.agent_data.agent_id.as_bytes())?;
         buffer.write(self.agent_data.session_id.as_bytes())?;
@@ -47924,9 +45129,7 @@ impl Message for ObjectBuy {
     }
 
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         // Block AgentData
         let agent_data = ObjectBuy_AgentData::read_from(buffer)?;
         // Block ObjectData
@@ -47944,11 +45147,11 @@ impl Message for ObjectBuy {
 
 impl Message for ObjectCategory {
     fn write_to<W: ?Sized>(&self, buffer: &mut W) -> WriteMessageResult
-    where
-        W: Write,
-    {
+    where W: Write {
         // Write the message number.
-        buffer.write(&[0xff, 0xff, 0x00, 0x6d])?;
+        buffer.write(&[
+            0xff, 0xff, 0x00, 0x6d
+        ])?;
         // Block AgentData
         buffer.write(self.agent_data.agent_id.as_bytes())?;
         buffer.write(self.agent_data.session_id.as_bytes())?;
@@ -47962,9 +45165,7 @@ impl Message for ObjectCategory {
     }
 
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         // Block AgentData
         let agent_data = ObjectCategory_AgentData::read_from(buffer)?;
         // Block ObjectData
@@ -47982,11 +45183,11 @@ impl Message for ObjectCategory {
 
 impl Message for ObjectClickAction {
     fn write_to<W: ?Sized>(&self, buffer: &mut W) -> WriteMessageResult
-    where
-        W: Write,
-    {
+    where W: Write {
         // Write the message number.
-        buffer.write(&[0xff, 0xff, 0x00, 0x5f])?;
+        buffer.write(&[
+            0xff, 0xff, 0x00, 0x5f
+        ])?;
         // Block AgentData
         buffer.write(self.agent_data.agent_id.as_bytes())?;
         buffer.write(self.agent_data.session_id.as_bytes())?;
@@ -48000,9 +45201,7 @@ impl Message for ObjectClickAction {
     }
 
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         // Block AgentData
         let agent_data = ObjectClickAction_AgentData::read_from(buffer)?;
         // Block ObjectData
@@ -48020,11 +45219,11 @@ impl Message for ObjectClickAction {
 
 impl Message for ObjectDeGrab {
     fn write_to<W: ?Sized>(&self, buffer: &mut W) -> WriteMessageResult
-    where
-        W: Write,
-    {
+    where W: Write {
         // Write the message number.
-        buffer.write(&[0xff, 0xff, 0x00, 0x77])?;
+        buffer.write(&[
+            0xff, 0xff, 0x00, 0x77
+        ])?;
         // Block AgentData
         buffer.write(self.agent_data.agent_id.as_bytes())?;
         buffer.write(self.agent_data.session_id.as_bytes())?;
@@ -48064,9 +45263,7 @@ impl Message for ObjectDeGrab {
     }
 
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         // Block AgentData
         let agent_data = ObjectDeGrab_AgentData::read_from(buffer)?;
         // Block ObjectData
@@ -48087,11 +45284,11 @@ impl Message for ObjectDeGrab {
 
 impl Message for ObjectDelete {
     fn write_to<W: ?Sized>(&self, buffer: &mut W) -> WriteMessageResult
-    where
-        W: Write,
-    {
+    where W: Write {
         // Write the message number.
-        buffer.write(&[0xff, 0xff, 0x00, 0x59])?;
+        buffer.write(&[
+            0xff, 0xff, 0x00, 0x59
+        ])?;
         // Block AgentData
         buffer.write(self.agent_data.agent_id.as_bytes())?;
         buffer.write(self.agent_data.session_id.as_bytes())?;
@@ -48105,9 +45302,7 @@ impl Message for ObjectDelete {
     }
 
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         // Block AgentData
         let agent_data = ObjectDelete_AgentData::read_from(buffer)?;
         // Block ObjectData
@@ -48125,11 +45320,11 @@ impl Message for ObjectDelete {
 
 impl Message for ObjectDelink {
     fn write_to<W: ?Sized>(&self, buffer: &mut W) -> WriteMessageResult
-    where
-        W: Write,
-    {
+    where W: Write {
         // Write the message number.
-        buffer.write(&[0xff, 0xff, 0x00, 0x74])?;
+        buffer.write(&[
+            0xff, 0xff, 0x00, 0x74
+        ])?;
         // Block AgentData
         buffer.write(self.agent_data.agent_id.as_bytes())?;
         buffer.write(self.agent_data.session_id.as_bytes())?;
@@ -48142,9 +45337,7 @@ impl Message for ObjectDelink {
     }
 
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         // Block AgentData
         let agent_data = ObjectDelink_AgentData::read_from(buffer)?;
         // Block ObjectData
@@ -48162,11 +45355,11 @@ impl Message for ObjectDelink {
 
 impl Message for ObjectDescription {
     fn write_to<W: ?Sized>(&self, buffer: &mut W) -> WriteMessageResult
-    where
-        W: Write,
-    {
+    where W: Write {
         // Write the message number.
-        buffer.write(&[0xff, 0xff, 0x00, 0x6c])?;
+        buffer.write(&[
+            0xff, 0xff, 0x00, 0x6c
+        ])?;
         // Block AgentData
         buffer.write(self.agent_data.agent_id.as_bytes())?;
         buffer.write(self.agent_data.session_id.as_bytes())?;
@@ -48181,9 +45374,7 @@ impl Message for ObjectDescription {
     }
 
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         // Block AgentData
         let agent_data = ObjectDescription_AgentData::read_from(buffer)?;
         // Block ObjectData
@@ -48201,11 +45392,11 @@ impl Message for ObjectDescription {
 
 impl Message for ObjectDeselect {
     fn write_to<W: ?Sized>(&self, buffer: &mut W) -> WriteMessageResult
-    where
-        W: Write,
-    {
+    where W: Write {
         // Write the message number.
-        buffer.write(&[0xff, 0xff, 0x00, 0x6f])?;
+        buffer.write(&[
+            0xff, 0xff, 0x00, 0x6f
+        ])?;
         // Block AgentData
         buffer.write(self.agent_data.agent_id.as_bytes())?;
         buffer.write(self.agent_data.session_id.as_bytes())?;
@@ -48218,9 +45409,7 @@ impl Message for ObjectDeselect {
     }
 
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         // Block AgentData
         let agent_data = ObjectDeselect_AgentData::read_from(buffer)?;
         // Block ObjectData
@@ -48238,11 +45427,11 @@ impl Message for ObjectDeselect {
 
 impl Message for ObjectDetach {
     fn write_to<W: ?Sized>(&self, buffer: &mut W) -> WriteMessageResult
-    where
-        W: Write,
-    {
+    where W: Write {
         // Write the message number.
-        buffer.write(&[0xff, 0xff, 0x00, 0x71])?;
+        buffer.write(&[
+            0xff, 0xff, 0x00, 0x71
+        ])?;
         // Block AgentData
         buffer.write(self.agent_data.agent_id.as_bytes())?;
         buffer.write(self.agent_data.session_id.as_bytes())?;
@@ -48255,9 +45444,7 @@ impl Message for ObjectDetach {
     }
 
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         // Block AgentData
         let agent_data = ObjectDetach_AgentData::read_from(buffer)?;
         // Block ObjectData
@@ -48275,11 +45462,11 @@ impl Message for ObjectDetach {
 
 impl Message for ObjectDrop {
     fn write_to<W: ?Sized>(&self, buffer: &mut W) -> WriteMessageResult
-    where
-        W: Write,
-    {
+    where W: Write {
         // Write the message number.
-        buffer.write(&[0xff, 0xff, 0x00, 0x72])?;
+        buffer.write(&[
+            0xff, 0xff, 0x00, 0x72
+        ])?;
         // Block AgentData
         buffer.write(self.agent_data.agent_id.as_bytes())?;
         buffer.write(self.agent_data.session_id.as_bytes())?;
@@ -48292,9 +45479,7 @@ impl Message for ObjectDrop {
     }
 
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         // Block AgentData
         let agent_data = ObjectDrop_AgentData::read_from(buffer)?;
         // Block ObjectData
@@ -48312,11 +45497,11 @@ impl Message for ObjectDrop {
 
 impl Message for ObjectDuplicate {
     fn write_to<W: ?Sized>(&self, buffer: &mut W) -> WriteMessageResult
-    where
-        W: Write,
-    {
+    where W: Write {
         // Write the message number.
-        buffer.write(&[0xff, 0xff, 0x00, 0x5a])?;
+        buffer.write(&[
+            0xff, 0xff, 0x00, 0x5a
+        ])?;
         // Block AgentData
         buffer.write(self.agent_data.agent_id.as_bytes())?;
         buffer.write(self.agent_data.session_id.as_bytes())?;
@@ -48327,9 +45512,7 @@ impl Message for ObjectDuplicate {
         buffer.write_f32::<LittleEndian>(self.shared_data.offset.y)?;
 
         buffer.write_f32::<LittleEndian>(self.shared_data.offset.z)?;
-        buffer.write_u32::<LittleEndian>(
-            self.shared_data.duplicate_flags,
-        )?;
+        buffer.write_u32::<LittleEndian>(self.shared_data.duplicate_flags)?;
         // Block ObjectData
         buffer.write_u8(self.object_data.len() as u8)?;
         for item in &self.object_data {
@@ -48339,9 +45522,7 @@ impl Message for ObjectDuplicate {
     }
 
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         // Block AgentData
         let agent_data = ObjectDuplicate_AgentData::read_from(buffer)?;
         // Block SharedData
@@ -48362,41 +45543,31 @@ impl Message for ObjectDuplicate {
 
 impl Message for ObjectDuplicateOnRay {
     fn write_to<W: ?Sized>(&self, buffer: &mut W) -> WriteMessageResult
-    where
-        W: Write,
-    {
+    where W: Write {
         // Write the message number.
-        buffer.write(&[0xff, 0xff, 0x00, 0x5b])?;
+        buffer.write(&[
+            0xff, 0xff, 0x00, 0x5b
+        ])?;
         // Block AgentData
         buffer.write(self.agent_data.agent_id.as_bytes())?;
         buffer.write(self.agent_data.session_id.as_bytes())?;
         buffer.write(self.agent_data.group_id.as_bytes())?;
-        buffer.write_f32::<LittleEndian>(
-            self.agent_data.ray_start.x,
-        )?;
+        buffer.write_f32::<LittleEndian>(self.agent_data.ray_start.x)?;
 
-        buffer.write_f32::<LittleEndian>(
-            self.agent_data.ray_start.y,
-        )?;
+        buffer.write_f32::<LittleEndian>(self.agent_data.ray_start.y)?;
 
-        buffer.write_f32::<LittleEndian>(
-            self.agent_data.ray_start.z,
-        )?;
+        buffer.write_f32::<LittleEndian>(self.agent_data.ray_start.z)?;
         buffer.write_f32::<LittleEndian>(self.agent_data.ray_end.x)?;
 
         buffer.write_f32::<LittleEndian>(self.agent_data.ray_end.y)?;
 
         buffer.write_f32::<LittleEndian>(self.agent_data.ray_end.z)?;
         buffer.write_u8(self.agent_data.bypass_raycast as u8)?;
-        buffer.write_u8(
-            self.agent_data.ray_end_is_intersection as u8,
-        )?;
+        buffer.write_u8(self.agent_data.ray_end_is_intersection as u8)?;
         buffer.write_u8(self.agent_data.copy_centers as u8)?;
         buffer.write_u8(self.agent_data.copy_rotates as u8)?;
         buffer.write(self.agent_data.ray_target_id.as_bytes())?;
-        buffer.write_u32::<LittleEndian>(
-            self.agent_data.duplicate_flags,
-        )?;
+        buffer.write_u32::<LittleEndian>(self.agent_data.duplicate_flags)?;
         // Block ObjectData
         buffer.write_u8(self.object_data.len() as u8)?;
         for item in &self.object_data {
@@ -48406,9 +45577,7 @@ impl Message for ObjectDuplicateOnRay {
     }
 
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         // Block AgentData
         let agent_data = ObjectDuplicateOnRay_AgentData::read_from(buffer)?;
         // Block ObjectData
@@ -48428,17 +45597,15 @@ impl Message for ObjectDuplicateOnRay {
 
 impl Message for ObjectExportSelected {
     fn write_to<W: ?Sized>(&self, buffer: &mut W) -> WriteMessageResult
-    where
-        W: Write,
-    {
+    where W: Write {
         // Write the message number.
-        buffer.write(&[0xff, 0xff, 0x00, 0x7b])?;
+        buffer.write(&[
+            0xff, 0xff, 0x00, 0x7b
+        ])?;
         // Block AgentData
         buffer.write(self.agent_data.agent_id.as_bytes())?;
         buffer.write(self.agent_data.request_id.as_bytes())?;
-        buffer.write_i16::<LittleEndian>(
-            self.agent_data.volume_detail,
-        )?;
+        buffer.write_i16::<LittleEndian>(self.agent_data.volume_detail)?;
         // Block ObjectData
         buffer.write_u8(self.object_data.len() as u8)?;
         for item in &self.object_data {
@@ -48448,9 +45615,7 @@ impl Message for ObjectExportSelected {
     }
 
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         // Block AgentData
         let agent_data = ObjectExportSelected_AgentData::read_from(buffer)?;
         // Block ObjectData
@@ -48470,11 +45635,11 @@ impl Message for ObjectExportSelected {
 
 impl Message for ObjectExtraParams {
     fn write_to<W: ?Sized>(&self, buffer: &mut W) -> WriteMessageResult
-    where
-        W: Write,
-    {
+    where W: Write {
         // Write the message number.
-        buffer.write(&[0xff, 0xff, 0x00, 0x63])?;
+        buffer.write(&[
+            0xff, 0xff, 0x00, 0x63
+        ])?;
         // Block AgentData
         buffer.write(self.agent_data.agent_id.as_bytes())?;
         buffer.write(self.agent_data.session_id.as_bytes())?;
@@ -48492,9 +45657,7 @@ impl Message for ObjectExtraParams {
     }
 
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         // Block AgentData
         let agent_data = ObjectExtraParams_AgentData::read_from(buffer)?;
         // Block ObjectData
@@ -48512,17 +45675,15 @@ impl Message for ObjectExtraParams {
 
 impl Message for ObjectFlagUpdate {
     fn write_to<W: ?Sized>(&self, buffer: &mut W) -> WriteMessageResult
-    where
-        W: Write,
-    {
+    where W: Write {
         // Write the message number.
-        buffer.write(&[0xff, 0xff, 0x00, 0x5e])?;
+        buffer.write(&[
+            0xff, 0xff, 0x00, 0x5e
+        ])?;
         // Block AgentData
         buffer.write(self.agent_data.agent_id.as_bytes())?;
         buffer.write(self.agent_data.session_id.as_bytes())?;
-        buffer.write_u32::<LittleEndian>(
-            self.agent_data.object_local_id,
-        )?;
+        buffer.write_u32::<LittleEndian>(self.agent_data.object_local_id)?;
         buffer.write_u8(self.agent_data.use_physics as u8)?;
         buffer.write_u8(self.agent_data.is_temporary as u8)?;
         buffer.write_u8(self.agent_data.is_phantom as u8)?;
@@ -48531,40 +45692,32 @@ impl Message for ObjectFlagUpdate {
     }
 
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         // Block AgentData
         let agent_data = ObjectFlagUpdate_AgentData::read_from(buffer)?;
-        Ok(MessageInstance::ObjectFlagUpdate(
-            ObjectFlagUpdate { agent_data: agent_data },
-        ))
+        Ok(MessageInstance::ObjectFlagUpdate(ObjectFlagUpdate {
+            agent_data: agent_data,
+        }))
     }
 }
 
 impl Message for ObjectGrab {
     fn write_to<W: ?Sized>(&self, buffer: &mut W) -> WriteMessageResult
-    where
-        W: Write,
-    {
+    where W: Write {
         // Write the message number.
-        buffer.write(&[0xff, 0xff, 0x00, 0x75])?;
+        buffer.write(&[
+            0xff, 0xff, 0x00, 0x75
+        ])?;
         // Block AgentData
         buffer.write(self.agent_data.agent_id.as_bytes())?;
         buffer.write(self.agent_data.session_id.as_bytes())?;
         // Block ObjectData
         buffer.write_u32::<LittleEndian>(self.object_data.local_id)?;
-        buffer.write_f32::<LittleEndian>(
-            self.object_data.grab_offset.x,
-        )?;
+        buffer.write_f32::<LittleEndian>(self.object_data.grab_offset.x)?;
 
-        buffer.write_f32::<LittleEndian>(
-            self.object_data.grab_offset.y,
-        )?;
+        buffer.write_f32::<LittleEndian>(self.object_data.grab_offset.y)?;
 
-        buffer.write_f32::<LittleEndian>(
-            self.object_data.grab_offset.z,
-        )?;
+        buffer.write_f32::<LittleEndian>(self.object_data.grab_offset.z)?;
         // Block SurfaceInfo
         buffer.write_u8(self.surface_info.len() as u8)?;
         for item in &self.surface_info {
@@ -48599,9 +45752,7 @@ impl Message for ObjectGrab {
     }
 
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         // Block AgentData
         let agent_data = ObjectGrab_AgentData::read_from(buffer)?;
         // Block ObjectData
@@ -48622,41 +45773,27 @@ impl Message for ObjectGrab {
 
 impl Message for ObjectGrabUpdate {
     fn write_to<W: ?Sized>(&self, buffer: &mut W) -> WriteMessageResult
-    where
-        W: Write,
-    {
+    where W: Write {
         // Write the message number.
-        buffer.write(&[0xff, 0xff, 0x00, 0x76])?;
+        buffer.write(&[
+            0xff, 0xff, 0x00, 0x76
+        ])?;
         // Block AgentData
         buffer.write(self.agent_data.agent_id.as_bytes())?;
         buffer.write(self.agent_data.session_id.as_bytes())?;
         // Block ObjectData
         buffer.write(self.object_data.object_id.as_bytes())?;
-        buffer.write_f32::<LittleEndian>(
-            self.object_data.grab_offset_initial.x,
-        )?;
+        buffer.write_f32::<LittleEndian>(self.object_data.grab_offset_initial.x)?;
 
-        buffer.write_f32::<LittleEndian>(
-            self.object_data.grab_offset_initial.y,
-        )?;
+        buffer.write_f32::<LittleEndian>(self.object_data.grab_offset_initial.y)?;
 
-        buffer.write_f32::<LittleEndian>(
-            self.object_data.grab_offset_initial.z,
-        )?;
-        buffer.write_f32::<LittleEndian>(
-            self.object_data.grab_position.x,
-        )?;
+        buffer.write_f32::<LittleEndian>(self.object_data.grab_offset_initial.z)?;
+        buffer.write_f32::<LittleEndian>(self.object_data.grab_position.x)?;
 
-        buffer.write_f32::<LittleEndian>(
-            self.object_data.grab_position.y,
-        )?;
+        buffer.write_f32::<LittleEndian>(self.object_data.grab_position.y)?;
 
-        buffer.write_f32::<LittleEndian>(
-            self.object_data.grab_position.z,
-        )?;
-        buffer.write_u32::<LittleEndian>(
-            self.object_data.time_since_last,
-        )?;
+        buffer.write_f32::<LittleEndian>(self.object_data.grab_position.z)?;
+        buffer.write_u32::<LittleEndian>(self.object_data.time_since_last)?;
         // Block SurfaceInfo
         buffer.write_u8(self.surface_info.len() as u8)?;
         for item in &self.surface_info {
@@ -48691,9 +45828,7 @@ impl Message for ObjectGrabUpdate {
     }
 
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         // Block AgentData
         let agent_data = ObjectGrabUpdate_AgentData::read_from(buffer)?;
         // Block ObjectData
@@ -48714,11 +45849,11 @@ impl Message for ObjectGrabUpdate {
 
 impl Message for ObjectGroup {
     fn write_to<W: ?Sized>(&self, buffer: &mut W) -> WriteMessageResult
-    where
-        W: Write,
-    {
+    where W: Write {
         // Write the message number.
-        buffer.write(&[0xff, 0xff, 0x00, 0x65])?;
+        buffer.write(&[
+            0xff, 0xff, 0x00, 0x65
+        ])?;
         // Block AgentData
         buffer.write(self.agent_data.agent_id.as_bytes())?;
         buffer.write(self.agent_data.session_id.as_bytes())?;
@@ -48732,9 +45867,7 @@ impl Message for ObjectGroup {
     }
 
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         // Block AgentData
         let agent_data = ObjectGroup_AgentData::read_from(buffer)?;
         // Block ObjectData
@@ -48752,11 +45885,11 @@ impl Message for ObjectGroup {
 
 impl Message for ObjectImage {
     fn write_to<W: ?Sized>(&self, buffer: &mut W) -> WriteMessageResult
-    where
-        W: Write,
-    {
+    where W: Write {
         // Write the message number.
-        buffer.write(&[0xff, 0xff, 0x00, 0x60])?;
+        buffer.write(&[
+            0xff, 0xff, 0x00, 0x60
+        ])?;
         // Block AgentData
         buffer.write(self.agent_data.agent_id.as_bytes())?;
         buffer.write(self.agent_data.session_id.as_bytes())?;
@@ -48766,18 +45899,14 @@ impl Message for ObjectImage {
             buffer.write_u32::<LittleEndian>(item.object_local_id)?;
             buffer.write_u8(item.media_url.len() as u8)?;
             buffer.write(&item.media_url[..])?;
-            buffer.write_u16::<LittleEndian>(
-                item.texture_entry.len() as u16,
-            )?;
+            buffer.write_u16::<LittleEndian>(item.texture_entry.len() as u16)?;
             buffer.write(&item.texture_entry[..])?;
         }
         Ok(())
     }
 
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         // Block AgentData
         let agent_data = ObjectImage_AgentData::read_from(buffer)?;
         // Block ObjectData
@@ -48795,11 +45924,11 @@ impl Message for ObjectImage {
 
 impl Message for ObjectIncludeInSearch {
     fn write_to<W: ?Sized>(&self, buffer: &mut W) -> WriteMessageResult
-    where
-        W: Write,
-    {
+    where W: Write {
         // Write the message number.
-        buffer.write(&[0xff, 0xff, 0x01, 0xa8])?;
+        buffer.write(&[
+            0xff, 0xff, 0x01, 0xa8
+        ])?;
         // Block AgentData
         buffer.write(self.agent_data.agent_id.as_bytes())?;
         buffer.write(self.agent_data.session_id.as_bytes())?;
@@ -48813,9 +45942,7 @@ impl Message for ObjectIncludeInSearch {
     }
 
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         // Block AgentData
         let agent_data = ObjectIncludeInSearch_AgentData::read_from(buffer)?;
         // Block ObjectData
@@ -48835,11 +45962,11 @@ impl Message for ObjectIncludeInSearch {
 
 impl Message for ObjectLink {
     fn write_to<W: ?Sized>(&self, buffer: &mut W) -> WriteMessageResult
-    where
-        W: Write,
-    {
+    where W: Write {
         // Write the message number.
-        buffer.write(&[0xff, 0xff, 0x00, 0x73])?;
+        buffer.write(&[
+            0xff, 0xff, 0x00, 0x73
+        ])?;
         // Block AgentData
         buffer.write(self.agent_data.agent_id.as_bytes())?;
         buffer.write(self.agent_data.session_id.as_bytes())?;
@@ -48852,9 +45979,7 @@ impl Message for ObjectLink {
     }
 
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         // Block AgentData
         let agent_data = ObjectLink_AgentData::read_from(buffer)?;
         // Block ObjectData
@@ -48872,11 +45997,11 @@ impl Message for ObjectLink {
 
 impl Message for ObjectMaterial {
     fn write_to<W: ?Sized>(&self, buffer: &mut W) -> WriteMessageResult
-    where
-        W: Write,
-    {
+    where W: Write {
         // Write the message number.
-        buffer.write(&[0xff, 0xff, 0x00, 0x61])?;
+        buffer.write(&[
+            0xff, 0xff, 0x00, 0x61
+        ])?;
         // Block AgentData
         buffer.write(self.agent_data.agent_id.as_bytes())?;
         buffer.write(self.agent_data.session_id.as_bytes())?;
@@ -48890,9 +46015,7 @@ impl Message for ObjectMaterial {
     }
 
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         // Block AgentData
         let agent_data = ObjectMaterial_AgentData::read_from(buffer)?;
         // Block ObjectData
@@ -48910,11 +46033,11 @@ impl Message for ObjectMaterial {
 
 impl Message for ObjectName {
     fn write_to<W: ?Sized>(&self, buffer: &mut W) -> WriteMessageResult
-    where
-        W: Write,
-    {
+    where W: Write {
         // Write the message number.
-        buffer.write(&[0xff, 0xff, 0x00, 0x6b])?;
+        buffer.write(&[
+            0xff, 0xff, 0x00, 0x6b
+        ])?;
         // Block AgentData
         buffer.write(self.agent_data.agent_id.as_bytes())?;
         buffer.write(self.agent_data.session_id.as_bytes())?;
@@ -48929,9 +46052,7 @@ impl Message for ObjectName {
     }
 
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         // Block AgentData
         let agent_data = ObjectName_AgentData::read_from(buffer)?;
         // Block ObjectData
@@ -48949,11 +46070,11 @@ impl Message for ObjectName {
 
 impl Message for ObjectOwner {
     fn write_to<W: ?Sized>(&self, buffer: &mut W) -> WriteMessageResult
-    where
-        W: Write,
-    {
+    where W: Write {
         // Write the message number.
-        buffer.write(&[0xff, 0xff, 0x00, 0x64])?;
+        buffer.write(&[
+            0xff, 0xff, 0x00, 0x64
+        ])?;
         // Block AgentData
         buffer.write(self.agent_data.agent_id.as_bytes())?;
         buffer.write(self.agent_data.session_id.as_bytes())?;
@@ -48970,9 +46091,7 @@ impl Message for ObjectOwner {
     }
 
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         // Block AgentData
         let agent_data = ObjectOwner_AgentData::read_from(buffer)?;
         // Block HeaderData
@@ -48993,11 +46112,11 @@ impl Message for ObjectOwner {
 
 impl Message for ObjectPermissions {
     fn write_to<W: ?Sized>(&self, buffer: &mut W) -> WriteMessageResult
-    where
-        W: Write,
-    {
+    where W: Write {
         // Write the message number.
-        buffer.write(&[0xff, 0xff, 0x00, 0x69])?;
+        buffer.write(&[
+            0xff, 0xff, 0x00, 0x69
+        ])?;
         // Block AgentData
         buffer.write(self.agent_data.agent_id.as_bytes())?;
         buffer.write(self.agent_data.session_id.as_bytes())?;
@@ -49015,9 +46134,7 @@ impl Message for ObjectPermissions {
     }
 
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         // Block AgentData
         let agent_data = ObjectPermissions_AgentData::read_from(buffer)?;
         // Block HeaderData
@@ -49038,9 +46155,7 @@ impl Message for ObjectPermissions {
 
 impl Message for ObjectPosition {
     fn write_to<W: ?Sized>(&self, buffer: &mut W) -> WriteMessageResult
-    where
-        W: Write,
-    {
+    where W: Write {
         // Write the message number.
         buffer.write(&[0xff, 0x04])?;
         // Block AgentData
@@ -49060,9 +46175,7 @@ impl Message for ObjectPosition {
     }
 
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         // Block AgentData
         let agent_data = ObjectPosition_AgentData::read_from(buffer)?;
         // Block ObjectData
@@ -49080,9 +46193,7 @@ impl Message for ObjectPosition {
 
 impl Message for ObjectProperties {
     fn write_to<W: ?Sized>(&self, buffer: &mut W) -> WriteMessageResult
-    where
-        W: Write,
-    {
+    where W: Write {
         // Write the message number.
         buffer.write(&[0xff, 0x09])?;
         // Block ObjectData
@@ -49125,55 +46236,37 @@ impl Message for ObjectProperties {
     }
 
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         // Block ObjectData
         let mut object_data = Vec::new();
         let _object_data_count = buffer.read_u8()?;
         for _ in 0.._object_data_count {
             object_data.push(ObjectProperties_ObjectData::read_from(buffer)?);
         }
-        Ok(MessageInstance::ObjectProperties(
-            ObjectProperties { object_data: object_data },
-        ))
+        Ok(MessageInstance::ObjectProperties(ObjectProperties {
+            object_data: object_data,
+        }))
     }
 }
 
 impl Message for ObjectPropertiesFamily {
     fn write_to<W: ?Sized>(&self, buffer: &mut W) -> WriteMessageResult
-    where
-        W: Write,
-    {
+    where W: Write {
         // Write the message number.
         buffer.write(&[0xff, 0x0a])?;
         // Block ObjectData
-        buffer.write_u32::<LittleEndian>(
-            self.object_data.request_flags,
-        )?;
+        buffer.write_u32::<LittleEndian>(self.object_data.request_flags)?;
         buffer.write(self.object_data.object_id.as_bytes())?;
         buffer.write(self.object_data.owner_id.as_bytes())?;
         buffer.write(self.object_data.group_id.as_bytes())?;
         buffer.write_u32::<LittleEndian>(self.object_data.base_mask)?;
-        buffer.write_u32::<LittleEndian>(
-            self.object_data.owner_mask,
-        )?;
-        buffer.write_u32::<LittleEndian>(
-            self.object_data.group_mask,
-        )?;
-        buffer.write_u32::<LittleEndian>(
-            self.object_data.everyone_mask,
-        )?;
-        buffer.write_u32::<LittleEndian>(
-            self.object_data.next_owner_mask,
-        )?;
-        buffer.write_i32::<LittleEndian>(
-            self.object_data.ownership_cost,
-        )?;
+        buffer.write_u32::<LittleEndian>(self.object_data.owner_mask)?;
+        buffer.write_u32::<LittleEndian>(self.object_data.group_mask)?;
+        buffer.write_u32::<LittleEndian>(self.object_data.everyone_mask)?;
+        buffer.write_u32::<LittleEndian>(self.object_data.next_owner_mask)?;
+        buffer.write_i32::<LittleEndian>(self.object_data.ownership_cost)?;
         buffer.write_u8(self.object_data.sale_type)?;
-        buffer.write_i32::<LittleEndian>(
-            self.object_data.sale_price,
-        )?;
+        buffer.write_i32::<LittleEndian>(self.object_data.sale_price)?;
         buffer.write_u32::<LittleEndian>(self.object_data.category)?;
         buffer.write(self.object_data.last_owner_id.as_bytes())?;
         buffer.write_u8(self.object_data.name.len() as u8)?;
@@ -49184,24 +46277,24 @@ impl Message for ObjectPropertiesFamily {
     }
 
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         // Block ObjectData
         let object_data = ObjectPropertiesFamily_ObjectData::read_from(buffer)?;
         Ok(MessageInstance::ObjectPropertiesFamily(
-            ObjectPropertiesFamily { object_data: object_data },
+            ObjectPropertiesFamily {
+                object_data: object_data,
+            },
         ))
     }
 }
 
 impl Message for ObjectRotation {
     fn write_to<W: ?Sized>(&self, buffer: &mut W) -> WriteMessageResult
-    where
-        W: Write,
-    {
+    where W: Write {
         // Write the message number.
-        buffer.write(&[0xff, 0xff, 0x00, 0x5d])?;
+        buffer.write(&[
+            0xff, 0xff, 0x00, 0x5d
+        ])?;
         // Block AgentData
         buffer.write(self.agent_data.agent_id.as_bytes())?;
         buffer.write(self.agent_data.session_id.as_bytes())?;
@@ -49221,9 +46314,7 @@ impl Message for ObjectRotation {
     }
 
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         // Block AgentData
         let agent_data = ObjectRotation_AgentData::read_from(buffer)?;
         // Block ObjectData
@@ -49241,11 +46332,11 @@ impl Message for ObjectRotation {
 
 impl Message for ObjectSaleInfo {
     fn write_to<W: ?Sized>(&self, buffer: &mut W) -> WriteMessageResult
-    where
-        W: Write,
-    {
+    where W: Write {
         // Write the message number.
-        buffer.write(&[0xff, 0xff, 0x00, 0x6a])?;
+        buffer.write(&[
+            0xff, 0xff, 0x00, 0x6a
+        ])?;
         // Block AgentData
         buffer.write(self.agent_data.agent_id.as_bytes())?;
         buffer.write(self.agent_data.session_id.as_bytes())?;
@@ -49260,9 +46351,7 @@ impl Message for ObjectSaleInfo {
     }
 
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         // Block AgentData
         let agent_data = ObjectSaleInfo_AgentData::read_from(buffer)?;
         // Block ObjectData
@@ -49280,11 +46369,11 @@ impl Message for ObjectSaleInfo {
 
 impl Message for ObjectScale {
     fn write_to<W: ?Sized>(&self, buffer: &mut W) -> WriteMessageResult
-    where
-        W: Write,
-    {
+    where W: Write {
         // Write the message number.
-        buffer.write(&[0xff, 0xff, 0x00, 0x5c])?;
+        buffer.write(&[
+            0xff, 0xff, 0x00, 0x5c
+        ])?;
         // Block AgentData
         buffer.write(self.agent_data.agent_id.as_bytes())?;
         buffer.write(self.agent_data.session_id.as_bytes())?;
@@ -49302,9 +46391,7 @@ impl Message for ObjectScale {
     }
 
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         // Block AgentData
         let agent_data = ObjectScale_AgentData::read_from(buffer)?;
         // Block ObjectData
@@ -49322,11 +46409,11 @@ impl Message for ObjectScale {
 
 impl Message for ObjectSelect {
     fn write_to<W: ?Sized>(&self, buffer: &mut W) -> WriteMessageResult
-    where
-        W: Write,
-    {
+    where W: Write {
         // Write the message number.
-        buffer.write(&[0xff, 0xff, 0x00, 0x6e])?;
+        buffer.write(&[
+            0xff, 0xff, 0x00, 0x6e
+        ])?;
         // Block AgentData
         buffer.write(self.agent_data.agent_id.as_bytes())?;
         buffer.write(self.agent_data.session_id.as_bytes())?;
@@ -49339,9 +46426,7 @@ impl Message for ObjectSelect {
     }
 
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         // Block AgentData
         let agent_data = ObjectSelect_AgentData::read_from(buffer)?;
         // Block ObjectData
@@ -49359,11 +46444,11 @@ impl Message for ObjectSelect {
 
 impl Message for ObjectShape {
     fn write_to<W: ?Sized>(&self, buffer: &mut W) -> WriteMessageResult
-    where
-        W: Write,
-    {
+    where W: Write {
         // Write the message number.
-        buffer.write(&[0xff, 0xff, 0x00, 0x62])?;
+        buffer.write(&[
+            0xff, 0xff, 0x00, 0x62
+        ])?;
         // Block AgentData
         buffer.write(self.agent_data.agent_id.as_bytes())?;
         buffer.write(self.agent_data.session_id.as_bytes())?;
@@ -49394,9 +46479,7 @@ impl Message for ObjectShape {
     }
 
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         // Block AgentData
         let agent_data = ObjectShape_AgentData::read_from(buffer)?;
         // Block ObjectData
@@ -49414,11 +46497,11 @@ impl Message for ObjectShape {
 
 impl Message for ObjectSpinStart {
     fn write_to<W: ?Sized>(&self, buffer: &mut W) -> WriteMessageResult
-    where
-        W: Write,
-    {
+    where W: Write {
         // Write the message number.
-        buffer.write(&[0xff, 0xff, 0x00, 0x78])?;
+        buffer.write(&[
+            0xff, 0xff, 0x00, 0x78
+        ])?;
         // Block AgentData
         buffer.write(self.agent_data.agent_id.as_bytes())?;
         buffer.write(self.agent_data.session_id.as_bytes())?;
@@ -49428,9 +46511,7 @@ impl Message for ObjectSpinStart {
     }
 
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         // Block AgentData
         let agent_data = ObjectSpinStart_AgentData::read_from(buffer)?;
         // Block ObjectData
@@ -49444,11 +46525,11 @@ impl Message for ObjectSpinStart {
 
 impl Message for ObjectSpinStop {
     fn write_to<W: ?Sized>(&self, buffer: &mut W) -> WriteMessageResult
-    where
-        W: Write,
-    {
+    where W: Write {
         // Write the message number.
-        buffer.write(&[0xff, 0xff, 0x00, 0x7a])?;
+        buffer.write(&[
+            0xff, 0xff, 0x00, 0x7a
+        ])?;
         // Block AgentData
         buffer.write(self.agent_data.agent_id.as_bytes())?;
         buffer.write(self.agent_data.session_id.as_bytes())?;
@@ -49458,9 +46539,7 @@ impl Message for ObjectSpinStop {
     }
 
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         // Block AgentData
         let agent_data = ObjectSpinStop_AgentData::read_from(buffer)?;
         // Block ObjectData
@@ -49474,11 +46553,11 @@ impl Message for ObjectSpinStop {
 
 impl Message for ObjectSpinUpdate {
     fn write_to<W: ?Sized>(&self, buffer: &mut W) -> WriteMessageResult
-    where
-        W: Write,
-    {
+    where W: Write {
         // Write the message number.
-        buffer.write(&[0xff, 0xff, 0x00, 0x79])?;
+        buffer.write(&[
+            0xff, 0xff, 0x00, 0x79
+        ])?;
         // Block AgentData
         buffer.write(self.agent_data.agent_id.as_bytes())?;
         buffer.write(self.agent_data.session_id.as_bytes())?;
@@ -49495,9 +46574,7 @@ impl Message for ObjectSpinUpdate {
     }
 
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         // Block AgentData
         let agent_data = ObjectSpinUpdate_AgentData::read_from(buffer)?;
         // Block ObjectData
@@ -49511,18 +46588,12 @@ impl Message for ObjectSpinUpdate {
 
 impl Message for ObjectUpdate {
     fn write_to<W: ?Sized>(&self, buffer: &mut W) -> WriteMessageResult
-    where
-        W: Write,
-    {
+    where W: Write {
         // Write the message number.
         buffer.write(&[0x0c])?;
         // Block RegionData
-        buffer.write_u64::<LittleEndian>(
-            self.region_data.region_handle,
-        )?;
-        buffer.write_u16::<LittleEndian>(
-            self.region_data.time_dilation,
-        )?;
+        buffer.write_u64::<LittleEndian>(self.region_data.region_handle)?;
+        buffer.write_u16::<LittleEndian>(self.region_data.time_dilation)?;
         // Block ObjectData
         buffer.write_u8(self.object_data.len() as u8)?;
         for item in &self.object_data {
@@ -49560,15 +46631,11 @@ impl Message for ObjectUpdate {
             buffer.write_u16::<LittleEndian>(item.profile_begin)?;
             buffer.write_u16::<LittleEndian>(item.profile_end)?;
             buffer.write_u16::<LittleEndian>(item.profile_hollow)?;
-            buffer.write_u16::<LittleEndian>(
-                item.texture_entry.len() as u16,
-            )?;
+            buffer.write_u16::<LittleEndian>(item.texture_entry.len() as u16)?;
             buffer.write(&item.texture_entry[..])?;
             buffer.write_u8(item.texture_anim.len() as u8)?;
             buffer.write(&item.texture_anim[..])?;
-            buffer.write_u16::<LittleEndian>(
-                item.name_value.len() as u16,
-            )?;
+            buffer.write_u16::<LittleEndian>(item.name_value.len() as u16)?;
             buffer.write(&item.name_value[..])?;
             buffer.write_u16::<LittleEndian>(item.data.len() as u16)?;
             buffer.write(&item.data[..])?;
@@ -49592,25 +46659,17 @@ impl Message for ObjectUpdate {
             buffer.write_f32::<LittleEndian>(item.joint_pivot.y)?;
 
             buffer.write_f32::<LittleEndian>(item.joint_pivot.z)?;
-            buffer.write_f32::<LittleEndian>(
-                item.joint_axis_or_anchor.x,
-            )?;
+            buffer.write_f32::<LittleEndian>(item.joint_axis_or_anchor.x)?;
 
-            buffer.write_f32::<LittleEndian>(
-                item.joint_axis_or_anchor.y,
-            )?;
+            buffer.write_f32::<LittleEndian>(item.joint_axis_or_anchor.y)?;
 
-            buffer.write_f32::<LittleEndian>(
-                item.joint_axis_or_anchor.z,
-            )?;
+            buffer.write_f32::<LittleEndian>(item.joint_axis_or_anchor.z)?;
         }
         Ok(())
     }
 
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         // Block RegionData
         let region_data = ObjectUpdate_RegionData::read_from(buffer)?;
         // Block ObjectData
@@ -49628,18 +46687,12 @@ impl Message for ObjectUpdate {
 
 impl Message for ObjectUpdateCached {
     fn write_to<W: ?Sized>(&self, buffer: &mut W) -> WriteMessageResult
-    where
-        W: Write,
-    {
+    where W: Write {
         // Write the message number.
         buffer.write(&[0x0e])?;
         // Block RegionData
-        buffer.write_u64::<LittleEndian>(
-            self.region_data.region_handle,
-        )?;
-        buffer.write_u16::<LittleEndian>(
-            self.region_data.time_dilation,
-        )?;
+        buffer.write_u64::<LittleEndian>(self.region_data.region_handle)?;
+        buffer.write_u16::<LittleEndian>(self.region_data.time_dilation)?;
         // Block ObjectData
         buffer.write_u8(self.object_data.len() as u8)?;
         for item in &self.object_data {
@@ -49651,9 +46704,7 @@ impl Message for ObjectUpdateCached {
     }
 
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         // Block RegionData
         let region_data = ObjectUpdateCached_RegionData::read_from(buffer)?;
         // Block ObjectData
@@ -49671,18 +46722,12 @@ impl Message for ObjectUpdateCached {
 
 impl Message for ObjectUpdateCompressed {
     fn write_to<W: ?Sized>(&self, buffer: &mut W) -> WriteMessageResult
-    where
-        W: Write,
-    {
+    where W: Write {
         // Write the message number.
         buffer.write(&[0x0d])?;
         // Block RegionData
-        buffer.write_u64::<LittleEndian>(
-            self.region_data.region_handle,
-        )?;
-        buffer.write_u16::<LittleEndian>(
-            self.region_data.time_dilation,
-        )?;
+        buffer.write_u64::<LittleEndian>(self.region_data.region_handle)?;
+        buffer.write_u16::<LittleEndian>(self.region_data.time_dilation)?;
         // Block ObjectData
         buffer.write_u8(self.object_data.len() as u8)?;
         for item in &self.object_data {
@@ -49694,9 +46739,7 @@ impl Message for ObjectUpdateCompressed {
     }
 
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         // Block RegionData
         let region_data = ObjectUpdateCompressed_RegionData::read_from(buffer)?;
         // Block ObjectData
@@ -49716,11 +46759,11 @@ impl Message for ObjectUpdateCompressed {
 
 impl Message for OfferCallingCard {
     fn write_to<W: ?Sized>(&self, buffer: &mut W) -> WriteMessageResult
-    where
-        W: Write,
-    {
+    where W: Write {
         // Write the message number.
-        buffer.write(&[0xff, 0xff, 0x01, 0x2d])?;
+        buffer.write(&[
+            0xff, 0xff, 0x01, 0x2d
+        ])?;
         // Block AgentData
         buffer.write(self.agent_data.agent_id.as_bytes())?;
         buffer.write(self.agent_data.session_id.as_bytes())?;
@@ -49731,9 +46774,7 @@ impl Message for OfferCallingCard {
     }
 
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         // Block AgentData
         let agent_data = OfferCallingCard_AgentData::read_from(buffer)?;
         // Block AgentBlock
@@ -49747,11 +46788,11 @@ impl Message for OfferCallingCard {
 
 impl Message for OfflineNotification {
     fn write_to<W: ?Sized>(&self, buffer: &mut W) -> WriteMessageResult
-    where
-        W: Write,
-    {
+    where W: Write {
         // Write the message number.
-        buffer.write(&[0xff, 0xff, 0x01, 0x43])?;
+        buffer.write(&[
+            0xff, 0xff, 0x01, 0x43
+        ])?;
         // Block AgentBlock
         buffer.write_u8(self.agent_block.len() as u8)?;
         for item in &self.agent_block {
@@ -49761,28 +46802,26 @@ impl Message for OfflineNotification {
     }
 
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         // Block AgentBlock
         let mut agent_block = Vec::new();
         let _agent_block_count = buffer.read_u8()?;
         for _ in 0.._agent_block_count {
             agent_block.push(OfflineNotification_AgentBlock::read_from(buffer)?);
         }
-        Ok(MessageInstance::OfflineNotification(
-            OfflineNotification { agent_block: agent_block },
-        ))
+        Ok(MessageInstance::OfflineNotification(OfflineNotification {
+            agent_block: agent_block,
+        }))
     }
 }
 
 impl Message for OnlineNotification {
     fn write_to<W: ?Sized>(&self, buffer: &mut W) -> WriteMessageResult
-    where
-        W: Write,
-    {
+    where W: Write {
         // Write the message number.
-        buffer.write(&[0xff, 0xff, 0x01, 0x42])?;
+        buffer.write(&[
+            0xff, 0xff, 0x01, 0x42
+        ])?;
         // Block AgentBlock
         buffer.write_u8(self.agent_block.len() as u8)?;
         for item in &self.agent_block {
@@ -49792,28 +46831,26 @@ impl Message for OnlineNotification {
     }
 
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         // Block AgentBlock
         let mut agent_block = Vec::new();
         let _agent_block_count = buffer.read_u8()?;
         for _ in 0.._agent_block_count {
             agent_block.push(OnlineNotification_AgentBlock::read_from(buffer)?);
         }
-        Ok(MessageInstance::OnlineNotification(
-            OnlineNotification { agent_block: agent_block },
-        ))
+        Ok(MessageInstance::OnlineNotification(OnlineNotification {
+            agent_block: agent_block,
+        }))
     }
 }
 
 impl Message for OpenCircuit {
     fn write_to<W: ?Sized>(&self, buffer: &mut W) -> WriteMessageResult
-    where
-        W: Write,
-    {
+    where W: Write {
         // Write the message number.
-        buffer.write(&[0xff, 0xff, 0xff, 0xFC])?;
+        buffer.write(&[
+            0xff, 0xff, 0xff, 0xFC
+        ])?;
         // Block CircuitInfo
         buffer.write(&self.circuit_info.ip.octets())?;
         buffer.write_u16::<LittleEndian>(self.circuit_info.port)?;
@@ -49821,24 +46858,22 @@ impl Message for OpenCircuit {
     }
 
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         // Block CircuitInfo
         let circuit_info = OpenCircuit_CircuitInfo::read_from(buffer)?;
-        Ok(MessageInstance::OpenCircuit(
-            OpenCircuit { circuit_info: circuit_info },
-        ))
+        Ok(MessageInstance::OpenCircuit(OpenCircuit {
+            circuit_info: circuit_info,
+        }))
     }
 }
 
 impl Message for PacketAck {
     fn write_to<W: ?Sized>(&self, buffer: &mut W) -> WriteMessageResult
-    where
-        W: Write,
-    {
+    where W: Write {
         // Write the message number.
-        buffer.write(&[0xff, 0xff, 0xff, 0xFB])?;
+        buffer.write(&[
+            0xff, 0xff, 0xff, 0xFB
+        ])?;
         // Block Packets
         buffer.write_u8(self.packets.len() as u8)?;
         for item in &self.packets {
@@ -49848,9 +46883,7 @@ impl Message for PacketAck {
     }
 
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         // Block Packets
         let mut packets = Vec::new();
         let _packets_count = buffer.read_u8()?;
@@ -49863,11 +46896,11 @@ impl Message for PacketAck {
 
 impl Message for ParcelAccessListReply {
     fn write_to<W: ?Sized>(&self, buffer: &mut W) -> WriteMessageResult
-    where
-        W: Write,
-    {
+    where W: Write {
         // Write the message number.
-        buffer.write(&[0xff, 0xff, 0x00, 0xd8])?;
+        buffer.write(&[
+            0xff, 0xff, 0x00, 0xd8
+        ])?;
         // Block Data
         buffer.write(self.data.agent_id.as_bytes())?;
         buffer.write_i32::<LittleEndian>(self.data.sequence_id)?;
@@ -49884,9 +46917,7 @@ impl Message for ParcelAccessListReply {
     }
 
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         // Block Data
         let data = ParcelAccessListReply_Data::read_from(buffer)?;
         // Block List
@@ -49906,11 +46937,11 @@ impl Message for ParcelAccessListReply {
 
 impl Message for ParcelAccessListRequest {
     fn write_to<W: ?Sized>(&self, buffer: &mut W) -> WriteMessageResult
-    where
-        W: Write,
-    {
+    where W: Write {
         // Write the message number.
-        buffer.write(&[0xff, 0xff, 0x00, 0xd7])?;
+        buffer.write(&[
+            0xff, 0xff, 0x00, 0xd7
+        ])?;
         // Block AgentData
         buffer.write(self.agent_data.agent_id.as_bytes())?;
         buffer.write(self.agent_data.session_id.as_bytes())?;
@@ -49922,9 +46953,7 @@ impl Message for ParcelAccessListRequest {
     }
 
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         // Block AgentData
         let agent_data = ParcelAccessListRequest_AgentData::read_from(buffer)?;
         // Block Data
@@ -49940,11 +46969,11 @@ impl Message for ParcelAccessListRequest {
 
 impl Message for ParcelAccessListUpdate {
     fn write_to<W: ?Sized>(&self, buffer: &mut W) -> WriteMessageResult
-    where
-        W: Write,
-    {
+    where W: Write {
         // Write the message number.
-        buffer.write(&[0xff, 0xff, 0x00, 0xd9])?;
+        buffer.write(&[
+            0xff, 0xff, 0x00, 0xd9
+        ])?;
         // Block AgentData
         buffer.write(self.agent_data.agent_id.as_bytes())?;
         buffer.write(self.agent_data.session_id.as_bytes())?;
@@ -49965,9 +46994,7 @@ impl Message for ParcelAccessListUpdate {
     }
 
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         // Block AgentData
         let agent_data = ParcelAccessListUpdate_AgentData::read_from(buffer)?;
         // Block Data
@@ -49990,11 +47017,11 @@ impl Message for ParcelAccessListUpdate {
 
 impl Message for ParcelAuctions {
     fn write_to<W: ?Sized>(&self, buffer: &mut W) -> WriteMessageResult
-    where
-        W: Write,
-    {
+    where W: Write {
         // Write the message number.
-        buffer.write(&[0xff, 0xff, 0x00, 0xea])?;
+        buffer.write(&[
+            0xff, 0xff, 0x00, 0xea
+        ])?;
         // Block ParcelData
         buffer.write_u8(self.parcel_data.len() as u8)?;
         for item in &self.parcel_data {
@@ -50005,28 +47032,26 @@ impl Message for ParcelAuctions {
     }
 
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         // Block ParcelData
         let mut parcel_data = Vec::new();
         let _parcel_data_count = buffer.read_u8()?;
         for _ in 0.._parcel_data_count {
             parcel_data.push(ParcelAuctions_ParcelData::read_from(buffer)?);
         }
-        Ok(MessageInstance::ParcelAuctions(
-            ParcelAuctions { parcel_data: parcel_data },
-        ))
+        Ok(MessageInstance::ParcelAuctions(ParcelAuctions {
+            parcel_data: parcel_data,
+        }))
     }
 }
 
 impl Message for ParcelBuy {
     fn write_to<W: ?Sized>(&self, buffer: &mut W) -> WriteMessageResult
-    where
-        W: Write,
-    {
+    where W: Write {
         // Write the message number.
-        buffer.write(&[0xff, 0xff, 0x00, 0xd5])?;
+        buffer.write(&[
+            0xff, 0xff, 0x00, 0xd5
+        ])?;
         // Block AgentData
         buffer.write(self.agent_data.agent_id.as_bytes())?;
         buffer.write(self.agent_data.session_id.as_bytes())?;
@@ -50043,9 +47068,7 @@ impl Message for ParcelBuy {
     }
 
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         // Block AgentData
         let agent_data = ParcelBuy_AgentData::read_from(buffer)?;
         // Block Data
@@ -50062,11 +47085,11 @@ impl Message for ParcelBuy {
 
 impl Message for ParcelBuyPass {
     fn write_to<W: ?Sized>(&self, buffer: &mut W) -> WriteMessageResult
-    where
-        W: Write,
-    {
+    where W: Write {
         // Write the message number.
-        buffer.write(&[0xff, 0xff, 0x00, 0xce])?;
+        buffer.write(&[
+            0xff, 0xff, 0x00, 0xce
+        ])?;
         // Block AgentData
         buffer.write(self.agent_data.agent_id.as_bytes())?;
         buffer.write(self.agent_data.session_id.as_bytes())?;
@@ -50076,9 +47099,7 @@ impl Message for ParcelBuyPass {
     }
 
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         // Block AgentData
         let agent_data = ParcelBuyPass_AgentData::read_from(buffer)?;
         // Block ParcelData
@@ -50092,11 +47113,11 @@ impl Message for ParcelBuyPass {
 
 impl Message for ParcelClaim {
     fn write_to<W: ?Sized>(&self, buffer: &mut W) -> WriteMessageResult
-    where
-        W: Write,
-    {
+    where W: Write {
         // Write the message number.
-        buffer.write(&[0xff, 0xff, 0x00, 0xd1])?;
+        buffer.write(&[
+            0xff, 0xff, 0x00, 0xd1
+        ])?;
         // Block AgentData
         buffer.write(self.agent_data.agent_id.as_bytes())?;
         buffer.write(self.agent_data.session_id.as_bytes())?;
@@ -50116,9 +47137,7 @@ impl Message for ParcelClaim {
     }
 
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         // Block AgentData
         let agent_data = ParcelClaim_AgentData::read_from(buffer)?;
         // Block Data
@@ -50139,11 +47158,11 @@ impl Message for ParcelClaim {
 
 impl Message for ParcelDeedToGroup {
     fn write_to<W: ?Sized>(&self, buffer: &mut W) -> WriteMessageResult
-    where
-        W: Write,
-    {
+    where W: Write {
         // Write the message number.
-        buffer.write(&[0xff, 0xff, 0x00, 0xcf])?;
+        buffer.write(&[
+            0xff, 0xff, 0x00, 0xcf
+        ])?;
         // Block AgentData
         buffer.write(self.agent_data.agent_id.as_bytes())?;
         buffer.write(self.agent_data.session_id.as_bytes())?;
@@ -50154,9 +47173,7 @@ impl Message for ParcelDeedToGroup {
     }
 
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         // Block AgentData
         let agent_data = ParcelDeedToGroup_AgentData::read_from(buffer)?;
         // Block Data
@@ -50170,19 +47187,17 @@ impl Message for ParcelDeedToGroup {
 
 impl Message for ParcelDisableObjects {
     fn write_to<W: ?Sized>(&self, buffer: &mut W) -> WriteMessageResult
-    where
-        W: Write,
-    {
+    where W: Write {
         // Write the message number.
-        buffer.write(&[0xff, 0xff, 0x00, 0xc9])?;
+        buffer.write(&[
+            0xff, 0xff, 0x00, 0xc9
+        ])?;
         // Block AgentData
         buffer.write(self.agent_data.agent_id.as_bytes())?;
         buffer.write(self.agent_data.session_id.as_bytes())?;
         // Block ParcelData
         buffer.write_i32::<LittleEndian>(self.parcel_data.local_id)?;
-        buffer.write_u32::<LittleEndian>(
-            self.parcel_data.return_type,
-        )?;
+        buffer.write_u32::<LittleEndian>(self.parcel_data.return_type)?;
         // Block TaskIDs
         buffer.write_u8(self.task_i_ds.len() as u8)?;
         for item in &self.task_i_ds {
@@ -50197,9 +47212,7 @@ impl Message for ParcelDisableObjects {
     }
 
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         // Block AgentData
         let agent_data = ParcelDisableObjects_AgentData::read_from(buffer)?;
         // Block ParcelData
@@ -50229,11 +47242,11 @@ impl Message for ParcelDisableObjects {
 
 impl Message for ParcelDivide {
     fn write_to<W: ?Sized>(&self, buffer: &mut W) -> WriteMessageResult
-    where
-        W: Write,
-    {
+    where W: Write {
         // Write the message number.
-        buffer.write(&[0xff, 0xff, 0x00, 0xd3])?;
+        buffer.write(&[
+            0xff, 0xff, 0x00, 0xd3
+        ])?;
         // Block AgentData
         buffer.write(self.agent_data.agent_id.as_bytes())?;
         buffer.write(self.agent_data.session_id.as_bytes())?;
@@ -50246,9 +47259,7 @@ impl Message for ParcelDivide {
     }
 
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         // Block AgentData
         let agent_data = ParcelDivide_AgentData::read_from(buffer)?;
         // Block ParcelData
@@ -50262,11 +47273,11 @@ impl Message for ParcelDivide {
 
 impl Message for ParcelDwellReply {
     fn write_to<W: ?Sized>(&self, buffer: &mut W) -> WriteMessageResult
-    where
-        W: Write,
-    {
+    where W: Write {
         // Write the message number.
-        buffer.write(&[0xff, 0xff, 0x00, 0xdb])?;
+        buffer.write(&[
+            0xff, 0xff, 0x00, 0xdb
+        ])?;
         // Block AgentData
         buffer.write(self.agent_data.agent_id.as_bytes())?;
         // Block Data
@@ -50277,9 +47288,7 @@ impl Message for ParcelDwellReply {
     }
 
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         // Block AgentData
         let agent_data = ParcelDwellReply_AgentData::read_from(buffer)?;
         // Block Data
@@ -50293,11 +47302,11 @@ impl Message for ParcelDwellReply {
 
 impl Message for ParcelDwellRequest {
     fn write_to<W: ?Sized>(&self, buffer: &mut W) -> WriteMessageResult
-    where
-        W: Write,
-    {
+    where W: Write {
         // Write the message number.
-        buffer.write(&[0xff, 0xff, 0x00, 0xda])?;
+        buffer.write(&[
+            0xff, 0xff, 0x00, 0xda
+        ])?;
         // Block AgentData
         buffer.write(self.agent_data.agent_id.as_bytes())?;
         buffer.write(self.agent_data.session_id.as_bytes())?;
@@ -50308,9 +47317,7 @@ impl Message for ParcelDwellRequest {
     }
 
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         // Block AgentData
         let agent_data = ParcelDwellRequest_AgentData::read_from(buffer)?;
         // Block Data
@@ -50324,11 +47331,11 @@ impl Message for ParcelDwellRequest {
 
 impl Message for ParcelGodForceOwner {
     fn write_to<W: ?Sized>(&self, buffer: &mut W) -> WriteMessageResult
-    where
-        W: Write,
-    {
+    where W: Write {
         // Write the message number.
-        buffer.write(&[0xff, 0xff, 0x00, 0xd6])?;
+        buffer.write(&[
+            0xff, 0xff, 0x00, 0xd6
+        ])?;
         // Block AgentData
         buffer.write(self.agent_data.agent_id.as_bytes())?;
         buffer.write(self.agent_data.session_id.as_bytes())?;
@@ -50339,9 +47346,7 @@ impl Message for ParcelGodForceOwner {
     }
 
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         // Block AgentData
         let agent_data = ParcelGodForceOwner_AgentData::read_from(buffer)?;
         // Block Data
@@ -50355,11 +47360,11 @@ impl Message for ParcelGodForceOwner {
 
 impl Message for ParcelGodMarkAsContent {
     fn write_to<W: ?Sized>(&self, buffer: &mut W) -> WriteMessageResult
-    where
-        W: Write,
-    {
+    where W: Write {
         // Write the message number.
-        buffer.write(&[0xff, 0xff, 0x00, 0xe3])?;
+        buffer.write(&[
+            0xff, 0xff, 0x00, 0xe3
+        ])?;
         // Block AgentData
         buffer.write(self.agent_data.agent_id.as_bytes())?;
         buffer.write(self.agent_data.session_id.as_bytes())?;
@@ -50369,9 +47374,7 @@ impl Message for ParcelGodMarkAsContent {
     }
 
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         // Block AgentData
         let agent_data = ParcelGodMarkAsContent_AgentData::read_from(buffer)?;
         // Block ParcelData
@@ -50387,11 +47390,11 @@ impl Message for ParcelGodMarkAsContent {
 
 impl Message for ParcelInfoReply {
     fn write_to<W: ?Sized>(&self, buffer: &mut W) -> WriteMessageResult
-    where
-        W: Write,
-    {
+    where W: Write {
         // Write the message number.
-        buffer.write(&[0xff, 0xff, 0x00, 0x37])?;
+        buffer.write(&[
+            0xff, 0xff, 0x00, 0x37
+        ])?;
         // Block AgentData
         buffer.write(self.agent_data.agent_id.as_bytes())?;
         // Block Data
@@ -50417,9 +47420,7 @@ impl Message for ParcelInfoReply {
     }
 
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         // Block AgentData
         let agent_data = ParcelInfoReply_AgentData::read_from(buffer)?;
         // Block Data
@@ -50433,11 +47434,11 @@ impl Message for ParcelInfoReply {
 
 impl Message for ParcelInfoRequest {
     fn write_to<W: ?Sized>(&self, buffer: &mut W) -> WriteMessageResult
-    where
-        W: Write,
-    {
+    where W: Write {
         // Write the message number.
-        buffer.write(&[0xff, 0xff, 0x00, 0x36])?;
+        buffer.write(&[
+            0xff, 0xff, 0x00, 0x36
+        ])?;
         // Block AgentData
         buffer.write(self.agent_data.agent_id.as_bytes())?;
         buffer.write(self.agent_data.session_id.as_bytes())?;
@@ -50447,9 +47448,7 @@ impl Message for ParcelInfoRequest {
     }
 
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         // Block AgentData
         let agent_data = ParcelInfoRequest_AgentData::read_from(buffer)?;
         // Block Data
@@ -50463,11 +47462,11 @@ impl Message for ParcelInfoRequest {
 
 impl Message for ParcelJoin {
     fn write_to<W: ?Sized>(&self, buffer: &mut W) -> WriteMessageResult
-    where
-        W: Write,
-    {
+    where W: Write {
         // Write the message number.
-        buffer.write(&[0xff, 0xff, 0x00, 0xd2])?;
+        buffer.write(&[
+            0xff, 0xff, 0x00, 0xd2
+        ])?;
         // Block AgentData
         buffer.write(self.agent_data.agent_id.as_bytes())?;
         buffer.write(self.agent_data.session_id.as_bytes())?;
@@ -50480,9 +47479,7 @@ impl Message for ParcelJoin {
     }
 
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         // Block AgentData
         let agent_data = ParcelJoin_AgentData::read_from(buffer)?;
         // Block ParcelData
@@ -50496,11 +47493,11 @@ impl Message for ParcelJoin {
 
 impl Message for ParcelMediaCommandMessage {
     fn write_to<W: ?Sized>(&self, buffer: &mut W) -> WriteMessageResult
-    where
-        W: Write,
-    {
+    where W: Write {
         // Write the message number.
-        buffer.write(&[0xff, 0xff, 0x01, 0xa3])?;
+        buffer.write(&[
+            0xff, 0xff, 0x01, 0xa3
+        ])?;
         // Block CommandBlock
         buffer.write_u32::<LittleEndian>(self.command_block.flags)?;
         buffer.write_u32::<LittleEndian>(self.command_block.command)?;
@@ -50509,52 +47506,42 @@ impl Message for ParcelMediaCommandMessage {
     }
 
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         // Block CommandBlock
         let command_block = ParcelMediaCommandMessage_CommandBlock::read_from(buffer)?;
         Ok(MessageInstance::ParcelMediaCommandMessage(
-            ParcelMediaCommandMessage { command_block: command_block },
+            ParcelMediaCommandMessage {
+                command_block: command_block,
+            },
         ))
     }
 }
 
 impl Message for ParcelMediaUpdate {
     fn write_to<W: ?Sized>(&self, buffer: &mut W) -> WriteMessageResult
-    where
-        W: Write,
-    {
+    where W: Write {
         // Write the message number.
-        buffer.write(&[0xff, 0xff, 0x01, 0xa4])?;
+        buffer.write(&[
+            0xff, 0xff, 0x01, 0xa4
+        ])?;
         // Block DataBlock
         buffer.write_u8(self.data_block.media_url.len() as u8)?;
         buffer.write(&self.data_block.media_url[..])?;
         buffer.write(self.data_block.media_id.as_bytes())?;
         buffer.write_u8(self.data_block.media_auto_scale)?;
         // Block DataBlockExtended
-        buffer.write_u8(
-            self.data_block_extended.media_type.len() as u8,
-        )?;
+        buffer.write_u8(self.data_block_extended.media_type.len() as u8)?;
         buffer.write(&self.data_block_extended.media_type[..])?;
-        buffer.write_u8(
-            self.data_block_extended.media_desc.len() as u8,
-        )?;
+        buffer.write_u8(self.data_block_extended.media_desc.len() as u8)?;
         buffer.write(&self.data_block_extended.media_desc[..])?;
-        buffer.write_i32::<LittleEndian>(
-            self.data_block_extended.media_width,
-        )?;
-        buffer.write_i32::<LittleEndian>(
-            self.data_block_extended.media_height,
-        )?;
+        buffer.write_i32::<LittleEndian>(self.data_block_extended.media_width)?;
+        buffer.write_i32::<LittleEndian>(self.data_block_extended.media_height)?;
         buffer.write_u8(self.data_block_extended.media_loop)?;
         Ok(())
     }
 
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         // Block DataBlock
         let data_block = ParcelMediaUpdate_DataBlock::read_from(buffer)?;
         // Block DataBlockExtended
@@ -50568,11 +47555,11 @@ impl Message for ParcelMediaUpdate {
 
 impl Message for ParcelObjectOwnersReply {
     fn write_to<W: ?Sized>(&self, buffer: &mut W) -> WriteMessageResult
-    where
-        W: Write,
-    {
+    where W: Write {
         // Write the message number.
-        buffer.write(&[0xff, 0xff, 0x00, 0x39])?;
+        buffer.write(&[
+            0xff, 0xff, 0x00, 0x39
+        ])?;
         // Block Data
         buffer.write_u8(self.data.len() as u8)?;
         for item in &self.data {
@@ -50585,9 +47572,7 @@ impl Message for ParcelObjectOwnersReply {
     }
 
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         // Block Data
         let mut data = Vec::new();
         let _data_count = buffer.read_u8()?;
@@ -50602,11 +47587,11 @@ impl Message for ParcelObjectOwnersReply {
 
 impl Message for ParcelObjectOwnersRequest {
     fn write_to<W: ?Sized>(&self, buffer: &mut W) -> WriteMessageResult
-    where
-        W: Write,
-    {
+    where W: Write {
         // Write the message number.
-        buffer.write(&[0xff, 0xff, 0x00, 0x38])?;
+        buffer.write(&[
+            0xff, 0xff, 0x00, 0x38
+        ])?;
         // Block AgentData
         buffer.write(self.agent_data.agent_id.as_bytes())?;
         buffer.write(self.agent_data.session_id.as_bytes())?;
@@ -50616,9 +47601,7 @@ impl Message for ParcelObjectOwnersRequest {
     }
 
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         // Block AgentData
         let agent_data = ParcelObjectOwnersRequest_AgentData::read_from(buffer)?;
         // Block ParcelData
@@ -50634,135 +47617,73 @@ impl Message for ParcelObjectOwnersRequest {
 
 impl Message for ParcelOverlay {
     fn write_to<W: ?Sized>(&self, buffer: &mut W) -> WriteMessageResult
-    where
-        W: Write,
-    {
+    where W: Write {
         // Write the message number.
-        buffer.write(&[0xff, 0xff, 0x00, 0xc4])?;
+        buffer.write(&[
+            0xff, 0xff, 0x00, 0xc4
+        ])?;
         // Block ParcelData
-        buffer.write_i32::<LittleEndian>(
-            self.parcel_data.sequence_id,
-        )?;
-        buffer.write_u16::<LittleEndian>(
-            self.parcel_data.data.len() as u16,
-        )?;
+        buffer.write_i32::<LittleEndian>(self.parcel_data.sequence_id)?;
+        buffer.write_u16::<LittleEndian>(self.parcel_data.data.len() as u16)?;
         buffer.write(&self.parcel_data.data[..])?;
         Ok(())
     }
 
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         // Block ParcelData
         let parcel_data = ParcelOverlay_ParcelData::read_from(buffer)?;
-        Ok(MessageInstance::ParcelOverlay(
-            ParcelOverlay { parcel_data: parcel_data },
-        ))
+        Ok(MessageInstance::ParcelOverlay(ParcelOverlay {
+            parcel_data: parcel_data,
+        }))
     }
 }
 
 impl Message for ParcelProperties {
     fn write_to<W: ?Sized>(&self, buffer: &mut W) -> WriteMessageResult
-    where
-        W: Write,
-    {
+    where W: Write {
         // Write the message number.
         buffer.write(&[0x17])?;
         // Block ParcelData
-        buffer.write_i32::<LittleEndian>(
-            self.parcel_data.request_result,
-        )?;
-        buffer.write_i32::<LittleEndian>(
-            self.parcel_data.sequence_id,
-        )?;
+        buffer.write_i32::<LittleEndian>(self.parcel_data.request_result)?;
+        buffer.write_i32::<LittleEndian>(self.parcel_data.sequence_id)?;
         buffer.write_u8(self.parcel_data.snap_selection as u8)?;
-        buffer.write_i32::<LittleEndian>(
-            self.parcel_data.self_count,
-        )?;
-        buffer.write_i32::<LittleEndian>(
-            self.parcel_data.other_count,
-        )?;
-        buffer.write_i32::<LittleEndian>(
-            self.parcel_data.public_count,
-        )?;
+        buffer.write_i32::<LittleEndian>(self.parcel_data.self_count)?;
+        buffer.write_i32::<LittleEndian>(self.parcel_data.other_count)?;
+        buffer.write_i32::<LittleEndian>(self.parcel_data.public_count)?;
         buffer.write_i32::<LittleEndian>(self.parcel_data.local_id)?;
         buffer.write(self.parcel_data.owner_id.as_bytes())?;
         buffer.write_u8(self.parcel_data.is_group_owned as u8)?;
-        buffer.write_u32::<LittleEndian>(
-            self.parcel_data.auction_id,
-        )?;
-        buffer.write_i32::<LittleEndian>(
-            self.parcel_data.claim_date,
-        )?;
-        buffer.write_i32::<LittleEndian>(
-            self.parcel_data.claim_price,
-        )?;
-        buffer.write_i32::<LittleEndian>(
-            self.parcel_data.rent_price,
-        )?;
-        buffer.write_f32::<LittleEndian>(
-            self.parcel_data.aabb_min.x,
-        )?;
+        buffer.write_u32::<LittleEndian>(self.parcel_data.auction_id)?;
+        buffer.write_i32::<LittleEndian>(self.parcel_data.claim_date)?;
+        buffer.write_i32::<LittleEndian>(self.parcel_data.claim_price)?;
+        buffer.write_i32::<LittleEndian>(self.parcel_data.rent_price)?;
+        buffer.write_f32::<LittleEndian>(self.parcel_data.aabb_min.x)?;
 
-        buffer.write_f32::<LittleEndian>(
-            self.parcel_data.aabb_min.y,
-        )?;
+        buffer.write_f32::<LittleEndian>(self.parcel_data.aabb_min.y)?;
 
-        buffer.write_f32::<LittleEndian>(
-            self.parcel_data.aabb_min.z,
-        )?;
-        buffer.write_f32::<LittleEndian>(
-            self.parcel_data.aabb_max.x,
-        )?;
+        buffer.write_f32::<LittleEndian>(self.parcel_data.aabb_min.z)?;
+        buffer.write_f32::<LittleEndian>(self.parcel_data.aabb_max.x)?;
 
-        buffer.write_f32::<LittleEndian>(
-            self.parcel_data.aabb_max.y,
-        )?;
+        buffer.write_f32::<LittleEndian>(self.parcel_data.aabb_max.y)?;
 
-        buffer.write_f32::<LittleEndian>(
-            self.parcel_data.aabb_max.z,
-        )?;
-        buffer.write_u16::<LittleEndian>(
-            self.parcel_data.bitmap.len() as u16,
-        )?;
+        buffer.write_f32::<LittleEndian>(self.parcel_data.aabb_max.z)?;
+        buffer.write_u16::<LittleEndian>(self.parcel_data.bitmap.len() as u16)?;
         buffer.write(&self.parcel_data.bitmap[..])?;
         buffer.write_i32::<LittleEndian>(self.parcel_data.area)?;
         buffer.write_u8(self.parcel_data.status)?;
-        buffer.write_i32::<LittleEndian>(
-            self.parcel_data.sim_wide_max_prims,
-        )?;
-        buffer.write_i32::<LittleEndian>(
-            self.parcel_data.sim_wide_total_prims,
-        )?;
+        buffer.write_i32::<LittleEndian>(self.parcel_data.sim_wide_max_prims)?;
+        buffer.write_i32::<LittleEndian>(self.parcel_data.sim_wide_total_prims)?;
         buffer.write_i32::<LittleEndian>(self.parcel_data.max_prims)?;
-        buffer.write_i32::<LittleEndian>(
-            self.parcel_data.total_prims,
-        )?;
-        buffer.write_i32::<LittleEndian>(
-            self.parcel_data.owner_prims,
-        )?;
-        buffer.write_i32::<LittleEndian>(
-            self.parcel_data.group_prims,
-        )?;
-        buffer.write_i32::<LittleEndian>(
-            self.parcel_data.other_prims,
-        )?;
-        buffer.write_i32::<LittleEndian>(
-            self.parcel_data.selected_prims,
-        )?;
-        buffer.write_f32::<LittleEndian>(
-            self.parcel_data.parcel_prim_bonus,
-        )?;
-        buffer.write_i32::<LittleEndian>(
-            self.parcel_data.other_clean_time,
-        )?;
-        buffer.write_u32::<LittleEndian>(
-            self.parcel_data.parcel_flags,
-        )?;
-        buffer.write_i32::<LittleEndian>(
-            self.parcel_data.sale_price,
-        )?;
+        buffer.write_i32::<LittleEndian>(self.parcel_data.total_prims)?;
+        buffer.write_i32::<LittleEndian>(self.parcel_data.owner_prims)?;
+        buffer.write_i32::<LittleEndian>(self.parcel_data.group_prims)?;
+        buffer.write_i32::<LittleEndian>(self.parcel_data.other_prims)?;
+        buffer.write_i32::<LittleEndian>(self.parcel_data.selected_prims)?;
+        buffer.write_f32::<LittleEndian>(self.parcel_data.parcel_prim_bonus)?;
+        buffer.write_i32::<LittleEndian>(self.parcel_data.other_clean_time)?;
+        buffer.write_u32::<LittleEndian>(self.parcel_data.parcel_flags)?;
+        buffer.write_i32::<LittleEndian>(self.parcel_data.sale_price)?;
         buffer.write_u8(self.parcel_data.name.len() as u8)?;
         buffer.write(&self.parcel_data.name[..])?;
         buffer.write_u8(self.parcel_data.desc.len() as u8)?;
@@ -50774,60 +47695,33 @@ impl Message for ParcelProperties {
         buffer.write(self.parcel_data.media_id.as_bytes())?;
         buffer.write_u8(self.parcel_data.media_auto_scale)?;
         buffer.write(self.parcel_data.group_id.as_bytes())?;
-        buffer.write_i32::<LittleEndian>(
-            self.parcel_data.pass_price,
-        )?;
-        buffer.write_f32::<LittleEndian>(
-            self.parcel_data.pass_hours,
-        )?;
+        buffer.write_i32::<LittleEndian>(self.parcel_data.pass_price)?;
+        buffer.write_f32::<LittleEndian>(self.parcel_data.pass_hours)?;
         buffer.write_u8(self.parcel_data.category)?;
         buffer.write(self.parcel_data.auth_buyer_id.as_bytes())?;
         buffer.write(self.parcel_data.snapshot_id.as_bytes())?;
-        buffer.write_f32::<LittleEndian>(
-            self.parcel_data.user_location.x,
-        )?;
+        buffer.write_f32::<LittleEndian>(self.parcel_data.user_location.x)?;
 
-        buffer.write_f32::<LittleEndian>(
-            self.parcel_data.user_location.y,
-        )?;
+        buffer.write_f32::<LittleEndian>(self.parcel_data.user_location.y)?;
 
-        buffer.write_f32::<LittleEndian>(
-            self.parcel_data.user_location.z,
-        )?;
-        buffer.write_f32::<LittleEndian>(
-            self.parcel_data.user_look_at.x,
-        )?;
+        buffer.write_f32::<LittleEndian>(self.parcel_data.user_location.z)?;
+        buffer.write_f32::<LittleEndian>(self.parcel_data.user_look_at.x)?;
 
-        buffer.write_f32::<LittleEndian>(
-            self.parcel_data.user_look_at.y,
-        )?;
+        buffer.write_f32::<LittleEndian>(self.parcel_data.user_look_at.y)?;
 
-        buffer.write_f32::<LittleEndian>(
-            self.parcel_data.user_look_at.z,
-        )?;
+        buffer.write_f32::<LittleEndian>(self.parcel_data.user_look_at.z)?;
         buffer.write_u8(self.parcel_data.landing_type)?;
         buffer.write_u8(self.parcel_data.region_push_override as u8)?;
-        buffer.write_u8(
-            self.parcel_data.region_deny_anonymous as u8,
-        )?;
-        buffer.write_u8(
-            self.parcel_data.region_deny_identified as u8,
-        )?;
-        buffer.write_u8(
-            self.parcel_data.region_deny_transacted as u8,
-        )?;
+        buffer.write_u8(self.parcel_data.region_deny_anonymous as u8)?;
+        buffer.write_u8(self.parcel_data.region_deny_identified as u8)?;
+        buffer.write_u8(self.parcel_data.region_deny_transacted as u8)?;
         // Block AgeVerificationBlock
-        buffer.write_u8(
-            self.age_verification_block
-                .region_deny_age_unverified as u8,
-        )?;
+        buffer.write_u8(self.age_verification_block.region_deny_age_unverified as u8)?;
         Ok(())
     }
 
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         // Block ParcelData
         let parcel_data = ParcelProperties_ParcelData::read_from(buffer)?;
         // Block AgeVerificationBlock
@@ -50841,18 +47735,14 @@ impl Message for ParcelProperties {
 
 impl Message for ParcelPropertiesRequest {
     fn write_to<W: ?Sized>(&self, buffer: &mut W) -> WriteMessageResult
-    where
-        W: Write,
-    {
+    where W: Write {
         // Write the message number.
         buffer.write(&[0xff, 0x0b])?;
         // Block AgentData
         buffer.write(self.agent_data.agent_id.as_bytes())?;
         buffer.write(self.agent_data.session_id.as_bytes())?;
         // Block ParcelData
-        buffer.write_i32::<LittleEndian>(
-            self.parcel_data.sequence_id,
-        )?;
+        buffer.write_i32::<LittleEndian>(self.parcel_data.sequence_id)?;
         buffer.write_f32::<LittleEndian>(self.parcel_data.west)?;
         buffer.write_f32::<LittleEndian>(self.parcel_data.south)?;
         buffer.write_f32::<LittleEndian>(self.parcel_data.east)?;
@@ -50862,9 +47752,7 @@ impl Message for ParcelPropertiesRequest {
     }
 
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         // Block AgentData
         let agent_data = ParcelPropertiesRequest_AgentData::read_from(buffer)?;
         // Block ParcelData
@@ -50880,26 +47768,22 @@ impl Message for ParcelPropertiesRequest {
 
 impl Message for ParcelPropertiesRequestByID {
     fn write_to<W: ?Sized>(&self, buffer: &mut W) -> WriteMessageResult
-    where
-        W: Write,
-    {
+    where W: Write {
         // Write the message number.
-        buffer.write(&[0xff, 0xff, 0x00, 0xc5])?;
+        buffer.write(&[
+            0xff, 0xff, 0x00, 0xc5
+        ])?;
         // Block AgentData
         buffer.write(self.agent_data.agent_id.as_bytes())?;
         buffer.write(self.agent_data.session_id.as_bytes())?;
         // Block ParcelData
-        buffer.write_i32::<LittleEndian>(
-            self.parcel_data.sequence_id,
-        )?;
+        buffer.write_i32::<LittleEndian>(self.parcel_data.sequence_id)?;
         buffer.write_i32::<LittleEndian>(self.parcel_data.local_id)?;
         Ok(())
     }
 
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         // Block AgentData
         let agent_data = ParcelPropertiesRequestByID_AgentData::read_from(buffer)?;
         // Block ParcelData
@@ -50915,23 +47799,19 @@ impl Message for ParcelPropertiesRequestByID {
 
 impl Message for ParcelPropertiesUpdate {
     fn write_to<W: ?Sized>(&self, buffer: &mut W) -> WriteMessageResult
-    where
-        W: Write,
-    {
+    where W: Write {
         // Write the message number.
-        buffer.write(&[0xff, 0xff, 0x00, 0xc6])?;
+        buffer.write(&[
+            0xff, 0xff, 0x00, 0xc6
+        ])?;
         // Block AgentData
         buffer.write(self.agent_data.agent_id.as_bytes())?;
         buffer.write(self.agent_data.session_id.as_bytes())?;
         // Block ParcelData
         buffer.write_i32::<LittleEndian>(self.parcel_data.local_id)?;
         buffer.write_u32::<LittleEndian>(self.parcel_data.flags)?;
-        buffer.write_u32::<LittleEndian>(
-            self.parcel_data.parcel_flags,
-        )?;
-        buffer.write_i32::<LittleEndian>(
-            self.parcel_data.sale_price,
-        )?;
+        buffer.write_u32::<LittleEndian>(self.parcel_data.parcel_flags)?;
+        buffer.write_i32::<LittleEndian>(self.parcel_data.sale_price)?;
         buffer.write_u8(self.parcel_data.name.len() as u8)?;
         buffer.write(&self.parcel_data.name[..])?;
         buffer.write_u8(self.parcel_data.desc.len() as u8)?;
@@ -50943,45 +47823,27 @@ impl Message for ParcelPropertiesUpdate {
         buffer.write(self.parcel_data.media_id.as_bytes())?;
         buffer.write_u8(self.parcel_data.media_auto_scale)?;
         buffer.write(self.parcel_data.group_id.as_bytes())?;
-        buffer.write_i32::<LittleEndian>(
-            self.parcel_data.pass_price,
-        )?;
-        buffer.write_f32::<LittleEndian>(
-            self.parcel_data.pass_hours,
-        )?;
+        buffer.write_i32::<LittleEndian>(self.parcel_data.pass_price)?;
+        buffer.write_f32::<LittleEndian>(self.parcel_data.pass_hours)?;
         buffer.write_u8(self.parcel_data.category)?;
         buffer.write(self.parcel_data.auth_buyer_id.as_bytes())?;
         buffer.write(self.parcel_data.snapshot_id.as_bytes())?;
-        buffer.write_f32::<LittleEndian>(
-            self.parcel_data.user_location.x,
-        )?;
+        buffer.write_f32::<LittleEndian>(self.parcel_data.user_location.x)?;
 
-        buffer.write_f32::<LittleEndian>(
-            self.parcel_data.user_location.y,
-        )?;
+        buffer.write_f32::<LittleEndian>(self.parcel_data.user_location.y)?;
 
-        buffer.write_f32::<LittleEndian>(
-            self.parcel_data.user_location.z,
-        )?;
-        buffer.write_f32::<LittleEndian>(
-            self.parcel_data.user_look_at.x,
-        )?;
+        buffer.write_f32::<LittleEndian>(self.parcel_data.user_location.z)?;
+        buffer.write_f32::<LittleEndian>(self.parcel_data.user_look_at.x)?;
 
-        buffer.write_f32::<LittleEndian>(
-            self.parcel_data.user_look_at.y,
-        )?;
+        buffer.write_f32::<LittleEndian>(self.parcel_data.user_look_at.y)?;
 
-        buffer.write_f32::<LittleEndian>(
-            self.parcel_data.user_look_at.z,
-        )?;
+        buffer.write_f32::<LittleEndian>(self.parcel_data.user_look_at.z)?;
         buffer.write_u8(self.parcel_data.landing_type)?;
         Ok(())
     }
 
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         // Block AgentData
         let agent_data = ParcelPropertiesUpdate_AgentData::read_from(buffer)?;
         // Block ParcelData
@@ -50997,11 +47859,11 @@ impl Message for ParcelPropertiesUpdate {
 
 impl Message for ParcelReclaim {
     fn write_to<W: ?Sized>(&self, buffer: &mut W) -> WriteMessageResult
-    where
-        W: Write,
-    {
+    where W: Write {
         // Write the message number.
-        buffer.write(&[0xff, 0xff, 0x00, 0xd0])?;
+        buffer.write(&[
+            0xff, 0xff, 0x00, 0xd0
+        ])?;
         // Block AgentData
         buffer.write(self.agent_data.agent_id.as_bytes())?;
         buffer.write(self.agent_data.session_id.as_bytes())?;
@@ -51011,9 +47873,7 @@ impl Message for ParcelReclaim {
     }
 
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         // Block AgentData
         let agent_data = ParcelReclaim_AgentData::read_from(buffer)?;
         // Block Data
@@ -51027,11 +47887,11 @@ impl Message for ParcelReclaim {
 
 impl Message for ParcelRelease {
     fn write_to<W: ?Sized>(&self, buffer: &mut W) -> WriteMessageResult
-    where
-        W: Write,
-    {
+    where W: Write {
         // Write the message number.
-        buffer.write(&[0xff, 0xff, 0x00, 0xd4])?;
+        buffer.write(&[
+            0xff, 0xff, 0x00, 0xd4
+        ])?;
         // Block AgentData
         buffer.write(self.agent_data.agent_id.as_bytes())?;
         buffer.write(self.agent_data.session_id.as_bytes())?;
@@ -51041,9 +47901,7 @@ impl Message for ParcelRelease {
     }
 
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         // Block AgentData
         let agent_data = ParcelRelease_AgentData::read_from(buffer)?;
         // Block Data
@@ -51057,11 +47915,11 @@ impl Message for ParcelRelease {
 
 impl Message for ParcelRename {
     fn write_to<W: ?Sized>(&self, buffer: &mut W) -> WriteMessageResult
-    where
-        W: Write,
-    {
+    where W: Write {
         // Write the message number.
-        buffer.write(&[0xff, 0xff, 0x01, 0x92])?;
+        buffer.write(&[
+            0xff, 0xff, 0x01, 0x92
+        ])?;
         // Block ParcelData
         buffer.write_u8(self.parcel_data.len() as u8)?;
         for item in &self.parcel_data {
@@ -51073,36 +47931,32 @@ impl Message for ParcelRename {
     }
 
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         // Block ParcelData
         let mut parcel_data = Vec::new();
         let _parcel_data_count = buffer.read_u8()?;
         for _ in 0.._parcel_data_count {
             parcel_data.push(ParcelRename_ParcelData::read_from(buffer)?);
         }
-        Ok(MessageInstance::ParcelRename(
-            ParcelRename { parcel_data: parcel_data },
-        ))
+        Ok(MessageInstance::ParcelRename(ParcelRename {
+            parcel_data: parcel_data,
+        }))
     }
 }
 
 impl Message for ParcelReturnObjects {
     fn write_to<W: ?Sized>(&self, buffer: &mut W) -> WriteMessageResult
-    where
-        W: Write,
-    {
+    where W: Write {
         // Write the message number.
-        buffer.write(&[0xff, 0xff, 0x00, 0xc7])?;
+        buffer.write(&[
+            0xff, 0xff, 0x00, 0xc7
+        ])?;
         // Block AgentData
         buffer.write(self.agent_data.agent_id.as_bytes())?;
         buffer.write(self.agent_data.session_id.as_bytes())?;
         // Block ParcelData
         buffer.write_i32::<LittleEndian>(self.parcel_data.local_id)?;
-        buffer.write_u32::<LittleEndian>(
-            self.parcel_data.return_type,
-        )?;
+        buffer.write_u32::<LittleEndian>(self.parcel_data.return_type)?;
         // Block TaskIDs
         buffer.write_u8(self.task_i_ds.len() as u8)?;
         for item in &self.task_i_ds {
@@ -51117,9 +47971,7 @@ impl Message for ParcelReturnObjects {
     }
 
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         // Block AgentData
         let agent_data = ParcelReturnObjects_AgentData::read_from(buffer)?;
         // Block ParcelData
@@ -51147,11 +47999,11 @@ impl Message for ParcelReturnObjects {
 
 impl Message for ParcelSales {
     fn write_to<W: ?Sized>(&self, buffer: &mut W) -> WriteMessageResult
-    where
-        W: Write,
-    {
+    where W: Write {
         // Write the message number.
-        buffer.write(&[0xff, 0xff, 0x00, 0xe2])?;
+        buffer.write(&[
+            0xff, 0xff, 0x00, 0xe2
+        ])?;
         // Block ParcelData
         buffer.write_u8(self.parcel_data.len() as u8)?;
         for item in &self.parcel_data {
@@ -51162,36 +48014,32 @@ impl Message for ParcelSales {
     }
 
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         // Block ParcelData
         let mut parcel_data = Vec::new();
         let _parcel_data_count = buffer.read_u8()?;
         for _ in 0.._parcel_data_count {
             parcel_data.push(ParcelSales_ParcelData::read_from(buffer)?);
         }
-        Ok(MessageInstance::ParcelSales(
-            ParcelSales { parcel_data: parcel_data },
-        ))
+        Ok(MessageInstance::ParcelSales(ParcelSales {
+            parcel_data: parcel_data,
+        }))
     }
 }
 
 impl Message for ParcelSelectObjects {
     fn write_to<W: ?Sized>(&self, buffer: &mut W) -> WriteMessageResult
-    where
-        W: Write,
-    {
+    where W: Write {
         // Write the message number.
-        buffer.write(&[0xff, 0xff, 0x00, 0xca])?;
+        buffer.write(&[
+            0xff, 0xff, 0x00, 0xca
+        ])?;
         // Block AgentData
         buffer.write(self.agent_data.agent_id.as_bytes())?;
         buffer.write(self.agent_data.session_id.as_bytes())?;
         // Block ParcelData
         buffer.write_i32::<LittleEndian>(self.parcel_data.local_id)?;
-        buffer.write_u32::<LittleEndian>(
-            self.parcel_data.return_type,
-        )?;
+        buffer.write_u32::<LittleEndian>(self.parcel_data.return_type)?;
         // Block ReturnIDs
         buffer.write_u8(self.return_i_ds.len() as u8)?;
         for item in &self.return_i_ds {
@@ -51201,9 +48049,7 @@ impl Message for ParcelSelectObjects {
     }
 
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         // Block AgentData
         let agent_data = ParcelSelectObjects_AgentData::read_from(buffer)?;
         // Block ParcelData
@@ -51224,26 +48070,22 @@ impl Message for ParcelSelectObjects {
 
 impl Message for ParcelSetOtherCleanTime {
     fn write_to<W: ?Sized>(&self, buffer: &mut W) -> WriteMessageResult
-    where
-        W: Write,
-    {
+    where W: Write {
         // Write the message number.
-        buffer.write(&[0xff, 0xff, 0x00, 0xc8])?;
+        buffer.write(&[
+            0xff, 0xff, 0x00, 0xc8
+        ])?;
         // Block AgentData
         buffer.write(self.agent_data.agent_id.as_bytes())?;
         buffer.write(self.agent_data.session_id.as_bytes())?;
         // Block ParcelData
         buffer.write_i32::<LittleEndian>(self.parcel_data.local_id)?;
-        buffer.write_i32::<LittleEndian>(
-            self.parcel_data.other_clean_time,
-        )?;
+        buffer.write_i32::<LittleEndian>(self.parcel_data.other_clean_time)?;
         Ok(())
     }
 
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         // Block AgentData
         let agent_data = ParcelSetOtherCleanTime_AgentData::read_from(buffer)?;
         // Block ParcelData
@@ -51259,16 +48101,14 @@ impl Message for ParcelSetOtherCleanTime {
 
 impl Message for PayPriceReply {
     fn write_to<W: ?Sized>(&self, buffer: &mut W) -> WriteMessageResult
-    where
-        W: Write,
-    {
+    where W: Write {
         // Write the message number.
-        buffer.write(&[0xff, 0xff, 0x00, 0xa2])?;
+        buffer.write(&[
+            0xff, 0xff, 0x00, 0xa2
+        ])?;
         // Block ObjectData
         buffer.write(self.object_data.object_id.as_bytes())?;
-        buffer.write_i32::<LittleEndian>(
-            self.object_data.default_pay_price,
-        )?;
+        buffer.write_i32::<LittleEndian>(self.object_data.default_pay_price)?;
         // Block ButtonData
         buffer.write_u8(self.button_data.len() as u8)?;
         for item in &self.button_data {
@@ -51278,9 +48118,7 @@ impl Message for PayPriceReply {
     }
 
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         // Block ObjectData
         let object_data = PayPriceReply_ObjectData::read_from(buffer)?;
         // Block ButtonData
@@ -51298,11 +48136,11 @@ impl Message for PayPriceReply {
 
 impl Message for PickDelete {
     fn write_to<W: ?Sized>(&self, buffer: &mut W) -> WriteMessageResult
-    where
-        W: Write,
-    {
+    where W: Write {
         // Write the message number.
-        buffer.write(&[0xff, 0xff, 0x00, 0xba])?;
+        buffer.write(&[
+            0xff, 0xff, 0x00, 0xba
+        ])?;
         // Block AgentData
         buffer.write(self.agent_data.agent_id.as_bytes())?;
         buffer.write(self.agent_data.session_id.as_bytes())?;
@@ -51312,9 +48150,7 @@ impl Message for PickDelete {
     }
 
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         // Block AgentData
         let agent_data = PickDelete_AgentData::read_from(buffer)?;
         // Block Data
@@ -51328,11 +48164,11 @@ impl Message for PickDelete {
 
 impl Message for PickGodDelete {
     fn write_to<W: ?Sized>(&self, buffer: &mut W) -> WriteMessageResult
-    where
-        W: Write,
-    {
+    where W: Write {
         // Write the message number.
-        buffer.write(&[0xff, 0xff, 0x00, 0xbb])?;
+        buffer.write(&[
+            0xff, 0xff, 0x00, 0xbb
+        ])?;
         // Block AgentData
         buffer.write(self.agent_data.agent_id.as_bytes())?;
         buffer.write(self.agent_data.session_id.as_bytes())?;
@@ -51343,9 +48179,7 @@ impl Message for PickGodDelete {
     }
 
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         // Block AgentData
         let agent_data = PickGodDelete_AgentData::read_from(buffer)?;
         // Block Data
@@ -51359,11 +48193,11 @@ impl Message for PickGodDelete {
 
 impl Message for PickInfoReply {
     fn write_to<W: ?Sized>(&self, buffer: &mut W) -> WriteMessageResult
-    where
-        W: Write,
-    {
+    where W: Write {
         // Write the message number.
-        buffer.write(&[0xff, 0xff, 0x00, 0xb8])?;
+        buffer.write(&[
+            0xff, 0xff, 0x00, 0xb8
+        ])?;
         // Block AgentData
         buffer.write(self.agent_data.agent_id.as_bytes())?;
         // Block Data
@@ -51373,9 +48207,7 @@ impl Message for PickInfoReply {
         buffer.write(self.data.parcel_id.as_bytes())?;
         buffer.write_u8(self.data.name.len() as u8)?;
         buffer.write(&self.data.name[..])?;
-        buffer.write_u16::<LittleEndian>(
-            self.data.desc.len() as u16,
-        )?;
+        buffer.write_u16::<LittleEndian>(self.data.desc.len() as u16)?;
         buffer.write(&self.data.desc[..])?;
         buffer.write(self.data.snapshot_id.as_bytes())?;
         buffer.write_u8(self.data.user.len() as u8)?;
@@ -51395,9 +48227,7 @@ impl Message for PickInfoReply {
     }
 
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         // Block AgentData
         let agent_data = PickInfoReply_AgentData::read_from(buffer)?;
         // Block Data
@@ -51411,11 +48241,11 @@ impl Message for PickInfoReply {
 
 impl Message for PickInfoUpdate {
     fn write_to<W: ?Sized>(&self, buffer: &mut W) -> WriteMessageResult
-    where
-        W: Write,
-    {
+    where W: Write {
         // Write the message number.
-        buffer.write(&[0xff, 0xff, 0x00, 0xb9])?;
+        buffer.write(&[
+            0xff, 0xff, 0x00, 0xb9
+        ])?;
         // Block AgentData
         buffer.write(self.agent_data.agent_id.as_bytes())?;
         buffer.write(self.agent_data.session_id.as_bytes())?;
@@ -51426,9 +48256,7 @@ impl Message for PickInfoUpdate {
         buffer.write(self.data.parcel_id.as_bytes())?;
         buffer.write_u8(self.data.name.len() as u8)?;
         buffer.write(&self.data.name[..])?;
-        buffer.write_u16::<LittleEndian>(
-            self.data.desc.len() as u16,
-        )?;
+        buffer.write_u16::<LittleEndian>(self.data.desc.len() as u16)?;
         buffer.write(&self.data.desc[..])?;
         buffer.write(self.data.snapshot_id.as_bytes())?;
         buffer.write_f64::<LittleEndian>(self.data.pos_global.x)?;
@@ -51442,9 +48270,7 @@ impl Message for PickInfoUpdate {
     }
 
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         // Block AgentData
         let agent_data = PickInfoUpdate_AgentData::read_from(buffer)?;
         // Block Data
@@ -51458,25 +48284,21 @@ impl Message for PickInfoUpdate {
 
 impl Message for PlacesQuery {
     fn write_to<W: ?Sized>(&self, buffer: &mut W) -> WriteMessageResult
-    where
-        W: Write,
-    {
+    where W: Write {
         // Write the message number.
-        buffer.write(&[0xff, 0xff, 0x00, 0x1d])?;
+        buffer.write(&[
+            0xff, 0xff, 0x00, 0x1d
+        ])?;
         // Block AgentData
         buffer.write(self.agent_data.agent_id.as_bytes())?;
         buffer.write(self.agent_data.session_id.as_bytes())?;
         buffer.write(self.agent_data.query_id.as_bytes())?;
         // Block TransactionData
-        buffer.write(
-            self.transaction_data.transaction_id.as_bytes(),
-        )?;
+        buffer.write(self.transaction_data.transaction_id.as_bytes())?;
         // Block QueryData
         buffer.write_u8(self.query_data.query_text.len() as u8)?;
         buffer.write(&self.query_data.query_text[..])?;
-        buffer.write_u32::<LittleEndian>(
-            self.query_data.query_flags,
-        )?;
+        buffer.write_u32::<LittleEndian>(self.query_data.query_flags)?;
         buffer.write_i8(self.query_data.category)?;
         buffer.write_u8(self.query_data.sim_name.len() as u8)?;
         buffer.write(&self.query_data.sim_name[..])?;
@@ -51484,9 +48306,7 @@ impl Message for PlacesQuery {
     }
 
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         // Block AgentData
         let agent_data = PlacesQuery_AgentData::read_from(buffer)?;
         // Block TransactionData
@@ -51503,18 +48323,16 @@ impl Message for PlacesQuery {
 
 impl Message for PlacesReply {
     fn write_to<W: ?Sized>(&self, buffer: &mut W) -> WriteMessageResult
-    where
-        W: Write,
-    {
+    where W: Write {
         // Write the message number.
-        buffer.write(&[0xff, 0xff, 0x00, 0x1e])?;
+        buffer.write(&[
+            0xff, 0xff, 0x00, 0x1e
+        ])?;
         // Block AgentData
         buffer.write(self.agent_data.agent_id.as_bytes())?;
         buffer.write(self.agent_data.query_id.as_bytes())?;
         // Block TransactionData
-        buffer.write(
-            self.transaction_data.transaction_id.as_bytes(),
-        )?;
+        buffer.write(self.transaction_data.transaction_id.as_bytes())?;
         // Block QueryData
         buffer.write_u8(self.query_data.len() as u8)?;
         for item in &self.query_data {
@@ -51539,9 +48357,7 @@ impl Message for PlacesReply {
     }
 
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         // Block AgentData
         let agent_data = PlacesReply_AgentData::read_from(buffer)?;
         // Block TransactionData
@@ -51562,9 +48378,7 @@ impl Message for PlacesReply {
 
 impl Message for PreloadSound {
     fn write_to<W: ?Sized>(&self, buffer: &mut W) -> WriteMessageResult
-    where
-        W: Write,
-    {
+    where W: Write {
         // Write the message number.
         buffer.write(&[0xff, 0x0f])?;
         // Block DataBlock
@@ -51578,28 +48392,26 @@ impl Message for PreloadSound {
     }
 
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         // Block DataBlock
         let mut data_block = Vec::new();
         let _data_block_count = buffer.read_u8()?;
         for _ in 0.._data_block_count {
             data_block.push(PreloadSound_DataBlock::read_from(buffer)?);
         }
-        Ok(MessageInstance::PreloadSound(
-            PreloadSound { data_block: data_block },
-        ))
+        Ok(MessageInstance::PreloadSound(PreloadSound {
+            data_block: data_block,
+        }))
     }
 }
 
 impl Message for PurgeInventoryDescendents {
     fn write_to<W: ?Sized>(&self, buffer: &mut W) -> WriteMessageResult
-    where
-        W: Write,
-    {
+    where W: Write {
         // Write the message number.
-        buffer.write(&[0xff, 0xff, 0x01, 0x1d])?;
+        buffer.write(&[
+            0xff, 0xff, 0x01, 0x1d
+        ])?;
         // Block AgentData
         buffer.write(self.agent_data.agent_id.as_bytes())?;
         buffer.write(self.agent_data.session_id.as_bytes())?;
@@ -51609,9 +48421,7 @@ impl Message for PurgeInventoryDescendents {
     }
 
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         // Block AgentData
         let agent_data = PurgeInventoryDescendents_AgentData::read_from(buffer)?;
         // Block InventoryData
@@ -51627,35 +48437,35 @@ impl Message for PurgeInventoryDescendents {
 
 impl Message for RebakeAvatarTextures {
     fn write_to<W: ?Sized>(&self, buffer: &mut W) -> WriteMessageResult
-    where
-        W: Write,
-    {
+    where W: Write {
         // Write the message number.
-        buffer.write(&[0xff, 0xff, 0x00, 0x57])?;
+        buffer.write(&[
+            0xff, 0xff, 0x00, 0x57
+        ])?;
         // Block TextureData
         buffer.write(self.texture_data.texture_id.as_bytes())?;
         Ok(())
     }
 
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         // Block TextureData
         let texture_data = RebakeAvatarTextures_TextureData::read_from(buffer)?;
         Ok(MessageInstance::RebakeAvatarTextures(
-            RebakeAvatarTextures { texture_data: texture_data },
+            RebakeAvatarTextures {
+                texture_data: texture_data,
+            },
         ))
     }
 }
 
 impl Message for Redo {
     fn write_to<W: ?Sized>(&self, buffer: &mut W) -> WriteMessageResult
-    where
-        W: Write,
-    {
+    where W: Write {
         // Write the message number.
-        buffer.write(&[0xff, 0xff, 0x00, 0x4c])?;
+        buffer.write(&[
+            0xff, 0xff, 0x00, 0x4c
+        ])?;
         // Block AgentData
         buffer.write(self.agent_data.agent_id.as_bytes())?;
         buffer.write(self.agent_data.session_id.as_bytes())?;
@@ -51669,9 +48479,7 @@ impl Message for Redo {
     }
 
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         // Block AgentData
         let agent_data = Redo_AgentData::read_from(buffer)?;
         // Block ObjectData
@@ -51689,50 +48497,42 @@ impl Message for Redo {
 
 impl Message for RegionHandleRequest {
     fn write_to<W: ?Sized>(&self, buffer: &mut W) -> WriteMessageResult
-    where
-        W: Write,
-    {
+    where W: Write {
         // Write the message number.
-        buffer.write(&[0xff, 0xff, 0x01, 0x35])?;
+        buffer.write(&[
+            0xff, 0xff, 0x01, 0x35
+        ])?;
         // Block RequestBlock
         buffer.write(self.request_block.region_id.as_bytes())?;
         Ok(())
     }
 
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         // Block RequestBlock
         let request_block = RegionHandleRequest_RequestBlock::read_from(buffer)?;
-        Ok(MessageInstance::RegionHandleRequest(
-            RegionHandleRequest { request_block: request_block },
-        ))
+        Ok(MessageInstance::RegionHandleRequest(RegionHandleRequest {
+            request_block: request_block,
+        }))
     }
 }
 
 impl Message for RegionHandshake {
     fn write_to<W: ?Sized>(&self, buffer: &mut W) -> WriteMessageResult
-    where
-        W: Write,
-    {
+    where W: Write {
         // Write the message number.
-        buffer.write(&[0xff, 0xff, 0x00, 0x94])?;
+        buffer.write(&[
+            0xff, 0xff, 0x00, 0x94
+        ])?;
         // Block RegionInfo
-        buffer.write_u32::<LittleEndian>(
-            self.region_info.region_flags,
-        )?;
+        buffer.write_u32::<LittleEndian>(self.region_info.region_flags)?;
         buffer.write_u8(self.region_info.sim_access)?;
         buffer.write_u8(self.region_info.sim_name.len() as u8)?;
         buffer.write(&self.region_info.sim_name[..])?;
         buffer.write(self.region_info.sim_owner.as_bytes())?;
         buffer.write_u8(self.region_info.is_estate_manager as u8)?;
-        buffer.write_f32::<LittleEndian>(
-            self.region_info.water_height,
-        )?;
-        buffer.write_f32::<LittleEndian>(
-            self.region_info.billable_factor,
-        )?;
+        buffer.write_f32::<LittleEndian>(self.region_info.water_height)?;
+        buffer.write_f32::<LittleEndian>(self.region_info.billable_factor)?;
         buffer.write(self.region_info.cache_id.as_bytes())?;
         buffer.write(self.region_info.terrain_base0.as_bytes())?;
         buffer.write(self.region_info.terrain_base1.as_bytes())?;
@@ -51742,39 +48542,19 @@ impl Message for RegionHandshake {
         buffer.write(self.region_info.terrain_detail1.as_bytes())?;
         buffer.write(self.region_info.terrain_detail2.as_bytes())?;
         buffer.write(self.region_info.terrain_detail3.as_bytes())?;
-        buffer.write_f32::<LittleEndian>(
-            self.region_info.terrain_start_height00,
-        )?;
-        buffer.write_f32::<LittleEndian>(
-            self.region_info.terrain_start_height01,
-        )?;
-        buffer.write_f32::<LittleEndian>(
-            self.region_info.terrain_start_height10,
-        )?;
-        buffer.write_f32::<LittleEndian>(
-            self.region_info.terrain_start_height11,
-        )?;
-        buffer.write_f32::<LittleEndian>(
-            self.region_info.terrain_height_range00,
-        )?;
-        buffer.write_f32::<LittleEndian>(
-            self.region_info.terrain_height_range01,
-        )?;
-        buffer.write_f32::<LittleEndian>(
-            self.region_info.terrain_height_range10,
-        )?;
-        buffer.write_f32::<LittleEndian>(
-            self.region_info.terrain_height_range11,
-        )?;
+        buffer.write_f32::<LittleEndian>(self.region_info.terrain_start_height00)?;
+        buffer.write_f32::<LittleEndian>(self.region_info.terrain_start_height01)?;
+        buffer.write_f32::<LittleEndian>(self.region_info.terrain_start_height10)?;
+        buffer.write_f32::<LittleEndian>(self.region_info.terrain_start_height11)?;
+        buffer.write_f32::<LittleEndian>(self.region_info.terrain_height_range00)?;
+        buffer.write_f32::<LittleEndian>(self.region_info.terrain_height_range01)?;
+        buffer.write_f32::<LittleEndian>(self.region_info.terrain_height_range10)?;
+        buffer.write_f32::<LittleEndian>(self.region_info.terrain_height_range11)?;
         // Block RegionInfo2
         buffer.write(self.region_info2.region_id.as_bytes())?;
         // Block RegionInfo3
-        buffer.write_i32::<LittleEndian>(
-            self.region_info3.cpu_class_id,
-        )?;
-        buffer.write_i32::<LittleEndian>(
-            self.region_info3.cpu_ratio,
-        )?;
+        buffer.write_i32::<LittleEndian>(self.region_info3.cpu_class_id)?;
+        buffer.write_i32::<LittleEndian>(self.region_info3.cpu_ratio)?;
         buffer.write_u8(self.region_info3.colo_name.len() as u8)?;
         buffer.write(&self.region_info3.colo_name[..])?;
         buffer.write_u8(self.region_info3.product_sku.len() as u8)?;
@@ -51785,9 +48565,7 @@ impl Message for RegionHandshake {
     }
 
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         // Block RegionInfo
         let region_info = RegionHandshake_RegionInfo::read_from(buffer)?;
         // Block RegionInfo2
@@ -51804,11 +48582,11 @@ impl Message for RegionHandshake {
 
 impl Message for RegionHandshakeReply {
     fn write_to<W: ?Sized>(&self, buffer: &mut W) -> WriteMessageResult
-    where
-        W: Write,
-    {
+    where W: Write {
         // Write the message number.
-        buffer.write(&[0xff, 0xff, 0x00, 0x95])?;
+        buffer.write(&[
+            0xff, 0xff, 0x00, 0x95
+        ])?;
         // Block AgentData
         buffer.write(self.agent_data.agent_id.as_bytes())?;
         buffer.write(self.agent_data.session_id.as_bytes())?;
@@ -51818,9 +48596,7 @@ impl Message for RegionHandshakeReply {
     }
 
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         // Block AgentData
         let agent_data = RegionHandshakeReply_AgentData::read_from(buffer)?;
         // Block RegionInfo
@@ -51836,38 +48612,36 @@ impl Message for RegionHandshakeReply {
 
 impl Message for RegionIDAndHandleReply {
     fn write_to<W: ?Sized>(&self, buffer: &mut W) -> WriteMessageResult
-    where
-        W: Write,
-    {
+    where W: Write {
         // Write the message number.
-        buffer.write(&[0xff, 0xff, 0x01, 0x36])?;
+        buffer.write(&[
+            0xff, 0xff, 0x01, 0x36
+        ])?;
         // Block ReplyBlock
         buffer.write(self.reply_block.region_id.as_bytes())?;
-        buffer.write_u64::<LittleEndian>(
-            self.reply_block.region_handle,
-        )?;
+        buffer.write_u64::<LittleEndian>(self.reply_block.region_handle)?;
         Ok(())
     }
 
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         // Block ReplyBlock
         let reply_block = RegionIDAndHandleReply_ReplyBlock::read_from(buffer)?;
         Ok(MessageInstance::RegionIDAndHandleReply(
-            RegionIDAndHandleReply { reply_block: reply_block },
+            RegionIDAndHandleReply {
+                reply_block: reply_block,
+            },
         ))
     }
 }
 
 impl Message for RegionInfo {
     fn write_to<W: ?Sized>(&self, buffer: &mut W) -> WriteMessageResult
-    where
-        W: Write,
-    {
+    where W: Write {
         // Write the message number.
-        buffer.write(&[0xff, 0xff, 0x00, 0x8e])?;
+        buffer.write(&[
+            0xff, 0xff, 0x00, 0x8e
+        ])?;
         // Block AgentData
         buffer.write(self.agent_data.agent_id.as_bytes())?;
         buffer.write(self.agent_data.session_id.as_bytes())?;
@@ -51875,38 +48649,18 @@ impl Message for RegionInfo {
         buffer.write_u8(self.region_info.sim_name.len() as u8)?;
         buffer.write(&self.region_info.sim_name[..])?;
         buffer.write_u32::<LittleEndian>(self.region_info.estate_id)?;
-        buffer.write_u32::<LittleEndian>(
-            self.region_info.parent_estate_id,
-        )?;
-        buffer.write_u32::<LittleEndian>(
-            self.region_info.region_flags,
-        )?;
+        buffer.write_u32::<LittleEndian>(self.region_info.parent_estate_id)?;
+        buffer.write_u32::<LittleEndian>(self.region_info.region_flags)?;
         buffer.write_u8(self.region_info.sim_access)?;
         buffer.write_u8(self.region_info.max_agents)?;
-        buffer.write_f32::<LittleEndian>(
-            self.region_info.billable_factor,
-        )?;
-        buffer.write_f32::<LittleEndian>(
-            self.region_info.object_bonus_factor,
-        )?;
-        buffer.write_f32::<LittleEndian>(
-            self.region_info.water_height,
-        )?;
-        buffer.write_f32::<LittleEndian>(
-            self.region_info.terrain_raise_limit,
-        )?;
-        buffer.write_f32::<LittleEndian>(
-            self.region_info.terrain_lower_limit,
-        )?;
-        buffer.write_i32::<LittleEndian>(
-            self.region_info.price_per_meter,
-        )?;
-        buffer.write_i32::<LittleEndian>(
-            self.region_info.redirect_grid_x,
-        )?;
-        buffer.write_i32::<LittleEndian>(
-            self.region_info.redirect_grid_y,
-        )?;
+        buffer.write_f32::<LittleEndian>(self.region_info.billable_factor)?;
+        buffer.write_f32::<LittleEndian>(self.region_info.object_bonus_factor)?;
+        buffer.write_f32::<LittleEndian>(self.region_info.water_height)?;
+        buffer.write_f32::<LittleEndian>(self.region_info.terrain_raise_limit)?;
+        buffer.write_f32::<LittleEndian>(self.region_info.terrain_lower_limit)?;
+        buffer.write_i32::<LittleEndian>(self.region_info.price_per_meter)?;
+        buffer.write_i32::<LittleEndian>(self.region_info.redirect_grid_x)?;
+        buffer.write_i32::<LittleEndian>(self.region_info.redirect_grid_y)?;
         buffer.write_u8(self.region_info.use_estate_sun as u8)?;
         buffer.write_f32::<LittleEndian>(self.region_info.sun_hour)?;
         // Block RegionInfo2
@@ -51914,22 +48668,14 @@ impl Message for RegionInfo {
         buffer.write(&self.region_info2.product_sku[..])?;
         buffer.write_u8(self.region_info2.product_name.len() as u8)?;
         buffer.write(&self.region_info2.product_name[..])?;
-        buffer.write_u32::<LittleEndian>(
-            self.region_info2.max_agents32,
-        )?;
-        buffer.write_u32::<LittleEndian>(
-            self.region_info2.hard_max_agents,
-        )?;
-        buffer.write_u32::<LittleEndian>(
-            self.region_info2.hard_max_objects,
-        )?;
+        buffer.write_u32::<LittleEndian>(self.region_info2.max_agents32)?;
+        buffer.write_u32::<LittleEndian>(self.region_info2.hard_max_agents)?;
+        buffer.write_u32::<LittleEndian>(self.region_info2.hard_max_objects)?;
         Ok(())
     }
 
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         // Block AgentData
         let agent_data = RegionInfo_AgentData::read_from(buffer)?;
         // Block RegionInfo
@@ -51946,11 +48692,11 @@ impl Message for RegionInfo {
 
 impl Message for RegionPresenceRequestByHandle {
     fn write_to<W: ?Sized>(&self, buffer: &mut W) -> WriteMessageResult
-    where
-        W: Write,
-    {
+    where W: Write {
         // Write the message number.
-        buffer.write(&[0xff, 0xff, 0x00, 0x0f])?;
+        buffer.write(&[
+            0xff, 0xff, 0x00, 0x0f
+        ])?;
         // Block RegionData
         buffer.write_u8(self.region_data.len() as u8)?;
         for item in &self.region_data {
@@ -51960,9 +48706,7 @@ impl Message for RegionPresenceRequestByHandle {
     }
 
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         // Block RegionData
         let mut region_data = Vec::new();
         let _region_data_count = buffer.read_u8()?;
@@ -51970,18 +48714,20 @@ impl Message for RegionPresenceRequestByHandle {
             region_data.push(RegionPresenceRequestByHandle_RegionData::read_from(buffer)?);
         }
         Ok(MessageInstance::RegionPresenceRequestByHandle(
-            RegionPresenceRequestByHandle { region_data: region_data },
+            RegionPresenceRequestByHandle {
+                region_data: region_data,
+            },
         ))
     }
 }
 
 impl Message for RegionPresenceRequestByRegionID {
     fn write_to<W: ?Sized>(&self, buffer: &mut W) -> WriteMessageResult
-    where
-        W: Write,
-    {
+    where W: Write {
         // Write the message number.
-        buffer.write(&[0xff, 0xff, 0x00, 0x0e])?;
+        buffer.write(&[
+            0xff, 0xff, 0x00, 0x0e
+        ])?;
         // Block RegionData
         buffer.write_u8(self.region_data.len() as u8)?;
         for item in &self.region_data {
@@ -51991,9 +48737,7 @@ impl Message for RegionPresenceRequestByRegionID {
     }
 
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         // Block RegionData
         let mut region_data = Vec::new();
         let _region_data_count = buffer.read_u8()?;
@@ -52003,18 +48747,20 @@ impl Message for RegionPresenceRequestByRegionID {
             )?);
         }
         Ok(MessageInstance::RegionPresenceRequestByRegionID(
-            RegionPresenceRequestByRegionID { region_data: region_data },
+            RegionPresenceRequestByRegionID {
+                region_data: region_data,
+            },
         ))
     }
 }
 
 impl Message for RegionPresenceResponse {
     fn write_to<W: ?Sized>(&self, buffer: &mut W) -> WriteMessageResult
-    where
-        W: Write,
-    {
+    where W: Write {
         // Write the message number.
-        buffer.write(&[0xff, 0xff, 0x00, 0x10])?;
+        buffer.write(&[
+            0xff, 0xff, 0x00, 0x10
+        ])?;
         // Block RegionData
         buffer.write_u8(self.region_data.len() as u8)?;
         for item in &self.region_data {
@@ -52031,9 +48777,7 @@ impl Message for RegionPresenceResponse {
     }
 
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         // Block RegionData
         let mut region_data = Vec::new();
         let _region_data_count = buffer.read_u8()?;
@@ -52041,18 +48785,20 @@ impl Message for RegionPresenceResponse {
             region_data.push(RegionPresenceResponse_RegionData::read_from(buffer)?);
         }
         Ok(MessageInstance::RegionPresenceResponse(
-            RegionPresenceResponse { region_data: region_data },
+            RegionPresenceResponse {
+                region_data: region_data,
+            },
         ))
     }
 }
 
 impl Message for RemoveAttachment {
     fn write_to<W: ?Sized>(&self, buffer: &mut W) -> WriteMessageResult
-    where
-        W: Write,
-    {
+    where W: Write {
         // Write the message number.
-        buffer.write(&[0xff, 0xff, 0x01, 0x4c])?;
+        buffer.write(&[
+            0xff, 0xff, 0x01, 0x4c
+        ])?;
         // Block AgentData
         buffer.write(self.agent_data.agent_id.as_bytes())?;
         buffer.write(self.agent_data.session_id.as_bytes())?;
@@ -52063,9 +48809,7 @@ impl Message for RemoveAttachment {
     }
 
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         // Block AgentData
         let agent_data = RemoveAttachment_AgentData::read_from(buffer)?;
         // Block AttachmentBlock
@@ -52079,11 +48823,11 @@ impl Message for RemoveAttachment {
 
 impl Message for RemoveInventoryFolder {
     fn write_to<W: ?Sized>(&self, buffer: &mut W) -> WriteMessageResult
-    where
-        W: Write,
-    {
+    where W: Write {
         // Write the message number.
-        buffer.write(&[0xff, 0xff, 0x01, 0x14])?;
+        buffer.write(&[
+            0xff, 0xff, 0x01, 0x14
+        ])?;
         // Block AgentData
         buffer.write(self.agent_data.agent_id.as_bytes())?;
         buffer.write(self.agent_data.session_id.as_bytes())?;
@@ -52096,9 +48840,7 @@ impl Message for RemoveInventoryFolder {
     }
 
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         // Block AgentData
         let agent_data = RemoveInventoryFolder_AgentData::read_from(buffer)?;
         // Block FolderData
@@ -52118,11 +48860,11 @@ impl Message for RemoveInventoryFolder {
 
 impl Message for RemoveInventoryItem {
     fn write_to<W: ?Sized>(&self, buffer: &mut W) -> WriteMessageResult
-    where
-        W: Write,
-    {
+    where W: Write {
         // Write the message number.
-        buffer.write(&[0xff, 0xff, 0x01, 0x0e])?;
+        buffer.write(&[
+            0xff, 0xff, 0x01, 0x0e
+        ])?;
         // Block AgentData
         buffer.write(self.agent_data.agent_id.as_bytes())?;
         buffer.write(self.agent_data.session_id.as_bytes())?;
@@ -52135,9 +48877,7 @@ impl Message for RemoveInventoryItem {
     }
 
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         // Block AgentData
         let agent_data = RemoveInventoryItem_AgentData::read_from(buffer)?;
         // Block InventoryData
@@ -52155,11 +48895,11 @@ impl Message for RemoveInventoryItem {
 
 impl Message for RemoveInventoryObjects {
     fn write_to<W: ?Sized>(&self, buffer: &mut W) -> WriteMessageResult
-    where
-        W: Write,
-    {
+    where W: Write {
         // Write the message number.
-        buffer.write(&[0xff, 0xff, 0x01, 0x1c])?;
+        buffer.write(&[
+            0xff, 0xff, 0x01, 0x1c
+        ])?;
         // Block AgentData
         buffer.write(self.agent_data.agent_id.as_bytes())?;
         buffer.write(self.agent_data.session_id.as_bytes())?;
@@ -52177,9 +48917,7 @@ impl Message for RemoveInventoryObjects {
     }
 
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         // Block AgentData
         let agent_data = RemoveInventoryObjects_AgentData::read_from(buffer)?;
         // Block FolderData
@@ -52206,11 +48944,11 @@ impl Message for RemoveInventoryObjects {
 
 impl Message for RemoveMuteListEntry {
     fn write_to<W: ?Sized>(&self, buffer: &mut W) -> WriteMessageResult
-    where
-        W: Write,
-    {
+    where W: Write {
         // Write the message number.
-        buffer.write(&[0xff, 0xff, 0x01, 0x08])?;
+        buffer.write(&[
+            0xff, 0xff, 0x01, 0x08
+        ])?;
         // Block AgentData
         buffer.write(self.agent_data.agent_id.as_bytes())?;
         buffer.write(self.agent_data.session_id.as_bytes())?;
@@ -52222,9 +48960,7 @@ impl Message for RemoveMuteListEntry {
     }
 
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         // Block AgentData
         let agent_data = RemoveMuteListEntry_AgentData::read_from(buffer)?;
         // Block MuteData
@@ -52238,11 +48974,11 @@ impl Message for RemoveMuteListEntry {
 
 impl Message for RemoveNameValuePair {
     fn write_to<W: ?Sized>(&self, buffer: &mut W) -> WriteMessageResult
-    where
-        W: Write,
-    {
+    where W: Write {
         // Write the message number.
-        buffer.write(&[0xff, 0xff, 0x01, 0x4a])?;
+        buffer.write(&[
+            0xff, 0xff, 0x01, 0x4a
+        ])?;
         // Block TaskData
         buffer.write(self.task_data.id.as_bytes())?;
         // Block NameValueData
@@ -52255,9 +48991,7 @@ impl Message for RemoveNameValuePair {
     }
 
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         // Block TaskData
         let task_data = RemoveNameValuePair_TaskData::read_from(buffer)?;
         // Block NameValueData
@@ -52275,11 +49009,11 @@ impl Message for RemoveNameValuePair {
 
 impl Message for RemoveParcel {
     fn write_to<W: ?Sized>(&self, buffer: &mut W) -> WriteMessageResult
-    where
-        W: Write,
-    {
+    where W: Write {
         // Write the message number.
-        buffer.write(&[0xff, 0xff, 0x00, 0xde])?;
+        buffer.write(&[
+            0xff, 0xff, 0x00, 0xde
+        ])?;
         // Block ParcelData
         buffer.write_u8(self.parcel_data.len() as u8)?;
         for item in &self.parcel_data {
@@ -52289,43 +49023,37 @@ impl Message for RemoveParcel {
     }
 
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         // Block ParcelData
         let mut parcel_data = Vec::new();
         let _parcel_data_count = buffer.read_u8()?;
         for _ in 0.._parcel_data_count {
             parcel_data.push(RemoveParcel_ParcelData::read_from(buffer)?);
         }
-        Ok(MessageInstance::RemoveParcel(
-            RemoveParcel { parcel_data: parcel_data },
-        ))
+        Ok(MessageInstance::RemoveParcel(RemoveParcel {
+            parcel_data: parcel_data,
+        }))
     }
 }
 
 impl Message for RemoveTaskInventory {
     fn write_to<W: ?Sized>(&self, buffer: &mut W) -> WriteMessageResult
-    where
-        W: Write,
-    {
+    where W: Write {
         // Write the message number.
-        buffer.write(&[0xff, 0xff, 0x01, 0x1f])?;
+        buffer.write(&[
+            0xff, 0xff, 0x01, 0x1f
+        ])?;
         // Block AgentData
         buffer.write(self.agent_data.agent_id.as_bytes())?;
         buffer.write(self.agent_data.session_id.as_bytes())?;
         // Block InventoryData
-        buffer.write_u32::<LittleEndian>(
-            self.inventory_data.local_id,
-        )?;
+        buffer.write_u32::<LittleEndian>(self.inventory_data.local_id)?;
         buffer.write(self.inventory_data.item_id.as_bytes())?;
         Ok(())
     }
 
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         // Block AgentData
         let agent_data = RemoveTaskInventory_AgentData::read_from(buffer)?;
         // Block InventoryData
@@ -52339,11 +49067,11 @@ impl Message for RemoveTaskInventory {
 
 impl Message for ReplyTaskInventory {
     fn write_to<W: ?Sized>(&self, buffer: &mut W) -> WriteMessageResult
-    where
-        W: Write,
-    {
+    where W: Write {
         // Write the message number.
-        buffer.write(&[0xff, 0xff, 0x01, 0x22])?;
+        buffer.write(&[
+            0xff, 0xff, 0x01, 0x22
+        ])?;
         // Block InventoryData
         buffer.write(self.inventory_data.task_id.as_bytes())?;
         buffer.write_i16::<LittleEndian>(self.inventory_data.serial)?;
@@ -52353,24 +49081,22 @@ impl Message for ReplyTaskInventory {
     }
 
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         // Block InventoryData
         let inventory_data = ReplyTaskInventory_InventoryData::read_from(buffer)?;
-        Ok(MessageInstance::ReplyTaskInventory(
-            ReplyTaskInventory { inventory_data: inventory_data },
-        ))
+        Ok(MessageInstance::ReplyTaskInventory(ReplyTaskInventory {
+            inventory_data: inventory_data,
+        }))
     }
 }
 
 impl Message for ReportAutosaveCrash {
     fn write_to<W: ?Sized>(&self, buffer: &mut W) -> WriteMessageResult
-    where
-        W: Write,
-    {
+    where W: Write {
         // Write the message number.
-        buffer.write(&[0xff, 0xff, 0x00, 0x80])?;
+        buffer.write(&[
+            0xff, 0xff, 0x00, 0x80
+        ])?;
         // Block AutosaveData
         buffer.write_i32::<LittleEndian>(self.autosave_data.pid)?;
         buffer.write_i32::<LittleEndian>(self.autosave_data.status)?;
@@ -52378,24 +49104,22 @@ impl Message for ReportAutosaveCrash {
     }
 
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         // Block AutosaveData
         let autosave_data = ReportAutosaveCrash_AutosaveData::read_from(buffer)?;
-        Ok(MessageInstance::ReportAutosaveCrash(
-            ReportAutosaveCrash { autosave_data: autosave_data },
-        ))
+        Ok(MessageInstance::ReportAutosaveCrash(ReportAutosaveCrash {
+            autosave_data: autosave_data,
+        }))
     }
 }
 
 impl Message for RequestGodlikePowers {
     fn write_to<W: ?Sized>(&self, buffer: &mut W) -> WriteMessageResult
-    where
-        W: Write,
-    {
+    where W: Write {
         // Write the message number.
-        buffer.write(&[0xff, 0xff, 0x01, 0x01])?;
+        buffer.write(&[
+            0xff, 0xff, 0x01, 0x01
+        ])?;
         // Block AgentData
         buffer.write(self.agent_data.agent_id.as_bytes())?;
         buffer.write(self.agent_data.session_id.as_bytes())?;
@@ -52406,9 +49130,7 @@ impl Message for RequestGodlikePowers {
     }
 
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         // Block AgentData
         let agent_data = RequestGodlikePowers_AgentData::read_from(buffer)?;
         // Block RequestBlock
@@ -52424,9 +49146,7 @@ impl Message for RequestGodlikePowers {
 
 impl Message for RequestImage {
     fn write_to<W: ?Sized>(&self, buffer: &mut W) -> WriteMessageResult
-    where
-        W: Write,
-    {
+    where W: Write {
         // Write the message number.
         buffer.write(&[0x08])?;
         // Block AgentData
@@ -52445,9 +49165,7 @@ impl Message for RequestImage {
     }
 
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         // Block AgentData
         let agent_data = RequestImage_AgentData::read_from(buffer)?;
         // Block RequestImage
@@ -52465,11 +49183,11 @@ impl Message for RequestImage {
 
 impl Message for RequestInventoryAsset {
     fn write_to<W: ?Sized>(&self, buffer: &mut W) -> WriteMessageResult
-    where
-        W: Write,
-    {
+    where W: Write {
         // Write the message number.
-        buffer.write(&[0xff, 0xff, 0x01, 0x1a])?;
+        buffer.write(&[
+            0xff, 0xff, 0x01, 0x1a
+        ])?;
         // Block QueryData
         buffer.write(self.query_data.query_id.as_bytes())?;
         buffer.write(self.query_data.agent_id.as_bytes())?;
@@ -52479,22 +49197,20 @@ impl Message for RequestInventoryAsset {
     }
 
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         // Block QueryData
         let query_data = RequestInventoryAsset_QueryData::read_from(buffer)?;
         Ok(MessageInstance::RequestInventoryAsset(
-            RequestInventoryAsset { query_data: query_data },
+            RequestInventoryAsset {
+                query_data: query_data,
+            },
         ))
     }
 }
 
 impl Message for RequestMultipleObjects {
     fn write_to<W: ?Sized>(&self, buffer: &mut W) -> WriteMessageResult
-    where
-        W: Write,
-    {
+    where W: Write {
         // Write the message number.
         buffer.write(&[0xff, 0x03])?;
         // Block AgentData
@@ -52510,9 +49226,7 @@ impl Message for RequestMultipleObjects {
     }
 
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         // Block AgentData
         let agent_data = RequestMultipleObjects_AgentData::read_from(buffer)?;
         // Block ObjectData
@@ -52532,26 +49246,20 @@ impl Message for RequestMultipleObjects {
 
 impl Message for RequestObjectPropertiesFamily {
     fn write_to<W: ?Sized>(&self, buffer: &mut W) -> WriteMessageResult
-    where
-        W: Write,
-    {
+    where W: Write {
         // Write the message number.
         buffer.write(&[0xff, 0x05])?;
         // Block AgentData
         buffer.write(self.agent_data.agent_id.as_bytes())?;
         buffer.write(self.agent_data.session_id.as_bytes())?;
         // Block ObjectData
-        buffer.write_u32::<LittleEndian>(
-            self.object_data.request_flags,
-        )?;
+        buffer.write_u32::<LittleEndian>(self.object_data.request_flags)?;
         buffer.write(self.object_data.object_id.as_bytes())?;
         Ok(())
     }
 
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         // Block AgentData
         let agent_data = RequestObjectPropertiesFamily_AgentData::read_from(buffer)?;
         // Block ObjectData
@@ -52567,11 +49275,11 @@ impl Message for RequestObjectPropertiesFamily {
 
 impl Message for RequestParcelTransfer {
     fn write_to<W: ?Sized>(&self, buffer: &mut W) -> WriteMessageResult
-    where
-        W: Write,
-    {
+    where W: Write {
         // Write the message number.
-        buffer.write(&[0xff, 0xff, 0x00, 0xdc])?;
+        buffer.write(&[
+            0xff, 0xff, 0x00, 0xdc
+        ])?;
         // Block Data
         buffer.write(self.data.transaction_id.as_bytes())?;
         buffer.write_u32::<LittleEndian>(self.data.transaction_time)?;
@@ -52592,9 +49300,7 @@ impl Message for RequestParcelTransfer {
     }
 
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         // Block Data
         let data = RequestParcelTransfer_Data::read_from(buffer)?;
         // Block RegionData
@@ -52610,35 +49316,33 @@ impl Message for RequestParcelTransfer {
 
 impl Message for RequestPayPrice {
     fn write_to<W: ?Sized>(&self, buffer: &mut W) -> WriteMessageResult
-    where
-        W: Write,
-    {
+    where W: Write {
         // Write the message number.
-        buffer.write(&[0xff, 0xff, 0x00, 0xa1])?;
+        buffer.write(&[
+            0xff, 0xff, 0x00, 0xa1
+        ])?;
         // Block ObjectData
         buffer.write(self.object_data.object_id.as_bytes())?;
         Ok(())
     }
 
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         // Block ObjectData
         let object_data = RequestPayPrice_ObjectData::read_from(buffer)?;
-        Ok(MessageInstance::RequestPayPrice(
-            RequestPayPrice { object_data: object_data },
-        ))
+        Ok(MessageInstance::RequestPayPrice(RequestPayPrice {
+            object_data: object_data,
+        }))
     }
 }
 
 impl Message for RequestRegionInfo {
     fn write_to<W: ?Sized>(&self, buffer: &mut W) -> WriteMessageResult
-    where
-        W: Write,
-    {
+    where W: Write {
         // Write the message number.
-        buffer.write(&[0xff, 0xff, 0x00, 0x8d])?;
+        buffer.write(&[
+            0xff, 0xff, 0x00, 0x8d
+        ])?;
         // Block AgentData
         buffer.write(self.agent_data.agent_id.as_bytes())?;
         buffer.write(self.agent_data.session_id.as_bytes())?;
@@ -52646,38 +49350,32 @@ impl Message for RequestRegionInfo {
     }
 
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         // Block AgentData
         let agent_data = RequestRegionInfo_AgentData::read_from(buffer)?;
-        Ok(MessageInstance::RequestRegionInfo(
-            RequestRegionInfo { agent_data: agent_data },
-        ))
+        Ok(MessageInstance::RequestRegionInfo(RequestRegionInfo {
+            agent_data: agent_data,
+        }))
     }
 }
 
 impl Message for RequestTaskInventory {
     fn write_to<W: ?Sized>(&self, buffer: &mut W) -> WriteMessageResult
-    where
-        W: Write,
-    {
+    where W: Write {
         // Write the message number.
-        buffer.write(&[0xff, 0xff, 0x01, 0x21])?;
+        buffer.write(&[
+            0xff, 0xff, 0x01, 0x21
+        ])?;
         // Block AgentData
         buffer.write(self.agent_data.agent_id.as_bytes())?;
         buffer.write(self.agent_data.session_id.as_bytes())?;
         // Block InventoryData
-        buffer.write_u32::<LittleEndian>(
-            self.inventory_data.local_id,
-        )?;
+        buffer.write_u32::<LittleEndian>(self.inventory_data.local_id)?;
         Ok(())
     }
 
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         // Block AgentData
         let agent_data = RequestTaskInventory_AgentData::read_from(buffer)?;
         // Block InventoryData
@@ -52693,18 +49391,16 @@ impl Message for RequestTaskInventory {
 
 impl Message for RequestTrustedCircuit {
     fn write_to<W: ?Sized>(&self, buffer: &mut W) -> WriteMessageResult
-    where
-        W: Write,
-    {
+    where W: Write {
         // Write the message number.
-        buffer.write(&[0xff, 0xff, 0x01, 0x8a])?;
+        buffer.write(&[
+            0xff, 0xff, 0x01, 0x8a
+        ])?;
         Ok(())
     }
 
     fn read_from<R: ?Sized>(_: &mut R) -> Result<MessageInstance, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(MessageInstance::RequestTrustedCircuit(
             RequestTrustedCircuit {},
         ))
@@ -52713,11 +49409,11 @@ impl Message for RequestTrustedCircuit {
 
 impl Message for RequestXfer {
     fn write_to<W: ?Sized>(&self, buffer: &mut W) -> WriteMessageResult
-    where
-        W: Write,
-    {
+    where W: Write {
         // Write the message number.
-        buffer.write(&[0xff, 0xff, 0x00, 0x9c])?;
+        buffer.write(&[
+            0xff, 0xff, 0x00, 0x9c
+        ])?;
         // Block XferID
         buffer.write_u64::<LittleEndian>(self.xfer_id.id)?;
         buffer.write_u8(self.xfer_id.filename.len() as u8)?;
@@ -52731,9 +49427,7 @@ impl Message for RequestXfer {
     }
 
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         // Block XferID
         let xfer_id = RequestXfer_XferID::read_from(buffer)?;
         Ok(MessageInstance::RequestXfer(
@@ -52744,11 +49438,11 @@ impl Message for RequestXfer {
 
 impl Message for RetrieveInstantMessages {
     fn write_to<W: ?Sized>(&self, buffer: &mut W) -> WriteMessageResult
-    where
-        W: Write,
-    {
+    where W: Write {
         // Write the message number.
-        buffer.write(&[0xff, 0xff, 0x00, 0xff])?;
+        buffer.write(&[
+            0xff, 0xff, 0x00, 0xff
+        ])?;
         // Block AgentData
         buffer.write(self.agent_data.agent_id.as_bytes())?;
         buffer.write(self.agent_data.session_id.as_bytes())?;
@@ -52756,39 +49450,35 @@ impl Message for RetrieveInstantMessages {
     }
 
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         // Block AgentData
         let agent_data = RetrieveInstantMessages_AgentData::read_from(buffer)?;
         Ok(MessageInstance::RetrieveInstantMessages(
-            RetrieveInstantMessages { agent_data: agent_data },
+            RetrieveInstantMessages {
+                agent_data: agent_data,
+            },
         ))
     }
 }
 
 impl Message for RevokePermissions {
     fn write_to<W: ?Sized>(&self, buffer: &mut W) -> WriteMessageResult
-    where
-        W: Write,
-    {
+    where W: Write {
         // Write the message number.
-        buffer.write(&[0xff, 0xff, 0x00, 0xc1])?;
+        buffer.write(&[
+            0xff, 0xff, 0x00, 0xc1
+        ])?;
         // Block AgentData
         buffer.write(self.agent_data.agent_id.as_bytes())?;
         buffer.write(self.agent_data.session_id.as_bytes())?;
         // Block Data
         buffer.write(self.data.object_id.as_bytes())?;
-        buffer.write_u32::<LittleEndian>(
-            self.data.object_permissions,
-        )?;
+        buffer.write_u32::<LittleEndian>(self.data.object_permissions)?;
         Ok(())
     }
 
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         // Block AgentData
         let agent_data = RevokePermissions_AgentData::read_from(buffer)?;
         // Block Data
@@ -52802,11 +49492,11 @@ impl Message for RevokePermissions {
 
 impl Message for RezMultipleAttachmentsFromInv {
     fn write_to<W: ?Sized>(&self, buffer: &mut W) -> WriteMessageResult
-    where
-        W: Write,
-    {
+    where W: Write {
         // Write the message number.
-        buffer.write(&[0xff, 0xff, 0x01, 0x8c])?;
+        buffer.write(&[
+            0xff, 0xff, 0x01, 0x8c
+        ])?;
         // Block AgentData
         buffer.write(self.agent_data.agent_id.as_bytes())?;
         buffer.write(self.agent_data.session_id.as_bytes())?;
@@ -52833,9 +49523,7 @@ impl Message for RezMultipleAttachmentsFromInv {
     }
 
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         // Block AgentData
         let agent_data = RezMultipleAttachmentsFromInv_AgentData::read_from(buffer)?;
         // Block HeaderData
@@ -52858,11 +49546,11 @@ impl Message for RezMultipleAttachmentsFromInv {
 
 impl Message for RezObject {
     fn write_to<W: ?Sized>(&self, buffer: &mut W) -> WriteMessageResult
-    where
-        W: Write,
-    {
+    where W: Write {
         // Write the message number.
-        buffer.write(&[0xff, 0xff, 0x01, 0x25])?;
+        buffer.write(&[
+            0xff, 0xff, 0x01, 0x25
+        ])?;
         // Block AgentData
         buffer.write(self.agent_data.agent_id.as_bytes())?;
         buffer.write(self.agent_data.session_id.as_bytes())?;
@@ -52886,57 +49574,37 @@ impl Message for RezObject {
         buffer.write_u8(self.rez_data.remove_item as u8)?;
         buffer.write_u32::<LittleEndian>(self.rez_data.item_flags)?;
         buffer.write_u32::<LittleEndian>(self.rez_data.group_mask)?;
-        buffer.write_u32::<LittleEndian>(
-            self.rez_data.everyone_mask,
-        )?;
-        buffer.write_u32::<LittleEndian>(
-            self.rez_data.next_owner_mask,
-        )?;
+        buffer.write_u32::<LittleEndian>(self.rez_data.everyone_mask)?;
+        buffer.write_u32::<LittleEndian>(self.rez_data.next_owner_mask)?;
         // Block InventoryData
         buffer.write(self.inventory_data.item_id.as_bytes())?;
         buffer.write(self.inventory_data.folder_id.as_bytes())?;
         buffer.write(self.inventory_data.creator_id.as_bytes())?;
         buffer.write(self.inventory_data.owner_id.as_bytes())?;
         buffer.write(self.inventory_data.group_id.as_bytes())?;
-        buffer.write_u32::<LittleEndian>(
-            self.inventory_data.base_mask,
-        )?;
-        buffer.write_u32::<LittleEndian>(
-            self.inventory_data.owner_mask,
-        )?;
-        buffer.write_u32::<LittleEndian>(
-            self.inventory_data.group_mask,
-        )?;
-        buffer.write_u32::<LittleEndian>(
-            self.inventory_data.everyone_mask,
-        )?;
-        buffer.write_u32::<LittleEndian>(
-            self.inventory_data.next_owner_mask,
-        )?;
+        buffer.write_u32::<LittleEndian>(self.inventory_data.base_mask)?;
+        buffer.write_u32::<LittleEndian>(self.inventory_data.owner_mask)?;
+        buffer.write_u32::<LittleEndian>(self.inventory_data.group_mask)?;
+        buffer.write_u32::<LittleEndian>(self.inventory_data.everyone_mask)?;
+        buffer.write_u32::<LittleEndian>(self.inventory_data.next_owner_mask)?;
         buffer.write_u8(self.inventory_data.group_owned as u8)?;
         buffer.write(self.inventory_data.transaction_id.as_bytes())?;
         buffer.write_i8(self.inventory_data.type_)?;
         buffer.write_i8(self.inventory_data.inv_type)?;
         buffer.write_u32::<LittleEndian>(self.inventory_data.flags)?;
         buffer.write_u8(self.inventory_data.sale_type)?;
-        buffer.write_i32::<LittleEndian>(
-            self.inventory_data.sale_price,
-        )?;
+        buffer.write_i32::<LittleEndian>(self.inventory_data.sale_price)?;
         buffer.write_u8(self.inventory_data.name.len() as u8)?;
         buffer.write(&self.inventory_data.name[..])?;
         buffer.write_u8(self.inventory_data.description.len() as u8)?;
         buffer.write(&self.inventory_data.description[..])?;
-        buffer.write_i32::<LittleEndian>(
-            self.inventory_data.creation_date,
-        )?;
+        buffer.write_i32::<LittleEndian>(self.inventory_data.creation_date)?;
         buffer.write_u32::<LittleEndian>(self.inventory_data.crc)?;
         Ok(())
     }
 
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         // Block AgentData
         let agent_data = RezObject_AgentData::read_from(buffer)?;
         // Block RezData
@@ -52953,11 +49621,11 @@ impl Message for RezObject {
 
 impl Message for RezObjectFromNotecard {
     fn write_to<W: ?Sized>(&self, buffer: &mut W) -> WriteMessageResult
-    where
-        W: Write,
-    {
+    where W: Write {
         // Write the message number.
-        buffer.write(&[0xff, 0xff, 0x01, 0x26])?;
+        buffer.write(&[
+            0xff, 0xff, 0x01, 0x26
+        ])?;
         // Block AgentData
         buffer.write(self.agent_data.agent_id.as_bytes())?;
         buffer.write(self.agent_data.session_id.as_bytes())?;
@@ -52981,12 +49649,8 @@ impl Message for RezObjectFromNotecard {
         buffer.write_u8(self.rez_data.remove_item as u8)?;
         buffer.write_u32::<LittleEndian>(self.rez_data.item_flags)?;
         buffer.write_u32::<LittleEndian>(self.rez_data.group_mask)?;
-        buffer.write_u32::<LittleEndian>(
-            self.rez_data.everyone_mask,
-        )?;
-        buffer.write_u32::<LittleEndian>(
-            self.rez_data.next_owner_mask,
-        )?;
+        buffer.write_u32::<LittleEndian>(self.rez_data.everyone_mask)?;
+        buffer.write_u32::<LittleEndian>(self.rez_data.next_owner_mask)?;
         // Block NotecardData
         buffer.write(self.notecard_data.notecard_item_id.as_bytes())?;
         buffer.write(self.notecard_data.object_id.as_bytes())?;
@@ -52999,9 +49663,7 @@ impl Message for RezObjectFromNotecard {
     }
 
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         // Block AgentData
         let agent_data = RezObjectFromNotecard_AgentData::read_from(buffer)?;
         // Block RezData
@@ -53027,11 +49689,11 @@ impl Message for RezObjectFromNotecard {
 
 impl Message for RezRestoreToWorld {
     fn write_to<W: ?Sized>(&self, buffer: &mut W) -> WriteMessageResult
-    where
-        W: Write,
-    {
+    where W: Write {
         // Write the message number.
-        buffer.write(&[0xff, 0xff, 0x01, 0xa9])?;
+        buffer.write(&[
+            0xff, 0xff, 0x01, 0xa9
+        ])?;
         // Block AgentData
         buffer.write(self.agent_data.agent_id.as_bytes())?;
         buffer.write(self.agent_data.session_id.as_bytes())?;
@@ -53041,45 +49703,29 @@ impl Message for RezRestoreToWorld {
         buffer.write(self.inventory_data.creator_id.as_bytes())?;
         buffer.write(self.inventory_data.owner_id.as_bytes())?;
         buffer.write(self.inventory_data.group_id.as_bytes())?;
-        buffer.write_u32::<LittleEndian>(
-            self.inventory_data.base_mask,
-        )?;
-        buffer.write_u32::<LittleEndian>(
-            self.inventory_data.owner_mask,
-        )?;
-        buffer.write_u32::<LittleEndian>(
-            self.inventory_data.group_mask,
-        )?;
-        buffer.write_u32::<LittleEndian>(
-            self.inventory_data.everyone_mask,
-        )?;
-        buffer.write_u32::<LittleEndian>(
-            self.inventory_data.next_owner_mask,
-        )?;
+        buffer.write_u32::<LittleEndian>(self.inventory_data.base_mask)?;
+        buffer.write_u32::<LittleEndian>(self.inventory_data.owner_mask)?;
+        buffer.write_u32::<LittleEndian>(self.inventory_data.group_mask)?;
+        buffer.write_u32::<LittleEndian>(self.inventory_data.everyone_mask)?;
+        buffer.write_u32::<LittleEndian>(self.inventory_data.next_owner_mask)?;
         buffer.write_u8(self.inventory_data.group_owned as u8)?;
         buffer.write(self.inventory_data.transaction_id.as_bytes())?;
         buffer.write_i8(self.inventory_data.type_)?;
         buffer.write_i8(self.inventory_data.inv_type)?;
         buffer.write_u32::<LittleEndian>(self.inventory_data.flags)?;
         buffer.write_u8(self.inventory_data.sale_type)?;
-        buffer.write_i32::<LittleEndian>(
-            self.inventory_data.sale_price,
-        )?;
+        buffer.write_i32::<LittleEndian>(self.inventory_data.sale_price)?;
         buffer.write_u8(self.inventory_data.name.len() as u8)?;
         buffer.write(&self.inventory_data.name[..])?;
         buffer.write_u8(self.inventory_data.description.len() as u8)?;
         buffer.write(&self.inventory_data.description[..])?;
-        buffer.write_i32::<LittleEndian>(
-            self.inventory_data.creation_date,
-        )?;
+        buffer.write_i32::<LittleEndian>(self.inventory_data.creation_date)?;
         buffer.write_u32::<LittleEndian>(self.inventory_data.crc)?;
         Ok(())
     }
 
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         // Block AgentData
         let agent_data = RezRestoreToWorld_AgentData::read_from(buffer)?;
         // Block InventoryData
@@ -53093,19 +49739,17 @@ impl Message for RezRestoreToWorld {
 
 impl Message for RezScript {
     fn write_to<W: ?Sized>(&self, buffer: &mut W) -> WriteMessageResult
-    where
-        W: Write,
-    {
+    where W: Write {
         // Write the message number.
-        buffer.write(&[0xff, 0xff, 0x01, 0x30])?;
+        buffer.write(&[
+            0xff, 0xff, 0x01, 0x30
+        ])?;
         // Block AgentData
         buffer.write(self.agent_data.agent_id.as_bytes())?;
         buffer.write(self.agent_data.session_id.as_bytes())?;
         buffer.write(self.agent_data.group_id.as_bytes())?;
         // Block UpdateBlock
-        buffer.write_u32::<LittleEndian>(
-            self.update_block.object_local_id,
-        )?;
+        buffer.write_u32::<LittleEndian>(self.update_block.object_local_id)?;
         buffer.write_u8(self.update_block.enabled as u8)?;
         // Block InventoryBlock
         buffer.write(self.inventory_block.item_id.as_bytes())?;
@@ -53113,47 +49757,29 @@ impl Message for RezScript {
         buffer.write(self.inventory_block.creator_id.as_bytes())?;
         buffer.write(self.inventory_block.owner_id.as_bytes())?;
         buffer.write(self.inventory_block.group_id.as_bytes())?;
-        buffer.write_u32::<LittleEndian>(
-            self.inventory_block.base_mask,
-        )?;
-        buffer.write_u32::<LittleEndian>(
-            self.inventory_block.owner_mask,
-        )?;
-        buffer.write_u32::<LittleEndian>(
-            self.inventory_block.group_mask,
-        )?;
-        buffer.write_u32::<LittleEndian>(
-            self.inventory_block.everyone_mask,
-        )?;
-        buffer.write_u32::<LittleEndian>(
-            self.inventory_block.next_owner_mask,
-        )?;
+        buffer.write_u32::<LittleEndian>(self.inventory_block.base_mask)?;
+        buffer.write_u32::<LittleEndian>(self.inventory_block.owner_mask)?;
+        buffer.write_u32::<LittleEndian>(self.inventory_block.group_mask)?;
+        buffer.write_u32::<LittleEndian>(self.inventory_block.everyone_mask)?;
+        buffer.write_u32::<LittleEndian>(self.inventory_block.next_owner_mask)?;
         buffer.write_u8(self.inventory_block.group_owned as u8)?;
         buffer.write(self.inventory_block.transaction_id.as_bytes())?;
         buffer.write_i8(self.inventory_block.type_)?;
         buffer.write_i8(self.inventory_block.inv_type)?;
         buffer.write_u32::<LittleEndian>(self.inventory_block.flags)?;
         buffer.write_u8(self.inventory_block.sale_type)?;
-        buffer.write_i32::<LittleEndian>(
-            self.inventory_block.sale_price,
-        )?;
+        buffer.write_i32::<LittleEndian>(self.inventory_block.sale_price)?;
         buffer.write_u8(self.inventory_block.name.len() as u8)?;
         buffer.write(&self.inventory_block.name[..])?;
-        buffer.write_u8(
-            self.inventory_block.description.len() as u8,
-        )?;
+        buffer.write_u8(self.inventory_block.description.len() as u8)?;
         buffer.write(&self.inventory_block.description[..])?;
-        buffer.write_i32::<LittleEndian>(
-            self.inventory_block.creation_date,
-        )?;
+        buffer.write_i32::<LittleEndian>(self.inventory_block.creation_date)?;
         buffer.write_u32::<LittleEndian>(self.inventory_block.crc)?;
         Ok(())
     }
 
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         // Block AgentData
         let agent_data = RezScript_AgentData::read_from(buffer)?;
         // Block UpdateBlock
@@ -53170,11 +49796,11 @@ impl Message for RezScript {
 
 impl Message for RezSingleAttachmentFromInv {
     fn write_to<W: ?Sized>(&self, buffer: &mut W) -> WriteMessageResult
-    where
-        W: Write,
-    {
+    where W: Write {
         // Write the message number.
-        buffer.write(&[0xff, 0xff, 0x01, 0x8b])?;
+        buffer.write(&[
+            0xff, 0xff, 0x01, 0x8b
+        ])?;
         // Block AgentData
         buffer.write(self.agent_data.agent_id.as_bytes())?;
         buffer.write(self.agent_data.session_id.as_bytes())?;
@@ -53182,18 +49808,10 @@ impl Message for RezSingleAttachmentFromInv {
         buffer.write(self.object_data.item_id.as_bytes())?;
         buffer.write(self.object_data.owner_id.as_bytes())?;
         buffer.write_u8(self.object_data.attachment_pt)?;
-        buffer.write_u32::<LittleEndian>(
-            self.object_data.item_flags,
-        )?;
-        buffer.write_u32::<LittleEndian>(
-            self.object_data.group_mask,
-        )?;
-        buffer.write_u32::<LittleEndian>(
-            self.object_data.everyone_mask,
-        )?;
-        buffer.write_u32::<LittleEndian>(
-            self.object_data.next_owner_mask,
-        )?;
+        buffer.write_u32::<LittleEndian>(self.object_data.item_flags)?;
+        buffer.write_u32::<LittleEndian>(self.object_data.group_mask)?;
+        buffer.write_u32::<LittleEndian>(self.object_data.everyone_mask)?;
+        buffer.write_u32::<LittleEndian>(self.object_data.next_owner_mask)?;
         buffer.write_u8(self.object_data.name.len() as u8)?;
         buffer.write(&self.object_data.name[..])?;
         buffer.write_u8(self.object_data.description.len() as u8)?;
@@ -53202,9 +49820,7 @@ impl Message for RezSingleAttachmentFromInv {
     }
 
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         // Block AgentData
         let agent_data = RezSingleAttachmentFromInv_AgentData::read_from(buffer)?;
         // Block ObjectData
@@ -53220,53 +49836,37 @@ impl Message for RezSingleAttachmentFromInv {
 
 impl Message for RoutedMoneyBalanceReply {
     fn write_to<W: ?Sized>(&self, buffer: &mut W) -> WriteMessageResult
-    where
-        W: Write,
-    {
+    where W: Write {
         // Write the message number.
-        buffer.write(&[0xff, 0xff, 0x01, 0x3b])?;
+        buffer.write(&[
+            0xff, 0xff, 0x01, 0x3b
+        ])?;
         // Block TargetBlock
         buffer.write(&self.target_block.target_ip.octets())?;
-        buffer.write_u16::<LittleEndian>(
-            self.target_block.target_port,
-        )?;
+        buffer.write_u16::<LittleEndian>(self.target_block.target_port)?;
         // Block MoneyData
         buffer.write(self.money_data.agent_id.as_bytes())?;
         buffer.write(self.money_data.transaction_id.as_bytes())?;
         buffer.write_u8(self.money_data.transaction_success as u8)?;
-        buffer.write_i32::<LittleEndian>(
-            self.money_data.money_balance,
-        )?;
-        buffer.write_i32::<LittleEndian>(
-            self.money_data.square_meters_credit,
-        )?;
-        buffer.write_i32::<LittleEndian>(
-            self.money_data.square_meters_committed,
-        )?;
+        buffer.write_i32::<LittleEndian>(self.money_data.money_balance)?;
+        buffer.write_i32::<LittleEndian>(self.money_data.square_meters_credit)?;
+        buffer.write_i32::<LittleEndian>(self.money_data.square_meters_committed)?;
         buffer.write_u8(self.money_data.description.len() as u8)?;
         buffer.write(&self.money_data.description[..])?;
         // Block TransactionInfo
-        buffer.write_i32::<LittleEndian>(
-            self.transaction_info.transaction_type,
-        )?;
+        buffer.write_i32::<LittleEndian>(self.transaction_info.transaction_type)?;
         buffer.write(self.transaction_info.source_id.as_bytes())?;
         buffer.write_u8(self.transaction_info.is_source_group as u8)?;
         buffer.write(self.transaction_info.dest_id.as_bytes())?;
         buffer.write_u8(self.transaction_info.is_dest_group as u8)?;
-        buffer.write_i32::<LittleEndian>(
-            self.transaction_info.amount,
-        )?;
-        buffer.write_u8(
-            self.transaction_info.item_description.len() as u8,
-        )?;
+        buffer.write_i32::<LittleEndian>(self.transaction_info.amount)?;
+        buffer.write_u8(self.transaction_info.item_description.len() as u8)?;
         buffer.write(&self.transaction_info.item_description[..])?;
         Ok(())
     }
 
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         // Block TargetBlock
         let target_block = RoutedMoneyBalanceReply_TargetBlock::read_from(buffer)?;
         // Block MoneyData
@@ -53285,11 +49885,11 @@ impl Message for RoutedMoneyBalanceReply {
 
 impl Message for RpcChannelReply {
     fn write_to<W: ?Sized>(&self, buffer: &mut W) -> WriteMessageResult
-    where
-        W: Write,
-    {
+    where W: Write {
         // Write the message number.
-        buffer.write(&[0xff, 0xff, 0x01, 0x9e])?;
+        buffer.write(&[
+            0xff, 0xff, 0x01, 0x9e
+        ])?;
         // Block DataBlock
         buffer.write(self.data_block.task_id.as_bytes())?;
         buffer.write(self.data_block.item_id.as_bytes())?;
@@ -53298,24 +49898,22 @@ impl Message for RpcChannelReply {
     }
 
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         // Block DataBlock
         let data_block = RpcChannelReply_DataBlock::read_from(buffer)?;
-        Ok(MessageInstance::RpcChannelReply(
-            RpcChannelReply { data_block: data_block },
-        ))
+        Ok(MessageInstance::RpcChannelReply(RpcChannelReply {
+            data_block: data_block,
+        }))
     }
 }
 
 impl Message for RpcChannelRequest {
     fn write_to<W: ?Sized>(&self, buffer: &mut W) -> WriteMessageResult
-    where
-        W: Write,
-    {
+    where W: Write {
         // Write the message number.
-        buffer.write(&[0xff, 0xff, 0x01, 0x9d])?;
+        buffer.write(&[
+            0xff, 0xff, 0x01, 0x9d
+        ])?;
         // Block DataBlock
         buffer.write_u32::<LittleEndian>(self.data_block.grid_x)?;
         buffer.write_u32::<LittleEndian>(self.data_block.grid_y)?;
@@ -53325,55 +49923,51 @@ impl Message for RpcChannelRequest {
     }
 
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         // Block DataBlock
         let data_block = RpcChannelRequest_DataBlock::read_from(buffer)?;
-        Ok(MessageInstance::RpcChannelRequest(
-            RpcChannelRequest { data_block: data_block },
-        ))
+        Ok(MessageInstance::RpcChannelRequest(RpcChannelRequest {
+            data_block: data_block,
+        }))
     }
 }
 
 impl Message for RpcScriptReplyInbound {
     fn write_to<W: ?Sized>(&self, buffer: &mut W) -> WriteMessageResult
-    where
-        W: Write,
-    {
+    where W: Write {
         // Write the message number.
-        buffer.write(&[0xff, 0xff, 0x01, 0xa1])?;
+        buffer.write(&[
+            0xff, 0xff, 0x01, 0xa1
+        ])?;
         // Block DataBlock
         buffer.write(self.data_block.task_id.as_bytes())?;
         buffer.write(self.data_block.item_id.as_bytes())?;
         buffer.write(self.data_block.channel_id.as_bytes())?;
         buffer.write_u32::<LittleEndian>(self.data_block.int_value)?;
-        buffer.write_u16::<LittleEndian>(
-            self.data_block.string_value.len() as u16,
-        )?;
+        buffer.write_u16::<LittleEndian>(self.data_block.string_value.len() as u16)?;
         buffer.write(&self.data_block.string_value[..])?;
         Ok(())
     }
 
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         // Block DataBlock
         let data_block = RpcScriptReplyInbound_DataBlock::read_from(buffer)?;
         Ok(MessageInstance::RpcScriptReplyInbound(
-            RpcScriptReplyInbound { data_block: data_block },
+            RpcScriptReplyInbound {
+                data_block: data_block,
+            },
         ))
     }
 }
 
 impl Message for RpcScriptRequestInbound {
     fn write_to<W: ?Sized>(&self, buffer: &mut W) -> WriteMessageResult
-    where
-        W: Write,
-    {
+    where W: Write {
         // Write the message number.
-        buffer.write(&[0xff, 0xff, 0x01, 0x9f])?;
+        buffer.write(&[
+            0xff, 0xff, 0x01, 0x9f
+        ])?;
         // Block TargetBlock
         buffer.write_u32::<LittleEndian>(self.target_block.grid_x)?;
         buffer.write_u32::<LittleEndian>(self.target_block.grid_y)?;
@@ -53382,17 +49976,13 @@ impl Message for RpcScriptRequestInbound {
         buffer.write(self.data_block.item_id.as_bytes())?;
         buffer.write(self.data_block.channel_id.as_bytes())?;
         buffer.write_u32::<LittleEndian>(self.data_block.int_value)?;
-        buffer.write_u16::<LittleEndian>(
-            self.data_block.string_value.len() as u16,
-        )?;
+        buffer.write_u16::<LittleEndian>(self.data_block.string_value.len() as u16)?;
         buffer.write(&self.data_block.string_value[..])?;
         Ok(())
     }
 
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         // Block TargetBlock
         let target_block = RpcScriptRequestInbound_TargetBlock::read_from(buffer)?;
         // Block DataBlock
@@ -53408,46 +49998,42 @@ impl Message for RpcScriptRequestInbound {
 
 impl Message for RpcScriptRequestInboundForward {
     fn write_to<W: ?Sized>(&self, buffer: &mut W) -> WriteMessageResult
-    where
-        W: Write,
-    {
+    where W: Write {
         // Write the message number.
-        buffer.write(&[0xff, 0xff, 0x01, 0xa0])?;
+        buffer.write(&[
+            0xff, 0xff, 0x01, 0xa0
+        ])?;
         // Block DataBlock
         buffer.write(&self.data_block.rpc_server_ip.octets())?;
-        buffer.write_u16::<LittleEndian>(
-            self.data_block.rpc_server_port,
-        )?;
+        buffer.write_u16::<LittleEndian>(self.data_block.rpc_server_port)?;
         buffer.write(self.data_block.task_id.as_bytes())?;
         buffer.write(self.data_block.item_id.as_bytes())?;
         buffer.write(self.data_block.channel_id.as_bytes())?;
         buffer.write_u32::<LittleEndian>(self.data_block.int_value)?;
-        buffer.write_u16::<LittleEndian>(
-            self.data_block.string_value.len() as u16,
-        )?;
+        buffer.write_u16::<LittleEndian>(self.data_block.string_value.len() as u16)?;
         buffer.write(&self.data_block.string_value[..])?;
         Ok(())
     }
 
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         // Block DataBlock
         let data_block = RpcScriptRequestInboundForward_DataBlock::read_from(buffer)?;
         Ok(MessageInstance::RpcScriptRequestInboundForward(
-            RpcScriptRequestInboundForward { data_block: data_block },
+            RpcScriptRequestInboundForward {
+                data_block: data_block,
+            },
         ))
     }
 }
 
 impl Message for SaveAssetIntoInventory {
     fn write_to<W: ?Sized>(&self, buffer: &mut W) -> WriteMessageResult
-    where
-        W: Write,
-    {
+    where W: Write {
         // Write the message number.
-        buffer.write(&[0xff, 0xff, 0x01, 0x10])?;
+        buffer.write(&[
+            0xff, 0xff, 0x01, 0x10
+        ])?;
         // Block AgentData
         buffer.write(self.agent_data.agent_id.as_bytes())?;
         // Block InventoryData
@@ -53457,9 +50043,7 @@ impl Message for SaveAssetIntoInventory {
     }
 
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         // Block AgentData
         let agent_data = SaveAssetIntoInventory_AgentData::read_from(buffer)?;
         // Block InventoryData
@@ -53475,11 +50059,11 @@ impl Message for SaveAssetIntoInventory {
 
 impl Message for ScriptAnswerYes {
     fn write_to<W: ?Sized>(&self, buffer: &mut W) -> WriteMessageResult
-    where
-        W: Write,
-    {
+    where W: Write {
         // Write the message number.
-        buffer.write(&[0xff, 0xff, 0x00, 0x84])?;
+        buffer.write(&[
+            0xff, 0xff, 0x00, 0x84
+        ])?;
         // Block AgentData
         buffer.write(self.agent_data.agent_id.as_bytes())?;
         buffer.write(self.agent_data.session_id.as_bytes())?;
@@ -53491,9 +50075,7 @@ impl Message for ScriptAnswerYes {
     }
 
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         // Block AgentData
         let agent_data = ScriptAnswerYes_AgentData::read_from(buffer)?;
         // Block Data
@@ -53507,11 +50089,11 @@ impl Message for ScriptAnswerYes {
 
 impl Message for ScriptControlChange {
     fn write_to<W: ?Sized>(&self, buffer: &mut W) -> WriteMessageResult
-    where
-        W: Write,
-    {
+    where W: Write {
         // Write the message number.
-        buffer.write(&[0xff, 0xff, 0x00, 0xbd])?;
+        buffer.write(&[
+            0xff, 0xff, 0x00, 0xbd
+        ])?;
         // Block Data
         buffer.write_u8(self.data.len() as u8)?;
         for item in &self.data {
@@ -53523,9 +50105,7 @@ impl Message for ScriptControlChange {
     }
 
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         // Block Data
         let mut data = Vec::new();
         let _data_count = buffer.read_u8()?;
@@ -53540,11 +50120,11 @@ impl Message for ScriptControlChange {
 
 impl Message for ScriptDataReply {
     fn write_to<W: ?Sized>(&self, buffer: &mut W) -> WriteMessageResult
-    where
-        W: Write,
-    {
+    where W: Write {
         // Write the message number.
-        buffer.write(&[0xff, 0xff, 0x01, 0x52])?;
+        buffer.write(&[
+            0xff, 0xff, 0x01, 0x52
+        ])?;
         // Block DataBlock
         buffer.write_u8(self.data_block.len() as u8)?;
         for item in &self.data_block {
@@ -53556,28 +50136,26 @@ impl Message for ScriptDataReply {
     }
 
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         // Block DataBlock
         let mut data_block = Vec::new();
         let _data_block_count = buffer.read_u8()?;
         for _ in 0.._data_block_count {
             data_block.push(ScriptDataReply_DataBlock::read_from(buffer)?);
         }
-        Ok(MessageInstance::ScriptDataReply(
-            ScriptDataReply { data_block: data_block },
-        ))
+        Ok(MessageInstance::ScriptDataReply(ScriptDataReply {
+            data_block: data_block,
+        }))
     }
 }
 
 impl Message for ScriptDataRequest {
     fn write_to<W: ?Sized>(&self, buffer: &mut W) -> WriteMessageResult
-    where
-        W: Write,
-    {
+    where W: Write {
         // Write the message number.
-        buffer.write(&[0xff, 0xff, 0x01, 0x51])?;
+        buffer.write(&[
+            0xff, 0xff, 0x01, 0x51
+        ])?;
         // Block DataBlock
         buffer.write_u8(self.data_block.len() as u8)?;
         for item in &self.data_block {
@@ -53590,28 +50168,26 @@ impl Message for ScriptDataRequest {
     }
 
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         // Block DataBlock
         let mut data_block = Vec::new();
         let _data_block_count = buffer.read_u8()?;
         for _ in 0.._data_block_count {
             data_block.push(ScriptDataRequest_DataBlock::read_from(buffer)?);
         }
-        Ok(MessageInstance::ScriptDataRequest(
-            ScriptDataRequest { data_block: data_block },
-        ))
+        Ok(MessageInstance::ScriptDataRequest(ScriptDataRequest {
+            data_block: data_block,
+        }))
     }
 }
 
 impl Message for ScriptDialog {
     fn write_to<W: ?Sized>(&self, buffer: &mut W) -> WriteMessageResult
-    where
-        W: Write,
-    {
+    where W: Write {
         // Write the message number.
-        buffer.write(&[0xff, 0xff, 0x00, 0xbe])?;
+        buffer.write(&[
+            0xff, 0xff, 0x00, 0xbe
+        ])?;
         // Block Data
         buffer.write(self.data.object_id.as_bytes())?;
         buffer.write_u8(self.data.first_name.len() as u8)?;
@@ -53620,9 +50196,7 @@ impl Message for ScriptDialog {
         buffer.write(&self.data.last_name[..])?;
         buffer.write_u8(self.data.object_name.len() as u8)?;
         buffer.write(&self.data.object_name[..])?;
-        buffer.write_u16::<LittleEndian>(
-            self.data.message.len() as u16,
-        )?;
+        buffer.write_u16::<LittleEndian>(self.data.message.len() as u16)?;
         buffer.write(&self.data.message[..])?;
         buffer.write_i32::<LittleEndian>(self.data.chat_channel)?;
         buffer.write(self.data.image_id.as_bytes())?;
@@ -53641,9 +50215,7 @@ impl Message for ScriptDialog {
     }
 
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         // Block Data
         let data = ScriptDialog_Data::read_from(buffer)?;
         // Block Buttons
@@ -53668,11 +50240,11 @@ impl Message for ScriptDialog {
 
 impl Message for ScriptDialogReply {
     fn write_to<W: ?Sized>(&self, buffer: &mut W) -> WriteMessageResult
-    where
-        W: Write,
-    {
+    where W: Write {
         // Write the message number.
-        buffer.write(&[0xff, 0xff, 0x00, 0xbf])?;
+        buffer.write(&[
+            0xff, 0xff, 0x00, 0xbf
+        ])?;
         // Block AgentData
         buffer.write(self.agent_data.agent_id.as_bytes())?;
         buffer.write(self.agent_data.session_id.as_bytes())?;
@@ -53686,9 +50258,7 @@ impl Message for ScriptDialogReply {
     }
 
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         // Block AgentData
         let agent_data = ScriptDialogReply_AgentData::read_from(buffer)?;
         // Block Data
@@ -53702,41 +50272,39 @@ impl Message for ScriptDialogReply {
 
 impl Message for ScriptMailRegistration {
     fn write_to<W: ?Sized>(&self, buffer: &mut W) -> WriteMessageResult
-    where
-        W: Write,
-    {
+    where W: Write {
         // Write the message number.
-        buffer.write(&[0xff, 0xff, 0x01, 0xa2])?;
+        buffer.write(&[
+            0xff, 0xff, 0x01, 0xa2
+        ])?;
         // Block DataBlock
         buffer.write_u8(self.data_block.target_ip.len() as u8)?;
         buffer.write(&self.data_block.target_ip[..])?;
-        buffer.write_u16::<LittleEndian>(
-            self.data_block.target_port,
-        )?;
+        buffer.write_u16::<LittleEndian>(self.data_block.target_port)?;
         buffer.write(self.data_block.task_id.as_bytes())?;
         buffer.write_u32::<LittleEndian>(self.data_block.flags)?;
         Ok(())
     }
 
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         // Block DataBlock
         let data_block = ScriptMailRegistration_DataBlock::read_from(buffer)?;
         Ok(MessageInstance::ScriptMailRegistration(
-            ScriptMailRegistration { data_block: data_block },
+            ScriptMailRegistration {
+                data_block: data_block,
+            },
         ))
     }
 }
 
 impl Message for ScriptQuestion {
     fn write_to<W: ?Sized>(&self, buffer: &mut W) -> WriteMessageResult
-    where
-        W: Write,
-    {
+    where W: Write {
         // Write the message number.
-        buffer.write(&[0xff, 0xff, 0x00, 0xbc])?;
+        buffer.write(&[
+            0xff, 0xff, 0x00, 0xbc
+        ])?;
         // Block Data
         buffer.write(self.data.task_id.as_bytes())?;
         buffer.write(self.data.item_id.as_bytes())?;
@@ -53749,9 +50317,7 @@ impl Message for ScriptQuestion {
     }
 
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         // Block Data
         let data = ScriptQuestion_Data::read_from(buffer)?;
         Ok(MessageInstance::ScriptQuestion(
@@ -53762,11 +50328,11 @@ impl Message for ScriptQuestion {
 
 impl Message for ScriptReset {
     fn write_to<W: ?Sized>(&self, buffer: &mut W) -> WriteMessageResult
-    where
-        W: Write,
-    {
+    where W: Write {
         // Write the message number.
-        buffer.write(&[0xff, 0xff, 0x00, 0xf6])?;
+        buffer.write(&[
+            0xff, 0xff, 0x00, 0xf6
+        ])?;
         // Block AgentData
         buffer.write(self.agent_data.agent_id.as_bytes())?;
         buffer.write(self.agent_data.session_id.as_bytes())?;
@@ -53777,9 +50343,7 @@ impl Message for ScriptReset {
     }
 
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         // Block AgentData
         let agent_data = ScriptReset_AgentData::read_from(buffer)?;
         // Block Script
@@ -53793,11 +50357,11 @@ impl Message for ScriptReset {
 
 impl Message for ScriptRunningReply {
     fn write_to<W: ?Sized>(&self, buffer: &mut W) -> WriteMessageResult
-    where
-        W: Write,
-    {
+    where W: Write {
         // Write the message number.
-        buffer.write(&[0xff, 0xff, 0x00, 0xf4])?;
+        buffer.write(&[
+            0xff, 0xff, 0x00, 0xf4
+        ])?;
         // Block Script
         buffer.write(self.script.object_id.as_bytes())?;
         buffer.write(self.script.item_id.as_bytes())?;
@@ -53806,9 +50370,7 @@ impl Message for ScriptRunningReply {
     }
 
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         // Block Script
         let script = ScriptRunningReply_Script::read_from(buffer)?;
         Ok(MessageInstance::ScriptRunningReply(
@@ -53819,11 +50381,11 @@ impl Message for ScriptRunningReply {
 
 impl Message for ScriptSensorReply {
     fn write_to<W: ?Sized>(&self, buffer: &mut W) -> WriteMessageResult
-    where
-        W: Write,
-    {
+    where W: Write {
         // Write the message number.
-        buffer.write(&[0xff, 0xff, 0x00, 0xf8])?;
+        buffer.write(&[
+            0xff, 0xff, 0x00, 0xf8
+        ])?;
         // Block Requester
         buffer.write(self.requester.source_id.as_bytes())?;
         // Block SensedData
@@ -53858,9 +50420,7 @@ impl Message for ScriptSensorReply {
     }
 
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         // Block Requester
         let requester = ScriptSensorReply_Requester::read_from(buffer)?;
         // Block SensedData
@@ -53878,26 +50438,20 @@ impl Message for ScriptSensorReply {
 
 impl Message for ScriptSensorRequest {
     fn write_to<W: ?Sized>(&self, buffer: &mut W) -> WriteMessageResult
-    where
-        W: Write,
-    {
+    where W: Write {
         // Write the message number.
-        buffer.write(&[0xff, 0xff, 0x00, 0xf7])?;
+        buffer.write(&[
+            0xff, 0xff, 0x00, 0xf7
+        ])?;
         // Block Requester
         buffer.write(self.requester.source_id.as_bytes())?;
         buffer.write(self.requester.request_id.as_bytes())?;
         buffer.write(self.requester.search_id.as_bytes())?;
-        buffer.write_f32::<LittleEndian>(
-            self.requester.search_pos.x,
-        )?;
+        buffer.write_f32::<LittleEndian>(self.requester.search_pos.x)?;
 
-        buffer.write_f32::<LittleEndian>(
-            self.requester.search_pos.y,
-        )?;
+        buffer.write_f32::<LittleEndian>(self.requester.search_pos.y)?;
 
-        buffer.write_f32::<LittleEndian>(
-            self.requester.search_pos.z,
-        )?;
+        buffer.write_f32::<LittleEndian>(self.requester.search_pos.z)?;
         let normed_search_dir = UnitQuaternion::new(&self.requester.search_dir).unwrap();
 
         buffer.write_f32::<LittleEndian>(normed_search_dir.i)?;
@@ -53910,32 +50464,28 @@ impl Message for ScriptSensorRequest {
         buffer.write_i32::<LittleEndian>(self.requester.type_)?;
         buffer.write_f32::<LittleEndian>(self.requester.range)?;
         buffer.write_f32::<LittleEndian>(self.requester.arc)?;
-        buffer.write_u64::<LittleEndian>(
-            self.requester.region_handle,
-        )?;
+        buffer.write_u64::<LittleEndian>(self.requester.region_handle)?;
         buffer.write_u8(self.requester.search_regions)?;
         Ok(())
     }
 
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         // Block Requester
         let requester = ScriptSensorRequest_Requester::read_from(buffer)?;
-        Ok(MessageInstance::ScriptSensorRequest(
-            ScriptSensorRequest { requester: requester },
-        ))
+        Ok(MessageInstance::ScriptSensorRequest(ScriptSensorRequest {
+            requester: requester,
+        }))
     }
 }
 
 impl Message for ScriptTeleportRequest {
     fn write_to<W: ?Sized>(&self, buffer: &mut W) -> WriteMessageResult
-    where
-        W: Write,
-    {
+    where W: Write {
         // Write the message number.
-        buffer.write(&[0xff, 0xff, 0x00, 0xc3])?;
+        buffer.write(&[
+            0xff, 0xff, 0x00, 0xc3
+        ])?;
         // Block Data
         buffer.write_u8(self.data.object_name.len() as u8)?;
         buffer.write(&self.data.object_name[..])?;
@@ -53955,9 +50505,7 @@ impl Message for ScriptTeleportRequest {
     }
 
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         // Block Data
         let data = ScriptTeleportRequest_Data::read_from(buffer)?;
         Ok(MessageInstance::ScriptTeleportRequest(
@@ -53968,26 +50516,20 @@ impl Message for ScriptTeleportRequest {
 
 impl Message for SendPostcard {
     fn write_to<W: ?Sized>(&self, buffer: &mut W) -> WriteMessageResult
-    where
-        W: Write,
-    {
+    where W: Write {
         // Write the message number.
-        buffer.write(&[0xff, 0xff, 0x01, 0x9c])?;
+        buffer.write(&[
+            0xff, 0xff, 0x01, 0x9c
+        ])?;
         // Block AgentData
         buffer.write(self.agent_data.agent_id.as_bytes())?;
         buffer.write(self.agent_data.session_id.as_bytes())?;
         buffer.write(self.agent_data.asset_id.as_bytes())?;
-        buffer.write_f64::<LittleEndian>(
-            self.agent_data.pos_global.x,
-        )?;
+        buffer.write_f64::<LittleEndian>(self.agent_data.pos_global.x)?;
 
-        buffer.write_f64::<LittleEndian>(
-            self.agent_data.pos_global.y,
-        )?;
+        buffer.write_f64::<LittleEndian>(self.agent_data.pos_global.y)?;
 
-        buffer.write_f64::<LittleEndian>(
-            self.agent_data.pos_global.z,
-        )?;
+        buffer.write_f64::<LittleEndian>(self.agent_data.pos_global.z)?;
         buffer.write_u8(self.agent_data.to.len() as u8)?;
         buffer.write(&self.agent_data.to[..])?;
         buffer.write_u8(self.agent_data.from.len() as u8)?;
@@ -53996,9 +50538,7 @@ impl Message for SendPostcard {
         buffer.write(&self.agent_data.name[..])?;
         buffer.write_u8(self.agent_data.subject.len() as u8)?;
         buffer.write(&self.agent_data.subject[..])?;
-        buffer.write_u16::<LittleEndian>(
-            self.agent_data.msg.len() as u16,
-        )?;
+        buffer.write_u16::<LittleEndian>(self.agent_data.msg.len() as u16)?;
         buffer.write(&self.agent_data.msg[..])?;
         buffer.write_u8(self.agent_data.allow_publish as u8)?;
         buffer.write_u8(self.agent_data.mature_publish as u8)?;
@@ -54006,39 +50546,31 @@ impl Message for SendPostcard {
     }
 
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         // Block AgentData
         let agent_data = SendPostcard_AgentData::read_from(buffer)?;
-        Ok(MessageInstance::SendPostcard(
-            SendPostcard { agent_data: agent_data },
-        ))
+        Ok(MessageInstance::SendPostcard(SendPostcard {
+            agent_data: agent_data,
+        }))
     }
 }
 
 impl Message for SendXferPacket {
     fn write_to<W: ?Sized>(&self, buffer: &mut W) -> WriteMessageResult
-    where
-        W: Write,
-    {
+    where W: Write {
         // Write the message number.
         buffer.write(&[0x12])?;
         // Block XferID
         buffer.write_u64::<LittleEndian>(self.xfer_id.id)?;
         buffer.write_u32::<LittleEndian>(self.xfer_id.packet)?;
         // Block DataPacket
-        buffer.write_u16::<LittleEndian>(
-            self.data_packet.data.len() as u16,
-        )?;
+        buffer.write_u16::<LittleEndian>(self.data_packet.data.len() as u16)?;
         buffer.write(&self.data_packet.data[..])?;
         Ok(())
     }
 
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         // Block XferID
         let xfer_id = SendXferPacket_XferID::read_from(buffer)?;
         // Block DataPacket
@@ -54052,11 +50584,11 @@ impl Message for SendXferPacket {
 
 impl Message for SetAlwaysRun {
     fn write_to<W: ?Sized>(&self, buffer: &mut W) -> WriteMessageResult
-    where
-        W: Write,
-    {
+    where W: Write {
         // Write the message number.
-        buffer.write(&[0xff, 0xff, 0x00, 0x58])?;
+        buffer.write(&[
+            0xff, 0xff, 0x00, 0x58
+        ])?;
         // Block AgentData
         buffer.write(self.agent_data.agent_id.as_bytes())?;
         buffer.write(self.agent_data.session_id.as_bytes())?;
@@ -54065,33 +50597,29 @@ impl Message for SetAlwaysRun {
     }
 
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         // Block AgentData
         let agent_data = SetAlwaysRun_AgentData::read_from(buffer)?;
-        Ok(MessageInstance::SetAlwaysRun(
-            SetAlwaysRun { agent_data: agent_data },
-        ))
+        Ok(MessageInstance::SetAlwaysRun(SetAlwaysRun {
+            agent_data: agent_data,
+        }))
     }
 }
 
 impl Message for SetCPURatio {
     fn write_to<W: ?Sized>(&self, buffer: &mut W) -> WriteMessageResult
-    where
-        W: Write,
-    {
+    where W: Write {
         // Write the message number.
-        buffer.write(&[0xff, 0xff, 0x01, 0x47])?;
+        buffer.write(&[
+            0xff, 0xff, 0x01, 0x47
+        ])?;
         // Block Data
         buffer.write_u8(self.data.ratio)?;
         Ok(())
     }
 
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         // Block Data
         let data = SetCPURatio_Data::read_from(buffer)?;
         Ok(MessageInstance::SetCPURatio(SetCPURatio { data: data }))
@@ -54100,11 +50628,11 @@ impl Message for SetCPURatio {
 
 impl Message for SetFollowCamProperties {
     fn write_to<W: ?Sized>(&self, buffer: &mut W) -> WriteMessageResult
-    where
-        W: Write,
-    {
+    where W: Write {
         // Write the message number.
-        buffer.write(&[0xff, 0xff, 0x00, 0x9f])?;
+        buffer.write(&[
+            0xff, 0xff, 0x00, 0x9f
+        ])?;
         // Block ObjectData
         buffer.write(self.object_data.object_id.as_bytes())?;
         // Block CameraProperty
@@ -54117,9 +50645,7 @@ impl Message for SetFollowCamProperties {
     }
 
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         // Block ObjectData
         let object_data = SetFollowCamProperties_ObjectData::read_from(buffer)?;
         // Block CameraProperty
@@ -54139,11 +50665,11 @@ impl Message for SetFollowCamProperties {
 
 impl Message for SetGroupAcceptNotices {
     fn write_to<W: ?Sized>(&self, buffer: &mut W) -> WriteMessageResult
-    where
-        W: Write,
-    {
+    where W: Write {
         // Write the message number.
-        buffer.write(&[0xff, 0xff, 0x01, 0x72])?;
+        buffer.write(&[
+            0xff, 0xff, 0x01, 0x72
+        ])?;
         // Block AgentData
         buffer.write(self.agent_data.agent_id.as_bytes())?;
         buffer.write(self.agent_data.session_id.as_bytes())?;
@@ -54156,9 +50682,7 @@ impl Message for SetGroupAcceptNotices {
     }
 
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         // Block AgentData
         let agent_data = SetGroupAcceptNotices_AgentData::read_from(buffer)?;
         // Block Data
@@ -54177,11 +50701,11 @@ impl Message for SetGroupAcceptNotices {
 
 impl Message for SetGroupContribution {
     fn write_to<W: ?Sized>(&self, buffer: &mut W) -> WriteMessageResult
-    where
-        W: Write,
-    {
+    where W: Write {
         // Write the message number.
-        buffer.write(&[0xff, 0xff, 0x01, 0x71])?;
+        buffer.write(&[
+            0xff, 0xff, 0x01, 0x71
+        ])?;
         // Block AgentData
         buffer.write(self.agent_data.agent_id.as_bytes())?;
         buffer.write(self.agent_data.session_id.as_bytes())?;
@@ -54192,9 +50716,7 @@ impl Message for SetGroupContribution {
     }
 
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         // Block AgentData
         let agent_data = SetGroupContribution_AgentData::read_from(buffer)?;
         // Block Data
@@ -54210,11 +50732,11 @@ impl Message for SetGroupContribution {
 
 impl Message for SetScriptRunning {
     fn write_to<W: ?Sized>(&self, buffer: &mut W) -> WriteMessageResult
-    where
-        W: Write,
-    {
+    where W: Write {
         // Write the message number.
-        buffer.write(&[0xff, 0xff, 0x00, 0xf5])?;
+        buffer.write(&[
+            0xff, 0xff, 0x00, 0xf5
+        ])?;
         // Block AgentData
         buffer.write(self.agent_data.agent_id.as_bytes())?;
         buffer.write(self.agent_data.session_id.as_bytes())?;
@@ -54226,9 +50748,7 @@ impl Message for SetScriptRunning {
     }
 
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         // Block AgentData
         let agent_data = SetScriptRunning_AgentData::read_from(buffer)?;
         // Block Script
@@ -54242,11 +50762,11 @@ impl Message for SetScriptRunning {
 
 impl Message for SetSimPresenceInDatabase {
     fn write_to<W: ?Sized>(&self, buffer: &mut W) -> WriteMessageResult
-    where
-        W: Write,
-    {
+    where W: Write {
         // Write the message number.
-        buffer.write(&[0xff, 0xff, 0x00, 0x17])?;
+        buffer.write(&[
+            0xff, 0xff, 0x00, 0x17
+        ])?;
         // Block SimData
         buffer.write(self.sim_data.region_id.as_bytes())?;
         buffer.write_u8(self.sim_data.host_name.len() as u8)?;
@@ -54262,9 +50782,7 @@ impl Message for SetSimPresenceInDatabase {
     }
 
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         // Block SimData
         let sim_data = SetSimPresenceInDatabase_SimData::read_from(buffer)?;
         Ok(MessageInstance::SetSimPresenceInDatabase(
@@ -54275,11 +50793,11 @@ impl Message for SetSimPresenceInDatabase {
 
 impl Message for SetSimStatusInDatabase {
     fn write_to<W: ?Sized>(&self, buffer: &mut W) -> WriteMessageResult
-    where
-        W: Write,
-    {
+    where W: Write {
         // Write the message number.
-        buffer.write(&[0xff, 0xff, 0x00, 0x16])?;
+        buffer.write(&[
+            0xff, 0xff, 0x00, 0x16
+        ])?;
         // Block Data
         buffer.write(self.data.region_id.as_bytes())?;
         buffer.write_u8(self.data.host_name.len() as u8)?;
@@ -54295,9 +50813,7 @@ impl Message for SetSimStatusInDatabase {
     }
 
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         // Block Data
         let data = SetSimStatusInDatabase_Data::read_from(buffer)?;
         Ok(MessageInstance::SetSimStatusInDatabase(
@@ -54308,49 +50824,31 @@ impl Message for SetSimStatusInDatabase {
 
 impl Message for SetStartLocation {
     fn write_to<W: ?Sized>(&self, buffer: &mut W) -> WriteMessageResult
-    where
-        W: Write,
-    {
+    where W: Write {
         // Write the message number.
-        buffer.write(&[0xff, 0xff, 0x01, 0x45])?;
+        buffer.write(&[
+            0xff, 0xff, 0x01, 0x45
+        ])?;
         // Block StartLocationData
         buffer.write(self.start_location_data.agent_id.as_bytes())?;
         buffer.write(self.start_location_data.region_id.as_bytes())?;
-        buffer.write_u32::<LittleEndian>(
-            self.start_location_data.location_id,
-        )?;
-        buffer.write_u64::<LittleEndian>(
-            self.start_location_data.region_handle,
-        )?;
-        buffer.write_f32::<LittleEndian>(
-            self.start_location_data.location_pos.x,
-        )?;
+        buffer.write_u32::<LittleEndian>(self.start_location_data.location_id)?;
+        buffer.write_u64::<LittleEndian>(self.start_location_data.region_handle)?;
+        buffer.write_f32::<LittleEndian>(self.start_location_data.location_pos.x)?;
 
-        buffer.write_f32::<LittleEndian>(
-            self.start_location_data.location_pos.y,
-        )?;
+        buffer.write_f32::<LittleEndian>(self.start_location_data.location_pos.y)?;
 
-        buffer.write_f32::<LittleEndian>(
-            self.start_location_data.location_pos.z,
-        )?;
-        buffer.write_f32::<LittleEndian>(
-            self.start_location_data.location_look_at.x,
-        )?;
+        buffer.write_f32::<LittleEndian>(self.start_location_data.location_pos.z)?;
+        buffer.write_f32::<LittleEndian>(self.start_location_data.location_look_at.x)?;
 
-        buffer.write_f32::<LittleEndian>(
-            self.start_location_data.location_look_at.y,
-        )?;
+        buffer.write_f32::<LittleEndian>(self.start_location_data.location_look_at.y)?;
 
-        buffer.write_f32::<LittleEndian>(
-            self.start_location_data.location_look_at.z,
-        )?;
+        buffer.write_f32::<LittleEndian>(self.start_location_data.location_look_at.z)?;
         Ok(())
     }
 
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         // Block StartLocationData
         let start_location_data = SetStartLocation_StartLocationData::read_from(buffer)?;
         Ok(MessageInstance::SetStartLocation(SetStartLocation {
@@ -54361,51 +50859,33 @@ impl Message for SetStartLocation {
 
 impl Message for SetStartLocationRequest {
     fn write_to<W: ?Sized>(&self, buffer: &mut W) -> WriteMessageResult
-    where
-        W: Write,
-    {
+    where W: Write {
         // Write the message number.
-        buffer.write(&[0xff, 0xff, 0x01, 0x44])?;
+        buffer.write(&[
+            0xff, 0xff, 0x01, 0x44
+        ])?;
         // Block AgentData
         buffer.write(self.agent_data.agent_id.as_bytes())?;
         buffer.write(self.agent_data.session_id.as_bytes())?;
         // Block StartLocationData
-        buffer.write_u8(
-            self.start_location_data.sim_name.len() as u8,
-        )?;
+        buffer.write_u8(self.start_location_data.sim_name.len() as u8)?;
         buffer.write(&self.start_location_data.sim_name[..])?;
-        buffer.write_u32::<LittleEndian>(
-            self.start_location_data.location_id,
-        )?;
-        buffer.write_f32::<LittleEndian>(
-            self.start_location_data.location_pos.x,
-        )?;
+        buffer.write_u32::<LittleEndian>(self.start_location_data.location_id)?;
+        buffer.write_f32::<LittleEndian>(self.start_location_data.location_pos.x)?;
 
-        buffer.write_f32::<LittleEndian>(
-            self.start_location_data.location_pos.y,
-        )?;
+        buffer.write_f32::<LittleEndian>(self.start_location_data.location_pos.y)?;
 
-        buffer.write_f32::<LittleEndian>(
-            self.start_location_data.location_pos.z,
-        )?;
-        buffer.write_f32::<LittleEndian>(
-            self.start_location_data.location_look_at.x,
-        )?;
+        buffer.write_f32::<LittleEndian>(self.start_location_data.location_pos.z)?;
+        buffer.write_f32::<LittleEndian>(self.start_location_data.location_look_at.x)?;
 
-        buffer.write_f32::<LittleEndian>(
-            self.start_location_data.location_look_at.y,
-        )?;
+        buffer.write_f32::<LittleEndian>(self.start_location_data.location_look_at.y)?;
 
-        buffer.write_f32::<LittleEndian>(
-            self.start_location_data.location_look_at.z,
-        )?;
+        buffer.write_f32::<LittleEndian>(self.start_location_data.location_look_at.z)?;
         Ok(())
     }
 
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         // Block AgentData
         let agent_data = SetStartLocationRequest_AgentData::read_from(buffer)?;
         // Block StartLocationData
@@ -54421,11 +50901,11 @@ impl Message for SetStartLocationRequest {
 
 impl Message for SimCrashed {
     fn write_to<W: ?Sized>(&self, buffer: &mut W) -> WriteMessageResult
-    where
-        W: Write,
-    {
+    where W: Write {
         // Write the message number.
-        buffer.write(&[0xff, 0xff, 0x01, 0x48])?;
+        buffer.write(&[
+            0xff, 0xff, 0x01, 0x48
+        ])?;
         // Block Data
         buffer.write_u32::<LittleEndian>(self.data.region_x)?;
         buffer.write_u32::<LittleEndian>(self.data.region_y)?;
@@ -54438,9 +50918,7 @@ impl Message for SimCrashed {
     }
 
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         // Block Data
         let data = SimCrashed_Data::read_from(buffer)?;
         // Block Users
@@ -54458,18 +50936,16 @@ impl Message for SimCrashed {
 
 impl Message for SimStats {
     fn write_to<W: ?Sized>(&self, buffer: &mut W) -> WriteMessageResult
-    where
-        W: Write,
-    {
+    where W: Write {
         // Write the message number.
-        buffer.write(&[0xff, 0xff, 0x00, 0x8c])?;
+        buffer.write(&[
+            0xff, 0xff, 0x00, 0x8c
+        ])?;
         // Block Region
         buffer.write_u32::<LittleEndian>(self.region.region_x)?;
         buffer.write_u32::<LittleEndian>(self.region.region_y)?;
         buffer.write_u32::<LittleEndian>(self.region.region_flags)?;
-        buffer.write_u32::<LittleEndian>(
-            self.region.object_capacity,
-        )?;
+        buffer.write_u32::<LittleEndian>(self.region.object_capacity)?;
         // Block Stat
         buffer.write_u8(self.stat.len() as u8)?;
         for item in &self.stat {
@@ -54482,9 +50958,7 @@ impl Message for SimStats {
     }
 
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         // Block Region
         let region = SimStats_Region::read_from(buffer)?;
         // Block Stat
@@ -54505,9 +50979,7 @@ impl Message for SimStats {
 
 impl Message for SimStatus {
     fn write_to<W: ?Sized>(&self, buffer: &mut W) -> WriteMessageResult
-    where
-        W: Write,
-    {
+    where W: Write {
         // Write the message number.
         buffer.write(&[0xff, 0x0c])?;
         // Block SimStatus
@@ -54517,24 +50989,22 @@ impl Message for SimStatus {
     }
 
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         // Block SimStatus
         let sim_status = SimStatus_SimStatus::read_from(buffer)?;
-        Ok(MessageInstance::SimStatus(
-            SimStatus { sim_status: sim_status },
-        ))
+        Ok(MessageInstance::SimStatus(SimStatus {
+            sim_status: sim_status,
+        }))
     }
 }
 
 impl Message for SimWideDeletes {
     fn write_to<W: ?Sized>(&self, buffer: &mut W) -> WriteMessageResult
-    where
-        W: Write,
-    {
+    where W: Write {
         // Write the message number.
-        buffer.write(&[0xff, 0xff, 0x00, 0x81])?;
+        buffer.write(&[
+            0xff, 0xff, 0x00, 0x81
+        ])?;
         // Block AgentData
         buffer.write(self.agent_data.agent_id.as_bytes())?;
         buffer.write(self.agent_data.session_id.as_bytes())?;
@@ -54545,9 +51015,7 @@ impl Message for SimWideDeletes {
     }
 
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         // Block AgentData
         let agent_data = SimWideDeletes_AgentData::read_from(buffer)?;
         // Block DataBlock
@@ -54561,18 +51029,14 @@ impl Message for SimWideDeletes {
 
 impl Message for SimulatorLoad {
     fn write_to<W: ?Sized>(&self, buffer: &mut W) -> WriteMessageResult
-    where
-        W: Write,
-    {
+    where W: Write {
         // Write the message number.
-        buffer.write(&[0xff, 0xff, 0x00, 0x0c])?;
+        buffer.write(&[
+            0xff, 0xff, 0x00, 0x0c
+        ])?;
         // Block SimulatorLoad
-        buffer.write_f32::<LittleEndian>(
-            self.simulator_load.time_dilation,
-        )?;
-        buffer.write_i32::<LittleEndian>(
-            self.simulator_load.agent_count,
-        )?;
+        buffer.write_f32::<LittleEndian>(self.simulator_load.time_dilation)?;
+        buffer.write_i32::<LittleEndian>(self.simulator_load.agent_count)?;
         buffer.write_u8(self.simulator_load.can_accept_agents as u8)?;
         // Block AgentList
         buffer.write_u8(self.agent_list.len() as u8)?;
@@ -54585,9 +51049,7 @@ impl Message for SimulatorLoad {
     }
 
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         // Block SimulatorLoad
         let simulator_load = SimulatorLoad_SimulatorLoad::read_from(buffer)?;
         // Block AgentList
@@ -54605,20 +51067,18 @@ impl Message for SimulatorLoad {
 
 impl Message for SimulatorMapUpdate {
     fn write_to<W: ?Sized>(&self, buffer: &mut W) -> WriteMessageResult
-    where
-        W: Write,
-    {
+    where W: Write {
         // Write the message number.
-        buffer.write(&[0xff, 0xff, 0x00, 0x05])?;
+        buffer.write(&[
+            0xff, 0xff, 0x00, 0x05
+        ])?;
         // Block MapData
         buffer.write_u32::<LittleEndian>(self.map_data.flags)?;
         Ok(())
     }
 
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         // Block MapData
         let map_data = SimulatorMapUpdate_MapData::read_from(buffer)?;
         Ok(MessageInstance::SimulatorMapUpdate(
@@ -54629,45 +51089,29 @@ impl Message for SimulatorMapUpdate {
 
 impl Message for SimulatorPresentAtLocation {
     fn write_to<W: ?Sized>(&self, buffer: &mut W) -> WriteMessageResult
-    where
-        W: Write,
-    {
+    where W: Write {
         // Write the message number.
-        buffer.write(&[0xff, 0xff, 0x00, 0x0b])?;
+        buffer.write(&[
+            0xff, 0xff, 0x00, 0x0b
+        ])?;
         // Block SimulatorPublicHostBlock
-        buffer.write_u16::<LittleEndian>(
-            self.simulator_public_host_block.port,
-        )?;
-        buffer.write(&self.simulator_public_host_block
-            .simulator_ip
-            .octets())?;
-        buffer.write_u32::<LittleEndian>(
-            self.simulator_public_host_block.grid_x,
-        )?;
-        buffer.write_u32::<LittleEndian>(
-            self.simulator_public_host_block.grid_y,
-        )?;
+        buffer.write_u16::<LittleEndian>(self.simulator_public_host_block.port)?;
+        buffer.write(&self.simulator_public_host_block.simulator_ip.octets())?;
+        buffer.write_u32::<LittleEndian>(self.simulator_public_host_block.grid_x)?;
+        buffer.write_u32::<LittleEndian>(self.simulator_public_host_block.grid_y)?;
         // Block NeighborBlock
         for i in 0..4 {
             buffer.write(&self.neighbor_block[i].ip.octets())?;
-            buffer.write_u16::<LittleEndian>(
-                self.neighbor_block[i].port,
-            )?;
+            buffer.write_u16::<LittleEndian>(self.neighbor_block[i].port)?;
         }
         // Block SimulatorBlock
         buffer.write_u8(self.simulator_block.sim_name.len() as u8)?;
         buffer.write(&self.simulator_block.sim_name[..])?;
         buffer.write_u8(self.simulator_block.sim_access)?;
-        buffer.write_u32::<LittleEndian>(
-            self.simulator_block.region_flags,
-        )?;
+        buffer.write_u32::<LittleEndian>(self.simulator_block.region_flags)?;
         buffer.write(self.simulator_block.region_id.as_bytes())?;
-        buffer.write_u32::<LittleEndian>(
-            self.simulator_block.estate_id,
-        )?;
-        buffer.write_u32::<LittleEndian>(
-            self.simulator_block.parent_estate_id,
-        )?;
+        buffer.write_u32::<LittleEndian>(self.simulator_block.estate_id)?;
+        buffer.write_u32::<LittleEndian>(self.simulator_block.parent_estate_id)?;
         // Block TelehubBlock
         buffer.write_u8(self.telehub_block.len() as u8)?;
         for item in &self.telehub_block {
@@ -54682,21 +51126,17 @@ impl Message for SimulatorPresentAtLocation {
     }
 
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         // Block SimulatorPublicHostBlock
         let simulator_public_host_block =
             SimulatorPresentAtLocation_SimulatorPublicHostBlock::read_from(buffer)?;
         // Block NeighborBlock
-        let neighbor_block = ArrayVec::from(
-            [
-                SimulatorPresentAtLocation_NeighborBlock::read_from(buffer)?,
-                SimulatorPresentAtLocation_NeighborBlock::read_from(buffer)?,
-                SimulatorPresentAtLocation_NeighborBlock::read_from(buffer)?,
-                SimulatorPresentAtLocation_NeighborBlock::read_from(buffer)?,
-            ],
-        );
+        let neighbor_block = ArrayVec::from([
+            SimulatorPresentAtLocation_NeighborBlock::read_from(buffer)?,
+            SimulatorPresentAtLocation_NeighborBlock::read_from(buffer)?,
+            SimulatorPresentAtLocation_NeighborBlock::read_from(buffer)?,
+            SimulatorPresentAtLocation_NeighborBlock::read_from(buffer)?,
+        ]);
         // Block SimulatorBlock
         let simulator_block = SimulatorPresentAtLocation_SimulatorBlock::read_from(buffer)?;
         // Block TelehubBlock
@@ -54718,45 +51158,31 @@ impl Message for SimulatorPresentAtLocation {
 
 impl Message for SimulatorReady {
     fn write_to<W: ?Sized>(&self, buffer: &mut W) -> WriteMessageResult
-    where
-        W: Write,
-    {
+    where W: Write {
         // Write the message number.
-        buffer.write(&[0xff, 0xff, 0x00, 0x09])?;
+        buffer.write(&[
+            0xff, 0xff, 0x00, 0x09
+        ])?;
         // Block SimulatorBlock
         buffer.write_u8(self.simulator_block.sim_name.len() as u8)?;
         buffer.write(&self.simulator_block.sim_name[..])?;
         buffer.write_u8(self.simulator_block.sim_access)?;
-        buffer.write_u32::<LittleEndian>(
-            self.simulator_block.region_flags,
-        )?;
+        buffer.write_u32::<LittleEndian>(self.simulator_block.region_flags)?;
         buffer.write(self.simulator_block.region_id.as_bytes())?;
-        buffer.write_u32::<LittleEndian>(
-            self.simulator_block.estate_id,
-        )?;
-        buffer.write_u32::<LittleEndian>(
-            self.simulator_block.parent_estate_id,
-        )?;
+        buffer.write_u32::<LittleEndian>(self.simulator_block.estate_id)?;
+        buffer.write_u32::<LittleEndian>(self.simulator_block.parent_estate_id)?;
         // Block TelehubBlock
         buffer.write_u8(self.telehub_block.has_telehub as u8)?;
-        buffer.write_f32::<LittleEndian>(
-            self.telehub_block.telehub_pos.x,
-        )?;
+        buffer.write_f32::<LittleEndian>(self.telehub_block.telehub_pos.x)?;
 
-        buffer.write_f32::<LittleEndian>(
-            self.telehub_block.telehub_pos.y,
-        )?;
+        buffer.write_f32::<LittleEndian>(self.telehub_block.telehub_pos.y)?;
 
-        buffer.write_f32::<LittleEndian>(
-            self.telehub_block.telehub_pos.z,
-        )?;
+        buffer.write_f32::<LittleEndian>(self.telehub_block.telehub_pos.z)?;
         Ok(())
     }
 
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         // Block SimulatorBlock
         let simulator_block = SimulatorReady_SimulatorBlock::read_from(buffer)?;
         // Block TelehubBlock
@@ -54770,24 +51196,20 @@ impl Message for SimulatorReady {
 
 impl Message for SimulatorSetMap {
     fn write_to<W: ?Sized>(&self, buffer: &mut W) -> WriteMessageResult
-    where
-        W: Write,
-    {
+    where W: Write {
         // Write the message number.
-        buffer.write(&[0xff, 0xff, 0x00, 0x06])?;
+        buffer.write(&[
+            0xff, 0xff, 0x00, 0x06
+        ])?;
         // Block MapData
-        buffer.write_u64::<LittleEndian>(
-            self.map_data.region_handle,
-        )?;
+        buffer.write_u64::<LittleEndian>(self.map_data.region_handle)?;
         buffer.write_i32::<LittleEndian>(self.map_data.type_)?;
         buffer.write(self.map_data.map_image.as_bytes())?;
         Ok(())
     }
 
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         // Block MapData
         let map_data = SimulatorSetMap_MapData::read_from(buffer)?;
         Ok(MessageInstance::SimulatorSetMap(
@@ -54798,18 +51220,16 @@ impl Message for SimulatorSetMap {
 
 impl Message for SimulatorShutdownRequest {
     fn write_to<W: ?Sized>(&self, buffer: &mut W) -> WriteMessageResult
-    where
-        W: Write,
-    {
+    where W: Write {
         // Write the message number.
-        buffer.write(&[0xff, 0xff, 0x00, 0x0d])?;
+        buffer.write(&[
+            0xff, 0xff, 0x00, 0x0d
+        ])?;
         Ok(())
     }
 
     fn read_from<R: ?Sized>(_: &mut R) -> Result<MessageInstance, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(MessageInstance::SimulatorShutdownRequest(
             SimulatorShutdownRequest {},
         ))
@@ -54818,62 +51238,44 @@ impl Message for SimulatorShutdownRequest {
 
 impl Message for SimulatorViewerTimeMessage {
     fn write_to<W: ?Sized>(&self, buffer: &mut W) -> WriteMessageResult
-    where
-        W: Write,
-    {
+    where W: Write {
         // Write the message number.
-        buffer.write(&[0xff, 0xff, 0x00, 0x96])?;
+        buffer.write(&[
+            0xff, 0xff, 0x00, 0x96
+        ])?;
         // Block TimeInfo
-        buffer.write_u64::<LittleEndian>(
-            self.time_info.usec_since_start,
-        )?;
+        buffer.write_u64::<LittleEndian>(self.time_info.usec_since_start)?;
         buffer.write_u32::<LittleEndian>(self.time_info.sec_per_day)?;
-        buffer.write_u32::<LittleEndian>(
-            self.time_info.sec_per_year,
-        )?;
-        buffer.write_f32::<LittleEndian>(
-            self.time_info.sun_direction.x,
-        )?;
+        buffer.write_u32::<LittleEndian>(self.time_info.sec_per_year)?;
+        buffer.write_f32::<LittleEndian>(self.time_info.sun_direction.x)?;
 
-        buffer.write_f32::<LittleEndian>(
-            self.time_info.sun_direction.y,
-        )?;
+        buffer.write_f32::<LittleEndian>(self.time_info.sun_direction.y)?;
 
-        buffer.write_f32::<LittleEndian>(
-            self.time_info.sun_direction.z,
-        )?;
+        buffer.write_f32::<LittleEndian>(self.time_info.sun_direction.z)?;
         buffer.write_f32::<LittleEndian>(self.time_info.sun_phase)?;
-        buffer.write_f32::<LittleEndian>(
-            self.time_info.sun_ang_velocity.x,
-        )?;
+        buffer.write_f32::<LittleEndian>(self.time_info.sun_ang_velocity.x)?;
 
-        buffer.write_f32::<LittleEndian>(
-            self.time_info.sun_ang_velocity.y,
-        )?;
+        buffer.write_f32::<LittleEndian>(self.time_info.sun_ang_velocity.y)?;
 
-        buffer.write_f32::<LittleEndian>(
-            self.time_info.sun_ang_velocity.z,
-        )?;
+        buffer.write_f32::<LittleEndian>(self.time_info.sun_ang_velocity.z)?;
         Ok(())
     }
 
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         // Block TimeInfo
         let time_info = SimulatorViewerTimeMessage_TimeInfo::read_from(buffer)?;
         Ok(MessageInstance::SimulatorViewerTimeMessage(
-            SimulatorViewerTimeMessage { time_info: time_info },
+            SimulatorViewerTimeMessage {
+                time_info: time_info,
+            },
         ))
     }
 }
 
 impl Message for SoundTrigger {
     fn write_to<W: ?Sized>(&self, buffer: &mut W) -> WriteMessageResult
-    where
-        W: Write,
-    {
+    where W: Write {
         // Write the message number.
         buffer.write(&[0x1d])?;
         // Block SoundData
@@ -54892,24 +51294,22 @@ impl Message for SoundTrigger {
     }
 
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         // Block SoundData
         let sound_data = SoundTrigger_SoundData::read_from(buffer)?;
-        Ok(MessageInstance::SoundTrigger(
-            SoundTrigger { sound_data: sound_data },
-        ))
+        Ok(MessageInstance::SoundTrigger(SoundTrigger {
+            sound_data: sound_data,
+        }))
     }
 }
 
 impl Message for StartAuction {
     fn write_to<W: ?Sized>(&self, buffer: &mut W) -> WriteMessageResult
-    where
-        W: Write,
-    {
+    where W: Write {
         // Write the message number.
-        buffer.write(&[0xff, 0xff, 0x00, 0xe5])?;
+        buffer.write(&[
+            0xff, 0xff, 0x00, 0xe5
+        ])?;
         // Block AgentData
         buffer.write(self.agent_data.agent_id.as_bytes())?;
         // Block ParcelData
@@ -54921,9 +51321,7 @@ impl Message for StartAuction {
     }
 
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         // Block AgentData
         let agent_data = StartAuction_AgentData::read_from(buffer)?;
         // Block ParcelData
@@ -54937,34 +51335,26 @@ impl Message for StartAuction {
 
 impl Message for StartGroupProposal {
     fn write_to<W: ?Sized>(&self, buffer: &mut W) -> WriteMessageResult
-    where
-        W: Write,
-    {
+    where W: Write {
         // Write the message number.
-        buffer.write(&[0xff, 0xff, 0x01, 0x6b])?;
+        buffer.write(&[
+            0xff, 0xff, 0x01, 0x6b
+        ])?;
         // Block AgentData
         buffer.write(self.agent_data.agent_id.as_bytes())?;
         buffer.write(self.agent_data.session_id.as_bytes())?;
         // Block ProposalData
         buffer.write(self.proposal_data.group_id.as_bytes())?;
         buffer.write_i32::<LittleEndian>(self.proposal_data.quorum)?;
-        buffer.write_f32::<LittleEndian>(
-            self.proposal_data.majority,
-        )?;
-        buffer.write_i32::<LittleEndian>(
-            self.proposal_data.duration,
-        )?;
-        buffer.write_u8(
-            self.proposal_data.proposal_text.len() as u8,
-        )?;
+        buffer.write_f32::<LittleEndian>(self.proposal_data.majority)?;
+        buffer.write_i32::<LittleEndian>(self.proposal_data.duration)?;
+        buffer.write_u8(self.proposal_data.proposal_text.len() as u8)?;
         buffer.write(&self.proposal_data.proposal_text[..])?;
         Ok(())
     }
 
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         // Block AgentData
         let agent_data = StartGroupProposal_AgentData::read_from(buffer)?;
         // Block ProposalData
@@ -54978,11 +51368,11 @@ impl Message for StartGroupProposal {
 
 impl Message for StartLure {
     fn write_to<W: ?Sized>(&self, buffer: &mut W) -> WriteMessageResult
-    where
-        W: Write,
-    {
+    where W: Write {
         // Write the message number.
-        buffer.write(&[0xff, 0xff, 0x00, 0x46])?;
+        buffer.write(&[
+            0xff, 0xff, 0x00, 0x46
+        ])?;
         // Block AgentData
         buffer.write(self.agent_data.agent_id.as_bytes())?;
         buffer.write(self.agent_data.session_id.as_bytes())?;
@@ -54999,9 +51389,7 @@ impl Message for StartLure {
     }
 
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         // Block AgentData
         let agent_data = StartLure_AgentData::read_from(buffer)?;
         // Block Info
@@ -55022,23 +51410,17 @@ impl Message for StartLure {
 
 impl Message for StartPingCheck {
     fn write_to<W: ?Sized>(&self, buffer: &mut W) -> WriteMessageResult
-    where
-        W: Write,
-    {
+    where W: Write {
         // Write the message number.
         buffer.write(&[0x01])?;
         // Block PingID
         buffer.write_u8(self.ping_id.ping_id)?;
-        buffer.write_u32::<LittleEndian>(
-            self.ping_id.oldest_unacked,
-        )?;
+        buffer.write_u32::<LittleEndian>(self.ping_id.oldest_unacked)?;
         Ok(())
     }
 
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         // Block PingID
         let ping_id = StartPingCheck_PingID::read_from(buffer)?;
         Ok(MessageInstance::StartPingCheck(
@@ -55049,11 +51431,11 @@ impl Message for StartPingCheck {
 
 impl Message for StateSave {
     fn write_to<W: ?Sized>(&self, buffer: &mut W) -> WriteMessageResult
-    where
-        W: Write,
-    {
+    where W: Write {
         // Write the message number.
-        buffer.write(&[0xff, 0xff, 0x00, 0x7f])?;
+        buffer.write(&[
+            0xff, 0xff, 0x00, 0x7f
+        ])?;
         // Block AgentData
         buffer.write(self.agent_data.agent_id.as_bytes())?;
         buffer.write(self.agent_data.session_id.as_bytes())?;
@@ -55064,9 +51446,7 @@ impl Message for StateSave {
     }
 
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         // Block AgentData
         let agent_data = StateSave_AgentData::read_from(buffer)?;
         // Block DataBlock
@@ -55080,29 +51460,27 @@ impl Message for StateSave {
 
 impl Message for SubscribeLoad {
     fn write_to<W: ?Sized>(&self, buffer: &mut W) -> WriteMessageResult
-    where
-        W: Write,
-    {
+    where W: Write {
         // Write the message number.
-        buffer.write(&[0xff, 0xff, 0x00, 0x07])?;
+        buffer.write(&[
+            0xff, 0xff, 0x00, 0x07
+        ])?;
         Ok(())
     }
 
     fn read_from<R: ?Sized>(_: &mut R) -> Result<MessageInstance, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(MessageInstance::SubscribeLoad(SubscribeLoad {}))
     }
 }
 
 impl Message for SystemKickUser {
     fn write_to<W: ?Sized>(&self, buffer: &mut W) -> WriteMessageResult
-    where
-        W: Write,
-    {
+    where W: Write {
         // Write the message number.
-        buffer.write(&[0xff, 0xff, 0x00, 0xa6])?;
+        buffer.write(&[
+            0xff, 0xff, 0x00, 0xa6
+        ])?;
         // Block AgentInfo
         buffer.write_u8(self.agent_info.len() as u8)?;
         for item in &self.agent_info {
@@ -55112,28 +51490,26 @@ impl Message for SystemKickUser {
     }
 
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         // Block AgentInfo
         let mut agent_info = Vec::new();
         let _agent_info_count = buffer.read_u8()?;
         for _ in 0.._agent_info_count {
             agent_info.push(SystemKickUser_AgentInfo::read_from(buffer)?);
         }
-        Ok(MessageInstance::SystemKickUser(
-            SystemKickUser { agent_info: agent_info },
-        ))
+        Ok(MessageInstance::SystemKickUser(SystemKickUser {
+            agent_info: agent_info,
+        }))
     }
 }
 
 impl Message for SystemMessage {
     fn write_to<W: ?Sized>(&self, buffer: &mut W) -> WriteMessageResult
-    where
-        W: Write,
-    {
+    where W: Write {
         // Write the message number.
-        buffer.write(&[0xff, 0xff, 0x01, 0x94])?;
+        buffer.write(&[
+            0xff, 0xff, 0x01, 0x94
+        ])?;
         // Block MethodData
         buffer.write_u8(self.method_data.method.len() as u8)?;
         buffer.write(&self.method_data.method[..])?;
@@ -55149,9 +51525,7 @@ impl Message for SystemMessage {
     }
 
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         // Block MethodData
         let method_data = SystemMessage_MethodData::read_from(buffer)?;
         // Block ParamList
@@ -55169,44 +51543,36 @@ impl Message for SystemMessage {
 
 impl Message for TallyVotes {
     fn write_to<W: ?Sized>(&self, buffer: &mut W) -> WriteMessageResult
-    where
-        W: Write,
-    {
+    where W: Write {
         // Write the message number.
-        buffer.write(&[0xff, 0xff, 0x01, 0x6d])?;
+        buffer.write(&[
+            0xff, 0xff, 0x01, 0x6d
+        ])?;
         Ok(())
     }
 
     fn read_from<R: ?Sized>(_: &mut R) -> Result<MessageInstance, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(MessageInstance::TallyVotes(TallyVotes {}))
     }
 }
 
 impl Message for TelehubInfo {
     fn write_to<W: ?Sized>(&self, buffer: &mut W) -> WriteMessageResult
-    where
-        W: Write,
-    {
+    where W: Write {
         // Write the message number.
-        buffer.write(&[0xff, 0xff, 0x00, 0x0a])?;
+        buffer.write(&[
+            0xff, 0xff, 0x00, 0x0a
+        ])?;
         // Block TelehubBlock
         buffer.write(self.telehub_block.object_id.as_bytes())?;
         buffer.write_u8(self.telehub_block.object_name.len() as u8)?;
         buffer.write(&self.telehub_block.object_name[..])?;
-        buffer.write_f32::<LittleEndian>(
-            self.telehub_block.telehub_pos.x,
-        )?;
+        buffer.write_f32::<LittleEndian>(self.telehub_block.telehub_pos.x)?;
 
-        buffer.write_f32::<LittleEndian>(
-            self.telehub_block.telehub_pos.y,
-        )?;
+        buffer.write_f32::<LittleEndian>(self.telehub_block.telehub_pos.y)?;
 
-        buffer.write_f32::<LittleEndian>(
-            self.telehub_block.telehub_pos.z,
-        )?;
+        buffer.write_f32::<LittleEndian>(self.telehub_block.telehub_pos.z)?;
         let normed_telehub_rot = UnitQuaternion::new(&self.telehub_block.telehub_rot).unwrap();
 
         buffer.write_f32::<LittleEndian>(normed_telehub_rot.i)?;
@@ -55227,9 +51593,7 @@ impl Message for TelehubInfo {
     }
 
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         // Block TelehubBlock
         let telehub_block = TelehubInfo_TelehubBlock::read_from(buffer)?;
         // Block SpawnPointBlock
@@ -55247,11 +51611,11 @@ impl Message for TelehubInfo {
 
 impl Message for TeleportCancel {
     fn write_to<W: ?Sized>(&self, buffer: &mut W) -> WriteMessageResult
-    where
-        W: Write,
-    {
+    where W: Write {
         // Write the message number.
-        buffer.write(&[0xff, 0xff, 0x00, 0x48])?;
+        buffer.write(&[
+            0xff, 0xff, 0x00, 0x48
+        ])?;
         // Block Info
         buffer.write(self.info.agent_id.as_bytes())?;
         buffer.write(self.info.session_id.as_bytes())?;
@@ -55259,9 +51623,7 @@ impl Message for TeleportCancel {
     }
 
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         // Block Info
         let info = TeleportCancel_Info::read_from(buffer)?;
         Ok(MessageInstance::TeleportCancel(
@@ -55272,11 +51634,11 @@ impl Message for TeleportCancel {
 
 impl Message for TeleportFailed {
     fn write_to<W: ?Sized>(&self, buffer: &mut W) -> WriteMessageResult
-    where
-        W: Write,
-    {
+    where W: Write {
         // Write the message number.
-        buffer.write(&[0xff, 0xff, 0x00, 0x4a])?;
+        buffer.write(&[
+            0xff, 0xff, 0x00, 0x4a
+        ])?;
         // Block Info
         buffer.write(self.info.agent_id.as_bytes())?;
         buffer.write_u8(self.info.reason.len() as u8)?;
@@ -55293,9 +51655,7 @@ impl Message for TeleportFailed {
     }
 
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         // Block Info
         let info = TeleportFailed_Info::read_from(buffer)?;
         // Block AlertInfo
@@ -55313,20 +51673,18 @@ impl Message for TeleportFailed {
 
 impl Message for TeleportFinish {
     fn write_to<W: ?Sized>(&self, buffer: &mut W) -> WriteMessageResult
-    where
-        W: Write,
-    {
+    where W: Write {
         // Write the message number.
-        buffer.write(&[0xff, 0xff, 0x00, 0x45])?;
+        buffer.write(&[
+            0xff, 0xff, 0x00, 0x45
+        ])?;
         // Block Info
         buffer.write(self.info.agent_id.as_bytes())?;
         buffer.write_u32::<LittleEndian>(self.info.location_id)?;
         buffer.write(&self.info.sim_ip.octets())?;
         buffer.write_u16::<LittleEndian>(self.info.sim_port)?;
         buffer.write_u64::<LittleEndian>(self.info.region_handle)?;
-        buffer.write_u16::<LittleEndian>(
-            self.info.seed_capability.len() as u16,
-        )?;
+        buffer.write_u16::<LittleEndian>(self.info.seed_capability.len() as u16)?;
         buffer.write(&self.info.seed_capability[..])?;
         buffer.write_u8(self.info.sim_access)?;
         buffer.write_u32::<LittleEndian>(self.info.teleport_flags)?;
@@ -55336,9 +51694,7 @@ impl Message for TeleportFinish {
     }
 
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         // Block Info
         let info = TeleportFinish_Info::read_from(buffer)?;
         Ok(MessageInstance::TeleportFinish(
@@ -55349,37 +51705,35 @@ impl Message for TeleportFinish {
 
 impl Message for TeleportLandingStatusChanged {
     fn write_to<W: ?Sized>(&self, buffer: &mut W) -> WriteMessageResult
-    where
-        W: Write,
-    {
+    where W: Write {
         // Write the message number.
-        buffer.write(&[0xff, 0xff, 0x00, 0x93])?;
+        buffer.write(&[
+            0xff, 0xff, 0x00, 0x93
+        ])?;
         // Block RegionData
-        buffer.write_u64::<LittleEndian>(
-            self.region_data.region_handle,
-        )?;
+        buffer.write_u64::<LittleEndian>(self.region_data.region_handle)?;
         Ok(())
     }
 
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         // Block RegionData
         let region_data = TeleportLandingStatusChanged_RegionData::read_from(buffer)?;
         Ok(MessageInstance::TeleportLandingStatusChanged(
-            TeleportLandingStatusChanged { region_data: region_data },
+            TeleportLandingStatusChanged {
+                region_data: region_data,
+            },
         ))
     }
 }
 
 impl Message for TeleportLandmarkRequest {
     fn write_to<W: ?Sized>(&self, buffer: &mut W) -> WriteMessageResult
-    where
-        W: Write,
-    {
+    where W: Write {
         // Write the message number.
-        buffer.write(&[0xff, 0xff, 0x00, 0x41])?;
+        buffer.write(&[
+            0xff, 0xff, 0x00, 0x41
+        ])?;
         // Block Info
         buffer.write(self.info.agent_id.as_bytes())?;
         buffer.write(self.info.session_id.as_bytes())?;
@@ -55388,9 +51742,7 @@ impl Message for TeleportLandmarkRequest {
     }
 
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         // Block Info
         let info = TeleportLandmarkRequest_Info::read_from(buffer)?;
         Ok(MessageInstance::TeleportLandmarkRequest(
@@ -55401,11 +51753,11 @@ impl Message for TeleportLandmarkRequest {
 
 impl Message for TeleportLocal {
     fn write_to<W: ?Sized>(&self, buffer: &mut W) -> WriteMessageResult
-    where
-        W: Write,
-    {
+    where W: Write {
         // Write the message number.
-        buffer.write(&[0xff, 0xff, 0x00, 0x40])?;
+        buffer.write(&[
+            0xff, 0xff, 0x00, 0x40
+        ])?;
         // Block Info
         buffer.write(self.info.agent_id.as_bytes())?;
         buffer.write_u32::<LittleEndian>(self.info.location_id)?;
@@ -55424,9 +51776,7 @@ impl Message for TeleportLocal {
     }
 
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         // Block Info
         let info = TeleportLocal_Info::read_from(buffer)?;
         Ok(MessageInstance::TeleportLocal(TeleportLocal { info: info }))
@@ -55435,11 +51785,11 @@ impl Message for TeleportLocal {
 
 impl Message for TeleportLocationRequest {
     fn write_to<W: ?Sized>(&self, buffer: &mut W) -> WriteMessageResult
-    where
-        W: Write,
-    {
+    where W: Write {
         // Write the message number.
-        buffer.write(&[0xff, 0xff, 0x00, 0x3f])?;
+        buffer.write(&[
+            0xff, 0xff, 0x00, 0x3f
+        ])?;
         // Block AgentData
         buffer.write(self.agent_data.agent_id.as_bytes())?;
         buffer.write(self.agent_data.session_id.as_bytes())?;
@@ -55459,9 +51809,7 @@ impl Message for TeleportLocationRequest {
     }
 
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         // Block AgentData
         let agent_data = TeleportLocationRequest_AgentData::read_from(buffer)?;
         // Block Info
@@ -55477,11 +51825,11 @@ impl Message for TeleportLocationRequest {
 
 impl Message for TeleportLureRequest {
     fn write_to<W: ?Sized>(&self, buffer: &mut W) -> WriteMessageResult
-    where
-        W: Write,
-    {
+    where W: Write {
         // Write the message number.
-        buffer.write(&[0xff, 0xff, 0x00, 0x47])?;
+        buffer.write(&[
+            0xff, 0xff, 0x00, 0x47
+        ])?;
         // Block Info
         buffer.write(self.info.agent_id.as_bytes())?;
         buffer.write(self.info.session_id.as_bytes())?;
@@ -55491,9 +51839,7 @@ impl Message for TeleportLureRequest {
     }
 
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         // Block Info
         let info = TeleportLureRequest_Info::read_from(buffer)?;
         Ok(MessageInstance::TeleportLureRequest(
@@ -55504,11 +51850,11 @@ impl Message for TeleportLureRequest {
 
 impl Message for TeleportProgress {
     fn write_to<W: ?Sized>(&self, buffer: &mut W) -> WriteMessageResult
-    where
-        W: Write,
-    {
+    where W: Write {
         // Write the message number.
-        buffer.write(&[0xff, 0xff, 0x00, 0x42])?;
+        buffer.write(&[
+            0xff, 0xff, 0x00, 0x42
+        ])?;
         // Block AgentData
         buffer.write(self.agent_data.agent_id.as_bytes())?;
         // Block Info
@@ -55519,9 +51865,7 @@ impl Message for TeleportProgress {
     }
 
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         // Block AgentData
         let agent_data = TeleportProgress_AgentData::read_from(buffer)?;
         // Block Info
@@ -55535,11 +51879,11 @@ impl Message for TeleportProgress {
 
 impl Message for TeleportRequest {
     fn write_to<W: ?Sized>(&self, buffer: &mut W) -> WriteMessageResult
-    where
-        W: Write,
-    {
+    where W: Write {
         // Write the message number.
-        buffer.write(&[0xff, 0xff, 0x00, 0x3e])?;
+        buffer.write(&[
+            0xff, 0xff, 0x00, 0x3e
+        ])?;
         // Block AgentData
         buffer.write(self.agent_data.agent_id.as_bytes())?;
         buffer.write(self.agent_data.session_id.as_bytes())?;
@@ -55559,9 +51903,7 @@ impl Message for TeleportRequest {
     }
 
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         // Block AgentData
         let agent_data = TeleportRequest_AgentData::read_from(buffer)?;
         // Block Info
@@ -55575,20 +51917,18 @@ impl Message for TeleportRequest {
 
 impl Message for TeleportStart {
     fn write_to<W: ?Sized>(&self, buffer: &mut W) -> WriteMessageResult
-    where
-        W: Write,
-    {
+    where W: Write {
         // Write the message number.
-        buffer.write(&[0xff, 0xff, 0x00, 0x49])?;
+        buffer.write(&[
+            0xff, 0xff, 0x00, 0x49
+        ])?;
         // Block Info
         buffer.write_u32::<LittleEndian>(self.info.teleport_flags)?;
         Ok(())
     }
 
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         // Block Info
         let info = TeleportStart_Info::read_from(buffer)?;
         Ok(MessageInstance::TeleportStart(TeleportStart { info: info }))
@@ -55597,11 +51937,11 @@ impl Message for TeleportStart {
 
 impl Message for TerminateFriendship {
     fn write_to<W: ?Sized>(&self, buffer: &mut W) -> WriteMessageResult
-    where
-        W: Write,
-    {
+    where W: Write {
         // Write the message number.
-        buffer.write(&[0xff, 0xff, 0x01, 0x2c])?;
+        buffer.write(&[
+            0xff, 0xff, 0x01, 0x2c
+        ])?;
         // Block AgentData
         buffer.write(self.agent_data.agent_id.as_bytes())?;
         buffer.write(self.agent_data.session_id.as_bytes())?;
@@ -55611,9 +51951,7 @@ impl Message for TerminateFriendship {
     }
 
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         // Block AgentData
         let agent_data = TerminateFriendship_AgentData::read_from(buffer)?;
         // Block ExBlock
@@ -55627,43 +51965,31 @@ impl Message for TerminateFriendship {
 
 impl Message for TestMessage {
     fn write_to<W: ?Sized>(&self, buffer: &mut W) -> WriteMessageResult
-    where
-        W: Write,
-    {
+    where W: Write {
         // Write the message number.
-        buffer.write(&[0xff, 0xff, 0x00, 0x01])?;
+        buffer.write(&[
+            0xff, 0xff, 0x00, 0x01
+        ])?;
         // Block TestBlock1
         buffer.write_u32::<LittleEndian>(self.test_block1.test1)?;
         // Block NeighborBlock
         for i in 0..4 {
-            buffer.write_u32::<LittleEndian>(
-                self.neighbor_block[i].test0,
-            )?;
-            buffer.write_u32::<LittleEndian>(
-                self.neighbor_block[i].test1,
-            )?;
-            buffer.write_u32::<LittleEndian>(
-                self.neighbor_block[i].test2,
-            )?;
+            buffer.write_u32::<LittleEndian>(self.neighbor_block[i].test0)?;
+            buffer.write_u32::<LittleEndian>(self.neighbor_block[i].test1)?;
+            buffer.write_u32::<LittleEndian>(self.neighbor_block[i].test2)?;
         }
         Ok(())
     }
 
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         // Block TestBlock1
         let test_block1 = TestMessage_TestBlock1::read_from(buffer)?;
         // Block NeighborBlock
-        let neighbor_block = ArrayVec::from(
-            [
-                TestMessage_NeighborBlock::read_from(buffer)?,
-                TestMessage_NeighborBlock::read_from(buffer)?,
-                TestMessage_NeighborBlock::read_from(buffer)?,
-                TestMessage_NeighborBlock::read_from(buffer)?,
-            ],
-        );
+        let neighbor_block = ArrayVec::from([
+            TestMessage_NeighborBlock::read_from(buffer)?, TestMessage_NeighborBlock::read_from(buffer)?,
+            TestMessage_NeighborBlock::read_from(buffer)?, TestMessage_NeighborBlock::read_from(buffer)?,
+        ]);
         Ok(MessageInstance::TestMessage(TestMessage {
             test_block1: test_block1,
             neighbor_block: neighbor_block,
@@ -55673,11 +51999,11 @@ impl Message for TestMessage {
 
 impl Message for TrackAgent {
     fn write_to<W: ?Sized>(&self, buffer: &mut W) -> WriteMessageResult
-    where
-        W: Write,
-    {
+    where W: Write {
         // Write the message number.
-        buffer.write(&[0xff, 0xff, 0x00, 0x82])?;
+        buffer.write(&[
+            0xff, 0xff, 0x00, 0x82
+        ])?;
         // Block AgentData
         buffer.write(self.agent_data.agent_id.as_bytes())?;
         buffer.write(self.agent_data.session_id.as_bytes())?;
@@ -55687,9 +52013,7 @@ impl Message for TrackAgent {
     }
 
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         // Block AgentData
         let agent_data = TrackAgent_AgentData::read_from(buffer)?;
         // Block TargetData
@@ -55703,74 +52027,62 @@ impl Message for TrackAgent {
 
 impl Message for TransferAbort {
     fn write_to<W: ?Sized>(&self, buffer: &mut W) -> WriteMessageResult
-    where
-        W: Write,
-    {
+    where W: Write {
         // Write the message number.
-        buffer.write(&[0xff, 0xff, 0x00, 0x9b])?;
+        buffer.write(&[
+            0xff, 0xff, 0x00, 0x9b
+        ])?;
         // Block TransferInfo
         buffer.write(self.transfer_info.transfer_id.as_bytes())?;
-        buffer.write_i32::<LittleEndian>(
-            self.transfer_info.channel_type,
-        )?;
+        buffer.write_i32::<LittleEndian>(self.transfer_info.channel_type)?;
         Ok(())
     }
 
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         // Block TransferInfo
         let transfer_info = TransferAbort_TransferInfo::read_from(buffer)?;
-        Ok(MessageInstance::TransferAbort(
-            TransferAbort { transfer_info: transfer_info },
-        ))
+        Ok(MessageInstance::TransferAbort(TransferAbort {
+            transfer_info: transfer_info,
+        }))
     }
 }
 
 impl Message for TransferInfo {
     fn write_to<W: ?Sized>(&self, buffer: &mut W) -> WriteMessageResult
-    where
-        W: Write,
-    {
+    where W: Write {
         // Write the message number.
-        buffer.write(&[0xff, 0xff, 0x00, 0x9a])?;
+        buffer.write(&[
+            0xff, 0xff, 0x00, 0x9a
+        ])?;
         // Block TransferInfo
         buffer.write(self.transfer_info.transfer_id.as_bytes())?;
-        buffer.write_i32::<LittleEndian>(
-            self.transfer_info.channel_type,
-        )?;
-        buffer.write_i32::<LittleEndian>(
-            self.transfer_info.target_type,
-        )?;
+        buffer.write_i32::<LittleEndian>(self.transfer_info.channel_type)?;
+        buffer.write_i32::<LittleEndian>(self.transfer_info.target_type)?;
         buffer.write_i32::<LittleEndian>(self.transfer_info.status)?;
         buffer.write_i32::<LittleEndian>(self.transfer_info.size)?;
-        buffer.write_u16::<LittleEndian>(
-            self.transfer_info.params.len() as u16,
-        )?;
+        buffer.write_u16::<LittleEndian>(self.transfer_info.params.len() as u16)?;
         buffer.write(&self.transfer_info.params[..])?;
         Ok(())
     }
 
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         // Block TransferInfo
         let transfer_info = TransferInfo_TransferInfo::read_from(buffer)?;
-        Ok(MessageInstance::TransferInfo(
-            TransferInfo { transfer_info: transfer_info },
-        ))
+        Ok(MessageInstance::TransferInfo(TransferInfo {
+            transfer_info: transfer_info,
+        }))
     }
 }
 
 impl Message for TransferInventory {
     fn write_to<W: ?Sized>(&self, buffer: &mut W) -> WriteMessageResult
-    where
-        W: Write,
-    {
+    where W: Write {
         // Write the message number.
-        buffer.write(&[0xff, 0xff, 0x01, 0x27])?;
+        buffer.write(&[
+            0xff, 0xff, 0x01, 0x27
+        ])?;
         // Block InfoBlock
         buffer.write(self.info_block.source_id.as_bytes())?;
         buffer.write(self.info_block.dest_id.as_bytes())?;
@@ -55785,9 +52097,7 @@ impl Message for TransferInventory {
     }
 
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         // Block InfoBlock
         let info_block = TransferInventory_InfoBlock::read_from(buffer)?;
         // Block InventoryBlock
@@ -55805,11 +52115,11 @@ impl Message for TransferInventory {
 
 impl Message for TransferInventoryAck {
     fn write_to<W: ?Sized>(&self, buffer: &mut W) -> WriteMessageResult
-    where
-        W: Write,
-    {
+    where W: Write {
         // Write the message number.
-        buffer.write(&[0xff, 0xff, 0x01, 0x28])?;
+        buffer.write(&[
+            0xff, 0xff, 0x01, 0x28
+        ])?;
         // Block InfoBlock
         buffer.write(self.info_block.transaction_id.as_bytes())?;
         buffer.write(self.info_block.inventory_id.as_bytes())?;
@@ -55817,94 +52127,76 @@ impl Message for TransferInventoryAck {
     }
 
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         // Block InfoBlock
         let info_block = TransferInventoryAck_InfoBlock::read_from(buffer)?;
         Ok(MessageInstance::TransferInventoryAck(
-            TransferInventoryAck { info_block: info_block },
+            TransferInventoryAck {
+                info_block: info_block,
+            },
         ))
     }
 }
 
 impl Message for TransferPacket {
     fn write_to<W: ?Sized>(&self, buffer: &mut W) -> WriteMessageResult
-    where
-        W: Write,
-    {
+    where W: Write {
         // Write the message number.
         buffer.write(&[0x11])?;
         // Block TransferData
         buffer.write(self.transfer_data.transfer_id.as_bytes())?;
-        buffer.write_i32::<LittleEndian>(
-            self.transfer_data.channel_type,
-        )?;
+        buffer.write_i32::<LittleEndian>(self.transfer_data.channel_type)?;
         buffer.write_i32::<LittleEndian>(self.transfer_data.packet)?;
         buffer.write_i32::<LittleEndian>(self.transfer_data.status)?;
-        buffer.write_u16::<LittleEndian>(
-            self.transfer_data.data.len() as u16,
-        )?;
+        buffer.write_u16::<LittleEndian>(self.transfer_data.data.len() as u16)?;
         buffer.write(&self.transfer_data.data[..])?;
         Ok(())
     }
 
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         // Block TransferData
         let transfer_data = TransferPacket_TransferData::read_from(buffer)?;
-        Ok(MessageInstance::TransferPacket(
-            TransferPacket { transfer_data: transfer_data },
-        ))
+        Ok(MessageInstance::TransferPacket(TransferPacket {
+            transfer_data: transfer_data,
+        }))
     }
 }
 
 impl Message for TransferRequest {
     fn write_to<W: ?Sized>(&self, buffer: &mut W) -> WriteMessageResult
-    where
-        W: Write,
-    {
+    where W: Write {
         // Write the message number.
-        buffer.write(&[0xff, 0xff, 0x00, 0x99])?;
+        buffer.write(&[
+            0xff, 0xff, 0x00, 0x99
+        ])?;
         // Block TransferInfo
         buffer.write(self.transfer_info.transfer_id.as_bytes())?;
-        buffer.write_i32::<LittleEndian>(
-            self.transfer_info.channel_type,
-        )?;
-        buffer.write_i32::<LittleEndian>(
-            self.transfer_info.source_type,
-        )?;
-        buffer.write_f32::<LittleEndian>(
-            self.transfer_info.priority,
-        )?;
-        buffer.write_u16::<LittleEndian>(
-            self.transfer_info.params.len() as u16,
-        )?;
+        buffer.write_i32::<LittleEndian>(self.transfer_info.channel_type)?;
+        buffer.write_i32::<LittleEndian>(self.transfer_info.source_type)?;
+        buffer.write_f32::<LittleEndian>(self.transfer_info.priority)?;
+        buffer.write_u16::<LittleEndian>(self.transfer_info.params.len() as u16)?;
         buffer.write(&self.transfer_info.params[..])?;
         Ok(())
     }
 
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         // Block TransferInfo
         let transfer_info = TransferRequest_TransferInfo::read_from(buffer)?;
-        Ok(MessageInstance::TransferRequest(
-            TransferRequest { transfer_info: transfer_info },
-        ))
+        Ok(MessageInstance::TransferRequest(TransferRequest {
+            transfer_info: transfer_info,
+        }))
     }
 }
 
 impl Message for UUIDGroupNameReply {
     fn write_to<W: ?Sized>(&self, buffer: &mut W) -> WriteMessageResult
-    where
-        W: Write,
-    {
+    where W: Write {
         // Write the message number.
-        buffer.write(&[0xff, 0xff, 0x00, 0xee])?;
+        buffer.write(&[
+            0xff, 0xff, 0x00, 0xee
+        ])?;
         // Block UUIDNameBlock
         buffer.write_u8(self.uuid_name_block.len() as u8)?;
         for item in &self.uuid_name_block {
@@ -55916,28 +52208,26 @@ impl Message for UUIDGroupNameReply {
     }
 
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         // Block UUIDNameBlock
         let mut uuid_name_block = Vec::new();
         let _uuid_name_block_count = buffer.read_u8()?;
         for _ in 0.._uuid_name_block_count {
             uuid_name_block.push(UUIDGroupNameReply_UUIDNameBlock::read_from(buffer)?);
         }
-        Ok(MessageInstance::UUIDGroupNameReply(
-            UUIDGroupNameReply { uuid_name_block: uuid_name_block },
-        ))
+        Ok(MessageInstance::UUIDGroupNameReply(UUIDGroupNameReply {
+            uuid_name_block: uuid_name_block,
+        }))
     }
 }
 
 impl Message for UUIDGroupNameRequest {
     fn write_to<W: ?Sized>(&self, buffer: &mut W) -> WriteMessageResult
-    where
-        W: Write,
-    {
+    where W: Write {
         // Write the message number.
-        buffer.write(&[0xff, 0xff, 0x00, 0xed])?;
+        buffer.write(&[
+            0xff, 0xff, 0x00, 0xed
+        ])?;
         // Block UUIDNameBlock
         buffer.write_u8(self.uuid_name_block.len() as u8)?;
         for item in &self.uuid_name_block {
@@ -55947,9 +52237,7 @@ impl Message for UUIDGroupNameRequest {
     }
 
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         // Block UUIDNameBlock
         let mut uuid_name_block = Vec::new();
         let _uuid_name_block_count = buffer.read_u8()?;
@@ -55957,18 +52245,20 @@ impl Message for UUIDGroupNameRequest {
             uuid_name_block.push(UUIDGroupNameRequest_UUIDNameBlock::read_from(buffer)?);
         }
         Ok(MessageInstance::UUIDGroupNameRequest(
-            UUIDGroupNameRequest { uuid_name_block: uuid_name_block },
+            UUIDGroupNameRequest {
+                uuid_name_block: uuid_name_block,
+            },
         ))
     }
 }
 
 impl Message for UUIDNameReply {
     fn write_to<W: ?Sized>(&self, buffer: &mut W) -> WriteMessageResult
-    where
-        W: Write,
-    {
+    where W: Write {
         // Write the message number.
-        buffer.write(&[0xff, 0xff, 0x00, 0xec])?;
+        buffer.write(&[
+            0xff, 0xff, 0x00, 0xec
+        ])?;
         // Block UUIDNameBlock
         buffer.write_u8(self.uuid_name_block.len() as u8)?;
         for item in &self.uuid_name_block {
@@ -55982,28 +52272,26 @@ impl Message for UUIDNameReply {
     }
 
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         // Block UUIDNameBlock
         let mut uuid_name_block = Vec::new();
         let _uuid_name_block_count = buffer.read_u8()?;
         for _ in 0.._uuid_name_block_count {
             uuid_name_block.push(UUIDNameReply_UUIDNameBlock::read_from(buffer)?);
         }
-        Ok(MessageInstance::UUIDNameReply(
-            UUIDNameReply { uuid_name_block: uuid_name_block },
-        ))
+        Ok(MessageInstance::UUIDNameReply(UUIDNameReply {
+            uuid_name_block: uuid_name_block,
+        }))
     }
 }
 
 impl Message for UUIDNameRequest {
     fn write_to<W: ?Sized>(&self, buffer: &mut W) -> WriteMessageResult
-    where
-        W: Write,
-    {
+    where W: Write {
         // Write the message number.
-        buffer.write(&[0xff, 0xff, 0x00, 0xeb])?;
+        buffer.write(&[
+            0xff, 0xff, 0x00, 0xeb
+        ])?;
         // Block UUIDNameBlock
         buffer.write_u8(self.uuid_name_block.len() as u8)?;
         for item in &self.uuid_name_block {
@@ -56013,28 +52301,26 @@ impl Message for UUIDNameRequest {
     }
 
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         // Block UUIDNameBlock
         let mut uuid_name_block = Vec::new();
         let _uuid_name_block_count = buffer.read_u8()?;
         for _ in 0.._uuid_name_block_count {
             uuid_name_block.push(UUIDNameRequest_UUIDNameBlock::read_from(buffer)?);
         }
-        Ok(MessageInstance::UUIDNameRequest(
-            UUIDNameRequest { uuid_name_block: uuid_name_block },
-        ))
+        Ok(MessageInstance::UUIDNameRequest(UUIDNameRequest {
+            uuid_name_block: uuid_name_block,
+        }))
     }
 }
 
 impl Message for Undo {
     fn write_to<W: ?Sized>(&self, buffer: &mut W) -> WriteMessageResult
-    where
-        W: Write,
-    {
+    where W: Write {
         // Write the message number.
-        buffer.write(&[0xff, 0xff, 0x00, 0x4b])?;
+        buffer.write(&[
+            0xff, 0xff, 0x00, 0x4b
+        ])?;
         // Block AgentData
         buffer.write(self.agent_data.agent_id.as_bytes())?;
         buffer.write(self.agent_data.session_id.as_bytes())?;
@@ -56048,9 +52334,7 @@ impl Message for Undo {
     }
 
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         // Block AgentData
         let agent_data = Undo_AgentData::read_from(buffer)?;
         // Block ObjectData
@@ -56068,11 +52352,11 @@ impl Message for Undo {
 
 impl Message for UndoLand {
     fn write_to<W: ?Sized>(&self, buffer: &mut W) -> WriteMessageResult
-    where
-        W: Write,
-    {
+    where W: Write {
         // Write the message number.
-        buffer.write(&[0xff, 0xff, 0x00, 0x4d])?;
+        buffer.write(&[
+            0xff, 0xff, 0x00, 0x4d
+        ])?;
         // Block AgentData
         buffer.write(self.agent_data.agent_id.as_bytes())?;
         buffer.write(self.agent_data.session_id.as_bytes())?;
@@ -56080,42 +52364,38 @@ impl Message for UndoLand {
     }
 
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         // Block AgentData
         let agent_data = UndoLand_AgentData::read_from(buffer)?;
-        Ok(MessageInstance::UndoLand(
-            UndoLand { agent_data: agent_data },
-        ))
+        Ok(MessageInstance::UndoLand(UndoLand {
+            agent_data: agent_data,
+        }))
     }
 }
 
 impl Message for UnsubscribeLoad {
     fn write_to<W: ?Sized>(&self, buffer: &mut W) -> WriteMessageResult
-    where
-        W: Write,
-    {
+    where W: Write {
         // Write the message number.
-        buffer.write(&[0xff, 0xff, 0x00, 0x08])?;
+        buffer.write(&[
+            0xff, 0xff, 0x00, 0x08
+        ])?;
         Ok(())
     }
 
     fn read_from<R: ?Sized>(_: &mut R) -> Result<MessageInstance, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         Ok(MessageInstance::UnsubscribeLoad(UnsubscribeLoad {}))
     }
 }
 
 impl Message for UpdateAttachment {
     fn write_to<W: ?Sized>(&self, buffer: &mut W) -> WriteMessageResult
-    where
-        W: Write,
-    {
+    where W: Write {
         // Write the message number.
-        buffer.write(&[0xff, 0xff, 0x01, 0x4b])?;
+        buffer.write(&[
+            0xff, 0xff, 0x01, 0x4b
+        ])?;
         // Block AgentData
         buffer.write(self.agent_data.agent_id.as_bytes())?;
         buffer.write(self.agent_data.session_id.as_bytes())?;
@@ -56123,54 +52403,36 @@ impl Message for UpdateAttachment {
         buffer.write_u8(self.attachment_block.attachment_point)?;
         // Block OperationData
         buffer.write_u8(self.operation_data.add_item as u8)?;
-        buffer.write_u8(
-            self.operation_data.use_existing_asset as u8,
-        )?;
+        buffer.write_u8(self.operation_data.use_existing_asset as u8)?;
         // Block InventoryData
         buffer.write(self.inventory_data.item_id.as_bytes())?;
         buffer.write(self.inventory_data.folder_id.as_bytes())?;
         buffer.write(self.inventory_data.creator_id.as_bytes())?;
         buffer.write(self.inventory_data.owner_id.as_bytes())?;
         buffer.write(self.inventory_data.group_id.as_bytes())?;
-        buffer.write_u32::<LittleEndian>(
-            self.inventory_data.base_mask,
-        )?;
-        buffer.write_u32::<LittleEndian>(
-            self.inventory_data.owner_mask,
-        )?;
-        buffer.write_u32::<LittleEndian>(
-            self.inventory_data.group_mask,
-        )?;
-        buffer.write_u32::<LittleEndian>(
-            self.inventory_data.everyone_mask,
-        )?;
-        buffer.write_u32::<LittleEndian>(
-            self.inventory_data.next_owner_mask,
-        )?;
+        buffer.write_u32::<LittleEndian>(self.inventory_data.base_mask)?;
+        buffer.write_u32::<LittleEndian>(self.inventory_data.owner_mask)?;
+        buffer.write_u32::<LittleEndian>(self.inventory_data.group_mask)?;
+        buffer.write_u32::<LittleEndian>(self.inventory_data.everyone_mask)?;
+        buffer.write_u32::<LittleEndian>(self.inventory_data.next_owner_mask)?;
         buffer.write_u8(self.inventory_data.group_owned as u8)?;
         buffer.write(self.inventory_data.asset_id.as_bytes())?;
         buffer.write_i8(self.inventory_data.type_)?;
         buffer.write_i8(self.inventory_data.inv_type)?;
         buffer.write_u32::<LittleEndian>(self.inventory_data.flags)?;
         buffer.write_u8(self.inventory_data.sale_type)?;
-        buffer.write_i32::<LittleEndian>(
-            self.inventory_data.sale_price,
-        )?;
+        buffer.write_i32::<LittleEndian>(self.inventory_data.sale_price)?;
         buffer.write_u8(self.inventory_data.name.len() as u8)?;
         buffer.write(&self.inventory_data.name[..])?;
         buffer.write_u8(self.inventory_data.description.len() as u8)?;
         buffer.write(&self.inventory_data.description[..])?;
-        buffer.write_i32::<LittleEndian>(
-            self.inventory_data.creation_date,
-        )?;
+        buffer.write_i32::<LittleEndian>(self.inventory_data.creation_date)?;
         buffer.write_u32::<LittleEndian>(self.inventory_data.crc)?;
         Ok(())
     }
 
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         // Block AgentData
         let agent_data = UpdateAttachment_AgentData::read_from(buffer)?;
         // Block AttachmentBlock
@@ -56190,11 +52452,11 @@ impl Message for UpdateAttachment {
 
 impl Message for UpdateCreateInventoryItem {
     fn write_to<W: ?Sized>(&self, buffer: &mut W) -> WriteMessageResult
-    where
-        W: Write,
-    {
+    where W: Write {
         // Write the message number.
-        buffer.write(&[0xff, 0xff, 0x01, 0x0b])?;
+        buffer.write(&[
+            0xff, 0xff, 0x01, 0x0b
+        ])?;
         // Block AgentData
         buffer.write(self.agent_data.agent_id.as_bytes())?;
         buffer.write_u8(self.agent_data.sim_approved as u8)?;
@@ -56231,9 +52493,7 @@ impl Message for UpdateCreateInventoryItem {
     }
 
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         // Block AgentData
         let agent_data = UpdateCreateInventoryItem_AgentData::read_from(buffer)?;
         // Block InventoryData
@@ -56253,25 +52513,21 @@ impl Message for UpdateCreateInventoryItem {
 
 impl Message for UpdateGroupInfo {
     fn write_to<W: ?Sized>(&self, buffer: &mut W) -> WriteMessageResult
-    where
-        W: Write,
-    {
+    where W: Write {
         // Write the message number.
-        buffer.write(&[0xff, 0xff, 0x01, 0x55])?;
+        buffer.write(&[
+            0xff, 0xff, 0x01, 0x55
+        ])?;
         // Block AgentData
         buffer.write(self.agent_data.agent_id.as_bytes())?;
         buffer.write(self.agent_data.session_id.as_bytes())?;
         // Block GroupData
         buffer.write(self.group_data.group_id.as_bytes())?;
-        buffer.write_u16::<LittleEndian>(
-            self.group_data.charter.len() as u16,
-        )?;
+        buffer.write_u16::<LittleEndian>(self.group_data.charter.len() as u16)?;
         buffer.write(&self.group_data.charter[..])?;
         buffer.write_u8(self.group_data.show_in_list as u8)?;
         buffer.write(self.group_data.insignia_id.as_bytes())?;
-        buffer.write_i32::<LittleEndian>(
-            self.group_data.membership_fee,
-        )?;
+        buffer.write_i32::<LittleEndian>(self.group_data.membership_fee)?;
         buffer.write_u8(self.group_data.open_enrollment as u8)?;
         buffer.write_u8(self.group_data.allow_publish as u8)?;
         buffer.write_u8(self.group_data.mature_publish as u8)?;
@@ -56279,9 +52535,7 @@ impl Message for UpdateGroupInfo {
     }
 
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         // Block AgentData
         let agent_data = UpdateGroupInfo_AgentData::read_from(buffer)?;
         // Block GroupData
@@ -56295,11 +52549,11 @@ impl Message for UpdateGroupInfo {
 
 impl Message for UpdateInventoryFolder {
     fn write_to<W: ?Sized>(&self, buffer: &mut W) -> WriteMessageResult
-    where
-        W: Write,
-    {
+    where W: Write {
         // Write the message number.
-        buffer.write(&[0xff, 0xff, 0x01, 0x12])?;
+        buffer.write(&[
+            0xff, 0xff, 0x01, 0x12
+        ])?;
         // Block AgentData
         buffer.write(self.agent_data.agent_id.as_bytes())?;
         buffer.write(self.agent_data.session_id.as_bytes())?;
@@ -56316,9 +52570,7 @@ impl Message for UpdateInventoryFolder {
     }
 
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         // Block AgentData
         let agent_data = UpdateInventoryFolder_AgentData::read_from(buffer)?;
         // Block FolderData
@@ -56338,11 +52590,11 @@ impl Message for UpdateInventoryFolder {
 
 impl Message for UpdateInventoryItem {
     fn write_to<W: ?Sized>(&self, buffer: &mut W) -> WriteMessageResult
-    where
-        W: Write,
-    {
+    where W: Write {
         // Write the message number.
-        buffer.write(&[0xff, 0xff, 0x01, 0x0a])?;
+        buffer.write(&[
+            0xff, 0xff, 0x01, 0x0a
+        ])?;
         // Block AgentData
         buffer.write(self.agent_data.agent_id.as_bytes())?;
         buffer.write(self.agent_data.session_id.as_bytes())?;
@@ -56379,9 +52631,7 @@ impl Message for UpdateInventoryItem {
     }
 
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         // Block AgentData
         let agent_data = UpdateInventoryItem_AgentData::read_from(buffer)?;
         // Block InventoryData
@@ -56399,11 +52649,11 @@ impl Message for UpdateInventoryItem {
 
 impl Message for UpdateMuteListEntry {
     fn write_to<W: ?Sized>(&self, buffer: &mut W) -> WriteMessageResult
-    where
-        W: Write,
-    {
+    where W: Write {
         // Write the message number.
-        buffer.write(&[0xff, 0xff, 0x01, 0x07])?;
+        buffer.write(&[
+            0xff, 0xff, 0x01, 0x07
+        ])?;
         // Block AgentData
         buffer.write(self.agent_data.agent_id.as_bytes())?;
         buffer.write(self.agent_data.session_id.as_bytes())?;
@@ -56417,9 +52667,7 @@ impl Message for UpdateMuteListEntry {
     }
 
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         // Block AgentData
         let agent_data = UpdateMuteListEntry_AgentData::read_from(buffer)?;
         // Block MuteData
@@ -56433,16 +52681,14 @@ impl Message for UpdateMuteListEntry {
 
 impl Message for UpdateParcel {
     fn write_to<W: ?Sized>(&self, buffer: &mut W) -> WriteMessageResult
-    where
-        W: Write,
-    {
+    where W: Write {
         // Write the message number.
-        buffer.write(&[0xff, 0xff, 0x00, 0xdd])?;
+        buffer.write(&[
+            0xff, 0xff, 0x00, 0xdd
+        ])?;
         // Block ParcelData
         buffer.write(self.parcel_data.parcel_id.as_bytes())?;
-        buffer.write_u64::<LittleEndian>(
-            self.parcel_data.region_handle,
-        )?;
+        buffer.write_u64::<LittleEndian>(self.parcel_data.region_handle)?;
         buffer.write(self.parcel_data.owner_id.as_bytes())?;
         buffer.write_u8(self.parcel_data.group_owned as u8)?;
         buffer.write_u8(self.parcel_data.status)?;
@@ -56454,87 +52700,67 @@ impl Message for UpdateParcel {
         buffer.write(&self.parcel_data.music_url[..])?;
         buffer.write_f32::<LittleEndian>(self.parcel_data.region_x)?;
         buffer.write_f32::<LittleEndian>(self.parcel_data.region_y)?;
-        buffer.write_i32::<LittleEndian>(
-            self.parcel_data.actual_area,
-        )?;
-        buffer.write_i32::<LittleEndian>(
-            self.parcel_data.billable_area,
-        )?;
+        buffer.write_i32::<LittleEndian>(self.parcel_data.actual_area)?;
+        buffer.write_i32::<LittleEndian>(self.parcel_data.billable_area)?;
         buffer.write_u8(self.parcel_data.show_dir as u8)?;
         buffer.write_u8(self.parcel_data.is_for_sale as u8)?;
         buffer.write_u8(self.parcel_data.category)?;
         buffer.write(self.parcel_data.snapshot_id.as_bytes())?;
-        buffer.write_f32::<LittleEndian>(
-            self.parcel_data.user_location.x,
-        )?;
+        buffer.write_f32::<LittleEndian>(self.parcel_data.user_location.x)?;
 
-        buffer.write_f32::<LittleEndian>(
-            self.parcel_data.user_location.y,
-        )?;
+        buffer.write_f32::<LittleEndian>(self.parcel_data.user_location.y)?;
 
-        buffer.write_f32::<LittleEndian>(
-            self.parcel_data.user_location.z,
-        )?;
-        buffer.write_i32::<LittleEndian>(
-            self.parcel_data.sale_price,
-        )?;
-        buffer.write(
-            self.parcel_data.authorized_buyer_id.as_bytes(),
-        )?;
+        buffer.write_f32::<LittleEndian>(self.parcel_data.user_location.z)?;
+        buffer.write_i32::<LittleEndian>(self.parcel_data.sale_price)?;
+        buffer.write(self.parcel_data.authorized_buyer_id.as_bytes())?;
         buffer.write_u8(self.parcel_data.allow_publish as u8)?;
         buffer.write_u8(self.parcel_data.mature_publish as u8)?;
         Ok(())
     }
 
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         // Block ParcelData
         let parcel_data = UpdateParcel_ParcelData::read_from(buffer)?;
-        Ok(MessageInstance::UpdateParcel(
-            UpdateParcel { parcel_data: parcel_data },
-        ))
+        Ok(MessageInstance::UpdateParcel(UpdateParcel {
+            parcel_data: parcel_data,
+        }))
     }
 }
 
 impl Message for UpdateSimulator {
     fn write_to<W: ?Sized>(&self, buffer: &mut W) -> WriteMessageResult
-    where
-        W: Write,
-    {
+    where W: Write {
         // Write the message number.
-        buffer.write(&[0xff, 0xff, 0x00, 0x11])?;
+        buffer.write(&[
+            0xff, 0xff, 0x00, 0x11
+        ])?;
         // Block SimulatorInfo
         buffer.write(self.simulator_info.region_id.as_bytes())?;
         buffer.write_u8(self.simulator_info.sim_name.len() as u8)?;
         buffer.write(&self.simulator_info.sim_name[..])?;
-        buffer.write_u32::<LittleEndian>(
-            self.simulator_info.estate_id,
-        )?;
+        buffer.write_u32::<LittleEndian>(self.simulator_info.estate_id)?;
         buffer.write_u8(self.simulator_info.sim_access)?;
         Ok(())
     }
 
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         // Block SimulatorInfo
         let simulator_info = UpdateSimulator_SimulatorInfo::read_from(buffer)?;
-        Ok(MessageInstance::UpdateSimulator(
-            UpdateSimulator { simulator_info: simulator_info },
-        ))
+        Ok(MessageInstance::UpdateSimulator(UpdateSimulator {
+            simulator_info: simulator_info,
+        }))
     }
 }
 
 impl Message for UpdateTaskInventory {
     fn write_to<W: ?Sized>(&self, buffer: &mut W) -> WriteMessageResult
-    where
-        W: Write,
-    {
+    where W: Write {
         // Write the message number.
-        buffer.write(&[0xff, 0xff, 0x01, 0x1e])?;
+        buffer.write(&[
+            0xff, 0xff, 0x01, 0x1e
+        ])?;
         // Block AgentData
         buffer.write(self.agent_data.agent_id.as_bytes())?;
         buffer.write(self.agent_data.session_id.as_bytes())?;
@@ -56547,45 +52773,29 @@ impl Message for UpdateTaskInventory {
         buffer.write(self.inventory_data.creator_id.as_bytes())?;
         buffer.write(self.inventory_data.owner_id.as_bytes())?;
         buffer.write(self.inventory_data.group_id.as_bytes())?;
-        buffer.write_u32::<LittleEndian>(
-            self.inventory_data.base_mask,
-        )?;
-        buffer.write_u32::<LittleEndian>(
-            self.inventory_data.owner_mask,
-        )?;
-        buffer.write_u32::<LittleEndian>(
-            self.inventory_data.group_mask,
-        )?;
-        buffer.write_u32::<LittleEndian>(
-            self.inventory_data.everyone_mask,
-        )?;
-        buffer.write_u32::<LittleEndian>(
-            self.inventory_data.next_owner_mask,
-        )?;
+        buffer.write_u32::<LittleEndian>(self.inventory_data.base_mask)?;
+        buffer.write_u32::<LittleEndian>(self.inventory_data.owner_mask)?;
+        buffer.write_u32::<LittleEndian>(self.inventory_data.group_mask)?;
+        buffer.write_u32::<LittleEndian>(self.inventory_data.everyone_mask)?;
+        buffer.write_u32::<LittleEndian>(self.inventory_data.next_owner_mask)?;
         buffer.write_u8(self.inventory_data.group_owned as u8)?;
         buffer.write(self.inventory_data.transaction_id.as_bytes())?;
         buffer.write_i8(self.inventory_data.type_)?;
         buffer.write_i8(self.inventory_data.inv_type)?;
         buffer.write_u32::<LittleEndian>(self.inventory_data.flags)?;
         buffer.write_u8(self.inventory_data.sale_type)?;
-        buffer.write_i32::<LittleEndian>(
-            self.inventory_data.sale_price,
-        )?;
+        buffer.write_i32::<LittleEndian>(self.inventory_data.sale_price)?;
         buffer.write_u8(self.inventory_data.name.len() as u8)?;
         buffer.write(&self.inventory_data.name[..])?;
         buffer.write_u8(self.inventory_data.description.len() as u8)?;
         buffer.write(&self.inventory_data.description[..])?;
-        buffer.write_i32::<LittleEndian>(
-            self.inventory_data.creation_date,
-        )?;
+        buffer.write_i32::<LittleEndian>(self.inventory_data.creation_date)?;
         buffer.write_u32::<LittleEndian>(self.inventory_data.crc)?;
         Ok(())
     }
 
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         // Block AgentData
         let agent_data = UpdateTaskInventory_AgentData::read_from(buffer)?;
         // Block UpdateData
@@ -56602,27 +52812,23 @@ impl Message for UpdateTaskInventory {
 
 impl Message for UpdateUserInfo {
     fn write_to<W: ?Sized>(&self, buffer: &mut W) -> WriteMessageResult
-    where
-        W: Write,
-    {
+    where W: Write {
         // Write the message number.
-        buffer.write(&[0xff, 0xff, 0x01, 0x91])?;
+        buffer.write(&[
+            0xff, 0xff, 0x01, 0x91
+        ])?;
         // Block AgentData
         buffer.write(self.agent_data.agent_id.as_bytes())?;
         buffer.write(self.agent_data.session_id.as_bytes())?;
         // Block UserData
         buffer.write_u8(self.user_data.im_via_e_mail as u8)?;
-        buffer.write_u8(
-            self.user_data.directory_visibility.len() as u8,
-        )?;
+        buffer.write_u8(self.user_data.directory_visibility.len() as u8)?;
         buffer.write(&self.user_data.directory_visibility[..])?;
         Ok(())
     }
 
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         // Block AgentData
         let agent_data = UpdateUserInfo_AgentData::read_from(buffer)?;
         // Block UserData
@@ -56636,35 +52842,33 @@ impl Message for UpdateUserInfo {
 
 impl Message for UseCachedMuteList {
     fn write_to<W: ?Sized>(&self, buffer: &mut W) -> WriteMessageResult
-    where
-        W: Write,
-    {
+    where W: Write {
         // Write the message number.
-        buffer.write(&[0xff, 0xff, 0x01, 0x3f])?;
+        buffer.write(&[
+            0xff, 0xff, 0x01, 0x3f
+        ])?;
         // Block AgentData
         buffer.write(self.agent_data.agent_id.as_bytes())?;
         Ok(())
     }
 
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         // Block AgentData
         let agent_data = UseCachedMuteList_AgentData::read_from(buffer)?;
-        Ok(MessageInstance::UseCachedMuteList(
-            UseCachedMuteList { agent_data: agent_data },
-        ))
+        Ok(MessageInstance::UseCachedMuteList(UseCachedMuteList {
+            agent_data: agent_data,
+        }))
     }
 }
 
 impl Message for UseCircuitCode {
     fn write_to<W: ?Sized>(&self, buffer: &mut W) -> WriteMessageResult
-    where
-        W: Write,
-    {
+    where W: Write {
         // Write the message number.
-        buffer.write(&[0xff, 0xff, 0x00, 0x03])?;
+        buffer.write(&[
+            0xff, 0xff, 0x00, 0x03
+        ])?;
         // Block CircuitCode
         buffer.write_u32::<LittleEndian>(self.circuit_code.code)?;
         buffer.write(self.circuit_code.session_id.as_bytes())?;
@@ -56673,43 +52877,35 @@ impl Message for UseCircuitCode {
     }
 
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         // Block CircuitCode
         let circuit_code = UseCircuitCode_CircuitCode::read_from(buffer)?;
-        Ok(MessageInstance::UseCircuitCode(
-            UseCircuitCode { circuit_code: circuit_code },
-        ))
+        Ok(MessageInstance::UseCircuitCode(UseCircuitCode {
+            circuit_code: circuit_code,
+        }))
     }
 }
 
 impl Message for UserInfoReply {
     fn write_to<W: ?Sized>(&self, buffer: &mut W) -> WriteMessageResult
-    where
-        W: Write,
-    {
+    where W: Write {
         // Write the message number.
-        buffer.write(&[0xff, 0xff, 0x01, 0x90])?;
+        buffer.write(&[
+            0xff, 0xff, 0x01, 0x90
+        ])?;
         // Block AgentData
         buffer.write(self.agent_data.agent_id.as_bytes())?;
         // Block UserData
         buffer.write_u8(self.user_data.im_via_e_mail as u8)?;
-        buffer.write_u8(
-            self.user_data.directory_visibility.len() as u8,
-        )?;
+        buffer.write_u8(self.user_data.directory_visibility.len() as u8)?;
         buffer.write(&self.user_data.directory_visibility[..])?;
-        buffer.write_u16::<LittleEndian>(
-            self.user_data.e_mail.len() as u16,
-        )?;
+        buffer.write_u16::<LittleEndian>(self.user_data.e_mail.len() as u16)?;
         buffer.write(&self.user_data.e_mail[..])?;
         Ok(())
     }
 
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         // Block AgentData
         let agent_data = UserInfoReply_AgentData::read_from(buffer)?;
         // Block UserData
@@ -56723,11 +52919,11 @@ impl Message for UserInfoReply {
 
 impl Message for UserInfoRequest {
     fn write_to<W: ?Sized>(&self, buffer: &mut W) -> WriteMessageResult
-    where
-        W: Write,
-    {
+    where W: Write {
         // Write the message number.
-        buffer.write(&[0xff, 0xff, 0x01, 0x8f])?;
+        buffer.write(&[
+            0xff, 0xff, 0x01, 0x8f
+        ])?;
         // Block AgentData
         buffer.write(self.agent_data.agent_id.as_bytes())?;
         buffer.write(self.agent_data.session_id.as_bytes())?;
@@ -56735,55 +52931,43 @@ impl Message for UserInfoRequest {
     }
 
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         // Block AgentData
         let agent_data = UserInfoRequest_AgentData::read_from(buffer)?;
-        Ok(MessageInstance::UserInfoRequest(
-            UserInfoRequest { agent_data: agent_data },
-        ))
+        Ok(MessageInstance::UserInfoRequest(UserInfoRequest {
+            agent_data: agent_data,
+        }))
     }
 }
 
 impl Message for UserReport {
     fn write_to<W: ?Sized>(&self, buffer: &mut W) -> WriteMessageResult
-    where
-        W: Write,
-    {
+    where W: Write {
         // Write the message number.
-        buffer.write(&[0xff, 0xff, 0x00, 0x85])?;
+        buffer.write(&[
+            0xff, 0xff, 0x00, 0x85
+        ])?;
         // Block AgentData
         buffer.write(self.agent_data.agent_id.as_bytes())?;
         buffer.write(self.agent_data.session_id.as_bytes())?;
         // Block ReportData
         buffer.write_u8(self.report_data.report_type)?;
         buffer.write_u8(self.report_data.category)?;
-        buffer.write_f32::<LittleEndian>(
-            self.report_data.position.x,
-        )?;
+        buffer.write_f32::<LittleEndian>(self.report_data.position.x)?;
 
-        buffer.write_f32::<LittleEndian>(
-            self.report_data.position.y,
-        )?;
+        buffer.write_f32::<LittleEndian>(self.report_data.position.y)?;
 
-        buffer.write_f32::<LittleEndian>(
-            self.report_data.position.z,
-        )?;
+        buffer.write_f32::<LittleEndian>(self.report_data.position.z)?;
         buffer.write_u8(self.report_data.check_flags)?;
         buffer.write(self.report_data.screenshot_id.as_bytes())?;
         buffer.write(self.report_data.object_id.as_bytes())?;
         buffer.write(self.report_data.abuser_id.as_bytes())?;
-        buffer.write_u8(
-            self.report_data.abuse_region_name.len() as u8,
-        )?;
+        buffer.write_u8(self.report_data.abuse_region_name.len() as u8)?;
         buffer.write(&self.report_data.abuse_region_name[..])?;
         buffer.write(self.report_data.abuse_region_id.as_bytes())?;
         buffer.write_u8(self.report_data.summary.len() as u8)?;
         buffer.write(&self.report_data.summary[..])?;
-        buffer.write_u16::<LittleEndian>(
-            self.report_data.details.len() as u16,
-        )?;
+        buffer.write_u16::<LittleEndian>(self.report_data.details.len() as u16)?;
         buffer.write(&self.report_data.details[..])?;
         buffer.write_u8(self.report_data.version_string.len() as u8)?;
         buffer.write(&self.report_data.version_string[..])?;
@@ -56791,9 +52975,7 @@ impl Message for UserReport {
     }
 
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         // Block AgentData
         let agent_data = UserReport_AgentData::read_from(buffer)?;
         // Block ReportData
@@ -56807,37 +52989,25 @@ impl Message for UserReport {
 
 impl Message for UserReportInternal {
     fn write_to<W: ?Sized>(&self, buffer: &mut W) -> WriteMessageResult
-    where
-        W: Write,
-    {
+    where W: Write {
         // Write the message number.
-        buffer.write(&[0xff, 0xff, 0x00, 0x15])?;
+        buffer.write(&[
+            0xff, 0xff, 0x00, 0x15
+        ])?;
         // Block ReportData
         buffer.write_u8(self.report_data.report_type)?;
         buffer.write_u8(self.report_data.category)?;
         buffer.write(self.report_data.reporter_id.as_bytes())?;
-        buffer.write_f32::<LittleEndian>(
-            self.report_data.viewer_position.x,
-        )?;
+        buffer.write_f32::<LittleEndian>(self.report_data.viewer_position.x)?;
 
-        buffer.write_f32::<LittleEndian>(
-            self.report_data.viewer_position.y,
-        )?;
+        buffer.write_f32::<LittleEndian>(self.report_data.viewer_position.y)?;
 
-        buffer.write_f32::<LittleEndian>(
-            self.report_data.viewer_position.z,
-        )?;
-        buffer.write_f32::<LittleEndian>(
-            self.report_data.agent_position.x,
-        )?;
+        buffer.write_f32::<LittleEndian>(self.report_data.viewer_position.z)?;
+        buffer.write_f32::<LittleEndian>(self.report_data.agent_position.x)?;
 
-        buffer.write_f32::<LittleEndian>(
-            self.report_data.agent_position.y,
-        )?;
+        buffer.write_f32::<LittleEndian>(self.report_data.agent_position.y)?;
 
-        buffer.write_f32::<LittleEndian>(
-            self.report_data.agent_position.z,
-        )?;
+        buffer.write_f32::<LittleEndian>(self.report_data.agent_position.z)?;
         buffer.write(self.report_data.screenshot_id.as_bytes())?;
         buffer.write(self.report_data.object_id.as_bytes())?;
         buffer.write(self.report_data.owner_id.as_bytes())?;
@@ -56845,16 +53015,12 @@ impl Message for UserReportInternal {
         buffer.write(self.report_data.creator_id.as_bytes())?;
         buffer.write(self.report_data.region_id.as_bytes())?;
         buffer.write(self.report_data.abuser_id.as_bytes())?;
-        buffer.write_u8(
-            self.report_data.abuse_region_name.len() as u8,
-        )?;
+        buffer.write_u8(self.report_data.abuse_region_name.len() as u8)?;
         buffer.write(&self.report_data.abuse_region_name[..])?;
         buffer.write(self.report_data.abuse_region_id.as_bytes())?;
         buffer.write_u8(self.report_data.summary.len() as u8)?;
         buffer.write(&self.report_data.summary[..])?;
-        buffer.write_u16::<LittleEndian>(
-            self.report_data.details.len() as u16,
-        )?;
+        buffer.write_u16::<LittleEndian>(self.report_data.details.len() as u16)?;
         buffer.write(&self.report_data.details[..])?;
         buffer.write_u8(self.report_data.version_string.len() as u8)?;
         buffer.write(&self.report_data.version_string[..])?;
@@ -56862,24 +53028,22 @@ impl Message for UserReportInternal {
     }
 
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         // Block ReportData
         let report_data = UserReportInternal_ReportData::read_from(buffer)?;
-        Ok(MessageInstance::UserReportInternal(
-            UserReportInternal { report_data: report_data },
-        ))
+        Ok(MessageInstance::UserReportInternal(UserReportInternal {
+            report_data: report_data,
+        }))
     }
 }
 
 impl Message for VelocityInterpolateOff {
     fn write_to<W: ?Sized>(&self, buffer: &mut W) -> WriteMessageResult
-    where
-        W: Write,
-    {
+    where W: Write {
         // Write the message number.
-        buffer.write(&[0xff, 0xff, 0x00, 0x7e])?;
+        buffer.write(&[
+            0xff, 0xff, 0x00, 0x7e
+        ])?;
         // Block AgentData
         buffer.write(self.agent_data.agent_id.as_bytes())?;
         buffer.write(self.agent_data.session_id.as_bytes())?;
@@ -56887,24 +53051,24 @@ impl Message for VelocityInterpolateOff {
     }
 
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         // Block AgentData
         let agent_data = VelocityInterpolateOff_AgentData::read_from(buffer)?;
         Ok(MessageInstance::VelocityInterpolateOff(
-            VelocityInterpolateOff { agent_data: agent_data },
+            VelocityInterpolateOff {
+                agent_data: agent_data,
+            },
         ))
     }
 }
 
 impl Message for VelocityInterpolateOn {
     fn write_to<W: ?Sized>(&self, buffer: &mut W) -> WriteMessageResult
-    where
-        W: Write,
-    {
+    where W: Write {
         // Write the message number.
-        buffer.write(&[0xff, 0xff, 0x00, 0x7d])?;
+        buffer.write(&[
+            0xff, 0xff, 0x00, 0x7d
+        ])?;
         // Block AgentData
         buffer.write(self.agent_data.agent_id.as_bytes())?;
         buffer.write(self.agent_data.session_id.as_bytes())?;
@@ -56912,22 +53076,20 @@ impl Message for VelocityInterpolateOn {
     }
 
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         // Block AgentData
         let agent_data = VelocityInterpolateOn_AgentData::read_from(buffer)?;
         Ok(MessageInstance::VelocityInterpolateOn(
-            VelocityInterpolateOn { agent_data: agent_data },
+            VelocityInterpolateOn {
+                agent_data: agent_data,
+            },
         ))
     }
 }
 
 impl Message for ViewerEffect {
     fn write_to<W: ?Sized>(&self, buffer: &mut W) -> WriteMessageResult
-    where
-        W: Write,
-    {
+    where W: Write {
         // Write the message number.
         buffer.write(&[0xff, 0x11])?;
         // Block AgentData
@@ -56948,9 +53110,7 @@ impl Message for ViewerEffect {
     }
 
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         // Block AgentData
         let agent_data = ViewerEffect_AgentData::read_from(buffer)?;
         // Block Effect
@@ -56968,35 +53128,33 @@ impl Message for ViewerEffect {
 
 impl Message for ViewerFrozenMessage {
     fn write_to<W: ?Sized>(&self, buffer: &mut W) -> WriteMessageResult
-    where
-        W: Write,
-    {
+    where W: Write {
         // Write the message number.
-        buffer.write(&[0xff, 0xff, 0x00, 0x89])?;
+        buffer.write(&[
+            0xff, 0xff, 0x00, 0x89
+        ])?;
         // Block FrozenData
         buffer.write_u8(self.frozen_data.data as u8)?;
         Ok(())
     }
 
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         // Block FrozenData
         let frozen_data = ViewerFrozenMessage_FrozenData::read_from(buffer)?;
-        Ok(MessageInstance::ViewerFrozenMessage(
-            ViewerFrozenMessage { frozen_data: frozen_data },
-        ))
+        Ok(MessageInstance::ViewerFrozenMessage(ViewerFrozenMessage {
+            frozen_data: frozen_data,
+        }))
     }
 }
 
 impl Message for ViewerStartAuction {
     fn write_to<W: ?Sized>(&self, buffer: &mut W) -> WriteMessageResult
-    where
-        W: Write,
-    {
+    where W: Write {
         // Write the message number.
-        buffer.write(&[0xff, 0xff, 0x00, 0xe4])?;
+        buffer.write(&[
+            0xff, 0xff, 0x00, 0xe4
+        ])?;
         // Block AgentData
         buffer.write(self.agent_data.agent_id.as_bytes())?;
         buffer.write(self.agent_data.session_id.as_bytes())?;
@@ -57007,9 +53165,7 @@ impl Message for ViewerStartAuction {
     }
 
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         // Block AgentData
         let agent_data = ViewerStartAuction_AgentData::read_from(buffer)?;
         // Block ParcelData
@@ -57023,11 +53179,11 @@ impl Message for ViewerStartAuction {
 
 impl Message for ViewerStats {
     fn write_to<W: ?Sized>(&self, buffer: &mut W) -> WriteMessageResult
-    where
-        W: Write,
-    {
+    where W: Write {
         // Write the message number.
-        buffer.write(&[0xff, 0xff, 0x00, 0x83])?;
+        buffer.write(&[
+            0xff, 0xff, 0x00, 0x83
+        ])?;
         // Block AgentData
         buffer.write(self.agent_data.agent_id.as_bytes())?;
         buffer.write(self.agent_data.session_id.as_bytes())?;
@@ -57038,12 +53194,8 @@ impl Message for ViewerStats {
         buffer.write_f32::<LittleEndian>(self.agent_data.fps)?;
         buffer.write_u8(self.agent_data.agents_in_view)?;
         buffer.write_f32::<LittleEndian>(self.agent_data.ping)?;
-        buffer.write_f64::<LittleEndian>(
-            self.agent_data.meters_traveled,
-        )?;
-        buffer.write_i32::<LittleEndian>(
-            self.agent_data.regions_visited,
-        )?;
+        buffer.write_f64::<LittleEndian>(self.agent_data.meters_traveled)?;
+        buffer.write_i32::<LittleEndian>(self.agent_data.regions_visited)?;
         buffer.write_u32::<LittleEndian>(self.agent_data.sys_ram)?;
         buffer.write_u8(self.agent_data.sys_os.len() as u8)?;
         buffer.write(&self.agent_data.sys_os[..])?;
@@ -57053,33 +53205,21 @@ impl Message for ViewerStats {
         buffer.write(&self.agent_data.sys_gpu[..])?;
         // Block DownloadTotals
         buffer.write_u32::<LittleEndian>(self.download_totals.world)?;
-        buffer.write_u32::<LittleEndian>(
-            self.download_totals.objects,
-        )?;
-        buffer.write_u32::<LittleEndian>(
-            self.download_totals.textures,
-        )?;
+        buffer.write_u32::<LittleEndian>(self.download_totals.objects)?;
+        buffer.write_u32::<LittleEndian>(self.download_totals.textures)?;
         // Block NetStats
         for i in 0..2 {
             buffer.write_u32::<LittleEndian>(self.net_stats[i].bytes)?;
             buffer.write_u32::<LittleEndian>(self.net_stats[i].packets)?;
-            buffer.write_u32::<LittleEndian>(
-                self.net_stats[i].compressed,
-            )?;
+            buffer.write_u32::<LittleEndian>(self.net_stats[i].compressed)?;
             buffer.write_u32::<LittleEndian>(self.net_stats[i].savings)?;
         }
         // Block FailStats
-        buffer.write_u32::<LittleEndian>(
-            self.fail_stats.send_packet,
-        )?;
+        buffer.write_u32::<LittleEndian>(self.fail_stats.send_packet)?;
         buffer.write_u32::<LittleEndian>(self.fail_stats.dropped)?;
         buffer.write_u32::<LittleEndian>(self.fail_stats.resent)?;
-        buffer.write_u32::<LittleEndian>(
-            self.fail_stats.failed_resends,
-        )?;
-        buffer.write_u32::<LittleEndian>(
-            self.fail_stats.off_circuit,
-        )?;
+        buffer.write_u32::<LittleEndian>(self.fail_stats.failed_resends)?;
+        buffer.write_u32::<LittleEndian>(self.fail_stats.off_circuit)?;
         buffer.write_u32::<LittleEndian>(self.fail_stats.invalid)?;
         // Block MiscStats
         buffer.write_u8(self.misc_stats.len() as u8)?;
@@ -57091,20 +53231,16 @@ impl Message for ViewerStats {
     }
 
     fn read_from<R: ?Sized>(buffer: &mut R) -> Result<MessageInstance, ReadError>
-    where
-        R: Read,
-    {
+    where R: Read {
         // Block AgentData
         let agent_data = ViewerStats_AgentData::read_from(buffer)?;
         // Block DownloadTotals
         let download_totals = ViewerStats_DownloadTotals::read_from(buffer)?;
         // Block NetStats
-        let net_stats = ArrayVec::from(
-            [
-                ViewerStats_NetStats::read_from(buffer)?,
-                ViewerStats_NetStats::read_from(buffer)?,
-            ],
-        );
+        let net_stats = ArrayVec::from([
+            ViewerStats_NetStats::read_from(buffer)?,
+            ViewerStats_NetStats::read_from(buffer)?,
+        ]);
         // Block FailStats
         let fail_stats = ViewerStats_FailStats::read_from(buffer)?;
         // Block MiscStats

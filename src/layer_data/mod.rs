@@ -25,7 +25,7 @@ pub enum LayerType {
 #[derive(Copy, Clone, Debug, Eq, PartialEq)]
 pub enum LandLayerType {
     Land,
-    VarLand
+    VarLand,
 }
 
 impl LayerType {
@@ -99,12 +99,18 @@ impl Patch {
         &self.data
     }
 
-    pub fn z_min(&self) -> f32 { self.z_min }
-    pub fn z_max(&self) -> f32 { self.z_max }
+    pub fn z_min(&self) -> f32 {
+        self.z_min
+    }
+    pub fn z_max(&self) -> f32 {
+        self.z_max
+    }
 }
 
 pub fn extract_land_patch(msg: &LayerData) -> Result<Vec<Patch>, ExtractSurfaceError> {
     // TODO remove unwrap
-    let layer_type = LayerType::from_code(msg.layer_id.type_)?.land_layer().unwrap();
+    let layer_type = LayerType::from_code(msg.layer_id.type_)?
+        .land_layer()
+        .unwrap();
     extractor::extract_land_patches(&msg.layer_data.data[..], layer_type)
 }
