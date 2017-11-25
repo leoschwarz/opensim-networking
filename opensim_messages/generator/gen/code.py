@@ -68,7 +68,7 @@ def generate_field_writer(field, source):
                   buffer.write_f32::<LittleEndian>({0}.z)?;\n
                   buffer.write_f32::<LittleEndian>({0}.w)?;\n""".format(value)
     elif r_type == "Quaternion<f32>":
-        return """let normed_{0} = UnitQuaternion::new(&{1}).unwrap();\n
+        return """let normed_{0} = UnitQuaternion::from_quaternion({1}).unwrap();\n
                   buffer.write_f32::<LittleEndian>(normed_{0}.i)?;\n
                   buffer.write_f32::<LittleEndian>(normed_{0}.j)?;\n
                   buffer.write_f32::<LittleEndian>(normed_{0}.k)?;\n""".format(field.r_name, value)
@@ -236,8 +236,8 @@ def generate_message_instance_enum(all_msgnames, messages):
     code += "\tpub fn read_message<R: ?Sized>(buffer: &mut R, message_num: u32) -> Result<MessageInstance, ReadError> where R: Read {\n"
     code += "\t\tmatch message_num {\n"
     for message in messages:
-        code += "\t\t\t%s => return %s::read_from(buffer),\n" % (message.message_num, message.name)
-    code += "\t\t\t_ => return Err(ReadErrorKind::UnknownMessageNumber(message_num).into())\n"
+        code += "\t\t\t%s => %s::read_from(buffer),\n" % (message.message_num, message.name)
+    code += "\t\t\t_ => Err(ReadErrorKind::UnknownMessageNumber(message_num).into())\n"
     code += "\t\t}\n"
     code += "\t}\n"
 
