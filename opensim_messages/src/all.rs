@@ -5923,14 +5923,90 @@ pub struct ImprovedTerseObjectUpdate_RegionData {
 
 #[derive(Clone, Debug)]
 pub struct ImprovedTerseObjectUpdate_ObjectData {
-    /// TODO
+    /// In sequential fashion the following fields are encoded.
+    ///
+    /// | bytes | field            | type        | description |
+    /// | ----- | ---------------- | ----------- | ----------- |
+    /// | 4     | localid          | u32         | should be the same as client.localid |
+    /// | 1     | state            | u8          | TODO |
+    /// | 1     | collision_exists | bool        | If 0 the next field is not specified (zero
+    /// bytes), if 1 read as usual. | | 16?   | collision_plane  | Vector4 f32 | |
+    /// | 12    | position         | Vector3 f32 | |
+    /// | 6     | velocity         | Vector3 u16f [-128;128] | |
+    /// | 6     | acceleration     | Vector3 u16f [-64;64] | |
+    /// | 8     | rotation (theta) | Quat4 u16f [-1;1] | |
+    /// | 6     | angular vel. (omega) | Vector3 u16f [-64;64] | |
+    ///
+    /// u16f: Means that the data is encoded as u16 (0-255), and is to be mapped
+    ///       into the f32 range specified in square brackets afterwards.
+    ///       Note that here we have to be careful that we set the value to zero,
+    ///       if `abs(fval) < (upper-lower) as f32 / 255`, so exact zeros can
+    ///       be decoded.
+    ///
     pub data: Vec<u8>,
-    /// TODO
+    /// If this field's value is even shorter than 16 bytes, the OpenMetaverse code
+    /// did not fail but report an absence of value, so probably we should do
+    /// the same thing. (TODO: Decide on that.)
+    ///
+    /// A TextureEntry specifies the properties of up to 32 faces.
+    /// Each of the properties is encoded for all specified faces as an array,
+    /// packed according to the following rules, and the arrays follow directly
+    /// after each other.
+    ///
+    /// These properties are specified (in this order).
+    ///
+    /// | Property   | Value Type (Bytes) | Description |
+    /// | ---------- | ------------------ | ----------- |
+    /// | Texture    | UUID (16)          | The texture ID for this face. |
+    /// | Color      | Color4 (4)         | RGBA value. |
+    /// | RepeatU    | f32 (4)            | TODO |
+    /// | RepeatV    | f32 (4)            | TODO |
+    /// | OffsetU    | f32 (2) *A         | TODO |
+    /// | OffsetV    | f32 (2) *A         | TODO |
+    /// | Rotation   | f32 (2) *B         | TODO |
+    /// | Material   | u8 (1)             | TODO |
+    /// | Media      | u8 (1)             | TODO |
+    /// | Glow       | f32 (1) *C         | TODO |
+    /// | MaterialID | UUID (16)          | TODO, note this value can also be missing like texture
+    /// |
+    ///
+    /// f32 encoding:
+    /// ============
+    /// - A: `read_i16::<LE>() / 32767.0f`
+    /// - B: `read_u16::<LE>() / 32768.0f * 2π`
+    /// - C: `read_u8() / 255.0f`
+    ///
+    /// Array structure:
+    /// ===============
+    /// - encode: default value for faces without an explicitly specified value
+    /// - repeat
+    ///     - encode: faces bit field
+    ///         - if bit is 1 set the face property to the following value otherwise ignore
+    ///         - if the whole bitset is zero, end of array is reached.
+    ///     - encode: value
+    ///
+    /// Arrays are preceeded with a default value for all unspecified faces,
+    /// and then followed by values for a selection of faces.
+    ///
+    /// Faces bit field:
+    ///
+    /// ```text
+    /// +--------+     +--------+--------+
+    /// |1XXXXXXX| ... |1XXXXXXX|0XXXXXXX|
+    /// +--------+     +--------+--------+
+    /// ```
+    /// - The value is obtained by gluing together the X bits in the same order as above,
+    ///   (assuming zero padding on the left side) then interpreting this as a little endian
+    ///   u32 number.
+    /// - Note that there can be even zero bytes with a 1 at the beginning.
+    /// - Bits refer right to left to faces 0, 1, 2, etc.
+    ///
     pub texture_entry: Vec<u8>,
 }
 
-/// TODO:
-/// /// packed terse object update format
+/// A terse object update is sent, when a transformation matrix, velocity or acceleration of an
+/// object changes, but the rest does not change.
+///
 ///
 #[derive(Clone, Debug)]
 pub struct ImprovedTerseObjectUpdate {
