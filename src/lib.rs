@@ -29,3 +29,6 @@ pub mod logging;
 pub mod login;
 pub mod packet;
 pub mod systems;
+
+/// experimental
+pub mod object_update;

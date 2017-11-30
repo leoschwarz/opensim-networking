@@ -215,7 +215,10 @@ impl<'d> BitsReader for BufBitsReader<'d> {
     }
 }
 
-impl BytesReader for IoRead {
+impl<T> BytesReader for T
+where
+    T: IoRead,
+{
     #[inline]
     fn read_bytes_u8(&mut self) -> Result<u8, ReadError> {
         Ok(self.read_u8()?)

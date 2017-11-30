@@ -1,4 +1,5 @@
-extern crate llsd;
+extern crate opensim_networking;
+
 use std::io::BufReader;
 
 fn main() {
@@ -11,6 +12,6 @@ fn main() {
 
     let mut reader = BufReader::new(&raw_data[..]);
 
-    let data = llsd::binary::read_value(&mut reader).unwrap();
+    let data = opensim_networking::object_update::read_object_data(&mut reader).unwrap();
     println!("data: {:?}", data);
 }
