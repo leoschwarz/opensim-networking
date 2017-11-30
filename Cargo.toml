@@ -15,6 +15,7 @@ members = ["opensim_messages", "opensim_types", "llsd"]
 [dependencies]
 opensim_messages = { path = "opensim_messages" }
 opensim_types = { path = "opensim_types" }
+llsd = { path = "llsd" }
 
 bitflags = "1.0"
 #bitreader = { git = "https://github.com/leoschwarz/bitreader", branch = "read-many" } # currently needed only for layer_data module.
