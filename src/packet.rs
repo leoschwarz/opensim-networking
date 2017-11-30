@@ -28,11 +28,14 @@ pub struct Packet {
     /// Flags of the packet.
     pub flags: PacketFlags,
 
-    /// The sequence number of the packet. This number is unique for each packet in each
-    /// circuit and each direction. It is incremented one after one for each message.
+    /// The sequence number of the packet. This number is unique for each
+    /// packet in each
+    /// circuit and each direction. It is incremented one after one for each
+    /// message.
     pub sequence_number: SequenceNumber,
 
-    /// Packet acknowledgments appended to this packet. Can contain any number (including zero)
+    /// Packet acknowledgments appended to this packet. Can contain any number
+    /// (including zero)
     /// of elements.
     pub appended_acks: Vec<SequenceNumber>,
 }
@@ -76,7 +79,8 @@ impl Packet {
 
     /// Try to read a packet from the provided buffer.
     ///
-    /// Note: Pass a slice only containing the relevant bytes, truncate all other noise
+    /// Note: Pass a slice only containing the relevant bytes, truncate all
+    /// other noise
     /// from previous reads etc from the slice!
     pub fn read<'a>(buf: &'a [u8]) -> Result<Packet, ReadPacketError> {
         let mut reader = PacketReader::new(buf);
@@ -161,9 +165,11 @@ struct PacketReader<'a> {
     buf: &'a [u8],
     pointer: usize,
     zerocoding_enabled: bool,
-    /// It is possible that with zerocoding enabled a pair of zero byte and count is encountered,
+    /// It is possible that with zerocoding enabled a pair of zero byte and
+    /// count is encountered,
     /// but not all such bytes can be read into the destination buffer.
-    /// In that case this variable will be set to the number of zerobytes which are yet pending
+    /// In that case this variable will be set to the number of zerobytes which
+    /// are yet pending
     /// to be read on the next invocation of read.
     pending_zerobytes: u8,
 }

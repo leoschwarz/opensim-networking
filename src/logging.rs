@@ -21,7 +21,8 @@ use std::sync::{Arc, Mutex, PoisonError};
 
 /// Any instance can be used as a logger for this crate.
 ///
-/// If instances are sent over thread boundaries or cloned they are supposed to perform the
+/// If instances are sent over thread boundaries or cloned they are supposed to
+/// perform the
 /// individual operations of this trait atomically.
 pub trait Logger: Clone + Send + Sync + 'static {
     fn log_recv(&self, raw_data: &[u8], packet: &Result<Packet, ReadPacketError>);
@@ -33,10 +34,13 @@ pub trait Logger: Clone + Send + Sync + 'static {
     }
 }
 
-/// A logger to be used to extract the full debug information into a specified directory.
+/// A logger to be used to extract the full debug information into a specified
+/// directory.
 ///
-/// Note that the numbering of the individual files doesn't correspond directly to the sequence
-/// numbers, since it's possible for packets to be transmitted multiple times with the same
+/// Note that the numbering of the individual files doesn't correspond directly
+/// to the sequence
+/// numbers, since it's possible for packets to be transmitted multiple times
+/// with the same
 /// sequence number.
 #[derive(Clone)]
 pub struct FullDebugLogger {
@@ -97,10 +101,13 @@ impl FullDebugLogger {
 
     /// Create a new instance of the logger.
     ///
-    /// Notice that the logger is expecting an empty directory, if the directory already contains
+    /// Notice that the logger is expecting an empty directory, if the
+    /// directory already contains
     /// other files, it will most likely lead to an error.
-    /// So if you want stuff like log rotation, you have to implement it yourself, but be aware,
-    /// that with this uncompressed logging you can quickly accumulate lots of data.
+    /// So if you want stuff like log rotation, you have to implement it
+    /// yourself, but be aware,
+    /// that with this uncompressed logging you can quickly accumulate lots of
+    /// data.
     pub fn new<P: Into<PathBuf>>(path: P) -> Result<Self, IoError> {
         let dir = path.into();
         Self::assert_empty_dir(dir.join("recv"))?;

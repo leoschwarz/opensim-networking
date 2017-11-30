@@ -44,7 +44,8 @@ impl SendMessage {
 }
 
 impl Future for SendMessage {
-    /// If we complete without error it means an unreliable packet was sent or a reliable
+    /// If we complete without error it means an unreliable packet was sent or
+    /// a reliable
     /// packet was sent and ack'ed by the server.
     type Item = ();
     type Error = SendMessageError;
@@ -78,7 +79,8 @@ pub enum SendMessageStatus {
     /// Has been sent but not acknowledged yet.
     /// The attempt variant describes the number of attempts already made.
     /// (0 → this is the first attempt, 1 → 2nd attempt, etc.)
-    /// timeout: holds the time after which the current attemt is considered timed out.
+    /// timeout: holds the time after which the current attemt is considered
+    /// timed out.
     PendingAck {
         attempt: u8,
         timeout: Instant,

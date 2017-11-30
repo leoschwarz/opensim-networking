@@ -14,7 +14,7 @@ pub struct ObjectData {
     pub angular_velocity: Vector3<f32>,
 }
 
-fn read_object_data(reader: &mut R) -> Result<ObjectData, ()> {
+fn read_object_data<R: Read>(reader: &mut R) -> Result<ObjectData, ()> {
     let local_id = reader.read_u32::<LittleEndian>()?;
     let state = reader.read_u8()?;
     

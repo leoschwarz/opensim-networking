@@ -83,7 +83,8 @@ pub struct Patch {
 impl Patch {
     /// Side length of the square shape patch.
     ///
-    /// This is both the number of values per direction, and the side length in meters of the
+    /// This is both the number of values per direction, and the side length in
+    /// meters of the
     /// patch, as there is one elevation value per meter.
     pub fn side_length(&self) -> u32 {
         self.size

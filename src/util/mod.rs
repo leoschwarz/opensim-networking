@@ -13,7 +13,8 @@ pub mod bitsreader;
 pub(crate) mod tests;
 
 /// Provides an atomic counter for u32 numbers.
-/// Essentially it provides a method that can be invoked and will return an incremented number
+/// Essentially it provides a method that can be invoked and will return an
+/// incremented number
 /// that for sure was not yet returned in any other thread.
 ///
 /// TODO: Remove once AtomicU32 is stabilized.

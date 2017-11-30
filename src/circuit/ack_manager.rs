@@ -70,7 +70,8 @@ impl AckManagerRx {
 
     /// Returns the next packet to be sent to the sim.
     ///
-    /// Note that this method will block the current thread until something is available.
+    /// Note that this method will block the current thread until something is
+    /// available.
     pub fn fetch(&mut self) -> Packet {
         let (packet, future) = self._fetch_loop();
 

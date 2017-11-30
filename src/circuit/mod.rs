@@ -37,11 +37,13 @@ mod status;
 pub use self::status::{SendMessage, SendMessageError};
 use self::status::SendMessageStatus;
 
-/// Encapsulates a so called circuit (networking link) between our viewer and a simulator.
+/// Encapsulates a so called circuit (networking link) between our viewer and a
+/// simulator.
 ///
 /// TODO:
 /// - Stop/exit functionality.
-/// - Consider whether we need functionality to plug in event handlers, or whether this should be
+/// - Consider whether we need functionality to plug in event handlers, or
+/// whether this should be
 ///   done at a different place.
 pub struct Circuit {
     incoming: mpsc::Receiver<MessageInstance>,
@@ -153,22 +155,27 @@ impl Circuit {
 
     /// Send a message through the circuit.
     ///
-    /// This returns a `SendMessage` instance which is a `Future`. However once you send it using
-    /// this method you needn't necessarily poll it for progress to be made. It will be handed over
-    /// to the sender threads of this Circuit and you will be able to confirm it has finished
+    /// This returns a `SendMessage` instance which is a `Future`. However once
+    /// you send it using
+    /// this method you needn't necessarily poll it for progress to be made. It
+    /// will be handed over
+    /// to the sender threads of this Circuit and you will be able to confirm
+    /// it has finished
     /// successfully or failed by polling the returned future.
     pub fn send<M: Into<MessageInstance>>(&self, msg: M, reliable: bool) -> SendMessage {
         self.ackmgr_tx.send_msg(msg.into(), reliable)
     }
 
     /// Reads a message and returns it.
-    /// If there is no message available yet it will block the current thread until there is one
+    /// If there is no message available yet it will block the current thread
+    /// until there is one
     /// available.
     pub fn read(&self) -> Result<MessageInstance, mpsc::RecvError> {
         self.incoming.recv()
     }
 
-    /// Trys to read a message and returns it if one is available right away. Otherwise this won't
+    /// Trys to read a message and returns it if one is available right away.
+    /// Otherwise this won't
     /// block the current thread and None will be returned.
     pub fn try_read(&self) -> Option<MessageInstance> {
         // TODO: return error
@@ -179,7 +186,8 @@ impl Circuit {
 #[derive(Debug, Clone)]
 pub struct CircuitConfig {
     /// The number of seconds before an unconfirmed packet becomes invalid.
-    /// If multiple attempts are allowed, each single attempt will get at most this time before
+    /// If multiple attempts are allowed, each single attempt will get at most
+    /// this time before
     /// timing out.
     pub send_timeout: Duration,
 

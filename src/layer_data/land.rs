@@ -1,4 +1,4 @@
-use util::bitsreader::{BitsReader, BitsReaderError};
+use util::bitsreader::{BitsReader, BufBitsReader};
 use layer_data::idct::{PatchSize, PatchTables};
 use layer_data::{idct, LandLayerType, LayerType, Patch};
 
@@ -15,7 +15,7 @@ lazy_static! {
 #[error_chain(error = "ExtractSurfaceError")]
 #[error_chain(result = "")]
 pub enum ExtractSurfaceErrorKind {
-    #[error_chain(foreign)] BitReader(BitsReaderError),
+    #[error_chain(foreign)] BitReader(::util::bitsreader::ReadError),
 
     #[error_chain(custom)]
     #[error_chain(description = r#"|_| "unknown layer type""#)]
@@ -33,10 +33,10 @@ pub(super) struct PatchGroupHeader {
 }
 
 impl PatchGroupHeader {
-    fn read(reader: &mut BitsReader) -> Result<Self, ExtractSurfaceError> {
+    fn read<BR: BitsReader>(reader: &mut BR) -> Result<Self, ExtractSurfaceError> {
         // TODO: This is always set to the value 264, but to me it's unclear where I
         // need this.
-        let stride = reader.read_full_u16::<LittleEndian>()?;
+        let stride = reader.read_bytes_u16::<LittleEndian>()?;
 
         // TODO: Can patch_i and patch_j be larger than this?
         // Because this is what's currently happening in the test, patch_size=16, but
@@ -46,8 +46,8 @@ impl PatchGroupHeader {
         // i.e. for large patches (patches_per_edge=32) patch_x being a u16
         // means it could go all the way up to 65565 which is even worse than
         // for normal size patches.
-        let patch_size = reader.read_full_u8()?;
-        let layer_type = reader.read_full_u8()?;
+        let patch_size = reader.read_bytes_u8()?;
+        let layer_type = reader.read_bytes_u8()?;
 
         Ok(PatchGroupHeader {
             stride: stride as u32,
@@ -69,11 +69,11 @@ pub(super) struct PatchHeader {
 }
 
 impl PatchHeader {
-    fn read(
-        reader: &mut BitsReader,
+    fn read<BR: BitsReader>(
+        reader: &mut BR,
         layer: LandLayerType,
     ) -> Result<Option<Self>, ExtractSurfaceError> {
-        let quantity_wbits = reader.read_full_u8()?;
+        let quantity_wbits = reader.read_bytes_u8()?;
         if quantity_wbits == END_OF_PATCH {
             return Ok(None);
         }
@@ -81,18 +81,18 @@ impl PatchHeader {
         let quant = (quantity_wbits as u32 >> 4) + 2;
         let word_bits = (quantity_wbits as u32 & 0xf) + 2;
 
-        let dc_offset = reader.read_full_f32::<LittleEndian>()?;
-        let range = reader.read_full_u16::<LittleEndian>()?;
+        let dc_offset = reader.read_bytes_f32::<LittleEndian>()?;
+        let range = reader.read_bytes_u16::<LittleEndian>()?;
 
         let (patch_x, patch_y) = match layer {
             LandLayerType::Land => {
-                let patchids = reader.read_part_u32::<LittleEndian>(10)?;
+                let patchids = reader.read_bits_u32::<LittleEndian>(10)?;
                 let x = patchids >> 5;
                 let y = patchids & 0x1f;
                 (x, y)
             }
             LandLayerType::VarLand => {
-                let patchids = reader.read_full_u32::<LittleEndian>()?;
+                let patchids = reader.read_bytes_u32::<LittleEndian>()?;
                 let x = patchids >> 16;
                 let y = patchids & 0xffff;
                 (x, y)
@@ -114,7 +114,7 @@ pub fn extract_land_patches(
     data: &[u8],
     expected_layer_type: LandLayerType,
 ) -> Result<Vec<Patch>, ExtractSurfaceError> {
-    let mut reader = BitsReader::new(data);
+    let mut reader = BufBitsReader::new(data);
 
     // Read patch_group_header
     let group_header = PatchGroupHeader::read(&mut reader)?;
@@ -133,8 +133,16 @@ pub fn extract_land_patches(
         };
 
         let patch = match group_header.patch_size {
-            16 => decode_patch_data::<idct::NormalPatch>(&mut reader, &header, &TABLES_NORMAL),
-            32 => decode_patch_data::<idct::LargePatch>(&mut reader, &header, &TABLES_LARGE),
+            16 => decode_patch_data::<idct::NormalPatch, BufBitsReader>(
+                &mut reader,
+                &header,
+                &TABLES_NORMAL,
+            ),
+            32 => decode_patch_data::<idct::LargePatch, BufBitsReader>(
+                &mut reader,
+                &header,
+                &TABLES_LARGE,
+            ),
             ps => Err(ExtractSurfaceErrorKind::UnsupportedPatchsize(ps).into()),
         }?;
 
@@ -142,21 +150,21 @@ pub fn extract_land_patches(
     }
 }
 
-fn decode_patch_data<PS: PatchSize>(
-    reader: &mut BitsReader,
+fn decode_patch_data<PS: PatchSize, BR: BitsReader>(
+    reader: &mut BR,
     header: &PatchHeader,
     tables: &PatchTables,
 ) -> Result<Patch, ExtractSurfaceError> {
     // Read raw patch data.
     let mut patch_data = Vec::<i32>::new();
     for i in 0..PS::per_patch() {
-        let exists = reader.read_bool()?;
+        let exists = reader.read_bit_bool()?;
         if exists {
-            let not_eob = reader.read_bool()?;
+            let not_eob = reader.read_bit_bool()?;
             if not_eob {
                 // Read the item.
-                let sign = if reader.read_bool()? { -1 } else { 1 };
-                let value = reader.read_part_u32::<LittleEndian>(header.word_bits as u8)? as i32;
+                let sign = if reader.read_bit_bool()? { -1 } else { 1 };
+                let value = reader.read_bits_u32::<LittleEndian>(header.word_bits as u8)? as i32;
                 patch_data.push(sign * value);
             } else {
                 for _ in i..PS::per_patch() {
