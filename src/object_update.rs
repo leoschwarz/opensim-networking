@@ -1,7 +1,7 @@
 // TODO
 
 use util::bitsreader::{BytesReader, LittleEndian};
-use types::{Quaternion, Vector3, Vector4};
+use types::{Quaternion, Vector3, Vector4, Uuid};
 
 #[derive(Debug)]
 pub struct ObjectData {
@@ -13,6 +13,41 @@ pub struct ObjectData {
     pub acceleration: Vector3<f32>,
     pub rotation: Quaternion<f32>,
     pub angular_velocity: Vector3<f32>,
+}
+
+pub type TextureEntry = Vec<FaceProperties>;
+
+#[derive(Debug)]
+pub struct FaceProperties {
+    /// The texture ID for this face.
+    pub texture_id: Uuid,
+    /// RGBA color value.
+    pub color: Vector4<u8>,
+    pub repeat_u: f32,
+    pub repeat_v: f32,
+    pub offset_u: f32,
+    pub offset_v: f32,
+    pub rotation: f32,
+    pub material: u8,
+    pub glow: f32,
+    pub material_id: Uuid,
+}
+
+impl Default for FaceProperties {
+    fn default() -> Self {
+        FaceProperties {
+            texture_id: Uuid::nil(),
+            color: Vector4::new(0,0,0,0),
+            repeat_u: 0.,
+            repeat_v: 0.,
+            offset_u: 0.,
+            offset_v: 0.,
+            rotation: 0.,
+            material: 0,
+            glow: 0.,
+            material_id: Uuid::nil(),
+        }
+    }
 }
 
 #[inline]
@@ -37,6 +72,29 @@ fn read_u16f<R: BytesReader>(
         -range_r,
         range_r,
     ))
+}
+
+fn read_f32_A<R: BytesReader>(reader: &mut R) -> Result<f32, ::util::bitsreader::ReadError> {
+    Ok(reader.read_bytes_i16::<LittleEndian>()? as f32 / 32767.)
+}
+
+fn read_f32_B<R: BytesReader>(reader: &mut R) -> Result<f32, ::util::bitsreader::ReadError>
+{
+    Ok(reader.read_bytes_u16::<LittleEndian>()? as f32 / 32768. * 2. * ::std::f32::consts::PI)
+}
+
+fn read_f32_C<R: BytesReader>(reader: &mut R) -> Result<f32, ::util::bitsreader::ReadError>
+{
+    Ok(reader.read_bytes_u8()? as f32 / 255.)
+}
+
+fn read_texture_entry<R: BytesReader>(
+    reader: &mut R
+) -> Result<TextureEntry, ::util::bitsreader::ReadError> {
+
+
+
+    unimplemented!()
 }
 
 pub fn read_object_data<R: BytesReader>(
@@ -93,12 +151,6 @@ pub fn read_object_data<R: BytesReader>(
         angular_velocity: angular_vel,
     })
 }
-
-/*
-fn read_texture_data() -> {
-
-}
-*/
 
 fn read_face_bitfield<R: BytesReader>(
     reader: &mut R,

@@ -65,6 +65,15 @@ pub trait BytesReader {
     /// Read the next 8 bytes as u64.
     fn read_bytes_u64<B: ByteOrder>(&mut self) -> Result<u64, ReadError>;
 
+    /// Read the next byte as i8.
+    fn read_bytes_i8(&mut self) -> Result<i8, ReadError>;
+    /// Read the next 2 bytes as i16.
+    fn read_bytes_i16<B: ByteOrder>(&mut self) -> Result<i16, ReadError>;
+    /// Read the next 4 bytes as i32.
+    fn read_bytes_i32<B: ByteOrder>(&mut self) -> Result<i32, ReadError>;
+    /// Read the next 8 bytes as i64.
+    fn read_bytes_i64<B: ByteOrder>(&mut self) -> Result<i64, ReadError>;
+
     /// Read the next 4 bytes as f32.
     fn read_bytes_f32<B: ByteOrder>(&mut self) -> Result<f32, ReadError>;
     /// Read the next 8 bytes as f64.
@@ -158,6 +167,35 @@ impl<'d> BytesReader for BufBitsReader<'d> {
     }
 
     #[inline]
+    fn read_bytes_i8(&mut self) -> Result<i8, ReadError> {
+        Ok(self.reader.read_i8(8)?)
+    }
+
+    #[inline]
+    fn read_bytes_i16<B: ByteOrder>(&mut self) -> Result<i16, ReadError> {
+        Ok(B::read_i16(
+            &[self.reader.read_u8(8)?, self.reader.read_u8(8)?],
+        ))
+    }
+
+    #[inline]
+    fn read_bytes_i32<B: ByteOrder>(&mut self) -> Result<i32, ReadError> {
+        Ok(B::read_i32(&[
+            self.reader.read_u8(8)?, self.reader.read_u8(8)?, self.reader.read_u8(8)?,
+            self.reader.read_u8(8)?,
+        ]))
+    }
+
+    #[inline]
+    fn read_bytes_i64<B: ByteOrder>(&mut self) -> Result<i64, ReadError> {
+        Ok(B::read_i64(&[
+            self.reader.read_u8(8)?, self.reader.read_u8(8)?, self.reader.read_u8(8)?,
+            self.reader.read_u8(8)?, self.reader.read_u8(8)?, self.reader.read_u8(8)?,
+            self.reader.read_u8(8)?, self.reader.read_u8(8)?,
+        ]))
+    }
+
+    #[inline]
     fn read_bytes_f32<B: ByteOrder>(&mut self) -> Result<f32, ReadError> {
         Ok(B::read_f32(&[
             self.reader.read_u8(8)?, self.reader.read_u8(8)?, self.reader.read_u8(8)?,
@@ -237,6 +275,26 @@ where
     #[inline]
     fn read_bytes_u64<B: ByteOrder>(&mut self) -> Result<u64, ReadError> {
         Ok(self.read_u64::<B>()?)
+    }
+
+    #[inline]
+    fn read_bytes_i8(&mut self) -> Result<i8, ReadError> {
+        Ok(self.read_i8()?)
+    }
+
+    #[inline]
+    fn read_bytes_i16<B: ByteOrder>(&mut self) -> Result<i16, ReadError> {
+        Ok(self.read_i16::<B>()?)
+    }
+
+    #[inline]
+    fn read_bytes_i32<B: ByteOrder>(&mut self) -> Result<i32, ReadError> {
+        Ok(self.read_i32::<B>()?)
+    }
+
+    #[inline]
+    fn read_bytes_i64<B: ByteOrder>(&mut self) -> Result<i64, ReadError> {
+        Ok(self.read_i64::<B>()?)
     }
 
     #[inline]
