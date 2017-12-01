@@ -79,6 +79,10 @@ pub trait BytesReader {
     /// Read the next 8 bytes as f64.
     fn read_bytes_f64<B: ByteOrder>(&mut self) -> Result<f64, ReadError>;
 
+    /// Read exactly as many bytes as fit into the buffer in this order,
+    /// and fail if this is not possible.
+    fn read_bytes_exact(&mut self, target_buf: &mut [u8]) -> Result<(), ReadError>;
+
     /// Read the next byte as bool.
     fn read_bytes_bool(&mut self) -> Result<bool, ReadError> {
         self.read_bytes_u8().map(|num| num != 0)
@@ -211,6 +215,10 @@ impl<'d> BytesReader for BufBitsReader<'d> {
             self.reader.read_u8(8)?, self.reader.read_u8(8)?,
         ]))
     }
+
+    fn read_bytes_exact(&mut self, target_buf: &mut [u8]) -> Result<(), ReadError> {
+        Ok(self.reader.read_u8_slice(target_buf)?)
+    }
 }
 
 impl<'d> BitsReader for BufBitsReader<'d> {
@@ -305,5 +313,10 @@ where
     #[inline]
     fn read_bytes_f64<B: ByteOrder>(&mut self) -> Result<f64, ReadError> {
         Ok(self.read_f64::<B>()?)
+    }
+
+    #[inline]
+    fn read_bytes_exact(&mut self, target_buf: &mut [u8]) -> Result<(), ReadError> {
+        Ok(self.read_exact(target_buf)?)
     }
 }
