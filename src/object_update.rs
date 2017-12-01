@@ -122,15 +122,15 @@ fn read_u16f<R: BytesReader>(
     ))
 }
 
-fn read_f32_A<R: BytesReader>(reader: &mut R) -> Result<f32, ::util::bitsreader::ReadError> {
+fn read_f32_a<R: BytesReader>(reader: &mut R) -> Result<f32, ::util::bitsreader::ReadError> {
     Ok(reader.read_bytes_i16::<LittleEndian>()? as f32 / 32767.)
 }
 
-fn read_f32_B<R: BytesReader>(reader: &mut R) -> Result<f32, ::util::bitsreader::ReadError> {
+fn read_f32_b<R: BytesReader>(reader: &mut R) -> Result<f32, ::util::bitsreader::ReadError> {
     Ok(reader.read_bytes_u16::<LittleEndian>()? as f32 / 32768. * 2. * ::std::f32::consts::PI)
 }
 
-fn read_f32_C<R: BytesReader>(reader: &mut R) -> Result<f32, ::util::bitsreader::ReadError> {
+fn read_f32_c<R: BytesReader>(reader: &mut R) -> Result<f32, ::util::bitsreader::ReadError> {
     Ok(reader.read_bytes_u8()? as f32 / 255.)
 }
 
@@ -188,12 +188,12 @@ fn read_texture_entry<R: BytesReader + ::std::io::Read>(
 
     decode_prop_vec!(repeat_u = reader.read_bytes_f32::<LittleEndian>()?);
     decode_prop_vec!(repeat_v = reader.read_bytes_f32::<LittleEndian>()?);
-    decode_prop_vec!(offset_u = read_f32_A(reader)?);
-    decode_prop_vec!(offset_v = read_f32_A(reader)?);
-    decode_prop_vec!(rotation = read_f32_B(reader)?);
+    decode_prop_vec!(offset_u = read_f32_a(reader)?);
+    decode_prop_vec!(offset_v = read_f32_a(reader)?);
+    decode_prop_vec!(rotation = read_f32_b(reader)?);
     decode_prop_vec!(material = reader.read_bytes_u8()?);
     decode_prop_vec!(media = reader.read_bytes_u8()?);
-    decode_prop_vec!(glow = read_f32_C(reader)?);
+    decode_prop_vec!(glow = read_f32_c(reader)?);
     decode_prop_vec!(material_id = read_uuid(reader)?);
 
     // Note: At this point this should not be able to fail, since each default value
