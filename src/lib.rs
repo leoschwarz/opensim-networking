@@ -18,7 +18,7 @@ extern crate regex;
 extern crate reqwest;
 extern crate xmlrpc;
 
-extern crate opensim_types as types;
+pub extern crate opensim_types as types;
 pub extern crate opensim_messages as messages;
 pub use types::*;
 
