@@ -64,7 +64,7 @@ impl From<::xmlrpc::Fault> for LoginError {
     }
 }
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct LoginResponse {
     pub look_at: Vector3<f32>,
     pub circuit_code: u32,

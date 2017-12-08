@@ -7,12 +7,14 @@ use llsd;
 use reqwest;
 use types::Url;
 
+#[derive(Debug)]
 pub struct Urls {
     pub get_texture: Url,
     // TODO: add more.
 }
 
-struct Capabilities {
+#[derive(Debug)]
+pub struct Capabilities {
     urls: Urls,
 }
 

@@ -5,12 +5,13 @@ extern crate opensim_networking;
 extern crate serde_derive;
 extern crate toml;
 
-use opensim_networking::login::{hash_password, LoginRequest};
+use opensim_networking::capabilities::Capabilities;
 use opensim_networking::circuit::{Circuit, CircuitConfig};
-use opensim_networking::{Duration, Quaternion, Vector3};
-use opensim_networking::systems::agent_update::{AgentState, Modality, MoveDirection};
-use opensim_networking::messages::{AgentUpdate, AgentUpdate_AgentData};
 use opensim_networking::logging::FullDebugLogger;
+use opensim_networking::login::{hash_password, LoginRequest};
+use opensim_networking::messages::{AgentUpdate, AgentUpdate_AgentData};
+use opensim_networking::systems::agent_update::{AgentState, Modality, MoveDirection};
+use opensim_networking::{Duration, Quaternion, Vector3};
 
 use num_traits::identities::{One, Zero};
 
@@ -57,14 +58,10 @@ fn main() {
     };
 
     println!("Performing login request: {:?}", request);
-
-    let resp = match request.perform(config.sim.loginuri.as_str()) {
-        Err(e) => panic!("Login failed, err: {:?}", e),
-        Ok(r) => {
-            println!("Login successful: {:?}", r);
-            r
-        }
-    };
+    let resp = request
+        .perform(config.sim.loginuri.as_str())
+        .expect("Login failed.");
+    println!("Login success, response = {:?}", resp);
 
     // Now establish the circuit.
     let config = CircuitConfig {
@@ -74,12 +71,10 @@ fn main() {
     let agent_id = resp.agent_id.clone();
     let session_id = resp.session_id.clone();
     let circuit_code = resp.circuit_code.clone();
-    let circuit = match Circuit::initiate(resp, config, logger.clone()) {
-        Err(e) => panic!("Circuit establishment failed, err: {:?}", e),
-        Ok(c) => c,
-    };
-
+    let circuit =
+        Circuit::initiate(resp.clone(), config, logger.clone()).expect("Establishing the Circuit failed.");
     println!("Created circuit instance.");
+
     // Perform the last steps of the circuit initiation.
     opensim_networking::systems::initiation::initiate(
         &circuit,
@@ -89,6 +84,11 @@ fn main() {
         logger,
     ).expect("circuit init sequence failed.");
     println!("Finish circuit initialization.");
+
+    // Start capabilities.
+    let caps = Capabilities::make_request(resp.seed_capability.clone())
+        .expect("Capabilities client could not be set up.");
+    println!("Capabilities: {:?}", caps);
 
     // Let the avatar walk back and forth.
     // TODO: extract position
