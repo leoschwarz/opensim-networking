@@ -1,8 +1,8 @@
 //! Handle binary representation of LLSD data.
 
 use data::*;
-use std::io::Read;
-use byteorder::{BigEndian, LittleEndian, ReadBytesExt};
+use std::io::{Read, Write};
+use byteorder::{BigEndian, LittleEndian, ReadBytesExt, WriteBytesExt};
 
 #[derive(Debug, ErrorChain)]
 #[error_chain(error = "ReadError")]
@@ -23,7 +23,9 @@ fn read_n_bytes<R: Read>(reader: &mut R, n_bytes: u32) -> Result<Vec<u8>, ReadEr
     Ok(data.to_vec())
 }
 
-// This assumes that the header has already been skipped by the initial caller.
+/// Read an LLSD value from its binary representation.
+///
+/// This assumes that the header has already been skipped by the initial caller.
 pub fn read_value<R: Read>(reader: &mut R) -> Result<Value, ReadError> {
     let code = reader.read_u8()? as char;
     match code {
@@ -85,6 +87,76 @@ pub fn read_value<R: Read>(reader: &mut R) -> Result<Value, ReadError> {
             Ok(Value::Map(items))
         }
         _ => Err(ReadErrorKind::InvalidTypePrefix.into()),
+    }
+}
+
+/// Writes a Value to the writer.
+///
+/// Note that this does not write the LLSD header.
+pub fn write_value<W: Write>(writer: &mut W, value: &Value) -> Result<(), ::std::io::Error> {
+    match *value {
+        Value::Scalar(Scalar::Boolean(ref b)) => {
+            writer.write_u8(if *b { '1' as u8 } else { '0' as u8 })
+        }
+        Value::Scalar(Scalar::Integer(ref i)) => {
+            writer.write_u8('i' as u8)?;
+            writer.write_i32::<BigEndian>(*i)
+        }
+        Value::Scalar(Scalar::Real(ref r)) => {
+            writer.write_u8('r' as u8)?;
+            writer.write_f64::<BigEndian>(*r)
+        }
+        Value::Scalar(Scalar::Uuid(ref u)) => {
+            writer.write_u8('u' as u8)?;
+            writer.write_all(u.as_bytes())
+        }
+        Value::Scalar(Scalar::String(ref s)) => {
+            writer.write_u8('s' as u8)?;
+            let bytes = s.as_bytes();
+            writer.write_u32::<BigEndian>(bytes.len() as u32)?;
+            writer.write_all(bytes)
+        }
+        Value::Scalar(Scalar::Date(ref d)) => {
+            writer.write_u8('d' as u8)?;
+            // TODO
+            let date = Scalar::Date(d.clone());
+            writer.write_f64::<LittleEndian>(date.as_real().unwrap())
+        }
+        Value::Scalar(Scalar::Uri(ref u)) => {
+            writer.write_u8('l' as u8)?;
+            let bytes = u.as_bytes();
+            writer.write_u32::<BigEndian>(bytes.len() as u32)?;
+            writer.write_all(bytes)
+        }
+        Value::Scalar(Scalar::Binary(ref b)) => {
+            writer.write_u8('b' as u8)?;
+            writer.write_u32::<BigEndian>(b.len() as u32)?;
+            writer.write_all(b)
+        }
+        Value::Scalar(Scalar::Undefined) => writer.write_u8('!' as u8),
+        Value::Map(ref map) => {
+            writer.write_u8('{' as u8)?;
+            writer.write_u32::<BigEndian>(map.len() as u32)?;
+            for (key, val) in map {
+                // Key
+                writer.write_u8('k' as u8)?;
+                let bytes = key.as_bytes();
+                writer.write_u32::<BigEndian>(bytes.len() as u32)?;
+                writer.write_all(bytes)?;
+
+                // Value
+                write_value(writer, val)?;
+            }
+            writer.write_u8('}' as u8)
+        }
+        Value::Array(ref arr) => {
+            writer.write_u8('[' as u8)?;
+            writer.write_u32::<BigEndian>(arr.len() as u32)?;
+            for item in arr {
+                write_value(writer, item)?;
+            }
+            writer.write_u8(']' as u8)
+        }
     }
 }
 
@@ -272,5 +344,50 @@ mod tests {
         assert_eq!(map["t0st"], Value::new_integer(241));
         assert_eq!(map["tes1"], Value::new_string("aha"));
         assert_eq!(map["test"], Value::Scalar(Scalar::Undefined));
+    }
+
+    #[test]
+    fn write() {
+        use std::collections::HashMap;
+        use chrono::{NaiveDate, NaiveDateTime, NaiveTime, Utc};
+
+        let mut map = HashMap::new();
+        map.insert("bool_0".to_string(), Value::new_boolean(false));
+        map.insert("bool_1".to_string(), Value::new_boolean(true));
+        map.insert("int".to_string(), Value::new_integer(42));
+        map.insert("real".to_string(), Value::new_real(1.2141e30));
+        map.insert(
+            "uuid".to_string(),
+            Value::new_uuid("7ad22c95-f7c2-47ab-9525-ca64135c928c".parse().unwrap()),
+        );
+        map.insert("string".to_string(), Value::new_string("Lorem ipsum"));
+        let d = NaiveDate::from_ymd(2008, 1, 1);
+        let t = NaiveTime::from_hms_milli(20, 10, 31, 0);
+        let date = Date::from_utc(NaiveDateTime::new(d, t), Utc);
+        map.insert("date".to_string(), Value::new_date(date));
+        map.insert("uri".to_string(), Value::new_uri("http://example.com"));
+        map.insert(
+            "binary".to_string(),
+            Value::new_binary(vec![
+                10, 11, 12, 13, 5, 6, 7, 8
+            ]),
+        );
+        map.insert("undef".to_string(), Value::Scalar(Scalar::Undefined));
+        map.insert(
+            "arr".to_string(),
+            Value::Array(vec![
+                Value::new_string("abc"),
+                Value::new_string("xyz"),
+                Value::new_real(123.456),
+            ]),
+        );
+        let data_in = Value::Map(map);
+
+        let mut ser = Vec::new();
+        write_value(&mut ser, &data_in).unwrap();
+
+        let data_out = read_unwrap(ser);
+
+        assert_eq!(data_out, data_in);
     }
 }
