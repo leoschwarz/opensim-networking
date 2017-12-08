@@ -3,7 +3,8 @@
 use data_encoding::{BASE64, Encoding};
 use quick_xml::events::Event;
 use quick_xml::reader::Reader;
-use std::io::BufRead;
+use std::io::{BufRead, Write};
+use xml_crate::escape::escape_str_pcdata;
 
 use data::*;
 
@@ -201,6 +202,7 @@ pub fn read_value<B: BufRead>(buf_reader: B) -> Result<Value, ReadError> {
                         let scalar = Scalar::Binary(data);
                         *content = Some(Value::Scalar(scalar));
                     }
+                    PartialValue::Scalar(ScalarType::Undefined, _) => {}
                     PartialValue::Scalar(ref s_type, ref mut s_val) => {
                         let scalar = s_type
                             .parse_scalar(e.unescaped()?.as_ref())
@@ -269,13 +271,73 @@ pub fn read_value<B: BufRead>(buf_reader: B) -> Result<Value, ReadError> {
     }
 }
 
+pub fn write_doc<W: Write>(writer: &mut W, value: &Value) -> Result<(), ::std::io::Error> {
+    writeln!(writer, "<?xml version=1.0?>")?;
+    writeln!(writer, "<llsd>")?;
+    write_value(writer, value)?;
+    writeln!(writer, "</llsd>")?;
+    Ok(())
+}
+
+fn write_value<W: Write>(writer: &mut W, value: &Value) -> Result<(), ::std::io::Error> {
+    match *value {
+        Value::Scalar(Scalar::Boolean(ref b)) => {
+            write!(writer, "<boolean>{:?}</boolean>", b)?;
+        }
+        Value::Scalar(Scalar::Integer(ref i)) => {
+            write!(writer, "<integer>{}</integer>", i)?;
+        }
+        Value::Scalar(Scalar::Real(ref r)) => {
+            write!(writer, "<real>{}</real>", r)?;
+        }
+        Value::Scalar(Scalar::Uuid(ref u)) => {
+            write!(writer, "<uuid>{}</uuid>", u)?;
+        }
+        Value::Scalar(Scalar::String(ref s)) => {
+            write!(writer, "<string>{}</string>", escape_str_pcdata(s))?;
+        }
+        Value::Scalar(Scalar::Date(ref d)) => {
+            write!(writer, "<date>{}</date>", d.to_rfc3339())?;
+        }
+        Value::Scalar(Scalar::Uri(ref u)) => {
+            write!(writer, "<uri>{}</uri>", escape_str_pcdata(u))?;
+        }
+        Value::Scalar(Scalar::Binary(ref b)) => {
+            write!(
+                writer,
+                "<binary encoding='base64'>{}</binary>",
+                BASE64.encode(b)
+            )?;
+        }
+        Value::Scalar(Scalar::Undefined) => {
+            write!(writer, "<undef/>")?;
+        }
+        Value::Map(ref map) => {
+            write!(writer, "<map>")?;
+            for (key, val) in map {
+                write!(writer, "<key>{}</key>", escape_str_pcdata(key))?;
+                write_value(writer, val)?;
+            }
+            write!(writer, "</map>")?;
+        }
+        Value::Array(ref arr) => {
+            write!(writer, "<array>")?;
+            for val in arr {
+                write_value(writer, val)?;
+            }
+            write!(writer, "</array>")?;
+        }
+    }
+    Ok(())
+}
+
 /// Most of the tests examples were taken from libOpenMetaverse,
 /// however actual code was not copied.
 #[cfg(test)]
 mod tests {
     use super::*;
     use std::str::FromStr;
-    use std::io::Cursor;
+    use std::io::{BufReader, Cursor};
 
     fn read_value_direct(source: &'static str) -> Value {
         let reader = Cursor::new(source);
@@ -532,5 +594,51 @@ mod tests {
             submap["pending uploads"],
             Value::Scalar(Scalar::Real(0.0001096525))
         );
+    }
+
+    #[test]
+    fn write() {
+        use std::collections::HashMap;
+        use chrono::{NaiveDate, NaiveDateTime, NaiveTime, Utc};
+
+        let mut map = HashMap::new();
+        map.insert("bool_0".to_string(), Value::new_boolean(false));
+        map.insert("bool_1".to_string(), Value::new_boolean(true));
+        map.insert("int".to_string(), Value::new_integer(42));
+        map.insert("real".to_string(), Value::new_real(1.2141e30));
+        map.insert(
+            "uuid".to_string(),
+            Value::new_uuid("7ad22c95-f7c2-47ab-9525-ca64135c928c".parse().unwrap()),
+        );
+        map.insert("string".to_string(), Value::new_string("Lorem ipsum"));
+        let d = NaiveDate::from_ymd(2008, 1, 1);
+        let t = NaiveTime::from_hms_milli(20, 10, 31, 0);
+        let date = Date::from_utc(NaiveDateTime::new(d, t), Utc);
+        map.insert("date".to_string(), Value::new_date(date));
+        map.insert("uri".to_string(), Value::new_uri("http://example.com"));
+        map.insert(
+            "binary".to_string(),
+            Value::new_binary(vec![
+                10, 11, 12, 13, 5, 6, 7, 8
+            ]),
+        );
+        map.insert("undef".to_string(), Value::Scalar(Scalar::Undefined));
+        map.insert(
+            "arr".to_string(),
+            Value::Array(vec![
+                Value::new_string("abc"),
+                Value::new_string("xyz"),
+                Value::new_real(123.456),
+            ]),
+        );
+        let data_in = Value::Map(map);
+
+        let mut ser = Vec::new();
+        write_doc(&mut ser, &data_in).unwrap();
+
+        let mut reader = BufReader::new(&ser[..]);
+        let data_out = read_value(&mut reader).unwrap();
+
+        assert_eq!(data_out, data_in);
     }
 }

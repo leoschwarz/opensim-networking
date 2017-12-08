@@ -3,9 +3,9 @@
 use data::Value;
 
 lazy_static! {
-    static ref PREFIX_BINARY: Vec<u8> = "<? LLSD/BINARY ?>\n".bytes().collect();
-    static ref PREFIX_XML: Vec<u8> = "<?xml ".bytes().collect();
-    static ref PREFIX_NOTATION: Vec<u8> = "<?llsd/notation?>\n".bytes().collect();
+    pub static ref PREFIX_BINARY: Vec<u8> = "<? LLSD/BINARY ?>\n".bytes().collect();
+    pub static ref PREFIX_XML: Vec<u8> = "<?xml ".bytes().collect();
+    pub static ref PREFIX_NOTATION: Vec<u8> = "<?llsd/notation?>\n".bytes().collect();
 }
 
 #[derive(Debug)]
