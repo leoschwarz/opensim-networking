@@ -481,21 +481,22 @@ pub struct AgentIsNowWearing {
 
 #[derive(Clone, Debug)]
 pub struct AgentMovementComplete_AgentData {
-    /// TODO
+    /// Agent id of the sender.
     pub agent_id: Uuid,
-    /// TODO
+    /// Temporary id assigned to this session by the simulator on login, used
+    /// to verify our identity in packets.
     pub session_id: Uuid,
 }
 
 #[derive(Clone, Debug)]
 pub struct AgentMovementComplete_Data {
-    /// TODO
+    /// Exact position of the avatar.
     pub position: Vector3<f32>,
-    /// TODO
+    /// Direction in which the camera is oriented.
     pub look_at: Vector3<f32>,
     /// TODO
     pub region_handle: u64,
-    /// TODO
+    /// Unix epoch timestamp.
     pub timestamp: u32,
 }
 
@@ -505,8 +506,8 @@ pub struct AgentMovementComplete_SimData {
     pub channel_version: Vec<u8>,
 }
 
-/// TODO:
-/// /// sim -> viewer
+/// This is one of the very first packets sent from the sim to the viewer on connection,
+/// to provide the viewer with detailed information of its position.
 ///
 #[derive(Clone, Debug)]
 pub struct AgentMovementComplete {
@@ -799,6 +800,8 @@ pub struct AgentUpdate_AgentData {
 }
 
 ///         Camera and movement info about an agent sent from viewer to simulator.
+///
+///         Sent up to 10 times per second, but must be sent at least every now and then.
 ///
 ///         TODO:
 ///         /// AgentUpdate - Camera info sent from viewer to simulator
@@ -2313,34 +2316,52 @@ pub struct CloseCircuit {}
 
 #[derive(Clone, Debug)]
 pub struct CoarseLocationUpdate_Location {
-    /// TODO
+    /// X coordinate in the region.
+    ///
+    /// TODO: How is this handled in VarRegion?
+    ///
     pub x: u8,
-    /// TODO
+    /// Y coordinate in the region.
+    ///
+    /// TODO: How is this handled in VarRegion?
+    ///
     pub y: u8,
-    /// TODO
+    /// Z coordinate divided by 4. If z>1020m then this is set to 0.
+    ///
     pub z: u8,
 }
 
 #[derive(Clone, Debug)]
 pub struct CoarseLocationUpdate_Index {
-    /// TODO
+    /// The index of the viewer agent in the location list. (0 indexed.)
+    ///
+    /// If this is not present in the location list, it is set to -1.
+    ///
     pub you: i16,
-    /// TODO
+    /// If the viewer is tracking or following somebody, this index value
+    /// points to that agent.
+    ///
+    /// If this is not present in the location list, it is set to -1.
+    ///
     pub prey: i16,
 }
 
 #[derive(Clone, Debug)]
 pub struct CoarseLocationUpdate_AgentData {
-    /// TODO
+    /// The agent id identifies the agent in packets. "client" and "avatar" are
+    /// synonymous to agent.
     pub agent_id: Uuid,
 }
 
-/// 		TODO:
-/// 		/// The CoarseLocationUpdate message is sent to notify the viewer of
-/// /// the location of mappable objects in the region. 1 meter resolution is
-/// /// sufficient for this. The index block is used to show where you are,
-/// /// and where someone you are tracking is located. They are -1 if not
-/// /// applicable.
+/// The CoarseLocationUpdate message is sent to notify the viewer of
+/// the location of mappable objects in the region. 1 meter resolution is
+/// sufficient for this. The index block is used to show where you are,
+/// and where someone you are tracking is located. They are -1 if not
+/// applicable.
+///
+/// This is usually used only for the minimap of the region.
+/// Its behavior is to always drop all current data and only use the new one
+/// for the minimap once such a message arrives.
 ///
 #[derive(Clone, Debug)]
 pub struct CoarseLocationUpdate {
@@ -5927,7 +5948,7 @@ pub struct ImprovedTerseObjectUpdate_ObjectData {
     ///
     /// | bytes | field            | type        | description |
     /// | ----- | ---------------- | ----------- | ----------- |
-    /// | 4     | localid          | u32         | should be the same as client.localid |
+    /// | 4     | local_id         | u32         | should be the same as client.local_id |
     /// | 1     | state            | u8          | TODO |
     /// | 1     | collision_exists | bool        | If 0 the next field is not specified (zero
     /// bytes), if 1 read as usual. | | 16?   | collision_plane  | Vector4 f32 | |
@@ -11435,22 +11456,68 @@ pub struct RequestTrustedCircuit {}
 pub struct RequestXfer_XferID {
     /// TODO
     pub id: u64,
-    /// TODO
+    /// Filename of the requested asset.
     pub filename: Vec<u8>,
     /// TODO
     pub file_path: u8,
-    /// TODO
+    /// If this is true this will delete the asset from the server after
+    /// retrieving it.
     pub delete_on_completion: bool,
-    /// TODO
+    /// Whether to use big transfer packets. (TODO: What does this mean, how is
+    /// this implemented in the llUDP stack?)
     pub use_big_packets: bool,
-    /// TODO
+    /// If the filename is empty, this should specify the UUID of the requested
+    /// file.
     pub v_file_id: Uuid,
-    /// TODO
+    /// If the filename is empty this should be the asset type.
     pub v_file_type: i16,
 }
 
-/// TODO:
-/// /// RequestXfer - request an arbitrary xfer
+/// This message can be sent from the viewer to the sim to request initiating a Xfer.
+///
+/// A file can be either requested by specifying its filename or its UUID.
+/// In the later case the `VFileType` has to be specified, otherwise the filetype is
+/// determined according to its extension.
+///
+/// | Asset type  | Code | Ext | Description |
+/// | ----------  | ---- | --- | ----------- |
+/// | Unknown     | -1   | | Unknown asset type |
+/// | Texture     | 0    | Texture asset, stored in JPEG2000 J2C stream format |
+/// | Sound       | 1    | | Sound asset |
+/// | CallingCard | 2    | | Calling card for another avatar |
+/// | Landmark    | 3    | | Link to a location in world |
+/// | [obsolete]  | 4    | | |
+/// | Clothing    | 5    | | Collection of textures and parameters that can be  worn by an avatar |
+/// | Object      | 6    | | Primitive that can contain textures, sounds, scripts and more |
+/// | Notecard    | 7    | | Notecard asset |
+/// | Folder      | 8    | | Holds a collection of inventory items |
+/// | RootFolder  | 9    | | Root inventory folder |
+/// | LSLText     | 10   | | Linden scripting language script |
+/// | LSLBytecode | 11   | | LSO bytecode for a script |
+/// | TextureTGA  | 12   | | Uncompressed TGA texture |
+/// | Bodypart    | 13   | | Collection of textures and shape parameters that can be worn |
+/// | TrashFolder | 14   | | Trash folder |
+/// | SnapshotFolder | 15 | | Snapshot folder |
+/// | LostAndFoundFolder | 16 | | Lost and found folder |
+/// | SoundWAV | 17 | | Uncompressed sound |
+/// | ImageTGA | 18 | | Uncompressed TGA non-square image, not to be used as a texture |
+/// | ImageJPEG | 19 | | Compressed JPEG non-square image, not to be used as a texture |
+/// | Animation | 20 | | Animation |
+/// | Gesture | 21 | | Sequence of animations, sounds, chat, and pauses |
+/// | Simstate | 22 | | Simstate file |
+/// | FavoriteFolder | 23 | | Contains landmarks for favorites |
+/// | Link | 24 | | Asset is a link to another inventory item |
+/// | LinkFolder | 25 | | Asset is a link to another inventory folder |
+/// | EnsembleStart | 26 | | Beginning of the range reserved for ensembles |
+/// | EnsembleEnd | 45 | | End of the range reserved for ensembles |
+/// | CurrentOutfitFolder | 46 | | Folder containing inventory links to wearables and attachments
+/// that are part of the current outfit | | OutfitFolder | 47 | | Folder containing inventory items
+/// or links to inventory items of wearables and attachments together make a full outfit |
+/// | MyOutfitsFolder | 48 | | Root folder for the folders of type OutfitFolder |
+/// | Mesh | 49 | | Linden mesh format |
+/// | Inbox | 50 | | Marketplace direct delivery inbox ("Received Items") |
+/// | Outbox | 51 | | Marketplace direct delivery outbox |
+/// | BasicRoot | 51 | | |
 ///
 #[derive(Clone, Debug)]
 pub struct RequestXfer {
@@ -12504,18 +12571,18 @@ pub struct SendPostcard {
 pub struct SendXferPacket_XferID {
     /// TODO
     pub id: u64,
-    /// TODO
+    /// TODO: Probably the sequence number of the data?
+    ///
     pub packet: u32,
 }
 
 #[derive(Clone, Debug)]
 pub struct SendXferPacket_DataPacket {
-    /// TODO
+    /// Payload data.
     pub data: Vec<u8>,
 }
 
-/// TODO:
-/// /// SendXferPacket - send an additional packet of an arbitrary xfer from sim -> viewer
+/// A chunk of Xfer data sent from the sim to the viewer.
 ///
 #[derive(Clone, Debug)]
 pub struct SendXferPacket {
