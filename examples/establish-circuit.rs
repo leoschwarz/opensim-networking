@@ -71,8 +71,8 @@ fn main() {
     let agent_id = resp.agent_id.clone();
     let session_id = resp.session_id.clone();
     let circuit_code = resp.circuit_code.clone();
-    let circuit =
-        Circuit::initiate(resp.clone(), config, logger.clone()).expect("Establishing the Circuit failed.");
+    let circuit = Circuit::initiate(resp.clone(), config, logger.clone())
+        .expect("Establishing the Circuit failed.");
     println!("Created circuit instance.");
 
     // Perform the last steps of the circuit initiation.

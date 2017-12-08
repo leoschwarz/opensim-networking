@@ -272,7 +272,7 @@ pub fn read_value<B: BufRead>(buf_reader: B) -> Result<Value, ReadError> {
 }
 
 pub fn write_doc<W: Write>(writer: &mut W, value: &Value) -> Result<(), ::std::io::Error> {
-    writeln!(writer, "<?xml version=1.0?>")?;
+    writeln!(writer, "<?xml version='1.0' encoding='UTF-8'?>")?;
     writeln!(writer, "<llsd>")?;
     write_value(writer, value)?;
     writeln!(writer, "</llsd>")?;
