@@ -1,13 +1,11 @@
 //! Implementation of the Capabilities protocol.
 
-use llsd::data::Value;
 use std::io::Read;
 // use futures::{Future, Stream};
 // use tokio_core::reactor::Handle;
 use llsd;
 use reqwest;
-
-type Url = String;
+use types::Url;
 
 pub struct Urls {
     pub get_texture: Url,
@@ -20,7 +18,7 @@ struct Capabilities {
 
 impl Capabilities {
     // TODO: Consider implementing this using async IO.
-    pub fn make_request(seed_caps_uri: ::reqwest::Url) -> Result<Capabilities, String> {
+    pub fn make_request(seed_caps_uri: Url) -> Result<Capabilities, String> {
         let client = reqwest::Client::new();
         let mut response = client
             .get(seed_caps_uri)
@@ -37,13 +35,14 @@ impl Capabilities {
             match val {
                 llsd::data::Value::Map(mut map) => {
                     let get_texture = map.remove("GetTexture")
-                        .and_then(|value| value.scalar())
+                        .and_then(|v| v.scalar())
+                        .and_then(|s| s.as_uri())
+                        .and_then(|u| u.parse().ok())
                         .ok_or_else(|| "No GetTexture cap.".to_string())?;
+
                     Ok(Capabilities {
                         urls: Urls {
-                            get_texture: get_texture
-                                .as_uri()
-                                .ok_or_else(|| "Wrong type".to_string())?,
+                            get_texture: get_texture,
                         },
                     })
                 }
@@ -53,30 +52,4 @@ impl Capabilities {
             Err("Response is error.".to_string())
         }
     }
-
-    /*
-    pub fn make_request(handle: &Handle) -> Box<Future<Item=Capabilities, Error=String>> {
-        let requested_caps = vec![Value::new_string("GetTexture")];
-        let client = hyper::Client::new(handle);
-        // TODO remove unwrap
-        let base_url = "";
-
-        Box::new(client.get(base_url.parse().unwrap()).then(|response| {
-            response.and_then(|resp| {
-                if resp.status().is_success() {
-                    Box::new(resp.body().concat2().then(|chunk| {
-                        if let Ok(chunk) = chunk {
-                            // TODO: don't swallow LLSD error
-                            llsd::read_value(chunk.as_ref()).map_err(|_| "Invalid LLSD".to_string())
-                        } else {
-                            Err("Concating chunks failed.".to_string())
-                        }
-                    }))
-                } else {
-                    Box::new(Err("Request was not successful.".to_string()))
-                }
-            })
-        }))
-    }
-    */
 }
