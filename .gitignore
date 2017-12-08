@@ -6,6 +6,3 @@ Cargo.lock
 *.iml
 *.pyc
 *.rustfmt
-
-# more thought should be put into where the examples should log to
-logdir

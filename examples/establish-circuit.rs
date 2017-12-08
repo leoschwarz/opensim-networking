@@ -39,7 +39,7 @@ struct ConfigSim {
 
 fn main() {
     // Setup our logger.
-    let logger = FullDebugLogger::new("logdir").unwrap();
+    let logger = FullDebugLogger::new("output/logdir").unwrap();
 
     // Read the configuration file.
     let mut file = File::open("establish-circuit.toml")

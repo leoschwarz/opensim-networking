@@ -79,6 +79,18 @@ fn write_image(patches: Vec<Patch>, region_size: usize, image_path: &str) {
         image::Luma([pixel as u8])
     });
     image.save(image_path).unwrap();
+
+    use std::io::Write;
+    let mut f = ::std::fs::File::create(format!("{}.txt", image_path)).unwrap();
+    writeln!(f, "vec![");
+    for x in 0..region_size {
+        write!(f, "vec![{:.6}", heightmap[(x, 0)]);
+        for y in 1..region_size {
+            write!(f, ", {:.6}", heightmap[(x, y)]);
+        }
+        writeln!(f, "],");
+    }
+
     println!("image has been written: {}", image_path);
 }
 
@@ -87,10 +99,10 @@ fn main() {
     let data_varland = get_data_varland();
 
     let patches_land = extract_patches(data_land);
-    write_image(patches_land, 256, "layer_land.png");
+    write_image(patches_land, 256, "output/layer_land.png");
 
     let patches_varland = extract_patches(data_varland);
-    write_image(patches_varland, 1024, "layer_varland.png");
+    write_image(patches_varland, 1024, "output/layer_varland.png");
     // write_image(patches_varland, 2048, "layer_varland.png");
 }
 
