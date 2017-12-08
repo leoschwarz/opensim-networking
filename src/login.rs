@@ -1,10 +1,11 @@
-use crypto::md5::Md5;
-use crypto::digest::Digest;
-use std::collections::BTreeMap;
-use xmlrpc::Value as XmlValue;
-use regex::Regex;
 use {Ip4Addr, Uuid, Vector3};
+use crypto::digest::Digest;
+use crypto::md5::Md5;
+use regex::Regex;
+use std::collections::BTreeMap;
 use std::str::FromStr;
+use types::Url;
+use xmlrpc::Value as XmlValue;
 
 /// Performing a LoginRequest is the first step at gaining access to a sim.
 #[derive(Debug)]
@@ -43,6 +44,8 @@ pub enum LoginErrorKind {
 
     #[error_chain(foreign)] UuidParseError(::types::UuidParseError),
 
+    #[error_chain(foreign)] UrlParseError(::types::UrlParseError),
+
     /// Login failed.
     #[error_chain(custom)]
     #[error_chain(description = r#"|_| "login failed""#)]
@@ -67,6 +70,9 @@ pub struct LoginResponse {
     pub circuit_code: u32,
     pub session_id: Uuid,
     pub agent_id: Uuid,
+
+    /// The URL where capabilities can be queried.
+    pub seed_capability: Url,
 
     /// The IP address of the simulator to connect to.
     pub sim_ip: Ip4Addr,
@@ -110,6 +116,10 @@ impl LoginResponse {
             Some(&XmlValue::String(ref id)) => try!(Uuid::parse_str(id)),
             _ => return Err(err("agent_id")),
         };
+        let seed_capability = match response.get("seed_capability") {
+            Some(&XmlValue::String(ref u)) => u.parse()?,
+            _ => return Err(err("seed_caps")),
+        };
         let sim_ip = match response.get("sim_ip") {
             Some(&XmlValue::String(ref ip_raw)) => try!(Ip4Addr::from_str(ip_raw)),
             _ => return Err(err("sim_ip")),
@@ -124,6 +134,7 @@ impl LoginResponse {
             circuit_code: circuit_code,
             session_id: session_id,
             agent_id: agent_id,
+            seed_capability: seed_capability,
             sim_ip: sim_ip,
             sim_port: sim_port,
         })
