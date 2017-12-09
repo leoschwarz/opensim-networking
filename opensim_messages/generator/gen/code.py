@@ -214,6 +214,15 @@ def generate_message_impl(message):
 
     return out
 
+def generate_message_type_enum(all_msgnames):
+    code = ""
+    code += "#[derive(Clone, Debug, Eq, Hash, PartialEq)]\n"
+    code += "pub enum MessageType {\n"
+    for name in all_msgnames:
+        code += "\t%s,\n" % name
+    code += "}\n\n"
+    return code
+
 def generate_message_instance_enum(all_msgnames, messages):
     code = ""
     code += "#[derive(Clone, Debug)]\n"
@@ -223,6 +232,14 @@ def generate_message_instance_enum(all_msgnames, messages):
     code += "}\n\n"
 
     code += "impl MessageInstance {\n"
+
+    # MessageInstance::message_type
+    code += "\tpub fn message_type(&self) -> MessageType {\n"
+    code += "\t\tmatch *self {\n"
+    for name in all_msgnames:
+        code += "\t\t\tMessageInstance::%s(_) => MessageType::%s,\n" % (name, name)
+    code += "\t\t}\n"
+    code += "\t}\n\n"
 
     # MessageInstance::write_to
     code += "\tpub fn write_to<W: Write>(&self, buffer: &mut W) -> WriteMessageResult {\n"

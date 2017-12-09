@@ -58,6 +58,7 @@ if __name__ == "__main__":
         for message in messages:
             f.write(gen.code.generate_struct(message))
 
+        f.write(gen.code.generate_message_type_enum(all_msgnames))
         f.write(gen.code.generate_message_instance_enum(all_msgnames, messages))
 
         f.write("\n\n\n\n// BLOCK IMPLEMENTATIONS\n\n")
