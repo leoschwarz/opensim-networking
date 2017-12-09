@@ -9,7 +9,7 @@ use opensim_networking::logging::FullDebugLogger;
 use opensim_networking::login::{hash_password, LoginRequest};
 use opensim_networking::simulator::Simulator;
 use opensim_networking::systems::agent_update::{AgentState, Modality, MoveDirection};
-use opensim_networking::{Quaternion, Vector3};
+use opensim_networking::types::{Quaternion, Vector3};
 
 use num_traits::identities::{One, Zero};
 

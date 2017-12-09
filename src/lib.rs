@@ -23,7 +23,6 @@ extern crate xmlrpc;
 
 pub extern crate opensim_messages as messages;
 pub extern crate opensim_types as types;
-pub use types::*;
 
 mod util;
 pub mod capabilities;

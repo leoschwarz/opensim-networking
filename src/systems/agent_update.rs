@@ -2,8 +2,8 @@
 // of maintaining a local instance about agent state and having this be
 // automatically sent to the sim at a regular interval.
 
-use {Quaternion, Uuid, Vector3};
 use messages::{AgentUpdate, AgentUpdate_AgentData};
+use types::{Quaternion, Uuid, Vector3};
 
 bitflags! {
     /// Agent Updates contain a set of flags which inform the sim about the current status

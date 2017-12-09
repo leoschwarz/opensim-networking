@@ -1,10 +1,9 @@
-use {Ip4Addr, Uuid, Vector3};
 use crypto::digest::Digest;
 use crypto::md5::Md5;
 use regex::Regex;
 use std::collections::BTreeMap;
 use std::str::FromStr;
-use types::Url;
+use types::{Ip4Addr, Url, Uuid, Vector3};
 use xmlrpc::Value as XmlValue;
 
 /// Performing a LoginRequest is the first step at gaining access to a sim.
