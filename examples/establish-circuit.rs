@@ -5,13 +5,11 @@ extern crate opensim_networking;
 extern crate serde_derive;
 extern crate toml;
 
-use opensim_networking::capabilities::Capabilities;
-use opensim_networking::circuit::{Circuit, CircuitConfig};
 use opensim_networking::logging::FullDebugLogger;
 use opensim_networking::login::{hash_password, LoginRequest};
-use opensim_networking::messages::{AgentUpdate, AgentUpdate_AgentData};
+use opensim_networking::simulator::Simulator;
 use opensim_networking::systems::agent_update::{AgentState, Modality, MoveDirection};
-use opensim_networking::{Duration, Quaternion, Vector3};
+use opensim_networking::{Quaternion, Vector3};
 
 use num_traits::identities::{One, Zero};
 
@@ -62,33 +60,10 @@ fn main() {
         .perform(config.sim.loginuri.as_str())
         .expect("Login failed.");
     println!("Login success, response = {:?}", resp);
-
-    // Now establish the circuit.
-    let config = CircuitConfig {
-        send_timeout: Duration::from_millis(2500),
-        send_attempts: 5,
-    };
     let agent_id = resp.agent_id.clone();
     let session_id = resp.session_id.clone();
-    let circuit_code = resp.circuit_code.clone();
-    let circuit = Circuit::initiate(resp.clone(), config, logger.clone())
-        .expect("Establishing the Circuit failed.");
-    println!("Created circuit instance.");
 
-    // Perform the last steps of the circuit initiation.
-    opensim_networking::systems::initiation::initiate(
-        &circuit,
-        circuit_code,
-        agent_id,
-        session_id,
-        logger,
-    ).expect("circuit init sequence failed.");
-    println!("Finish circuit initialization.");
-
-    // Start capabilities.
-    let caps = Capabilities::make_request(resp.seed_capability.clone())
-        .expect("Capabilities client could not be set up.");
-    println!("Capabilities: {:?}", caps);
+    let sim = Simulator::connect(&resp, &logger).unwrap();
 
     // Let the avatar walk back and forth.
     // TODO: extract position
@@ -104,7 +79,7 @@ fn main() {
         for _ in 1..40 {
             let msg = state.to_update_message(agent_id, session_id);
             // TODO: change this to unreliable (false) after debugging
-            circuit.send(msg, true).wait().unwrap();
+            sim.send_message(msg, true).wait().unwrap();
 
             thread::sleep(std::time::Duration::from_millis(50));
         }

@@ -3,7 +3,6 @@
 //! having to deal with the corresponding messages manually.
 
 pub mod agent_update;
-pub mod initiation;
 
 /*
 // TODO: Consider whether for our purposes we want to keep this composable, or just

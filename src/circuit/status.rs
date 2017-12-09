@@ -65,10 +65,23 @@ impl Future for SendMessage {
     }
 }
 
+// TODO: This seems kind of stupid.
 #[derive(Debug, Clone, Copy)]
 pub enum SendMessageError {
     /// Remote failed to acknowledge the packet.
     FailedAck,
+}
+
+impl ::std::fmt::Display for SendMessageError {
+    fn fmt(&self, f: &mut ::std::fmt::Formatter) -> Result<(), ::std::fmt::Error> {
+        write!(f, "ack failed.")
+    }
+}
+
+impl ::std::error::Error for SendMessageError {
+    fn description(&self) -> &str {
+        "Ack failed."
+    }
 }
 
 /// Describes the current status of a message that was submitted to be sent.

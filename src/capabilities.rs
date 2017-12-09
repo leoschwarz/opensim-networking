@@ -1,6 +1,6 @@
 //! Implementation of the Capabilities protocol.
 
-use std::io::{Read, Write};
+use std::io::Read;
 // use futures::{Future, Stream};
 // use tokio_core::reactor::Handle;
 use llsd;
@@ -19,8 +19,15 @@ pub struct Capabilities {
     urls: Urls,
 }
 
+#[derive(Debug, ErrorChain)]
+#[error_chain(error = "CapabilitiesError")]
+#[error_chain(result = "")]
+pub enum CapabilitiesErrorKind {
+    Msg(String),
+}
+
 impl Capabilities {
-    fn build_request_body(val: &llsd::data::Value) -> Result<Vec<u8>, String> {
+    fn build_request_body(val: &llsd::data::Value) -> Result<Vec<u8>, CapabilitiesError> {
         let mut data = Vec::new();
         // data.write_all(&llsd::PREFIX_BINARY).unwrap();
         llsd::xml::write_doc(&mut data, val).unwrap();
@@ -28,7 +35,7 @@ impl Capabilities {
     }
 
     // TODO: Consider implementing this using async IO.
-    pub fn make_request(seed_caps_uri: Url) -> Result<Capabilities, String> {
+    pub fn setup_capabilities(seed_caps_uri: Url) -> Result<Capabilities, CapabilitiesError> {
         let requested_caps =
             llsd::data::Value::Array(vec![llsd::data::Value::new_string("GetTexture")]);
 
@@ -40,7 +47,7 @@ impl Capabilities {
             .header(ContentLength(request_body.len() as u64))
             .body(request_body)
             .send()
-            .map_err(|_| "Request failed.".to_string())?;
+            .map_err(|_| CapabilitiesError::from("Request failed."))?;
 
         if response.status().is_success() {
             let mut raw_data = Vec::new();
@@ -51,14 +58,15 @@ impl Capabilities {
                     .get()
                     .ok_or_else(|| "Content type not specified.")?;
                 if c_type.0.as_ref() != "application/xml" {
-                    return Err(format!("wrong content type: {:?}", c_type));
+                    return Err(format!("wrong content type: {:?}", c_type).into());
                 }
             }
 
             response
                 .read_to_end(&mut raw_data)
-                .map_err(|_| "read failure".to_string())?;
-            let val = llsd::xml::read_value(&raw_data[..]).map_err(|_| "Invalid LLSD".to_string())?;
+                .map_err(|_| CapabilitiesError::from("read failure"))?;
+            let val = llsd::xml::read_value(&raw_data[..])
+                .map_err(|_| CapabilitiesError::from("Invalid LLSD"))?;
 
             match val {
                 llsd::data::Value::Map(mut map) => {
@@ -66,7 +74,7 @@ impl Capabilities {
                         .and_then(|v| v.scalar())
                         .and_then(|s| s.as_uri())
                         .and_then(|u| u.parse().ok())
-                        .ok_or_else(|| "No GetTexture cap.".to_string())?;
+                        .ok_or_else(|| CapabilitiesError::from("No GetTexture cap."))?;
 
                     Ok(Capabilities {
                         urls: Urls {
@@ -74,10 +82,10 @@ impl Capabilities {
                         },
                     })
                 }
-                _ => Err("LLSD is not a map.".to_string()),
+                _ => Err("LLSD is not a map.".into()),
             }
         } else {
-            Err("Response is error.".to_string())
+            Err("Response is error.".into())
         }
     }
 }

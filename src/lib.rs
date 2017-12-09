@@ -32,6 +32,7 @@ pub mod layer_data;
 pub mod logging;
 pub mod login;
 pub mod packet;
+pub mod simulator;
 pub mod systems;
 
 /// experimental
