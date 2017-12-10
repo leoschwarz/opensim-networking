@@ -180,7 +180,7 @@ pub fn read_value<B: BufRead>(buf_reader: B) -> Result<Value, ReadError> {
                         let attr_name = String::from_utf8_lossy(attr.key);
                         match attr_name.as_ref() {
                             "encoding" => {
-                                let attr_value = String::from_utf8_lossy(attr.value);
+                                let attr_value = String::from_utf8_lossy(&attr.value);
                                 *enc = match attr_value.as_ref() {
                                     "base16" => BinaryEncoding::Base16,
                                     "base85" => return Err("base85 unsupported.".into()),
