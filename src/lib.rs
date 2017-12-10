@@ -33,6 +33,7 @@ pub mod login;
 pub mod packet;
 pub mod simulator;
 pub mod systems;
+pub mod textures;
 
 /// experimental
 pub mod object_update;

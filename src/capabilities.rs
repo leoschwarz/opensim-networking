@@ -34,6 +34,10 @@ impl Capabilities {
         Ok(data)
     }
 
+    pub fn urls(&self) -> &Urls {
+        &self.urls
+    }
+
     // TODO: Consider implementing this using async IO.
     pub fn setup_capabilities(seed_caps_uri: Url) -> Result<Capabilities, CapabilitiesError> {
         let requested_caps =
