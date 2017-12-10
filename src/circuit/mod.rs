@@ -19,11 +19,13 @@
 
 use logging::Logger;
 use login::LoginResponse;
-use messages::MessageInstance;
+use messages::{MessageInstance, MessageType};
 use packet::Packet;
 use types::SequenceNumber;
 use util::FifoCache;
 
+use std::collections::HashMap;
+use std::error::Error;
 use std::io::Error as IoError;
 use std::net::{SocketAddr, SocketAddrV4, UdpSocket};
 use std::sync::mpsc;
@@ -37,14 +39,20 @@ mod status;
 pub use self::status::{SendMessage, SendMessageError};
 use self::status::SendMessageStatus;
 
+pub type MessageHandler = Box<Fn(MessageInstance) -> Result<(), MessageHandlerError> + Send>;
+pub type MessageHandlers = HashMap<MessageType, MessageHandler>;
+
+// TODO: Differentiate between recoverable and non-recoverable errors.
+#[derive(Debug)]
+pub enum MessageHandlerError {
+    Other(Box<Error>),
+}
+
 /// Encapsulates a so called circuit (networking link) between our viewer and a
 /// simulator.
 ///
 /// TODO:
 /// - Stop/exit functionality.
-/// - Consider whether we need functionality to plug in event handlers, or
-/// whether this should be
-///   done at a different place.
 pub struct Circuit {
     incoming: mpsc::Receiver<MessageInstance>,
     ackmgr_tx: AckManagerTx,
@@ -54,6 +62,7 @@ impl Circuit {
     pub fn initiate<L: Logger>(
         login_res: LoginResponse,
         config: CircuitConfig,
+        message_handlers: MessageHandlers,
         logger: L,
     ) -> Result<Circuit, IoError> {
         let sim_address = SocketAddr::V4(SocketAddrV4::new(login_res.sim_ip, login_res.sim_port));
@@ -140,8 +149,15 @@ impl Circuit {
                         }
                     }
                     msg => {
-                        // Yield the received message.
-                        incoming_tx.send(msg).unwrap();
+                        if let Some(handler) = message_handlers.get(&msg.message_type()) {
+                            // Let the handler handle this message.
+                            // TODO: Handle error better.
+                            handler(msg).unwrap();
+                        } else {
+                            // There is no registered message handler, so yield the message to the
+                            // incoming message channel.
+                            incoming_tx.send(msg).unwrap();
+                        }
                     }
                 }
             }
@@ -155,28 +171,26 @@ impl Circuit {
 
     /// Send a message through the circuit.
     ///
-    /// This returns a `SendMessage` instance which is a `Future`. However once
-    /// you send it using
-    /// this method you needn't necessarily poll it for progress to be made. It
-    /// will be handed over
+    /// This returns a `SendMessage` instance which is a `Future`.
+    /// However once you send it using this method you needn't
+    /// necessarily poll it for progress to be made. It will be handed over
     /// to the sender threads of this Circuit and you will be able to confirm
-    /// it has finished
-    /// successfully or failed by polling the returned future.
+    /// it has finished successfully or failed by polling the returned future.
     pub fn send<M: Into<MessageInstance>>(&self, msg: M, reliable: bool) -> SendMessage {
         self.ackmgr_tx.send_msg(msg.into(), reliable)
     }
 
     /// Reads a message and returns it.
+    ///
     /// If there is no message available yet it will block the current thread
-    /// until there is one
-    /// available.
+    /// until there is one available.
     pub fn read(&self) -> Result<MessageInstance, mpsc::RecvError> {
         self.incoming.recv()
     }
 
-    /// Trys to read a message and returns it if one is available right away.
-    /// Otherwise this won't
-    /// block the current thread and None will be returned.
+    /// Trys to reading a message and returns it if one is available right away.
+    ///
+    /// Otherwise this won't block the current thread and None will be returned.
     pub fn try_read(&self) -> Option<MessageInstance> {
         // TODO: return error
         self.incoming.try_recv().ok()

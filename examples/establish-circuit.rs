@@ -7,9 +7,9 @@ extern crate toml;
 
 use opensim_networking::logging::FullDebugLogger;
 use opensim_networking::login::{hash_password, LoginRequest};
-use opensim_networking::simulator::Simulator;
+use opensim_networking::simulator::{MessageHandlers, Simulator};
 use opensim_networking::systems::agent_update::{AgentState, Modality, MoveDirection};
-use opensim_networking::types::{Quaternion, Vector3};
+use opensim_networking::types::{Duration, Quaternion, Vector3};
 
 use num_traits::identities::{One, Zero};
 
@@ -63,7 +63,8 @@ fn main() {
     let agent_id = resp.agent_id.clone();
     let session_id = resp.session_id.clone();
 
-    let sim = Simulator::connect(&resp, &logger).unwrap();
+    let message_handlers = MessageHandlers::new();
+    let sim = Simulator::connect(&resp, message_handlers, &logger).unwrap();
 
     // Let the avatar walk back and forth.
     // TODO: extract position
@@ -81,9 +82,9 @@ fn main() {
             // TODO: change this to unreliable (false) after debugging
             sim.send_message(msg, true).wait().unwrap();
 
-            thread::sleep(std::time::Duration::from_millis(50));
+            thread::sleep(Duration::from_millis(50));
         }
-        thread::sleep(std::time::Duration::from_millis(200));
+        thread::sleep(Duration::from_millis(200));
         state.move_direction = Some(state.move_direction.unwrap().inverse());
     }
 }

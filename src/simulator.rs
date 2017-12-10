@@ -1,5 +1,6 @@
 use capabilities::Capabilities;
 use circuit::{Circuit, CircuitConfig, SendMessage};
+pub use circuit::MessageHandlers;
 use futures::Future;
 use logging::Logger;
 use login::LoginResponse;
@@ -22,8 +23,12 @@ pub struct Simulator {
 }
 
 impl Simulator {
-    pub fn connect<L: Logger>(login: &LoginResponse, logger: &L) -> Result<Simulator, Box<Error>> {
-        let circuit = Self::setup_circuit(login, logger)?;
+    pub fn connect<L: Logger>(
+        login: &LoginResponse,
+        handlers: MessageHandlers,
+        logger: &L,
+    ) -> Result<Simulator, Box<Error>> {
+        let circuit = Self::setup_circuit(login, handlers, logger)?;
         let capabilities = Self::setup_capabilities(login, logger)?;
         Ok(Simulator {
             caps: capabilities,
@@ -39,7 +44,11 @@ impl Simulator {
         self.circuit.send(message, reliable)
     }
 
-    fn setup_circuit<L: Logger>(login: &LoginResponse, logger: &L) -> Result<Circuit, Box<Error>> {
+    fn setup_circuit<L: Logger>(
+        login: &LoginResponse,
+        handlers: MessageHandlers,
+        logger: &L,
+    ) -> Result<Circuit, Box<Error>> {
         let config = CircuitConfig {
             send_timeout: Duration::from_millis(5000),
             send_attempts: 5,
@@ -48,7 +57,7 @@ impl Simulator {
         let session_id = login.session_id.clone();
         let circuit_code = login.circuit_code.clone();
 
-        let circuit = Circuit::initiate(login.clone(), config, logger.clone())?;
+        let circuit = Circuit::initiate(login.clone(), config, handlers, logger.clone())?;
 
         let message = UseCircuitCode {
             circuit_code: UseCircuitCode_CircuitCode {
