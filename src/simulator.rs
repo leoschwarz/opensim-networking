@@ -7,7 +7,6 @@ use login::LoginResponse;
 use messages::{MessageInstance, MessageType};
 use messages::all::{CompletePingCheck, CompletePingCheck_PingID, CompleteAgentMovement,
                     CompleteAgentMovement_AgentData, UseCircuitCode, UseCircuitCode_CircuitCode};
-use std::error::Error;
 use systems::agent_update::{AgentState, Modality};
 use types::{Duration, Vector3, UnitQuaternion};
 
@@ -23,12 +22,32 @@ pub struct Simulator {
     circuit: Circuit,
 }
 
+#[derive(Debug, ErrorChain)]
+#[error_chain(error = "ConnectError")]
+#[error_chain(result = "")]
+pub enum ConnectErrorKind {
+    #[error_chain(foreign)]
+    CapabilitiesError(::capabilities::CapabilitiesError),
+
+    #[error_chain(foreign)]
+    IoError(::std::io::Error),
+
+    #[error_chain(foreign)]
+    MpscError(::std::sync::mpsc::RecvError),
+
+    #[error_chain(foreign)]
+    SendMessageError(::circuit::SendMessageError),
+
+    #[error_chain(custom)]
+    Msg(String)
+}
+
 impl Simulator {
     pub fn connect<L: Logger>(
         login: &LoginResponse,
         mut handlers: MessageHandlers,
         logger: &L,
-    ) -> Result<Simulator, Box<Error>> {
+    ) -> Result<Simulator, ConnectError> {
         // Setup default handlers (TODO move to right place and make more transparent to user?)
         handlers.insert(MessageType::StartPingCheck, Box::new(|msg, circuit| {
             let start_ping_check = match msg {
@@ -64,7 +83,7 @@ impl Simulator {
         login: &LoginResponse,
         handlers: MessageHandlers,
         logger: &L,
-    ) -> Result<Circuit, Box<Error>> {
+    ) -> Result<Circuit, ConnectError> {
         let config = CircuitConfig {
             send_timeout: Duration::from_millis(5000),
             send_attempts: 5,
@@ -82,15 +101,14 @@ impl Simulator {
                 id: agent_id,
             },
         };
-        circuit.send(message, true).wait().map_err(Box::new)?;
+        circuit.send(message, true).wait()?;
 
         // Now wait for the RegionHandshake message.
         match circuit.read()? {
             MessageInstance::RegionHandshake(handshake) => {
                 println!("received region handshake: {:?}", handshake);
             }
-            // TODO FIXME
-            _ => unimplemented!(),
+            _ => return Err("Did not receive RegionHandshake".into())
         }
 
         let message = CompleteAgentMovement {
@@ -100,7 +118,7 @@ impl Simulator {
                 circuit_code: circuit_code,
             },
         };
-        circuit.send(message, true).wait().map_err(Box::new)?;
+        circuit.send(message, true).wait()?;
 
         //let region_x = 256000.;
         //let region_y = 256000.;
@@ -116,7 +134,7 @@ impl Simulator {
             head_rotation: UnitQuaternion::from_axis_angle(&z_axis, 0.),
         };
         let message = agent_state.to_update_message(agent_id, session_id);
-        circuit.send(message, true).wait().map_err(Box::new)?;
+        circuit.send(message, true).wait()?;
 
         Ok(circuit)
     }
@@ -124,7 +142,7 @@ impl Simulator {
     fn setup_capabilities<L: Logger>(
         login: &LoginResponse,
         _: &L,
-    ) -> Result<Capabilities, Box<Error>> {
+    ) -> Result<Capabilities, ConnectError> {
         Ok(Capabilities::setup_capabilities(
             login.seed_capability.clone(),
         )?)
