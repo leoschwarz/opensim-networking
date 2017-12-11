@@ -84,6 +84,15 @@ impl Simulator {
         };
         circuit.send(message, true).wait().map_err(Box::new)?;
 
+        // Now wait for the RegionHandshake message.
+        match circuit.read()? {
+            MessageInstance::RegionHandshake(handshake) => {
+                println!("received region handshake: {:?}", handshake);
+            }
+            // TODO FIXME
+            _ => unimplemented!(),
+        }
+
         let message = CompleteAgentMovement {
             agent_data: CompleteAgentMovement_AgentData {
                 agent_id: agent_id.clone(),
