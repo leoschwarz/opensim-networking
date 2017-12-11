@@ -1,5 +1,4 @@
 extern crate futures;
-extern crate num_traits;
 extern crate opensim_networking;
 #[macro_use]
 extern crate serde_derive;
@@ -10,8 +9,6 @@ use opensim_networking::login::{hash_password, LoginRequest};
 use opensim_networking::simulator::{MessageHandlers, Simulator};
 use opensim_networking::systems::agent_update::{AgentState, Modality, MoveDirection};
 use opensim_networking::types::{Duration, UnitQuaternion, Vector3};
-
-use num_traits::identities::{One, Zero};
 
 use std::io::prelude::*;
 use std::fs::File;
@@ -70,7 +67,7 @@ fn main() {
     // TODO: extract position
     let z_axis = Vector3::z_axis();
     let mut state = AgentState {
-        position: Vector3::zero(),
+        position: Vector3::new(0.,0.,0.),
         move_direction: Some(MoveDirection::Forward),
         modality: Modality::Walking,
         // TODO: This initialization is redundant as it was already done in simulator.rs
