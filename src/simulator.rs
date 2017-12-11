@@ -44,8 +44,8 @@ impl Simulator {
             Ok(())
         }));
 
-        let circuit = Self::setup_circuit(login, handlers, logger)?;
         let capabilities = Self::setup_capabilities(login, logger)?;
+        let circuit = Self::setup_circuit(login, handlers, logger)?;
         Ok(Simulator {
             caps: capabilities,
             circuit: circuit,
@@ -93,9 +93,14 @@ impl Simulator {
         };
         circuit.send(message, true).wait().map_err(Box::new)?;
 
+        //let region_x = 256000.;
+        //let region_y = 256000.;
+        let local_x = 10.;
+        let local_y = 10.;
+
         let z_axis = Vector3::z_axis();
         let agent_state = AgentState {
-            position: Vector3::new(0.,0.,0.),
+            position: Vector3::new(local_x, local_y,0.),
             move_direction: None,
             modality: Modality::Walking,
             body_rotation: UnitQuaternion::from_axis_angle(&z_axis, 0.),

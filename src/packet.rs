@@ -95,10 +95,10 @@ impl Packet {
         }
 
         // Read message.
-        let message_num = reader.read_message_number()?;
         if flags.contains(PacketFlags::ZEROCODED) {
             reader.zerocoding_enabled = true;
         }
+        let message_num = reader.read_message_number()?;
         let message = MessageInstance::read_message(&mut reader, message_num)?;
 
         // Read appended ACKs if there are supposed to be any.
