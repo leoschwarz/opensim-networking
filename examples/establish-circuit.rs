@@ -67,7 +67,7 @@ fn main() {
     // TODO: extract position
     let z_axis = Vector3::z_axis();
     let mut state = AgentState {
-        position: Vector3::new(0.,0.,0.),
+        position: Vector3::new(0., 0., 0.),
         move_direction: Some(MoveDirection::Forward),
         modality: Modality::Walking,
         // TODO: This initialization is redundant as it was already done in simulator.rs

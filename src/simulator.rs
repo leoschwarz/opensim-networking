@@ -1,6 +1,7 @@
 use capabilities::Capabilities;
 use circuit::{Circuit, CircuitConfig, MessageHandlerError, SendMessage};
 pub use circuit::MessageHandlers;
+use data::RegionInfo;
 use futures::Future;
 use logging::Logger;
 use login::LoginResponse;
@@ -20,6 +21,8 @@ use types::{Duration, UnitQuaternion, Vector3};
 pub struct Simulator {
     caps: Capabilities,
     circuit: Circuit,
+    // TODO: (future) can this be updated remotely somehow, i.e. by the estate manager?
+    region_info: RegionInfo,
 }
 
 #[derive(Debug, ErrorChain)]
@@ -65,11 +68,16 @@ impl Simulator {
         );
 
         let capabilities = Self::setup_capabilities(login, logger)?;
-        let circuit = Self::setup_circuit(login, handlers, logger)?;
+        let (circuit, region_info) = Self::setup_circuit(login, handlers, logger)?;
         Ok(Simulator {
             caps: capabilities,
             circuit: circuit,
+            region_info: region_info,
         })
+    }
+
+    pub fn region_info(&self) -> &RegionInfo {
+        &self.region_info
     }
 
     pub fn send_message<M: Into<MessageInstance>>(
@@ -84,7 +92,7 @@ impl Simulator {
         login: &LoginResponse,
         handlers: MessageHandlers,
         logger: &L,
-    ) -> Result<Circuit, ConnectError> {
+    ) -> Result<(Circuit, RegionInfo), ConnectError> {
         let config = CircuitConfig {
             send_timeout: Duration::from_millis(5000),
             send_attempts: 5,
@@ -106,12 +114,12 @@ impl Simulator {
 
         // Now wait for the RegionHandshake message.
         let timeout = Duration::from_millis(15_000);
-        match circuit.read(Some(timeout))? {
+        let region_info = match circuit.read(Some(timeout))? {
             MessageInstance::RegionHandshake(handshake) => {
-                println!("received region handshake: {:?}", handshake);
+                Ok(RegionInfo::extract_message(handshake))
             }
-            _ => return Err("Did not receive RegionHandshake".into()),
-        }
+            _ => Err(ConnectError::from("Did not receive RegionHandshake")),
+        }?;
 
         let message = CompleteAgentMovement {
             agent_data: CompleteAgentMovement_AgentData {
@@ -138,7 +146,7 @@ impl Simulator {
         let message = agent_state.to_update_message(agent_id, session_id);
         circuit.send(message, true).wait()?;
 
-        Ok(circuit)
+        Ok((circuit, region_info))
     }
 
     fn setup_capabilities<L: Logger>(

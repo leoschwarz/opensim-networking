@@ -27,6 +27,7 @@ pub extern crate opensim_types as types;
 mod util;
 pub mod capabilities;
 pub mod circuit;
+pub mod data;
 pub mod layer_data;
 pub mod logging;
 pub mod login;
