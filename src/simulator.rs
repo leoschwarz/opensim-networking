@@ -1,14 +1,14 @@
 use capabilities::Capabilities;
-use circuit::{Circuit, CircuitConfig, SendMessage, MessageHandlerError};
+use circuit::{Circuit, CircuitConfig, MessageHandlerError, SendMessage};
 pub use circuit::MessageHandlers;
 use futures::Future;
 use logging::Logger;
 use login::LoginResponse;
 use messages::{MessageInstance, MessageType};
-use messages::all::{CompletePingCheck, CompletePingCheck_PingID, CompleteAgentMovement,
-                    CompleteAgentMovement_AgentData, UseCircuitCode, UseCircuitCode_CircuitCode};
+use messages::all::{CompleteAgentMovement, CompleteAgentMovement_AgentData, CompletePingCheck,
+                    CompletePingCheck_PingID, UseCircuitCode, UseCircuitCode_CircuitCode};
 use systems::agent_update::{AgentState, Modality};
-use types::{Duration, Vector3, UnitQuaternion};
+use types::{Duration, UnitQuaternion, Vector3};
 
 // TODO: Right now here we use LoginResponse, however we should define a struct
 // only containing the relevant fields for sim connections so when jumping from
@@ -26,23 +26,17 @@ pub struct Simulator {
 #[error_chain(error = "ConnectError")]
 #[error_chain(result = "")]
 pub enum ConnectErrorKind {
-    #[error_chain(foreign)]
-    CapabilitiesError(::capabilities::CapabilitiesError),
+    #[error_chain(foreign)] CapabilitiesError(::capabilities::CapabilitiesError),
 
-    #[error_chain(foreign)]
-    IoError(::std::io::Error),
+    #[error_chain(foreign)] IoError(::std::io::Error),
 
-    #[error_chain(foreign)]
-    MpscError(::std::sync::mpsc::RecvError),
+    #[error_chain(foreign)] MpscError(::std::sync::mpsc::RecvError),
 
-    #[error_chain(foreign)]
-    ReadMessageError(::circuit::ReadMessageError),
+    #[error_chain(foreign)] ReadMessageError(::circuit::ReadMessageError),
 
-    #[error_chain(foreign)]
-    SendMessageError(::circuit::SendMessageError),
+    #[error_chain(foreign)] SendMessageError(::circuit::SendMessageError),
 
-    #[error_chain(custom)]
-    Msg(String)
+    #[error_chain(custom)] Msg(String),
 }
 
 impl Simulator {
@@ -51,20 +45,24 @@ impl Simulator {
         mut handlers: MessageHandlers,
         logger: &L,
     ) -> Result<Simulator, ConnectError> {
-        // Setup default handlers (TODO move to right place and make more transparent to user?)
-        handlers.insert(MessageType::StartPingCheck, Box::new(|msg, circuit| {
-            let start_ping_check = match msg {
-                MessageInstance::StartPingCheck(m) => Ok(m),
-                _ => Err(MessageHandlerError::WrongHandler),
-            }?;
-            let response = CompletePingCheck {
-                ping_id: CompletePingCheck_PingID {
-                    ping_id: start_ping_check.ping_id.ping_id,
-                },
-            };
-            circuit.send(response, false);
-            Ok(())
-        }));
+        // Setup default handlers (TODO move to right place and make more transparent
+        // to user?)
+        handlers.insert(
+            MessageType::StartPingCheck,
+            Box::new(|msg, circuit| {
+                let start_ping_check = match msg {
+                    MessageInstance::StartPingCheck(m) => Ok(m),
+                    _ => Err(MessageHandlerError::WrongHandler),
+                }?;
+                let response = CompletePingCheck {
+                    ping_id: CompletePingCheck_PingID {
+                        ping_id: start_ping_check.ping_id.ping_id,
+                    },
+                };
+                circuit.send(response, false);
+                Ok(())
+            }),
+        );
 
         let capabilities = Self::setup_capabilities(login, logger)?;
         let circuit = Self::setup_circuit(login, handlers, logger)?;
@@ -112,7 +110,7 @@ impl Simulator {
             MessageInstance::RegionHandshake(handshake) => {
                 println!("received region handshake: {:?}", handshake);
             }
-            _ => return Err("Did not receive RegionHandshake".into())
+            _ => return Err("Did not receive RegionHandshake".into()),
         }
 
         let message = CompleteAgentMovement {
@@ -124,14 +122,14 @@ impl Simulator {
         };
         circuit.send(message, true).wait()?;
 
-        //let region_x = 256000.;
-        //let region_y = 256000.;
+        // let region_x = 256000.;
+        // let region_y = 256000.;
         let local_x = 10.;
         let local_y = 10.;
 
         let z_axis = Vector3::z_axis();
         let agent_state = AgentState {
-            position: Vector3::new(local_x, local_y,0.),
+            position: Vector3::new(local_x, local_y, 0.),
             move_direction: None,
             modality: Modality::Walking,
             body_rotation: UnitQuaternion::from_axis_angle(&z_axis, 0.),

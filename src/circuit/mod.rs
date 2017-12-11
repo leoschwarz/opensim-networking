@@ -41,7 +41,9 @@ mod status;
 pub use self::status::{SendMessage, SendMessageError};
 use self::status::SendMessageStatus;
 
-pub type MessageHandler = Box<Fn(MessageInstance, &MessageSender) -> Result<(), MessageHandlerError> + Send>;
+pub type MessageHandler = Box<
+    Fn(MessageInstance, &MessageSender) -> Result<(), MessageHandlerError> + Send,
+>;
 pub type MessageHandlers = HashMap<MessageType, MessageHandler>;
 
 // TODO: Differentiate between recoverable and non-recoverable errors.
@@ -53,7 +55,8 @@ pub enum MessageHandlerError {
     Other(Box<Error>),
 }
 
-/// Can be used by MessageHandler instances to send a message through the Circuit.
+/// Can be used by MessageHandler instances to send a message through the
+/// Circuit.
 pub struct MessageSender {
     ackmgr_tx: AckManagerTx,
 }
@@ -68,12 +71,11 @@ impl MessageSender {
 #[derive(Debug)]
 pub enum ReadMessageError {
     Disconnected,
-    Timeout
+    Timeout,
 }
 
 impl fmt::Display for ReadMessageError {
-    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result
-    {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         write!(f, "{}", self.description())
     }
 }
