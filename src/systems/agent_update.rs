@@ -3,7 +3,7 @@
 // automatically sent to the sim at a regular interval.
 
 use messages::{AgentUpdate, AgentUpdate_AgentData};
-use types::{Quaternion, Uuid, Vector3};
+use types::{UnitQuaternion, Uuid, Vector3};
 
 bitflags! {
     /// Agent Updates contain a set of flags which inform the sim about the current status
@@ -71,7 +71,6 @@ pub enum Modality {
     Sitting,
 }
 
-// TODO: how to represent orientation? with vectors or quaternions.
 pub struct AgentState {
     /// The region local coordinates.
     pub position: Vector3<f32>,
@@ -82,8 +81,8 @@ pub struct AgentState {
     /// The current modality of the movement.
     pub modality: Modality,
 
-    pub body_rotation: Quaternion<f32>,
-    pub head_rotation: Quaternion<f32>,
+    pub body_rotation: UnitQuaternion<f32>,
+    pub head_rotation: UnitQuaternion<f32>,
 }
 
 impl AgentState {
@@ -115,8 +114,8 @@ impl AgentState {
             agent_data: AgentUpdate_AgentData {
                 agent_id: agent_id,
                 session_id: session_id,
-                body_rotation: self.body_rotation.clone(),
-                head_rotation: self.head_rotation.clone(),
+                body_rotation: self.body_rotation.quaternion().clone(),
+                head_rotation: self.head_rotation.quaternion().clone(),
                 state: 0,
                 camera_center: self.position,
                 camera_at_axis: self.position + Vector3::new(1., 0., 0.),

@@ -1,14 +1,15 @@
 use capabilities::Capabilities;
-use circuit::{Circuit, CircuitConfig, SendMessage};
+use circuit::{Circuit, CircuitConfig, SendMessage, MessageHandlerError};
 pub use circuit::MessageHandlers;
 use futures::Future;
 use logging::Logger;
 use login::LoginResponse;
-use messages::MessageInstance;
-use messages::all::{CompleteAgentMovement, CompleteAgentMovement_AgentData, UseCircuitCode,
-                    UseCircuitCode_CircuitCode};
+use messages::{MessageInstance, MessageType};
+use messages::all::{CompletePingCheck, CompletePingCheck_PingID, CompleteAgentMovement,
+                    CompleteAgentMovement_AgentData, UseCircuitCode, UseCircuitCode_CircuitCode};
 use std::error::Error;
-use types::Duration;
+use systems::agent_update::{AgentState, Modality};
+use types::{Duration, Vector3, UnitQuaternion};
 
 // TODO: Right now here we use LoginResponse, however we should define a struct
 // only containing the relevant fields for sim connections so when jumping from
@@ -25,9 +26,24 @@ pub struct Simulator {
 impl Simulator {
     pub fn connect<L: Logger>(
         login: &LoginResponse,
-        handlers: MessageHandlers,
+        mut handlers: MessageHandlers,
         logger: &L,
     ) -> Result<Simulator, Box<Error>> {
+        // Setup default handlers (TODO move to right place and make more transparent to user?)
+        handlers.insert(MessageType::StartPingCheck, Box::new(|msg, circuit| {
+            let start_ping_check = match msg {
+                MessageInstance::StartPingCheck(m) => Ok(m),
+                _ => Err(MessageHandlerError::WrongHandler),
+            }?;
+            let response = CompletePingCheck {
+                ping_id: CompletePingCheck_PingID {
+                    ping_id: start_ping_check.ping_id.ping_id,
+                },
+            };
+            circuit.send(response, false);
+            Ok(())
+        }));
+
         let circuit = Self::setup_circuit(login, handlers, logger)?;
         let capabilities = Self::setup_capabilities(login, logger)?;
         Ok(Simulator {
@@ -70,11 +86,22 @@ impl Simulator {
 
         let message = CompleteAgentMovement {
             agent_data: CompleteAgentMovement_AgentData {
-                agent_id: agent_id,
-                session_id: session_id,
+                agent_id: agent_id.clone(),
+                session_id: session_id.clone(),
                 circuit_code: circuit_code,
             },
         };
+        circuit.send(message, true).wait().map_err(Box::new)?;
+
+        let z_axis = Vector3::z_axis();
+        let agent_state = AgentState {
+            position: Vector3::new(0.,0.,0.),
+            move_direction: None,
+            modality: Modality::Walking,
+            body_rotation: UnitQuaternion::from_axis_angle(&z_axis, 0.),
+            head_rotation: UnitQuaternion::from_axis_angle(&z_axis, 0.),
+        };
+        let message = agent_state.to_update_message(agent_id, session_id);
         circuit.send(message, true).wait().map_err(Box::new)?;
 
         Ok(circuit)

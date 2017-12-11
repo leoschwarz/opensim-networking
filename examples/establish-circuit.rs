@@ -9,7 +9,7 @@ use opensim_networking::logging::FullDebugLogger;
 use opensim_networking::login::{hash_password, LoginRequest};
 use opensim_networking::simulator::{MessageHandlers, Simulator};
 use opensim_networking::systems::agent_update::{AgentState, Modality, MoveDirection};
-use opensim_networking::types::{Duration, Quaternion, Vector3};
+use opensim_networking::types::{Duration, UnitQuaternion, Vector3};
 
 use num_traits::identities::{One, Zero};
 
@@ -68,12 +68,14 @@ fn main() {
 
     // Let the avatar walk back and forth.
     // TODO: extract position
+    let z_axis = Vector3::z_axis();
     let mut state = AgentState {
         position: Vector3::zero(),
         move_direction: Some(MoveDirection::Forward),
         modality: Modality::Walking,
-        body_rotation: Quaternion::one(),
-        head_rotation: Quaternion::one(),
+        // TODO: This initialization is redundant as it was already done in simulator.rs
+        body_rotation: UnitQuaternion::from_axis_angle(&z_axis, 0.),
+        head_rotation: UnitQuaternion::from_axis_angle(&z_axis, 0.),
     };
 
     loop {

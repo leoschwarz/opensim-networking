@@ -5,8 +5,8 @@
 /// Don't edit manually, instead edit the generator.
 ///
 
-use {Ip4Addr, IpPort, Message, Quaternion, ReadError, ReadErrorKind, UnitQuaternion, Uuid,
-     Vector3, Vector4, WriteMessageResult};
+use {Ip4Addr, IpPort, Message, Quaternion, ReadError, ReadErrorKind, Uuid, Vector3, Vector4,
+     WriteMessageResult};
 
 use arrayvec::ArrayVec;
 use byteorder::{LittleEndian, ReadBytesExt, WriteBytesExt};
@@ -38000,22 +38000,40 @@ impl Message for AgentUpdate {
         // Block AgentData
         buffer.write(self.agent_data.agent_id.as_bytes())?;
         buffer.write(self.agent_data.session_id.as_bytes())?;
-        let normed_body_rotation =
-            UnitQuaternion::from_quaternion(self.agent_data.body_rotation).unwrap();
+        let norm_body_rotation = if self.agent_data.body_rotation.scalar() >= 0. {
+            self.agent_data.body_rotation.norm()
+        } else {
+            -self.agent_data.body_rotation.norm()
+        };
 
-        buffer.write_f32::<LittleEndian>(normed_body_rotation.i)?;
+        buffer.write_f32::<LittleEndian>(
+            self.agent_data.body_rotation.coords[0] / norm_body_rotation,
+        )?;
 
-        buffer.write_f32::<LittleEndian>(normed_body_rotation.j)?;
+        buffer.write_f32::<LittleEndian>(
+            self.agent_data.body_rotation.coords[1] / norm_body_rotation,
+        )?;
 
-        buffer.write_f32::<LittleEndian>(normed_body_rotation.k)?;
-        let normed_head_rotation =
-            UnitQuaternion::from_quaternion(self.agent_data.head_rotation).unwrap();
+        buffer.write_f32::<LittleEndian>(
+            self.agent_data.body_rotation.coords[2] / norm_body_rotation,
+        )?;
+        let norm_head_rotation = if self.agent_data.head_rotation.scalar() >= 0. {
+            self.agent_data.head_rotation.norm()
+        } else {
+            -self.agent_data.head_rotation.norm()
+        };
 
-        buffer.write_f32::<LittleEndian>(normed_head_rotation.i)?;
+        buffer.write_f32::<LittleEndian>(
+            self.agent_data.head_rotation.coords[0] / norm_head_rotation,
+        )?;
 
-        buffer.write_f32::<LittleEndian>(normed_head_rotation.j)?;
+        buffer.write_f32::<LittleEndian>(
+            self.agent_data.head_rotation.coords[1] / norm_head_rotation,
+        )?;
 
-        buffer.write_f32::<LittleEndian>(normed_head_rotation.k)?;
+        buffer.write_f32::<LittleEndian>(
+            self.agent_data.head_rotation.coords[2] / norm_head_rotation,
+        )?;
         buffer.write_u8(self.agent_data.state)?;
         buffer.write_f32::<LittleEndian>(self.agent_data.camera_center.x)?;
 
@@ -38882,14 +38900,23 @@ impl Message for AvatarSitResponse {
         buffer.write_f32::<LittleEndian>(self.sit_transform.sit_position.y)?;
 
         buffer.write_f32::<LittleEndian>(self.sit_transform.sit_position.z)?;
-        let normed_sit_rotation =
-            UnitQuaternion::from_quaternion(self.sit_transform.sit_rotation).unwrap();
+        let norm_sit_rotation = if self.sit_transform.sit_rotation.scalar() >= 0. {
+            self.sit_transform.sit_rotation.norm()
+        } else {
+            -self.sit_transform.sit_rotation.norm()
+        };
 
-        buffer.write_f32::<LittleEndian>(normed_sit_rotation.i)?;
+        buffer.write_f32::<LittleEndian>(
+            self.sit_transform.sit_rotation.coords[0] / norm_sit_rotation,
+        )?;
 
-        buffer.write_f32::<LittleEndian>(normed_sit_rotation.j)?;
+        buffer.write_f32::<LittleEndian>(
+            self.sit_transform.sit_rotation.coords[1] / norm_sit_rotation,
+        )?;
 
-        buffer.write_f32::<LittleEndian>(normed_sit_rotation.k)?;
+        buffer.write_f32::<LittleEndian>(
+            self.sit_transform.sit_rotation.coords[2] / norm_sit_rotation,
+        )?;
         buffer.write_f32::<LittleEndian>(self.sit_transform.camera_eye_offset.x)?;
 
         buffer.write_f32::<LittleEndian>(self.sit_transform.camera_eye_offset.y)?;
@@ -39541,22 +39568,40 @@ impl Message for ChildAgentUpdate {
         buffer.write_u8(self.agent_data.throttles.len() as u8)?;
         buffer.write(&self.agent_data.throttles[..])?;
         buffer.write_u32::<LittleEndian>(self.agent_data.locomotion_state)?;
-        let normed_head_rotation =
-            UnitQuaternion::from_quaternion(self.agent_data.head_rotation).unwrap();
+        let norm_head_rotation = if self.agent_data.head_rotation.scalar() >= 0. {
+            self.agent_data.head_rotation.norm()
+        } else {
+            -self.agent_data.head_rotation.norm()
+        };
 
-        buffer.write_f32::<LittleEndian>(normed_head_rotation.i)?;
+        buffer.write_f32::<LittleEndian>(
+            self.agent_data.head_rotation.coords[0] / norm_head_rotation,
+        )?;
 
-        buffer.write_f32::<LittleEndian>(normed_head_rotation.j)?;
+        buffer.write_f32::<LittleEndian>(
+            self.agent_data.head_rotation.coords[1] / norm_head_rotation,
+        )?;
 
-        buffer.write_f32::<LittleEndian>(normed_head_rotation.k)?;
-        let normed_body_rotation =
-            UnitQuaternion::from_quaternion(self.agent_data.body_rotation).unwrap();
+        buffer.write_f32::<LittleEndian>(
+            self.agent_data.head_rotation.coords[2] / norm_head_rotation,
+        )?;
+        let norm_body_rotation = if self.agent_data.body_rotation.scalar() >= 0. {
+            self.agent_data.body_rotation.norm()
+        } else {
+            -self.agent_data.body_rotation.norm()
+        };
 
-        buffer.write_f32::<LittleEndian>(normed_body_rotation.i)?;
+        buffer.write_f32::<LittleEndian>(
+            self.agent_data.body_rotation.coords[0] / norm_body_rotation,
+        )?;
 
-        buffer.write_f32::<LittleEndian>(normed_body_rotation.j)?;
+        buffer.write_f32::<LittleEndian>(
+            self.agent_data.body_rotation.coords[1] / norm_body_rotation,
+        )?;
 
-        buffer.write_f32::<LittleEndian>(normed_body_rotation.k)?;
+        buffer.write_f32::<LittleEndian>(
+            self.agent_data.body_rotation.coords[2] / norm_body_rotation,
+        )?;
         buffer.write_u32::<LittleEndian>(self.agent_data.control_flags)?;
         buffer.write_f32::<LittleEndian>(self.agent_data.energy_level)?;
         buffer.write_u8(self.agent_data.god_level)?;
@@ -45744,13 +45789,17 @@ impl Message for ObjectAdd {
         buffer.write_f32::<LittleEndian>(self.object_data.scale.y)?;
 
         buffer.write_f32::<LittleEndian>(self.object_data.scale.z)?;
-        let normed_rotation = UnitQuaternion::from_quaternion(self.object_data.rotation).unwrap();
+        let norm_rotation = if self.object_data.rotation.scalar() >= 0. {
+            self.object_data.rotation.norm()
+        } else {
+            -self.object_data.rotation.norm()
+        };
 
-        buffer.write_f32::<LittleEndian>(normed_rotation.i)?;
+        buffer.write_f32::<LittleEndian>(self.object_data.rotation.coords[0] / norm_rotation)?;
 
-        buffer.write_f32::<LittleEndian>(normed_rotation.j)?;
+        buffer.write_f32::<LittleEndian>(self.object_data.rotation.coords[1] / norm_rotation)?;
 
-        buffer.write_f32::<LittleEndian>(normed_rotation.k)?;
+        buffer.write_f32::<LittleEndian>(self.object_data.rotation.coords[2] / norm_rotation)?;
         buffer.write_u8(self.object_data.state)?;
         Ok(())
     }
@@ -45783,13 +45832,17 @@ impl Message for ObjectAttach {
         buffer.write_u8(self.object_data.len() as u8)?;
         for item in &self.object_data {
             buffer.write_u32::<LittleEndian>(item.object_local_id)?;
-            let normed_rotation = UnitQuaternion::from_quaternion(item.rotation).unwrap();
+            let norm_rotation = if item.rotation.scalar() >= 0. {
+                item.rotation.norm()
+            } else {
+                -item.rotation.norm()
+            };
 
-            buffer.write_f32::<LittleEndian>(normed_rotation.i)?;
+            buffer.write_f32::<LittleEndian>(item.rotation.coords[0] / norm_rotation)?;
 
-            buffer.write_f32::<LittleEndian>(normed_rotation.j)?;
+            buffer.write_f32::<LittleEndian>(item.rotation.coords[1] / norm_rotation)?;
 
-            buffer.write_f32::<LittleEndian>(normed_rotation.k)?;
+            buffer.write_f32::<LittleEndian>(item.rotation.coords[2] / norm_rotation)?;
         }
         Ok(())
     }
@@ -47007,13 +47060,17 @@ impl Message for ObjectRotation {
         buffer.write_u8(self.object_data.len() as u8)?;
         for item in &self.object_data {
             buffer.write_u32::<LittleEndian>(item.object_local_id)?;
-            let normed_rotation = UnitQuaternion::from_quaternion(item.rotation).unwrap();
+            let norm_rotation = if item.rotation.scalar() >= 0. {
+                item.rotation.norm()
+            } else {
+                -item.rotation.norm()
+            };
 
-            buffer.write_f32::<LittleEndian>(normed_rotation.i)?;
+            buffer.write_f32::<LittleEndian>(item.rotation.coords[0] / norm_rotation)?;
 
-            buffer.write_f32::<LittleEndian>(normed_rotation.j)?;
+            buffer.write_f32::<LittleEndian>(item.rotation.coords[1] / norm_rotation)?;
 
-            buffer.write_f32::<LittleEndian>(normed_rotation.k)?;
+            buffer.write_f32::<LittleEndian>(item.rotation.coords[2] / norm_rotation)?;
         }
         Ok(())
     }
@@ -47268,13 +47325,17 @@ impl Message for ObjectSpinUpdate {
         buffer.write(self.agent_data.session_id.as_bytes())?;
         // Block ObjectData
         buffer.write(self.object_data.object_id.as_bytes())?;
-        let normed_rotation = UnitQuaternion::from_quaternion(self.object_data.rotation).unwrap();
+        let norm_rotation = if self.object_data.rotation.scalar() >= 0. {
+            self.object_data.rotation.norm()
+        } else {
+            -self.object_data.rotation.norm()
+        };
 
-        buffer.write_f32::<LittleEndian>(normed_rotation.i)?;
+        buffer.write_f32::<LittleEndian>(self.object_data.rotation.coords[0] / norm_rotation)?;
 
-        buffer.write_f32::<LittleEndian>(normed_rotation.j)?;
+        buffer.write_f32::<LittleEndian>(self.object_data.rotation.coords[1] / norm_rotation)?;
 
-        buffer.write_f32::<LittleEndian>(normed_rotation.k)?;
+        buffer.write_f32::<LittleEndian>(self.object_data.rotation.coords[2] / norm_rotation)?;
         Ok(())
     }
 
@@ -51109,13 +51170,17 @@ impl Message for ScriptSensorReply {
             buffer.write_f32::<LittleEndian>(item.velocity.y)?;
 
             buffer.write_f32::<LittleEndian>(item.velocity.z)?;
-            let normed_rotation = UnitQuaternion::from_quaternion(item.rotation).unwrap();
+            let norm_rotation = if item.rotation.scalar() >= 0. {
+                item.rotation.norm()
+            } else {
+                -item.rotation.norm()
+            };
 
-            buffer.write_f32::<LittleEndian>(normed_rotation.i)?;
+            buffer.write_f32::<LittleEndian>(item.rotation.coords[0] / norm_rotation)?;
 
-            buffer.write_f32::<LittleEndian>(normed_rotation.j)?;
+            buffer.write_f32::<LittleEndian>(item.rotation.coords[1] / norm_rotation)?;
 
-            buffer.write_f32::<LittleEndian>(normed_rotation.k)?;
+            buffer.write_f32::<LittleEndian>(item.rotation.coords[2] / norm_rotation)?;
             buffer.write_u8(item.name.len() as u8)?;
             buffer.write(&item.name[..])?;
             buffer.write_i32::<LittleEndian>(item.type_)?;
@@ -51157,13 +51222,17 @@ impl Message for ScriptSensorRequest {
         buffer.write_f32::<LittleEndian>(self.requester.search_pos.y)?;
 
         buffer.write_f32::<LittleEndian>(self.requester.search_pos.z)?;
-        let normed_search_dir = UnitQuaternion::from_quaternion(self.requester.search_dir).unwrap();
+        let norm_search_dir = if self.requester.search_dir.scalar() >= 0. {
+            self.requester.search_dir.norm()
+        } else {
+            -self.requester.search_dir.norm()
+        };
 
-        buffer.write_f32::<LittleEndian>(normed_search_dir.i)?;
+        buffer.write_f32::<LittleEndian>(self.requester.search_dir.coords[0] / norm_search_dir)?;
 
-        buffer.write_f32::<LittleEndian>(normed_search_dir.j)?;
+        buffer.write_f32::<LittleEndian>(self.requester.search_dir.coords[1] / norm_search_dir)?;
 
-        buffer.write_f32::<LittleEndian>(normed_search_dir.k)?;
+        buffer.write_f32::<LittleEndian>(self.requester.search_dir.coords[2] / norm_search_dir)?;
         buffer.write_u8(self.requester.search_name.len() as u8)?;
         buffer.write(&self.requester.search_name[..])?;
         buffer.write_i32::<LittleEndian>(self.requester.type_)?;
@@ -52278,14 +52347,20 @@ impl Message for TelehubInfo {
         buffer.write_f32::<LittleEndian>(self.telehub_block.telehub_pos.y)?;
 
         buffer.write_f32::<LittleEndian>(self.telehub_block.telehub_pos.z)?;
-        let normed_telehub_rot =
-            UnitQuaternion::from_quaternion(self.telehub_block.telehub_rot).unwrap();
+        let norm_telehub_rot = if self.telehub_block.telehub_rot.scalar() >= 0. {
+            self.telehub_block.telehub_rot.norm()
+        } else {
+            -self.telehub_block.telehub_rot.norm()
+        };
 
-        buffer.write_f32::<LittleEndian>(normed_telehub_rot.i)?;
+        buffer
+            .write_f32::<LittleEndian>(self.telehub_block.telehub_rot.coords[0] / norm_telehub_rot)?;
 
-        buffer.write_f32::<LittleEndian>(normed_telehub_rot.j)?;
+        buffer
+            .write_f32::<LittleEndian>(self.telehub_block.telehub_rot.coords[1] / norm_telehub_rot)?;
 
-        buffer.write_f32::<LittleEndian>(normed_telehub_rot.k)?;
+        buffer
+            .write_f32::<LittleEndian>(self.telehub_block.telehub_rot.coords[2] / norm_telehub_rot)?;
         // Block SpawnPointBlock
         buffer.write_u8(self.spawn_point_block.len() as u8)?;
         for item in &self.spawn_point_block {

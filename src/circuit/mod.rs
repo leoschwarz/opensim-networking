@@ -39,13 +39,28 @@ mod status;
 pub use self::status::{SendMessage, SendMessageError};
 use self::status::SendMessageStatus;
 
-pub type MessageHandler = Box<Fn(MessageInstance) -> Result<(), MessageHandlerError> + Send>;
+pub type MessageHandler = Box<Fn(MessageInstance, &MessageSender) -> Result<(), MessageHandlerError> + Send>;
 pub type MessageHandlers = HashMap<MessageType, MessageHandler>;
 
 // TODO: Differentiate between recoverable and non-recoverable errors.
 #[derive(Debug)]
 pub enum MessageHandlerError {
+    /// Message handler does not know how to handle the message instance.
+    // TODO: Make this impossible?
+    WrongHandler,
     Other(Box<Error>),
+}
+
+/// Can be used by MessageHandler instances to send a message through the Circuit.
+pub struct MessageSender {
+    ackmgr_tx: AckManagerTx,
+}
+
+impl MessageSender {
+    /// See: `Ciruit::send()` for more information.
+    pub fn send<M: Into<MessageInstance>>(&self, msg: M, reliable: bool) -> SendMessage {
+        self.ackmgr_tx.send_msg(msg.into(), reliable)
+    }
 }
 
 /// Encapsulates a so called circuit (networking link) between our viewer and a
@@ -81,6 +96,9 @@ impl Circuit {
         let (ackmgr_tx, mut ackmgr_rx) = self::ack_manager::new(config);
         let ackmgr_tx_1 = ackmgr_tx;
         let ackmgr_tx_2 = ackmgr_tx_1.clone();
+        let message_sender = MessageSender {
+            ackmgr_tx: ackmgr_tx_1.clone(),
+        };
 
         // Create sender thread (1).
         let logger1 = logger.clone();
@@ -152,7 +170,7 @@ impl Circuit {
                         if let Some(handler) = message_handlers.get(&msg.message_type()) {
                             // Let the handler handle this message.
                             // TODO: Handle error better.
-                            handler(msg).unwrap();
+                            handler(msg, &message_sender).unwrap();
                         } else {
                             // There is no registered message handler, so yield the message to the
                             // incoming message channel.

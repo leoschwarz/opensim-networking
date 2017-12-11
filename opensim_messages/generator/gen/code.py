@@ -68,10 +68,10 @@ def generate_field_writer(field, source):
                   buffer.write_f32::<LittleEndian>({0}.z)?;\n
                   buffer.write_f32::<LittleEndian>({0}.w)?;\n""".format(value)
     elif r_type == "Quaternion<f32>":
-        return """let normed_{0} = UnitQuaternion::from_quaternion({1}).unwrap();\n
-                  buffer.write_f32::<LittleEndian>(normed_{0}.i)?;\n
-                  buffer.write_f32::<LittleEndian>(normed_{0}.j)?;\n
-                  buffer.write_f32::<LittleEndian>(normed_{0}.k)?;\n""".format(field.r_name, value)
+        return """let norm_{0} = if {1}.scalar() >= 0. {{{1}.norm()}} else {{-{1}.norm()}};\n
+                  buffer.write_f32::<LittleEndian>({1}.coords[0] / norm_{0})?;\n
+                  buffer.write_f32::<LittleEndian>({1}.coords[1] / norm_{0})?;\n
+                  buffer.write_f32::<LittleEndian>({1}.coords[2] / norm_{0})?;\n""".format(field.r_name, value)
     elif r_type == "bool":
         return "buffer.write_u8(%s as u8)?;\n" % value
     elif r_type == "Vec<u8>":
@@ -111,7 +111,6 @@ def generate_field_reader(field):
                                buffer.read_f32::<LittleEndian>()?,
                                buffer.read_f32::<LittleEndian>()?)"""
     elif r_type == "Quaternion<f32>":
-        # TODO: Verify if this is doing the right thing.
         return """Quaternion::from_parts(1., Vector3::new(
                       buffer.read_f32::<LittleEndian>()?,
                       buffer.read_f32::<LittleEndian>()?,
