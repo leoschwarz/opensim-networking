@@ -36,6 +36,9 @@ pub enum ConnectErrorKind {
     MpscError(::std::sync::mpsc::RecvError),
 
     #[error_chain(foreign)]
+    ReadMessageError(::circuit::ReadMessageError),
+
+    #[error_chain(foreign)]
     SendMessageError(::circuit::SendMessageError),
 
     #[error_chain(custom)]
@@ -104,7 +107,8 @@ impl Simulator {
         circuit.send(message, true).wait()?;
 
         // Now wait for the RegionHandshake message.
-        match circuit.read()? {
+        let timeout = Duration::from_millis(15_000);
+        match circuit.read(Some(timeout))? {
             MessageInstance::RegionHandshake(handshake) => {
                 println!("received region handshake: {:?}", handshake);
             }

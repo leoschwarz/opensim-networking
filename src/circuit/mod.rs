@@ -32,6 +32,8 @@ use std::sync::mpsc;
 use std::thread;
 use std::time::Duration;
 
+use std::fmt;
+
 mod ack_manager;
 use self::ack_manager::AckManagerTx;
 
@@ -60,6 +62,49 @@ impl MessageSender {
     /// See: `Ciruit::send()` for more information.
     pub fn send<M: Into<MessageInstance>>(&self, msg: M, reliable: bool) -> SendMessage {
         self.ackmgr_tx.send_msg(msg.into(), reliable)
+    }
+}
+
+#[derive(Debug)]
+pub enum ReadMessageError {
+    Disconnected,
+    Timeout
+}
+
+impl fmt::Display for ReadMessageError {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result
+    {
+        write!(f, "{}", self.description())
+    }
+}
+
+impl Error for ReadMessageError {
+    fn description(&self) -> &str {
+        match *self {
+            ReadMessageError::Disconnected => "MPSC reader was disconnected.",
+            ReadMessageError::Timeout => "MPSC reader timed out.",
+        }
+    }
+}
+
+impl From<mpsc::RecvError> for ReadMessageError {
+    fn from(_: mpsc::RecvError) -> Self {
+        ReadMessageError::Disconnected
+    }
+}
+
+impl From<mpsc::RecvTimeoutError> for ReadMessageError {
+    fn from(e: mpsc::RecvTimeoutError) -> Self {
+        match e {
+            mpsc::RecvTimeoutError::Disconnected => ReadMessageError::Disconnected,
+            mpsc::RecvTimeoutError::Timeout => ReadMessageError::Timeout,
+        }
+    }
+}
+
+impl From<mpsc::TryRecvError> for ReadMessageError {
+    fn from(_: mpsc::TryRecvError) -> Self {
+        ReadMessageError::Disconnected
     }
 }
 
@@ -201,17 +246,20 @@ impl Circuit {
     /// Reads a message and returns it.
     ///
     /// If there is no message available yet it will block the current thread
-    /// until there is one available.
-    pub fn read(&self) -> Result<MessageInstance, mpsc::RecvError> {
-        self.incoming.recv()
+    /// until there is one available, or if there is a timeout specified it will
+    /// wait at most for the specified duration before returning an error.
+    pub fn read(&self, timeout: Option<Duration>) -> Result<MessageInstance, ReadMessageError> {
+        match timeout {
+            Some(t) => Ok(self.incoming.recv_timeout(t)?),
+            None => Ok(self.incoming.recv()?),
+        }
     }
 
     /// Trys to reading a message and returns it if one is available right away.
     ///
     /// Otherwise this won't block the current thread and None will be returned.
-    pub fn try_read(&self) -> Option<MessageInstance> {
-        // TODO: return error
-        self.incoming.try_recv().ok()
+    pub fn try_read(&self) -> Result<MessageInstance, ReadMessageError> {
+        Ok(self.incoming.try_recv()?)
     }
 }
 
