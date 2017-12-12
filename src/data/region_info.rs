@@ -31,7 +31,8 @@ impl RegionInfo {
         let info = msg.region_info;
 
         RegionInfo {
-            sim_name: String::from_utf8_lossy(&info.sim_name[0..(info.sim_name.len()-1)]).to_string(),
+            sim_name: String::from_utf8_lossy(&info.sim_name[0..(info.sim_name.len() - 1)])
+                .to_string(),
             sim_owner: info.sim_owner,
             is_estate_manager: info.is_estate_manager,
             water_height: info.water_height,
@@ -72,6 +73,9 @@ mod tests {
 
         let info = RegionInfo::extract_message(message);
         assert_eq!(info.sim_name, "testland");
-        assert_eq!(info.sim_owner, "10b2de5f-2030-4ac4-ab53-9a8f082af748".parse().unwrap());
+        assert_eq!(
+            info.sim_owner,
+            "10b2de5f-2030-4ac4-ab53-9a8f082af748".parse().unwrap()
+        );
     }
 }

@@ -10,6 +10,8 @@ extern crate crypto;
 extern crate derive_error_chain;
 extern crate error_chain;
 extern crate futures;
+extern crate image;
+extern crate jpeg2000;
 // extern crate hyper;
 #[macro_use]
 extern crate lazy_static;
@@ -18,6 +20,10 @@ extern crate mio;
 extern crate nalgebra;
 extern crate regex;
 extern crate reqwest;
+extern crate rmp_serde;
+extern crate serde;
+#[macro_use]
+extern crate serde_derive;
 // extern crate tokio_core;
 extern crate xmlrpc;
 

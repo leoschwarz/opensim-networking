@@ -2,6 +2,7 @@
 use capabilities::Capabilities;
 use reqwest;
 use std::io::Read;
+use std::error::Error;
 use types::{Url, Uuid};
 
 pub mod cache {
@@ -13,17 +14,28 @@ pub mod cache {
     }
 }
 
+mod decode;
+
 use self::cache::*;
+
+#[derive(Debug, Serialize, Deserialize)]
+pub struct TextureData {
+    width: u32,
+    height: u32,
+    data: Vec<u8>,
+}
 
 pub struct Texture {
     id: Uuid,
-    data: Vec<u8>,
+    data: Option<TextureData>,
 }
 
 #[derive(Debug)]
 pub enum TextureServiceError {
     /// The requested texture was not found.
     NotFound,
+
+    DecodeError(Box<Error + Send + Sync>),
 
     /// There is an error with the sim configuration.
     ///
@@ -34,6 +46,12 @@ pub enum TextureServiceError {
 
     /// There was an error during network communication.
     NetworkError(String),
+}
+
+impl From<::jpeg2000::error::DecodeError> for TextureServiceError {
+    fn from(e: ::jpeg2000::error::DecodeError) -> Self {
+        TextureServiceError::DecodeError(Box::new(e))
+    }
 }
 
 pub struct TextureService {
@@ -82,9 +100,11 @@ impl TextureService {
             let mut data = Vec::new();
             response.read_to_end(&mut data).unwrap();
 
+            let texture_data = decode::extract_j2k(&data[..])?;
+
             Ok(Texture {
                 id: id.clone(),
-                data: data,
+                data: Some(texture_data),
             })
         } else {
             Err(TextureServiceError::NetworkError(

@@ -13,29 +13,31 @@ license = "GPL-3.0"
 members = ["opensim_messages", "opensim_types", "llsd"]
 
 [dependencies]
-opensim_messages = { path = "opensim_messages" }
-opensim_types = { path = "opensim_types" }
-llsd = { path = "llsd" }
-
+#hyper = "0.11.7"
+#tokio-core = "0.1.10"
 bitflags = "1.0"
 bitreader = { git = "https://github.com/irauta/bitreader", branch = "master" }
 byteorder = "1.0"
 derive-error-chain = "0.11.0"
 error-chain = "0.11.0"
 futures = "0.1.10"
-#hyper = "0.11.7"
+image = "0.18.0"
+jpeg2000 = "0.1.1"
 lazy_static = "1.0"
+llsd = { path = "llsd" }
 mio = "0.6"
 nalgebra = "0.13.1"
+opensim_messages = { path = "opensim_messages" }
+opensim_types = { path = "opensim_types" }
 regex = "0.2.2"
 reqwest = "0.8.1"
+rmp-serde = "0.13.7"
 rust-crypto = "0.2.36"
-#tokio-core = "0.1.10"
+serde = "1.0"
+serde_derive = "1.0"
 xmlrpc = "0.8.0"
 
 [dev-dependencies]
 env_logger = ""
 toml = "0.4.5"
-serde = "1.0"
-serde_derive = "1.0"
 image = "0.18.0"
