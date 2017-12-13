@@ -3,7 +3,7 @@ use circuit::{Circuit, CircuitConfig, MessageHandlerError, SendMessage};
 pub use circuit::MessageHandlers;
 use data::RegionInfo;
 use futures::Future;
-use logging::Logger;
+use logging::Log;
 use login::LoginResponse;
 use messages::{MessageInstance, MessageType};
 use messages::all::{CompleteAgentMovement, CompleteAgentMovement_AgentData, CompletePingCheck,
@@ -43,10 +43,10 @@ pub enum ConnectErrorKind {
 }
 
 impl Simulator {
-    pub fn connect<L: Logger>(
+    pub fn connect(
         login: &LoginResponse,
         mut handlers: MessageHandlers,
-        logger: &L,
+        logger: &Log,
     ) -> Result<Simulator, ConnectError> {
         // Setup default handlers (TODO move to right place and make more transparent
         // to user?)
@@ -88,10 +88,10 @@ impl Simulator {
         self.circuit.send(message, reliable)
     }
 
-    fn setup_circuit<L: Logger>(
+    fn setup_circuit(
         login: &LoginResponse,
         handlers: MessageHandlers,
-        logger: &L,
+        log: &Log,
     ) -> Result<(Circuit, RegionInfo), ConnectError> {
         let config = CircuitConfig {
             send_timeout: Duration::from_millis(5000),
@@ -101,7 +101,7 @@ impl Simulator {
         let session_id = login.session_id.clone();
         let circuit_code = login.circuit_code.clone();
 
-        let circuit = Circuit::initiate(login.clone(), config, handlers, logger.clone())?;
+        let circuit = Circuit::initiate(login.clone(), config, handlers, log.clone())?;
 
         let message = UseCircuitCode {
             circuit_code: UseCircuitCode_CircuitCode {
@@ -149,10 +149,7 @@ impl Simulator {
         Ok((circuit, region_info))
     }
 
-    fn setup_capabilities<L: Logger>(
-        login: &LoginResponse,
-        _: &L,
-    ) -> Result<Capabilities, ConnectError> {
+    fn setup_capabilities(login: &LoginResponse, _: &Log) -> Result<Capabilities, ConnectError> {
         Ok(Capabilities::setup_capabilities(
             login.seed_capability.clone(),
         )?)

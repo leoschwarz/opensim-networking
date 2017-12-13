@@ -17,7 +17,7 @@
 // - Eliminate all unwraps from this module except where we can verify it will
 // never fail.
 
-use logging::Logger;
+use logging::Log;
 use login::LoginResponse;
 use messages::{MessageInstance, MessageType};
 use packet::Packet;
@@ -121,11 +121,11 @@ pub struct Circuit {
 }
 
 impl Circuit {
-    pub fn initiate<L: Logger>(
+    pub fn initiate(
         login_res: LoginResponse,
         config: CircuitConfig,
         message_handlers: MessageHandlers,
-        logger: L,
+        log: Log,
     ) -> Result<Circuit, IoError> {
         let sim_address = SocketAddr::V4(SocketAddrV4::new(login_res.sim_ip, login_res.sim_port));
 
@@ -148,14 +148,14 @@ impl Circuit {
         };
 
         // Create sender thread (1).
-        let logger1 = logger.clone();
+        let log1 = log.clone();
         thread::spawn(move || {
             // TODO: proper shutdown mechanism
             loop {
                 let packet = ackmgr_rx.fetch();
                 let mut buf = Vec::<u8>::new();
                 packet.write_to(&mut buf).unwrap();
-                logger1.log_send(&buf, &packet);
+                log1.log_packet_send(&buf, &packet);
 
                 socket_out.send(&buf).unwrap();
             }
@@ -180,7 +180,7 @@ impl Circuit {
 
                 // Parse the packet.
                 let packet_res = Packet::read(&buf[..buf_size]);
-                logger.log_recv(&buf[..buf_size], &packet_res);
+                log.log_packet_recv(&buf[..buf_size], &packet_res);
                 let packet = match packet_res {
                     Ok(pkt) => pkt,
                     Err(_) => continue,

@@ -18,68 +18,166 @@ use std::io::Error as IoError;
 use std::io::ErrorKind as IoErrorKind;
 use std::path::PathBuf;
 use std::sync::{Arc, Mutex, PoisonError};
+use std::panic::RefUnwindSafe;
+use slog;
+use slog::Drain;
+use slog_async;
+use slog_term;
 
-/// Any instance can be used as a logger for this crate.
+/// This provides interfaces to the various logs maintained by this crate.
 ///
-/// If instances are sent over thread boundaries or cloned they are supposed to
-/// perform the
-/// individual operations of this trait atomically.
-pub trait Logger: Clone + Send + Sync + 'static {
-    fn log_recv(&self, raw_data: &[u8], packet: &Result<Packet, ReadPacketError>);
-    fn log_send(&self, raw_data: &[u8], packet: &Packet);
+/// Design:
+/// ======
+/// This struct holds internally an Arc to the actual implementation.
+/// The implementation is generic, so in the case log data is to be discared,
+/// fair performance will be achieved.
+///
+/// This struct can be cloned and sent across thread boundaries without care.
+#[derive(Clone)]
+pub struct Log {
+    inner: Arc<LogImpl<Ok = (), Err = slog::Never>>,
+}
 
-    fn debug<S: AsRef<str>>(&self, message: S);
-    fn info<S: AsRef<str>>(&self, message: S) {
-        self.debug(message); // TODO fix placeholder later
+/// Select the minimum level of messages to be included in the log.
+///
+/// TODO: Add more log levels. In the past there was a discard logger,
+///       but maybe errors should always be logged and such functionality
+///       would actually be more useful.
+#[derive(Clone, Debug)]
+pub enum LogLevel {
+    /// This logs everything including every received and sent message.
+    Debug,
+}
+
+impl Log {
+    pub fn new_dir<P: Into<PathBuf>>(dir: P, level: LogLevel) -> Result<Self, IoError> {
+        let inner = match level {
+            LogLevel::Debug => Arc::new(DebugDirLogger::new(dir.into())?),
+        };
+        Ok(Log { inner: inner })
+    }
+
+    /// Returns an instance of `slog::Logger`, which behaves the same way
+    /// as if using this struct as Drain directly.
+    ///
+    /// Note that often the later, using the Drain impl on this struct,
+    /// means you don't even need to call this if you already have a `Log`
+    /// instance.
+    pub fn slog_logger(&self) -> slog::Logger {
+        slog::Logger::root(Arc::clone(&self.inner), o!())
+    }
+
+    pub fn log_packet_recv(&self, raw_data: &[u8], packet: &Result<Packet, ReadPacketError>) {
+        self.inner.log_packet_recv(raw_data, packet)
+    }
+
+    pub fn log_packet_send(&self, raw_data: &[u8], packet: &Packet) {
+        self.inner.log_packet_send(raw_data, packet)
     }
 }
 
-/// A logger to be used to extract the full debug information into a specified
-/// directory.
-///
-/// Note that the numbering of the individual files doesn't correspond directly
-/// to the sequence
-/// numbers, since it's possible for packets to be transmitted multiple times
-/// with the same
-/// sequence number.
-#[derive(Clone)]
-pub struct FullDebugLogger {
-    inner: Arc<FullDebugLoggerInner>,
+impl slog::Drain for Log {
+    type Ok = ();
+    type Err = slog::Never;
+
+    fn log(
+        &self,
+        record: &slog::Record,
+        values: &slog::OwnedKVList,
+    ) -> Result<Self::Ok, Self::Err> {
+        self.inner.log(record, values)
+    }
 }
 
-struct FullDebugLoggerInner {
-    /// The directory that is to be logged to.
+trait LogImpl: slog::Drain + LogPacket + Send + Sync + RefUnwindSafe {}
+
+trait LogPacket {
+    fn log_packet_recv(&self, raw_data: &[u8], packet: &Result<Packet, ReadPacketError>);
+    fn log_packet_send(&self, raw_data: &[u8], packet: &Packet);
+}
+
+struct DebugDirLogger {
+    /// Target directory.
     dir: PathBuf,
 
     recv_counter: AtomicU32Counter,
     send_counter: AtomicU32Counter,
-
     index_recv: Mutex<File>,
     index_send: Mutex<File>,
 
-    // TODO: Make sure that the buffering performed by std::fs::File is sufficient.
-    out_debug: Mutex<File>,
+    logger: slog::Logger,
 }
 
+impl LogImpl for DebugDirLogger {}
+
 #[derive(Debug)]
-enum FullDebugLoggerError {
+enum LogPacketError {
     Io(IoError),
     FilePoisoned,
 }
 
-impl From<IoError> for FullDebugLoggerError {
+impl From<IoError> for LogPacketError {
     fn from(err: IoError) -> Self {
-        FullDebugLoggerError::Io(err)
+        LogPacketError::Io(err)
     }
 }
 
-impl<T> From<PoisonError<T>> for FullDebugLoggerError {
+impl<T> From<PoisonError<T>> for LogPacketError {
     fn from(_: PoisonError<T>) -> Self {
-        FullDebugLoggerError::FilePoisoned
+        LogPacketError::FilePoisoned
     }
 }
 
-impl FullDebugLogger {
+impl DebugDirLogger {
+    /// Create a new instance of the logger.
+    ///
+    /// Notice that the logger is expecting an empty directory, if the
+    /// directory already contains
+    /// other files, it will most likely lead to an error.
+    /// So if you want stuff like log rotation, you have to implement it
+    /// yourself, but be aware,
+    /// that with this uncompressed logging you can quickly accumulate lots of
+    /// data.
+    fn new(dir: PathBuf) -> Result<Self, IoError> {
+        Self::assert_empty_dir(dir.join("recv"))?;
+        Self::assert_empty_dir(dir.join("send"))?;
+
+        let index_recv_path = dir.join("recv.index");
+        let index_send_path = dir.join("send.index");
+
+        let log_text_path = dir.join("debug.log");
+        let log_text_file = File::create(log_text_path)?;
+        let decorator = slog_term::PlainDecorator::new(log_text_file);
+        let drain = slog_term::FullFormat::new(decorator).build().fuse();
+        let drain = slog_async::Async::new(drain).build().fuse();
+        let log_text = slog::Logger::root(drain, o!());
+
+        Ok(DebugDirLogger {
+            dir: dir,
+            recv_counter: AtomicU32Counter::new(0),
+            send_counter: AtomicU32Counter::new(0),
+            index_recv: Mutex::new(File::create(index_recv_path)?),
+            index_send: Mutex::new(File::create(index_send_path)?),
+            logger: log_text,
+        })
+    }
+
+    fn register_id(
+        counter: &AtomicU32Counter,
+        file_mutex: &Mutex<File>,
+        seq_num: Option<SequenceNumber>,
+    ) -> Result<u32, LogPacketError> {
+        let id = counter.next();
+        let mut file = file_mutex.lock()?;
+        // TODO: also log the message type for easier identification of relevant entries
+        if let Some(seq) = seq_num {
+            writeln!(&mut file, "file {:08} => seq {:08}", id, seq)?;
+        } else {
+            writeln!(&mut file, "file {:08} => error", id)?;
+        }
+        Ok(id)
+    }
+
     fn assert_empty_dir(dir: PathBuf) -> Result<(), IoError> {
         if !dir.exists() {
             // Create an empty directory and we're fine.
@@ -99,59 +197,11 @@ impl FullDebugLogger {
         }
     }
 
-    /// Create a new instance of the logger.
-    ///
-    /// Notice that the logger is expecting an empty directory, if the
-    /// directory already contains
-    /// other files, it will most likely lead to an error.
-    /// So if you want stuff like log rotation, you have to implement it
-    /// yourself, but be aware,
-    /// that with this uncompressed logging you can quickly accumulate lots of
-    /// data.
-    pub fn new<P: Into<PathBuf>>(path: P) -> Result<Self, IoError> {
-        let dir = path.into();
-        Self::assert_empty_dir(dir.join("recv"))?;
-        Self::assert_empty_dir(dir.join("send"))?;
-
-        let index_recv_path = dir.join("recv.index");
-        let index_send_path = dir.join("send.index");
-        let log_debug_path = dir.join("debug.log");
-
-        Ok(FullDebugLogger {
-            inner: Arc::new(FullDebugLoggerInner {
-                dir: dir,
-                recv_counter: AtomicU32Counter::new(0),
-                send_counter: AtomicU32Counter::new(0),
-                index_recv: Mutex::new(File::create(index_recv_path)?),
-                index_send: Mutex::new(File::create(index_send_path)?),
-                out_debug: Mutex::new(File::create(log_debug_path)?),
-            }),
-        })
-    }
-}
-
-impl FullDebugLoggerInner {
-    fn register_id(
-        counter: &AtomicU32Counter,
-        file_mutex: &Mutex<File>,
-        seq_num: Option<SequenceNumber>,
-    ) -> Result<u32, FullDebugLoggerError> {
-        let id = counter.next();
-        let mut file = file_mutex.lock()?;
-        // TODO: also log the message type for easier identification of relevant entries
-        if let Some(seq) = seq_num {
-            writeln!(&mut file, "file {:08} => seq {:08}", id, seq)?;
-        } else {
-            writeln!(&mut file, "file {:08} => error", id)?;
-        }
-        Ok(id)
-    }
-
     fn try_log_recv(
         &self,
         raw_data: &[u8],
         packet: &Result<Packet, ReadPacketError>,
-    ) -> Result<(), FullDebugLoggerError> {
+    ) -> Result<(), LogPacketError> {
         let seq_num = match *packet {
             Ok(ref pkt) => Some(pkt.sequence_number),
             Err(_) => None,
@@ -168,7 +218,7 @@ impl FullDebugLoggerInner {
         Ok(())
     }
 
-    fn try_log_send(&self, raw_data: &[u8], packet: &Packet) -> Result<(), FullDebugLoggerError> {
+    fn try_log_send(&self, raw_data: &[u8], packet: &Packet) -> Result<(), LogPacketError> {
         let id = Self::register_id(
             &self.send_counter,
             &self.index_send,
@@ -184,50 +234,29 @@ impl FullDebugLoggerInner {
         writeln!(&mut file, "{:?}", packet)?;
         Ok(())
     }
+}
 
-    fn try_debug(&self, message: &str) -> Result<(), FullDebugLoggerError> {
-        let mut file = self.out_debug.lock()?;
-        writeln!(&mut file, "{}", message)?;
-        Ok(())
+impl slog::Drain for DebugDirLogger {
+    type Ok = ();
+    type Err = slog::Never;
+
+    fn log(
+        &self,
+        record: &slog::Record,
+        values: &slog::OwnedKVList,
+    ) -> Result<Self::Ok, Self::Err> {
+        slog::Drain::log(&self.logger, record, values)
     }
 }
 
-// TODO: Better error handling.
-impl Logger for FullDebugLogger {
-    fn log_recv(&self, raw_data: &[u8], packet: &Result<Packet, ReadPacketError>) {
-        self.inner
-            .try_log_recv(raw_data, packet)
+impl LogPacket for DebugDirLogger {
+    fn log_packet_recv(&self, raw_data: &[u8], packet: &Result<Packet, ReadPacketError>) {
+        self.try_log_recv(raw_data, packet)
             .expect("failed logging packet recv.");
     }
 
-    fn log_send(&self, raw_data: &[u8], packet: &Packet) {
-        self.inner
-            .try_log_send(raw_data, packet)
+    fn log_packet_send(&self, raw_data: &[u8], packet: &Packet) {
+        self.try_log_send(raw_data, packet)
             .expect("failed logging message send.");
-    }
-
-    fn debug<S: AsRef<str>>(&self, message: S) {
-        self.inner
-            .try_debug(message.as_ref())
-            .expect("failed logging debug log message.");
-    }
-}
-
-/// This logger can be used in production to avoid the logging overhead
-/// completely.
-#[derive(Clone)]
-pub struct DiscardLogger;
-
-impl Logger for DiscardLogger {
-    fn log_recv(&self, _: &[u8], _: &Result<Packet, ReadPacketError>) {
-        // This method is supposed to do nothing.
-    }
-
-    fn log_send(&self, _: &[u8], _: &Packet) {
-        // This method is supposed to do nothing.
-    }
-
-    fn debug<S: AsRef<str>>(&self, _: S) {
-        // This method is supposed to do nothing.
     }
 }

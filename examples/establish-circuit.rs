@@ -4,7 +4,7 @@ extern crate opensim_networking;
 extern crate serde_derive;
 extern crate toml;
 
-use opensim_networking::logging::FullDebugLogger;
+use opensim_networking::logging::{Log, LogLevel};
 use opensim_networking::login::{hash_password, LoginRequest};
 use opensim_networking::simulator::{MessageHandlers, Simulator};
 use opensim_networking::systems::agent_update::{AgentState, Modality, MoveDirection};
@@ -34,8 +34,8 @@ struct ConfigSim {
 }
 
 fn main() {
-    // Setup our logger.
-    let logger = FullDebugLogger::new("output/logdir").unwrap();
+    // Setup logging.
+    let log = Log::new_dir("output/logdir", LogLevel::Debug).unwrap();
 
     // Read the configuration file.
     let mut file = File::open("establish-circuit.toml")
@@ -56,12 +56,14 @@ fn main() {
     let resp = request
         .perform(config.sim.loginuri.as_str())
         .expect("Login failed.");
-    println!("Login success, response = {:?}", resp);
+    // println!("Login success, response = {:?}", resp);
+    println!("Login success.");
     let agent_id = resp.agent_id.clone();
     let session_id = resp.session_id.clone();
 
     let message_handlers = MessageHandlers::new();
-    let sim = Simulator::connect(&resp, message_handlers, &logger).unwrap();
+    let sim = Simulator::connect(&resp, message_handlers, &log).unwrap();
+    println!("region info: {:?}", sim.region_info());
 
     // Let the avatar walk back and forth.
     // TODO: extract position
