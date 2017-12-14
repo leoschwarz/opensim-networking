@@ -9,7 +9,8 @@ use messages::{MessageInstance, MessageType};
 use messages::all::{CompleteAgentMovement, CompleteAgentMovement_AgentData, CompletePingCheck,
                     CompletePingCheck_PingID, UseCircuitCode, UseCircuitCode_CircuitCode};
 use systems::agent_update::{AgentState, Modality};
-use types::{Duration, UnitQuaternion, Vector3};
+use textures::{Texture, TextureService, TextureServiceError};
+use types::{Duration, UnitQuaternion, Uuid, Vector3};
 
 // TODO: Right now here we use LoginResponse, however we should define a struct
 // only containing the relevant fields for sim connections so when jumping from
@@ -21,7 +22,11 @@ use types::{Duration, UnitQuaternion, Vector3};
 pub struct Simulator {
     caps: Capabilities,
     circuit: Circuit,
+    texture_service: TextureService,
+
     // TODO: (future) can this be updated remotely somehow, i.e. by the estate manager?
+    // If yes we should register appropriate message handlers which update this data,
+    // and maybe also wrap it in a mutex.
     region_info: RegionInfo,
 }
 
@@ -46,7 +51,7 @@ impl Simulator {
     pub fn connect(
         login: &LoginResponse,
         mut handlers: MessageHandlers,
-        logger: &Log,
+        log: &Log,
     ) -> Result<Simulator, ConnectError> {
         // Setup default handlers (TODO move to right place and make more transparent
         // to user?)
@@ -67,12 +72,15 @@ impl Simulator {
             }),
         );
 
-        let capabilities = Self::setup_capabilities(login, logger)?;
-        let (circuit, region_info) = Self::setup_circuit(login, handlers, logger)?;
+        let capabilities = Self::setup_capabilities(login, log)?;
+        let (circuit, region_info) = Self::setup_circuit(login, handlers, log)?;
+        let texture_service = Self::setup_texture_service(&capabilities, log.clone());
+
         Ok(Simulator {
             caps: capabilities,
             circuit: circuit,
             region_info: region_info,
+            texture_service: texture_service,
         })
     }
 
@@ -86,6 +94,10 @@ impl Simulator {
         reliable: bool,
     ) -> SendMessage {
         self.circuit.send(message, reliable)
+    }
+
+    pub fn get_texture(&self, id: &Uuid) -> Result<Texture, TextureServiceError> {
+        self.texture_service.get_texture(id)
     }
 
     fn setup_circuit(
@@ -153,5 +165,9 @@ impl Simulator {
         Ok(Capabilities::setup_capabilities(
             login.seed_capability.clone(),
         )?)
+    }
+
+    fn setup_texture_service(caps: &Capabilities, log: Log) -> TextureService {
+        TextureService::new(caps, log)
     }
 }
