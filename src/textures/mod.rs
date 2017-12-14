@@ -1,41 +1,30 @@
 //! Contains the texture manager.
 use capabilities::Capabilities;
+use logging::Log;
 use reqwest;
-use std::io::Read;
 use std::error::Error;
+use std::io::Read;
+use std::io::Error as IoError;
 use types::{Url, Uuid};
 
-pub mod cache {
-    use types::Uuid;
-    use textures::{Texture, TextureServiceError};
-
-    pub trait TextureCache {
-        fn get_texture(&self, id: &Uuid) -> Result<Texture, TextureServiceError>;
-    }
-}
-
+pub mod cache;
 mod decode;
 
 use self::cache::*;
 
 #[derive(Debug, Serialize, Deserialize)]
-pub struct TextureData {
+pub struct Texture {
+    id: Uuid,
     width: u32,
     height: u32,
     data: Vec<u8>,
 }
 
-pub struct Texture {
-    id: Uuid,
-    data: Option<TextureData>,
-}
-
 #[derive(Debug)]
 pub enum TextureServiceError {
-    /// The requested texture was not found.
-    NotFound,
-
     DecodeError(Box<Error + Send + Sync>),
+
+    IoError(IoError),
 
     /// There is an error with the sim configuration.
     ///
@@ -48,6 +37,12 @@ pub enum TextureServiceError {
     NetworkError(String),
 }
 
+impl From<IoError> for TextureServiceError {
+    fn from(e: IoError) -> Self {
+        TextureServiceError::IoError(e)
+    }
+}
+
 impl From<::jpeg2000::error::DecodeError> for TextureServiceError {
     fn from(e: ::jpeg2000::error::DecodeError) -> Self {
         TextureServiceError::DecodeError(Box::new(e))
@@ -57,25 +52,32 @@ impl From<::jpeg2000::error::DecodeError> for TextureServiceError {
 pub struct TextureService {
     get_texture: Url,
     caches: Vec<Box<TextureCache>>,
+    log: Log,
 }
 
 impl TextureService {
-    pub fn new(caps: &Capabilities) -> Self {
+    pub fn new(caps: &Capabilities, log: Log) -> Self {
         TextureService {
             get_texture: caps.urls().get_texture.clone(),
             caches: Vec::new(),
+            log: log,
         }
     }
 
+    /// Register a TextureCache as the next layer in the cache hierarchy.
+    ///
+    /// Caches will be queried on lookup in the order they were inserted here.
     pub fn register_cache(&mut self, cache: Box<TextureCache>) {
         self.caches.push(cache);
     }
 
+    /// Get a texture by first checking the cache, then performing a network request
+    /// if it was not found.
     pub fn get_texture(&self, id: &Uuid) -> Result<Texture, TextureServiceError> {
         // Get the texture from a cache if possible.
         for cache in &self.caches {
             match cache.get_texture(id) {
-                Ok(t) => return Ok(t),
+                Ok(Some(t)) => return Ok(t),
                 _ => {}
             }
         }
@@ -100,12 +102,8 @@ impl TextureService {
             let mut data = Vec::new();
             response.read_to_end(&mut data).unwrap();
 
-            let texture_data = decode::extract_j2k(&data[..])?;
-
-            Ok(Texture {
-                id: id.clone(),
-                data: Some(texture_data),
-            })
+            let texture = decode::extract_j2k(id.clone(), &data[..], &self.log)?;
+            Ok(texture)
         } else {
             Err(TextureServiceError::NetworkError(
                 format!("Sim returned status: {}", response.status()),
