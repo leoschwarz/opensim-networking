@@ -10,9 +10,9 @@ extern crate crypto;
 extern crate derive_error_chain;
 extern crate error_chain;
 extern crate futures;
+extern crate hyper;
 extern crate image;
 extern crate jpeg2000;
-// extern crate hyper;
 #[macro_use]
 extern crate lazy_static;
 extern crate llsd;
@@ -28,7 +28,7 @@ extern crate serde_derive;
 extern crate slog;
 extern crate slog_async;
 extern crate slog_term;
-// extern crate tokio_core;
+extern crate tokio_core;
 extern crate xmlrpc;
 
 pub extern crate opensim_messages as messages;

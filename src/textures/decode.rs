@@ -7,7 +7,7 @@ use textures::Texture;
 use types::Uuid;
 
 /// Extract JPEG2000 code stream.
-pub fn extract_j2k(id: Uuid, raw_data: &[u8], log: &Log) -> Result<Texture, DecodeError> {
+pub fn extract_j2k(id: Uuid, raw_data: &[u8], log: Log) -> Result<Texture, DecodeError> {
     let config = DecodeConfig {
         default_colorspace: Some(ColorSpace::SRGB),
         discard_level: 0,

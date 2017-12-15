@@ -7,6 +7,9 @@ use types::Uuid;
 // TODO: How is cache invalidation handled.
 
 pub trait TextureCache {
+    // Note: Here no Future is returned because before it made the chaining of
+    // multiple cache layers harder, however in the future this might also be
+    // made async. (TODO)
     fn get_texture(&self, id: &Uuid) -> Result<Option<Texture>, TextureServiceError>;
     fn put_texture(&self, id: &Uuid, texture: &Texture) -> Result<(), TextureServiceError>;
 }

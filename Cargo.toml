@@ -13,14 +13,13 @@ license = "GPL-3.0"
 members = ["opensim_messages", "opensim_types", "llsd"]
 
 [dependencies]
-#hyper = "0.11.7"
-#tokio-core = "0.1.10"
 bitflags = "1.0"
 bitreader = { git = "https://github.com/irauta/bitreader", branch = "master" }
 byteorder = "1.0"
 derive-error-chain = "0.11.0"
 error-chain = "0.11.0"
 futures = "0.1.10"
+hyper = "0.11.7"
 image = "0.18.0"
 jpeg2000 = "0.1.1"
 lazy_static = "1.0"
@@ -38,6 +37,7 @@ serde_derive = "1.0"
 slog = "2.0"
 slog-term = "2.3"
 slog-async = "2.2"
+tokio-core = "0.1.10"
 xmlrpc = "0.8.0"
 
 [dev-dependencies]

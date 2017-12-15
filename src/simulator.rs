@@ -9,8 +9,9 @@ use messages::{MessageInstance, MessageType};
 use messages::all::{CompleteAgentMovement, CompleteAgentMovement_AgentData, CompletePingCheck,
                     CompletePingCheck_PingID, UseCircuitCode, UseCircuitCode_CircuitCode};
 use systems::agent_update::{AgentState, Modality};
-use textures::{Texture, TextureService, TextureServiceError};
+use textures::{GetTexture, TextureService};
 use types::{Duration, UnitQuaternion, Uuid, Vector3};
+use tokio_core::reactor::{Core, Handle};
 
 // TODO: Right now here we use LoginResponse, however we should define a struct
 // only containing the relevant fields for sim connections so when jumping from
@@ -21,6 +22,7 @@ use types::{Duration, UnitQuaternion, Uuid, Vector3};
 /// instance.
 pub struct Simulator {
     caps: Capabilities,
+    core: Core,
     circuit: Circuit,
     texture_service: TextureService,
 
@@ -72,6 +74,9 @@ impl Simulator {
             }),
         );
 
+        // TODO: Maybe remove unwrap?
+        let core = Core::new().unwrap();
+
         let capabilities = Self::setup_capabilities(login, log)?;
         let (circuit, region_info) = Self::setup_circuit(login, handlers, log)?;
         let texture_service = Self::setup_texture_service(&capabilities, log.clone());
@@ -79,6 +84,7 @@ impl Simulator {
         Ok(Simulator {
             caps: capabilities,
             circuit: circuit,
+            core: core,
             region_info: region_info,
             texture_service: texture_service,
         })
@@ -96,8 +102,13 @@ impl Simulator {
         self.circuit.send(message, reliable)
     }
 
-    pub fn get_texture(&self, id: &Uuid) -> Result<Texture, TextureServiceError> {
-        self.texture_service.get_texture(id)
+    pub fn get_texture(&self, id: &Uuid) -> GetTexture {
+        self.texture_service.get_texture(id, &self.core_handle())
+    }
+
+    /// Return a handle to the reactor core.
+    pub fn core_handle(&self) -> Handle {
+        self.core.handle()
     }
 
     fn setup_circuit(

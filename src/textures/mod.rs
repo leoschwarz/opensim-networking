@@ -1,16 +1,19 @@
 //! Contains the texture manager.
 use capabilities::Capabilities;
+use futures::{self, Future, Stream};
 use logging::Log;
-use reqwest;
+use hyper;
 use std::error::Error;
-use std::io::Read;
 use std::io::Error as IoError;
+use tokio_core::reactor::Handle;
 use types::{Url, Uuid};
 
 pub mod cache;
 mod decode;
 
 use self::cache::*;
+
+pub type GetTexture = Box<Future<Item = Texture, Error = TextureServiceError>>;
 
 #[derive(Debug, Serialize, Deserialize)]
 pub struct Texture {
@@ -73,41 +76,63 @@ impl TextureService {
 
     /// Get a texture by first checking the cache, then performing a network request
     /// if it was not found.
-    pub fn get_texture(&self, id: &Uuid) -> Result<Texture, TextureServiceError> {
+    pub fn get_texture(&self, id: &Uuid, handle: &Handle) -> GetTexture {
         // Get the texture from a cache if possible.
+        // TODO: Currently this is performed with blocking IO.
         for cache in &self.caches {
             match cache.get_texture(id) {
-                Ok(Some(t)) => return Ok(t),
+                Ok(Some(t)) => return Box::new(futures::future::result(Ok(t))),
                 _ => {}
             }
         }
 
         // Get the texture from the network instead.
-        let url = self.get_texture
-            .join(format!("/?texture_id={}", id).as_str())
-            .map_err(|_| {
-                TextureServiceError::SimConfigError(
-                    format!("get_texture url: {}", self.get_texture),
-                )
-            })?;
+        let url_res = self.get_texture
+            .join(format!("/?texture_id={}", id).as_str());
+        let url = match url_res {
+            Ok(u) => u,
+            Err(_) => {
+                return Box::new(futures::future::result(
+                    Err(TextureServiceError::SimConfigError(
+                        format!("get_texture url: {}", self.get_texture),
+                    )),
+                ))
+            }
+        };
 
-        // TODO: Async IO!!!
-        let client = reqwest::Client::new();
-        let mut response = client
-            .get(url)
-            .send()
-            .map_err(|e| TextureServiceError::NetworkError(format!("{}", e)))?;
-        if response.status().is_success() {
-            // TODO: This is bad for big textures!!!
-            let mut data = Vec::new();
-            response.read_to_end(&mut data).unwrap();
+        let client = hyper::Client::new(handle);
+        // see: https://github.com/hyperium/hyper/issues/1219
+        let uri: hyper::Uri = url.into_string().parse().unwrap();
+        let response = client.get(uri);
 
-            let texture = decode::extract_j2k(id.clone(), &data[..], &self.log)?;
-            Ok(texture)
-        } else {
-            Err(TextureServiceError::NetworkError(
-                format!("Sim returned status: {}", response.status()),
-            ))
-        }
+        let id = id.clone();
+        let log = self.log.clone();
+        Box::new(
+            response
+                .map_err(|e| TextureServiceError::NetworkError(format!("{:?}", e)))
+                .and_then(move |resp| {
+                    let f: Box<
+                        Future<Item = Texture, Error = TextureServiceError>,
+                    > = if resp.status().is_success() {
+                        // TODO: This is bad for big textures!!!
+                        Box::new(
+                            resp.body()
+                                .concat2()
+                                .map_err(|e| TextureServiceError::NetworkError(format!("{:?}", e)))
+                                .and_then(move |data| {
+                                    decode::extract_j2k(id, &data[..], log)
+                                        .map_err(|e| TextureServiceError::DecodeError(Box::new(e)))
+                                }),
+                        )
+                    } else {
+                        Box::new(futures::future::result(
+                            Err(TextureServiceError::NetworkError(
+                                format!("Sim returned status: {}", resp.status()),
+                            )),
+                        ))
+                    };
+                    f
+                }),
+        )
     }
 }
