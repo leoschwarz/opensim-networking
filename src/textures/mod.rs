@@ -3,6 +3,7 @@ use capabilities::Capabilities;
 use futures::{self, Future, Stream};
 use logging::Log;
 use hyper;
+use hyper::header::ContentType;
 use std::error::Error;
 use std::io::Error as IoError;
 use tokio_core::reactor::Handle;
@@ -88,7 +89,7 @@ impl TextureService {
 
         // Get the texture from the network instead.
         let url_res = self.get_texture
-            .join(format!("/?texture_id={}", id).as_str());
+            .join(format!("?texture_id={}", id).as_str());
         let url = match url_res {
             Ok(u) => u,
             Err(_) => {
@@ -101,6 +102,7 @@ impl TextureService {
         };
 
         let client = hyper::Client::new(handle);
+        debug!(self.log.slog_logger(), "Performing texture request: {:?}", url.clone());
         // see: https://github.com/hyperium/hyper/issues/1219
         let uri: hyper::Uri = url.into_string().parse().unwrap();
         let response = client.get(uri);
@@ -114,6 +116,14 @@ impl TextureService {
                     let f: Box<
                         Future<Item = Texture, Error = TextureServiceError>,
                     > = if resp.status().is_success() {
+                        let content_type = match resp.headers().get::<ContentType>() {
+                            None => Err(TextureServiceError::NetworkError("No content type found.".to_string())),
+                            Some(ct) => {
+                                println!("content_type: {}", ct);
+                                Ok(())
+                            }
+                        };
+
                         // TODO: This is bad for big textures!!!
                         Box::new(
                             resp.body()

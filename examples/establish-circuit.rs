@@ -62,8 +62,14 @@ fn main() {
     let session_id = resp.session_id.clone();
 
     let message_handlers = MessageHandlers::new();
-    let sim = Simulator::connect(&resp, message_handlers, &log).unwrap();
+    let mut sim = Simulator::connect(&resp, message_handlers, &log).unwrap();
     println!("region info: {:?}", sim.region_info());
+
+    // Exemplary texture request.
+    let texture_id = sim.region_info().terrain_detail[0].clone();
+    let texture_future = sim.get_texture(&texture_id);
+    let texture = sim.core().run(texture_future);
+    println!("texture: {:?}", texture);
 
     // Let the avatar walk back and forth.
     // TODO: extract position

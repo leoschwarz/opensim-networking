@@ -77,7 +77,8 @@ impl Simulator {
         // TODO: Maybe remove unwrap?
         let core = Core::new().unwrap();
 
-        let capabilities = Self::setup_capabilities(login, log)?;
+        let capabilities = Self::setup_capabilities(login)?;
+        info!(log.slog_logger(), "received capabilities from sim: {:?}", capabilities);
         let (circuit, region_info) = Self::setup_circuit(login, handlers, log)?;
         let texture_service = Self::setup_texture_service(&capabilities, log.clone());
 
@@ -104,6 +105,13 @@ impl Simulator {
 
     pub fn get_texture(&self, id: &Uuid) -> GetTexture {
         self.texture_service.get_texture(id, &self.core_handle())
+    }
+
+    /// TODO: Reconsider this.
+    ///
+    /// The main question is where we want to store the reactor in the first place.
+    pub fn core(&mut self) -> &mut Core {
+        &mut self.core
     }
 
     /// Return a handle to the reactor core.
@@ -143,6 +151,7 @@ impl Simulator {
             }
             _ => Err(ConnectError::from("Did not receive RegionHandshake")),
         }?;
+        info!(log.slog_logger(), "Connected to simulator successfully, received region_info: {:?}", region_info);
 
         let message = CompleteAgentMovement {
             agent_data: CompleteAgentMovement_AgentData {
@@ -172,7 +181,7 @@ impl Simulator {
         Ok((circuit, region_info))
     }
 
-    fn setup_capabilities(login: &LoginResponse, _: &Log) -> Result<Capabilities, ConnectError> {
+    fn setup_capabilities(login: &LoginResponse) -> Result<Capabilities, ConnectError> {
         Ok(Capabilities::setup_capabilities(
             login.seed_capability.clone(),
         )?)
