@@ -3,20 +3,44 @@ use circuit::{Circuit, CircuitConfig, MessageHandlerError, SendMessage};
 pub use circuit::MessageHandlers;
 use data::RegionInfo;
 use futures::Future;
-use logging::Log;
 use login::LoginResponse;
+use logging::Log;
 use messages::{MessageInstance, MessageType};
 use messages::all::{CompleteAgentMovement, CompleteAgentMovement_AgentData, CompletePingCheck,
                     CompletePingCheck_PingID, UseCircuitCode, UseCircuitCode_CircuitCode};
 use systems::agent_update::{AgentState, Modality};
 use textures::{GetTexture, TextureService};
-use types::{Duration, UnitQuaternion, Uuid, Vector3};
+use types::{Duration, Ip4Addr, UnitQuaternion, Url, Uuid, Vector3};
 use tokio_core::reactor::{Core, Handle};
 
-// TODO: Right now here we use LoginResponse, however we should define a struct
-// only containing the relevant fields for sim connections so when jumping from
-// sim to sim we can pass that data. And for LoginResponse a conversion to that
-// representation would be provided.
+#[derive(Clone, Debug, Eq, PartialEq, Hash)]
+pub struct SimLocator {
+    grid: Url,
+    grid_position: (u32, u32),
+}
+
+#[derive(Clone, Debug)]
+pub struct ConnectInfo {
+    pub capabilities_seed: Url,
+    pub agent_id: Uuid,
+    pub session_id: Uuid,
+    pub circuit_code: u32,
+    pub sim_ip: Ip4Addr,
+    pub sim_port: u16,
+}
+
+impl From<LoginResponse> for ConnectInfo {
+    fn from(l: LoginResponse) -> Self {
+        ConnectInfo {
+            capabilities_seed: l.seed_capability,
+            agent_id: l.agent_id,
+            session_id: l.session_id,
+            circuit_code: l.circuit_code,
+            sim_ip: l.sim_ip,
+            sim_port: l.sim_port,
+        }
+    }
+}
 
 /// This struct manages all connections from the viewer to a (single) simulator
 /// instance.
@@ -37,21 +61,16 @@ pub struct Simulator {
 #[error_chain(result = "")]
 pub enum ConnectErrorKind {
     #[error_chain(foreign)] CapabilitiesError(::capabilities::CapabilitiesError),
-
     #[error_chain(foreign)] IoError(::std::io::Error),
-
     #[error_chain(foreign)] MpscError(::std::sync::mpsc::RecvError),
-
     #[error_chain(foreign)] ReadMessageError(::circuit::ReadMessageError),
-
     #[error_chain(foreign)] SendMessageError(::circuit::SendMessageError),
-
     #[error_chain(custom)] Msg(String),
 }
 
 impl Simulator {
     pub fn connect(
-        login: &LoginResponse,
+        connect_info: &ConnectInfo,
         mut handlers: MessageHandlers,
         log: &Log,
     ) -> Result<Simulator, ConnectError> {
@@ -77,9 +96,13 @@ impl Simulator {
         // TODO: Maybe remove unwrap?
         let core = Core::new().unwrap();
 
-        let capabilities = Self::setup_capabilities(login)?;
-        info!(log.slog_logger(), "received capabilities from sim: {:?}", capabilities);
-        let (circuit, region_info) = Self::setup_circuit(login, handlers, log)?;
+        let capabilities = Self::setup_capabilities(connect_info)?;
+        info!(
+            log.slog_logger(),
+            "received capabilities from sim: {:?}",
+            capabilities
+        );
+        let (circuit, region_info) = Self::setup_circuit(connect_info, handlers, log)?;
         let texture_service = Self::setup_texture_service(&capabilities, log.clone());
 
         Ok(Simulator {
@@ -120,7 +143,7 @@ impl Simulator {
     }
 
     fn setup_circuit(
-        login: &LoginResponse,
+        connect_info: &ConnectInfo,
         handlers: MessageHandlers,
         log: &Log,
     ) -> Result<(Circuit, RegionInfo), ConnectError> {
@@ -128,11 +151,11 @@ impl Simulator {
             send_timeout: Duration::from_millis(5000),
             send_attempts: 5,
         };
-        let agent_id = login.agent_id.clone();
-        let session_id = login.session_id.clone();
-        let circuit_code = login.circuit_code.clone();
+        let agent_id = connect_info.agent_id.clone();
+        let session_id = connect_info.session_id.clone();
+        let circuit_code = connect_info.circuit_code.clone();
 
-        let circuit = Circuit::initiate(login.clone(), config, handlers, log.clone())?;
+        let circuit = Circuit::initiate(connect_info, config, handlers, log.clone())?;
 
         let message = UseCircuitCode {
             circuit_code: UseCircuitCode_CircuitCode {
@@ -151,7 +174,11 @@ impl Simulator {
             }
             _ => Err(ConnectError::from("Did not receive RegionHandshake")),
         }?;
-        info!(log.slog_logger(), "Connected to simulator successfully, received region_info: {:?}", region_info);
+        info!(
+            log.slog_logger(),
+            "Connected to simulator successfully, received region_info: {:?}",
+            region_info
+        );
 
         let message = CompleteAgentMovement {
             agent_data: CompleteAgentMovement_AgentData {
@@ -181,9 +208,9 @@ impl Simulator {
         Ok((circuit, region_info))
     }
 
-    fn setup_capabilities(login: &LoginResponse) -> Result<Capabilities, ConnectError> {
+    fn setup_capabilities(info: &ConnectInfo) -> Result<Capabilities, ConnectError> {
         Ok(Capabilities::setup_capabilities(
-            login.seed_capability.clone(),
+            info.capabilities_seed.clone(),
         )?)
     }
 

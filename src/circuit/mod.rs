@@ -18,9 +18,9 @@
 // never fail.
 
 use logging::Log;
-use login::LoginResponse;
 use messages::{MessageInstance, MessageType};
 use packet::Packet;
+use simulator::ConnectInfo;
 use types::SequenceNumber;
 use util::FifoCache;
 
@@ -122,12 +122,15 @@ pub struct Circuit {
 
 impl Circuit {
     pub fn initiate(
-        login_res: LoginResponse,
+        connect_info: &ConnectInfo,
         config: CircuitConfig,
         message_handlers: MessageHandlers,
         log: Log,
     ) -> Result<Circuit, IoError> {
-        let sim_address = SocketAddr::V4(SocketAddrV4::new(login_res.sim_ip, login_res.sim_port));
+        let sim_address = SocketAddr::V4(SocketAddrV4::new(
+            connect_info.sim_ip,
+            connect_info.sim_port,
+        ));
 
         // Queue for incoming messages.
         let (incoming_tx, incoming_rx) = mpsc::channel::<MessageInstance>();

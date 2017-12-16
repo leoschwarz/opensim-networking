@@ -62,7 +62,7 @@ fn main() {
     let session_id = resp.session_id.clone();
 
     let message_handlers = MessageHandlers::new();
-    let mut sim = Simulator::connect(&resp, message_handlers, &log).unwrap();
+    let mut sim = Simulator::connect(&resp.into(), message_handlers, &log).unwrap();
     println!("region info: {:?}", sim.region_info());
 
     // Exemplary texture request.
