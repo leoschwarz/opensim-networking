@@ -9,14 +9,19 @@ use messages::{MessageInstance, MessageType};
 use messages::all::{CompleteAgentMovement, CompleteAgentMovement_AgentData, CompletePingCheck,
                     CompletePingCheck_PingID, UseCircuitCode, UseCircuitCode_CircuitCode};
 use systems::agent_update::{AgentState, Modality};
+use std::sync::Mutex;
 use textures::{GetTexture, TextureService};
 use types::{Duration, Ip4Addr, UnitQuaternion, Url, Uuid, Vector3};
-use tokio_core::reactor::{Core, Handle};
+use tokio_core::reactor::Handle;
+
+pub mod manager;
 
 #[derive(Clone, Debug, Eq, PartialEq, Hash)]
 pub struct SimLocator {
-    grid: Url,
-    grid_position: (u32, u32),
+    pub sim_ip: Ip4Addr,
+    pub sim_port: u16,
+    //grid: Url,
+    //grid_position: (u32, u32),
 }
 
 #[derive(Clone, Debug)]
@@ -45,10 +50,12 @@ impl From<LoginResponse> for ConnectInfo {
 /// This struct manages all connections from the viewer to a (single) simulator
 /// instance.
 pub struct Simulator {
-    caps: Capabilities,
-    core: Core,
-    circuit: Circuit,
-    texture_service: TextureService,
+    caps: Mutex<Capabilities>,
+    circuit: Mutex<Circuit>,
+    texture_service: Mutex<TextureService>,
+
+    handle: Handle,
+    locator: SimLocator,
 
     // TODO: (future) can this be updated remotely somehow, i.e. by the estate manager?
     // If yes we should register appropriate message handlers which update this data,
@@ -72,6 +79,7 @@ impl Simulator {
     pub fn connect(
         connect_info: &ConnectInfo,
         mut handlers: MessageHandlers,
+        handle: Handle,
         log: &Log,
     ) -> Result<Simulator, ConnectError> {
         // Setup default handlers (TODO move to right place and make more transparent
@@ -93,9 +101,6 @@ impl Simulator {
             }),
         );
 
-        // TODO: Maybe remove unwrap?
-        let core = Core::new().unwrap();
-
         let capabilities = Self::setup_capabilities(connect_info)?;
         info!(
             log.slog_logger(),
@@ -104,14 +109,23 @@ impl Simulator {
         );
         let (circuit, region_info) = Self::setup_circuit(connect_info, handlers, log)?;
         let texture_service = Self::setup_texture_service(&capabilities, log.clone());
+        let locator = SimLocator {
+            sim_ip: connect_info.sim_ip.clone(),
+            sim_port: connect_info.sim_port.clone(),
+        };
 
         Ok(Simulator {
-            caps: capabilities,
-            circuit: circuit,
-            core: core,
+            caps: Mutex::new(capabilities),
+            circuit: Mutex::new(circuit),
             region_info: region_info,
-            texture_service: texture_service,
+            texture_service: Mutex::new(texture_service),
+            handle: handle,
+            locator: locator,
         })
+    }
+
+    pub fn locator(&self) -> SimLocator {
+        self.locator.clone()
     }
 
     pub fn region_info(&self) -> &RegionInfo {
@@ -123,23 +137,12 @@ impl Simulator {
         message: M,
         reliable: bool,
     ) -> SendMessage {
-        self.circuit.send(message, reliable)
+        self.circuit.lock().unwrap().send(message, reliable)
     }
 
-    pub fn get_texture(&self, id: &Uuid) -> GetTexture {
-        self.texture_service.get_texture(id, &self.core_handle())
-    }
-
-    /// TODO: Reconsider this.
-    ///
-    /// The main question is where we want to store the reactor in the first place.
-    pub fn core(&mut self) -> &mut Core {
-        &mut self.core
-    }
-
-    /// Return a handle to the reactor core.
-    pub fn core_handle(&self) -> Handle {
-        self.core.handle()
+    /// To call this method you need to use `EventLoop::run_with_handle`.
+    pub fn get_texture(&self, id: &Uuid, handle: &Handle) -> GetTexture {
+        self.texture_service.lock().unwrap().get_texture(id, handle)
     }
 
     fn setup_circuit(

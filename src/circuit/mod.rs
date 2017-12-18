@@ -260,7 +260,7 @@ impl Circuit {
         }
     }
 
-    /// Trys to reading a message and returns it if one is available right away.
+    /// Trys reading a message and returns it if one is available right away.
     ///
     /// Otherwise this won't block the current thread and None will be returned.
     pub fn try_read(&self) -> Result<MessageInstance, ReadMessageError> {

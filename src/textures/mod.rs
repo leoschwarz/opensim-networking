@@ -4,6 +4,7 @@ use futures::{self, Future, Stream};
 use logging::Log;
 use hyper;
 use hyper::header::ContentType;
+use slog::Logger;
 use std::error::Error;
 use std::io::Error as IoError;
 use tokio_core::reactor::Handle;
@@ -55,7 +56,7 @@ impl From<::jpeg2000::error::DecodeError> for TextureServiceError {
 
 pub struct TextureService {
     get_texture: Url,
-    caches: Vec<Box<TextureCache>>,
+    caches: Vec<Box<TextureCache + Send>>,
     log: Log,
 }
 
@@ -71,7 +72,7 @@ impl TextureService {
     /// Register a TextureCache as the next layer in the cache hierarchy.
     ///
     /// Caches will be queried on lookup in the order they were inserted here.
-    pub fn register_cache(&mut self, cache: Box<TextureCache>) {
+    pub fn register_cache(&mut self, cache: Box<TextureCache + Send>) {
         self.caches.push(cache);
     }
 
@@ -102,11 +103,8 @@ impl TextureService {
         };
 
         let client = hyper::Client::new(handle);
-        debug!(
-            self.log.slog_logger(),
-            "Performing texture request: {:?}",
-            url.clone()
-        );
+        let logger = Logger::root(self.log.clone(), o!("texture request" => format!("{}",id)));
+        debug!(logger, "request url: {:?}", url.clone());
         // see: https://github.com/hyperium/hyper/issues/1219
         let uri: hyper::Uri = url.into_string().parse().unwrap();
         let response = client.get(uri);
@@ -117,6 +115,7 @@ impl TextureService {
             response
                 .map_err(|e| TextureServiceError::NetworkError(format!("{:?}", e)))
                 .and_then(move |resp| {
+                    debug!(logger, "received response");
                     let f: Box<
                         Future<Item = Texture, Error = TextureServiceError>,
                     > = if resp.status().is_success() {

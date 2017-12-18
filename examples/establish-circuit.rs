@@ -3,17 +3,21 @@ extern crate opensim_networking;
 #[macro_use]
 extern crate serde_derive;
 extern crate toml;
+extern crate tokio_core;
 
 use opensim_networking::logging::{Log, LogLevel};
 use opensim_networking::login::{hash_password, LoginRequest};
-use opensim_networking::simulator::{MessageHandlers, Simulator};
+use opensim_networking::simulator::{MessageHandlers, Simulator, ConnectInfo, SimLocator};
+use opensim_networking::simulator::manager::SimManager;
 use opensim_networking::systems::agent_update::{AgentState, Modality, MoveDirection};
 use opensim_networking::types::{Duration, UnitQuaternion, Vector3};
 
 use std::io::prelude::*;
 use std::fs::File;
 use std::thread;
+use std::sync::Arc;
 use futures::future::Future;
+use tokio_core::reactor::Core;
 
 #[derive(Deserialize)]
 struct Config {
@@ -35,14 +39,11 @@ struct ConfigSim {
 
 fn main() {
     // Setup logging.
-    let log = Log::new_dir("output/logdir", LogLevel::Debug).unwrap();
+    let log = Log::new_dir("output/logdir", LogLevel::Debug)
+        .expect("Setting up log failed.");
 
     // Read the configuration file.
-    let mut file = File::open("establish-circuit.toml")
-        .expect("Copy establish-circuit.toml.tpl to establisk-circuit.toml and populate it.");
-    let mut raw_data = String::new();
-    file.read_to_string(&mut raw_data).unwrap();
-    let config: Config = toml::from_str(raw_data.as_str()).expect("invalid TOML");
+    let config = get_config();
 
     // Perform the login.
     let request = LoginRequest {
@@ -61,14 +62,22 @@ fn main() {
     let agent_id = resp.agent_id.clone();
     let session_id = resp.session_id.clone();
 
+    let mut core = Core::new().unwrap();
+
     let message_handlers = MessageHandlers::new();
-    let mut sim = Simulator::connect(&resp.into(), message_handlers, &log).unwrap();
-    println!("region info: {:?}", sim.region_info());
+    let mut sim_manager = SimManager::new(core.handle(), log.clone());
+    let sim_connect_info = ConnectInfo::from(resp);
+    let sim_locator = SimLocator {
+        sim_ip: sim_connect_info.sim_ip.clone(),
+        sim_port: sim_connect_info.sim_port,
+    };
+    let sim = sim_manager.get_sim(&sim_locator, Some(&sim_connect_info)).unwrap();
 
     // Exemplary texture request.
     let texture_id = sim.region_info().terrain_detail[0].clone();
-    let texture_future = sim.get_texture(&texture_id);
-    let texture = sim.core().run(texture_future);
+    let sim2 = Arc::clone(&sim);
+    let handle = core.handle();
+    let texture = core.run(sim2.get_texture(&texture_id, &handle)).unwrap();
     println!("texture: {:?}", texture);
 
     // Let the avatar walk back and forth.
@@ -94,4 +103,12 @@ fn main() {
         thread::sleep(Duration::from_millis(200));
         state.move_direction = Some(state.move_direction.unwrap().inverse());
     }
+}
+
+fn get_config() -> Config {
+    let mut file = File::open("establish-circuit.toml")
+        .expect("Copy establish-circuit.toml.tpl to establisk-circuit.toml and populate it.");
+    let mut raw_data = String::new();
+    file.read_to_string(&mut raw_data).unwrap();
+    toml::from_str(raw_data.as_str()).expect("invalid TOML")
 }
