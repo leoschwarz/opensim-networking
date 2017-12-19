@@ -1,19 +1,22 @@
 use capabilities::Capabilities;
-use circuit::{Circuit, CircuitConfig, MessageHandlerError, SendMessage};
+use circuit::{Circuit, CircuitConfig, SendMessage};
 pub use circuit::MessageHandlers;
 use data::RegionInfo;
 use futures::Future;
 use login::LoginResponse;
 use logging::Log;
-use messages::{MessageInstance, MessageType};
-use messages::all::{CompleteAgentMovement, CompleteAgentMovement_AgentData, CompletePingCheck,
-                    CompletePingCheck_PingID, UseCircuitCode, UseCircuitCode_CircuitCode};
+use messages::MessageInstance;
+use messages::all::{CompleteAgentMovement, CompleteAgentMovement_AgentData, UseCircuitCode,
+                    UseCircuitCode_CircuitCode};
 use systems::agent_update::{AgentState, Modality};
 use std::sync::Mutex;
 use textures::{GetTexture, TextureService};
 use types::{Duration, Ip4Addr, UnitQuaternion, Url, Uuid, Vector3};
 use tokio_core::reactor::Handle;
 
+// TODO: Reconsider how useful this is.
+// It might actually just be making something rather convenient which should
+// not be.
 #[derive(Clone, Debug, Eq, PartialEq, Hash)]
 pub struct SimLocator {
     pub sim_ip: Ip4Addr,
@@ -76,29 +79,10 @@ pub enum ConnectErrorKind {
 impl Simulator {
     pub fn connect(
         connect_info: &ConnectInfo,
-        mut handlers: MessageHandlers,
+        handlers: MessageHandlers,
         handle: Handle,
         log: &Log,
     ) -> Result<Simulator, ConnectError> {
-        // Setup default handlers (TODO move to right place and make more transparent
-        // to user?)
-        handlers.insert(
-            MessageType::StartPingCheck,
-            Box::new(|msg, circuit| {
-                let start_ping_check = match msg {
-                    MessageInstance::StartPingCheck(m) => Ok(m),
-                    _ => Err(MessageHandlerError::WrongHandler),
-                }?;
-                let response = CompletePingCheck {
-                    ping_id: CompletePingCheck_PingID {
-                        ping_id: start_ping_check.ping_id.ping_id,
-                    },
-                };
-                circuit.send(response, false);
-                Ok(())
-            }),
-        );
-
         let capabilities = Self::setup_capabilities(connect_info)?;
         info!(
             log.slog_logger(),

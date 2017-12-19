@@ -18,13 +18,12 @@
 // never fail.
 
 use logging::Log;
-use messages::{MessageInstance, MessageType};
+use messages::MessageInstance;
 use packet::Packet;
 use simulator::ConnectInfo;
 use types::SequenceNumber;
 use util::FifoCache;
 
-use std::collections::HashMap;
 use std::error::Error;
 use std::io::Error as IoError;
 use std::net::{SocketAddr, SocketAddrV4, UdpSocket};
@@ -41,32 +40,9 @@ mod status;
 pub use self::status::{SendMessage, SendMessageError};
 use self::status::SendMessageStatus;
 
-pub type MessageHandler = Box<
-    Fn(MessageInstance, &MessageSender) -> Result<(), MessageHandlerError> + Send,
->;
-pub type MessageHandlers = HashMap<MessageType, MessageHandler>;
-
-// TODO: Differentiate between recoverable and non-recoverable errors.
-#[derive(Debug)]
-pub enum MessageHandlerError {
-    /// Message handler does not know how to handle the message instance.
-    // TODO: Make this impossible?
-    WrongHandler,
-    Other(Box<Error>),
-}
-
-/// Can be used by MessageHandler instances to send a message through the
-/// Circuit.
-pub struct MessageSender {
-    ackmgr_tx: AckManagerTx,
-}
-
-impl MessageSender {
-    /// See: `Ciruit::send()` for more information.
-    pub fn send<M: Into<MessageInstance>>(&self, msg: M, reliable: bool) -> SendMessage {
-        self.ackmgr_tx.send_msg(msg.into(), reliable)
-    }
-}
+mod handlers;
+pub use self::handlers::{MessageHandlerError, MessageHandlers};
+use self::handlers::MessageSender;
 
 #[derive(Debug)]
 pub enum ReadMessageError {

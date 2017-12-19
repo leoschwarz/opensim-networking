@@ -61,7 +61,7 @@ fn main() {
 
     let mut core = Core::new().unwrap();
 
-    let message_handlers = MessageHandlers::new();
+    let message_handlers = MessageHandlers::default();
     let sim_connect_info = ConnectInfo::from(resp);
     let sim = Simulator::connect(&sim_connect_info, message_handlers, core.handle(), &log).unwrap();
 
