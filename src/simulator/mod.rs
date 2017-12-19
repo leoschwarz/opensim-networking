@@ -14,8 +14,6 @@ use textures::{GetTexture, TextureService};
 use types::{Duration, Ip4Addr, UnitQuaternion, Url, Uuid, Vector3};
 use tokio_core::reactor::Handle;
 
-pub mod manager;
-
 #[derive(Clone, Debug, Eq, PartialEq, Hash)]
 pub struct SimLocator {
     pub sim_ip: Ip4Addr,

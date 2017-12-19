@@ -2,20 +2,18 @@ extern crate futures;
 extern crate opensim_networking;
 #[macro_use]
 extern crate serde_derive;
-extern crate toml;
 extern crate tokio_core;
+extern crate toml;
 
 use opensim_networking::logging::{Log, LogLevel};
 use opensim_networking::login::{hash_password, LoginRequest};
-use opensim_networking::simulator::{MessageHandlers, Simulator, ConnectInfo, SimLocator};
-use opensim_networking::simulator::manager::SimManager;
+use opensim_networking::simulator::{ConnectInfo, MessageHandlers, Simulator};
 use opensim_networking::systems::agent_update::{AgentState, Modality, MoveDirection};
 use opensim_networking::types::{Duration, UnitQuaternion, Vector3};
 
 use std::io::prelude::*;
 use std::fs::File;
 use std::thread;
-use std::sync::Arc;
 use futures::future::Future;
 use tokio_core::reactor::Core;
 
@@ -39,8 +37,7 @@ struct ConfigSim {
 
 fn main() {
     // Setup logging.
-    let log = Log::new_dir("output/logdir", LogLevel::Debug)
-        .expect("Setting up log failed.");
+    let log = Log::new_dir("output/logdir", LogLevel::Debug).expect("Setting up log failed.");
 
     // Read the configuration file.
     let config = get_config();
@@ -65,19 +62,13 @@ fn main() {
     let mut core = Core::new().unwrap();
 
     let message_handlers = MessageHandlers::new();
-    let mut sim_manager = SimManager::new(core.handle(), log.clone());
     let sim_connect_info = ConnectInfo::from(resp);
-    let sim_locator = SimLocator {
-        sim_ip: sim_connect_info.sim_ip.clone(),
-        sim_port: sim_connect_info.sim_port,
-    };
-    let sim = sim_manager.get_sim(&sim_locator, Some(&sim_connect_info)).unwrap();
+    let sim = Simulator::connect(&sim_connect_info, message_handlers, core.handle(), &log).unwrap();
 
     // Exemplary texture request.
     let texture_id = sim.region_info().terrain_detail[0].clone();
-    let sim2 = Arc::clone(&sim);
     let handle = core.handle();
-    let texture = core.run(sim2.get_texture(&texture_id, &handle)).unwrap();
+    let texture = core.run(sim.get_texture(&texture_id, &handle)).unwrap();
     println!("texture: {:?}", texture);
 
     // Let the avatar walk back and forth.
