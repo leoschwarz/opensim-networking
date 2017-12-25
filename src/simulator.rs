@@ -80,33 +80,34 @@ pub enum ConnectError {
 }
 
 impl Simulator {
-    #[async]
     pub fn connect(
         connect_info: ConnectInfo,
         handlers: MessageHandlers,
         handle: Handle,
         log: Log,
-    ) -> Result<Simulator, Error> {
-        let capabilities = await!(Self::setup_capabilities(
-            connect_info.clone(),
-            handle.clone()
-        ))?;
+    ) -> impl Future<Item = Simulator, Error = Error> {
+        async_block! {
+            let capabilities = await!(Self::setup_capabilities(
+                connect_info.clone(),
+                handle.clone()
+            ))?;
 
-        let (circuit, region_info) = Self::setup_circuit(&connect_info, handlers, &log)?;
-        let texture_service = Self::setup_texture_service(&capabilities, log.clone());
-        let locator = SimLocator {
-            sim_ip: connect_info.sim_ip.clone(),
-            sim_port: connect_info.sim_port.clone(),
-        };
+            let (circuit, region_info) = Self::setup_circuit(&connect_info, handlers, &log)?;
+            let texture_service = Self::setup_texture_service(&capabilities, log.clone());
+            let locator = SimLocator {
+                sim_ip: connect_info.sim_ip.clone(),
+                sim_port: connect_info.sim_port.clone(),
+            };
 
-        Ok(Simulator {
-            caps: Mutex::new(capabilities),
-            circuit: Mutex::new(circuit),
-            region_info: region_info,
-            texture_service: Mutex::new(texture_service),
-            handle: handle,
-            locator: locator,
-        })
+            Ok(Simulator {
+                caps: Mutex::new(capabilities),
+                circuit: Mutex::new(circuit),
+                region_info: region_info,
+                texture_service: Mutex::new(texture_service),
+                handle: handle,
+                locator: locator,
+            })
+        }
     }
 
     pub fn locator(&self) -> SimLocator {
