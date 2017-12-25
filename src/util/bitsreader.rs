@@ -148,15 +148,18 @@ impl<'d> BytesReader for BufBitsReader<'d> {
 
     #[inline]
     fn read_bytes_u16<B: ByteOrder>(&mut self) -> Result<u16, ReadError> {
-        Ok(B::read_u16(
-            &[self.reader.read_u8(8)?, self.reader.read_u8(8)?],
-        ))
+        Ok(B::read_u16(&[
+            self.reader.read_u8(8)?,
+            self.reader.read_u8(8)?,
+        ]))
     }
 
     #[inline]
     fn read_bytes_u32<B: ByteOrder>(&mut self) -> Result<u32, ReadError> {
         Ok(B::read_u32(&[
-            self.reader.read_u8(8)?, self.reader.read_u8(8)?, self.reader.read_u8(8)?,
+            self.reader.read_u8(8)?,
+            self.reader.read_u8(8)?,
+            self.reader.read_u8(8)?,
             self.reader.read_u8(8)?,
         ]))
     }
@@ -164,9 +167,14 @@ impl<'d> BytesReader for BufBitsReader<'d> {
     #[inline]
     fn read_bytes_u64<B: ByteOrder>(&mut self) -> Result<u64, ReadError> {
         Ok(B::read_u64(&[
-            self.reader.read_u8(8)?, self.reader.read_u8(8)?, self.reader.read_u8(8)?,
-            self.reader.read_u8(8)?, self.reader.read_u8(8)?, self.reader.read_u8(8)?,
-            self.reader.read_u8(8)?, self.reader.read_u8(8)?,
+            self.reader.read_u8(8)?,
+            self.reader.read_u8(8)?,
+            self.reader.read_u8(8)?,
+            self.reader.read_u8(8)?,
+            self.reader.read_u8(8)?,
+            self.reader.read_u8(8)?,
+            self.reader.read_u8(8)?,
+            self.reader.read_u8(8)?,
         ]))
     }
 
@@ -177,15 +185,18 @@ impl<'d> BytesReader for BufBitsReader<'d> {
 
     #[inline]
     fn read_bytes_i16<B: ByteOrder>(&mut self) -> Result<i16, ReadError> {
-        Ok(B::read_i16(
-            &[self.reader.read_u8(8)?, self.reader.read_u8(8)?],
-        ))
+        Ok(B::read_i16(&[
+            self.reader.read_u8(8)?,
+            self.reader.read_u8(8)?,
+        ]))
     }
 
     #[inline]
     fn read_bytes_i32<B: ByteOrder>(&mut self) -> Result<i32, ReadError> {
         Ok(B::read_i32(&[
-            self.reader.read_u8(8)?, self.reader.read_u8(8)?, self.reader.read_u8(8)?,
+            self.reader.read_u8(8)?,
+            self.reader.read_u8(8)?,
+            self.reader.read_u8(8)?,
             self.reader.read_u8(8)?,
         ]))
     }
@@ -193,16 +204,23 @@ impl<'d> BytesReader for BufBitsReader<'d> {
     #[inline]
     fn read_bytes_i64<B: ByteOrder>(&mut self) -> Result<i64, ReadError> {
         Ok(B::read_i64(&[
-            self.reader.read_u8(8)?, self.reader.read_u8(8)?, self.reader.read_u8(8)?,
-            self.reader.read_u8(8)?, self.reader.read_u8(8)?, self.reader.read_u8(8)?,
-            self.reader.read_u8(8)?, self.reader.read_u8(8)?,
+            self.reader.read_u8(8)?,
+            self.reader.read_u8(8)?,
+            self.reader.read_u8(8)?,
+            self.reader.read_u8(8)?,
+            self.reader.read_u8(8)?,
+            self.reader.read_u8(8)?,
+            self.reader.read_u8(8)?,
+            self.reader.read_u8(8)?,
         ]))
     }
 
     #[inline]
     fn read_bytes_f32<B: ByteOrder>(&mut self) -> Result<f32, ReadError> {
         Ok(B::read_f32(&[
-            self.reader.read_u8(8)?, self.reader.read_u8(8)?, self.reader.read_u8(8)?,
+            self.reader.read_u8(8)?,
+            self.reader.read_u8(8)?,
+            self.reader.read_u8(8)?,
             self.reader.read_u8(8)?,
         ]))
     }
@@ -210,9 +228,14 @@ impl<'d> BytesReader for BufBitsReader<'d> {
     #[inline]
     fn read_bytes_f64<B: ByteOrder>(&mut self) -> Result<f64, ReadError> {
         Ok(B::read_f64(&[
-            self.reader.read_u8(8)?, self.reader.read_u8(8)?, self.reader.read_u8(8)?,
-            self.reader.read_u8(8)?, self.reader.read_u8(8)?, self.reader.read_u8(8)?,
-            self.reader.read_u8(8)?, self.reader.read_u8(8)?,
+            self.reader.read_u8(8)?,
+            self.reader.read_u8(8)?,
+            self.reader.read_u8(8)?,
+            self.reader.read_u8(8)?,
+            self.reader.read_u8(8)?,
+            self.reader.read_u8(8)?,
+            self.reader.read_u8(8)?,
+            self.reader.read_u8(8)?,
         ]))
     }
 

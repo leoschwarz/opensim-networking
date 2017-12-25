@@ -94,18 +94,19 @@ impl TextureService {
         let url = match url_res {
             Ok(u) => u,
             Err(_) => {
-                return Box::new(futures::future::result(
-                    Err(TextureServiceError::SimConfigError(
-                        format!("get_texture url: {}", self.get_texture),
+                return Box::new(futures::future::result(Err(
+                    TextureServiceError::SimConfigError(format!(
+                        "get_texture url: {}",
+                        self.get_texture
                     )),
-                ))
+                )))
             }
         };
 
         let client = hyper::Client::new(handle);
         let logger = Logger::root(self.log.clone(), o!("texture request" => format!("{}",id)));
         debug!(logger, "request url: {:?}", url.clone());
-        // see: https://github.com/hyperium/hyper/issues/1219
+        // TODO see: https://github.com/hyperium/hyper/issues/1219
         let uri: hyper::Uri = url.into_string().parse().unwrap();
         let response = client.get(uri);
 
@@ -142,11 +143,12 @@ impl TextureService {
                                 }),
                         )
                     } else {
-                        Box::new(futures::future::result(
-                            Err(TextureServiceError::NetworkError(
-                                format!("Sim returned status: {}", resp.status()),
+                        Box::new(futures::future::result(Err(
+                            TextureServiceError::NetworkError(format!(
+                                "Sim returned status: {}",
+                                resp.status()
                             )),
-                        ))
+                        )))
                     };
                     f
                 }),

@@ -467,9 +467,7 @@ mod tests {
         assert_eq!(array.len(), 3);
         assert_eq!(
             array[0],
-            Value::new_binary(vec![
-                114, 97, 110, 100, 111, 109
-            ])
+            Value::new_binary(vec![114, 97, 110, 100, 111, 109])
         );
         assert_eq!(
             array[1],
@@ -618,9 +616,7 @@ mod tests {
         map.insert("uri".to_string(), Value::new_uri("http://example.com"));
         map.insert(
             "binary".to_string(),
-            Value::new_binary(vec![
-                10, 11, 12, 13, 5, 6, 7, 8
-            ]),
+            Value::new_binary(vec![10, 11, 12, 13, 5, 6, 7, 8]),
         );
         map.insert("undef".to_string(), Value::Scalar(Scalar::Undefined));
         map.insert(

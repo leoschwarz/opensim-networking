@@ -186,24 +186,18 @@ mod tests {
     #[test]
     fn read_integer() {
         assert_eq!(
-            read_unwrap(vec![
-                0x69, 0x0, 0x0, 0x0, 0x0
-            ]),
+            read_unwrap(vec![0x69, 0x0, 0x0, 0x0, 0x0]),
             Value::new_integer(0)
         );
         assert_eq!(
-            read_unwrap(vec![
-                0x69, 0x0, 0x12, 0xd7, 0x9b
-            ]),
+            read_unwrap(vec![0x69, 0x0, 0x12, 0xd7, 0x9b]),
             Value::new_integer(1234843)
         );
     }
 
     #[test]
     fn read_real() {
-        let data = vec![
-            0x72, 0x41, 0x2c, 0xec, 0xf6, 0x77, 0xce, 0xd9, 0x17
-        ];
+        let data = vec![0x72, 0x41, 0x2c, 0xec, 0xf6, 0x77, 0xce, 0xd9, 0x17];
         assert_eq!(read_unwrap(data), Value::new_real(947835.234));
     }
 
@@ -218,9 +212,7 @@ mod tests {
             Value::new_uuid("97f4aeca-88a1-42a1-b385-b97b18abb255".parse().unwrap())
         );
 
-        let data = vec![
-            0x75, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
-        ];
+        let data = vec![0x75, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
         assert_eq!(
             read_unwrap(data),
             Value::new_uuid("00000000-0000-0000-0000-000000000000".parse().unwrap())
@@ -249,9 +241,7 @@ mod tests {
 
     #[test]
     fn read_string() {
-        let data = vec![
-            0x73, 0, 0, 0, 0
-        ];
+        let data = vec![0x73, 0, 0, 0, 0];
         assert_eq!(read_unwrap(data), Value::new_string(""));
 
         let data = vec![
@@ -281,9 +271,7 @@ mod tests {
     fn read_datetime() {
         use chrono::{NaiveDate, NaiveDateTime, NaiveTime, Utc};
 
-        let data = vec![
-            100, 0, 0, 192, 141, 167, 222, 209, 65
-        ];
+        let data = vec![100, 0, 0, 192, 141, 167, 222, 209, 65];
         let d = NaiveDate::from_ymd(2008, 1, 1);
         let t = NaiveTime::from_hms_milli(20, 10, 31, 0);
         let date = Date::from_utc(NaiveDateTime::new(d, t), Utc);
@@ -293,15 +281,11 @@ mod tests {
     #[test]
     fn read_array() {
         // Empty array.
-        let data = vec![
-            0x5b, 0x0, 0x0, 0x0, 0x0, 0x5d
-        ];
+        let data = vec![0x5b, 0x0, 0x0, 0x0, 0x0, 0x5d];
         assert_eq!(read_unwrap(data), Value::Array(Vec::new()));
 
         // { 0 }
-        let data = vec![
-            0x5b, 0x0, 0x0, 0x0, 0x1, 0x69, 0x0, 0x0, 0x0, 0x0, 0x5d
-        ];
+        let data = vec![0x5b, 0x0, 0x0, 0x0, 0x1, 0x69, 0x0, 0x0, 0x0, 0x0, 0x5d];
         let arr = read_unwrap(data).array().unwrap();
         assert_eq!(arr.len(), 1);
         assert_eq!(arr[0], Value::new_integer(0));
@@ -319,9 +303,7 @@ mod tests {
     #[test]
     fn read_map() {
         // {}
-        let data = vec![
-            0x7b, 0x0, 0x0, 0x0, 0x0, 0x7d
-        ];
+        let data = vec![0x7b, 0x0, 0x0, 0x0, 0x0, 0x7d];
         assert_eq!(read_unwrap(data), Value::Map(Map::new()));
 
         // { test = 0 }
@@ -368,9 +350,7 @@ mod tests {
         map.insert("uri".to_string(), Value::new_uri("http://example.com"));
         map.insert(
             "binary".to_string(),
-            Value::new_binary(vec![
-                10, 11, 12, 13, 5, 6, 7, 8
-            ]),
+            Value::new_binary(vec![10, 11, 12, 13, 5, 6, 7, 8]),
         );
         map.insert("undef".to_string(), Value::Scalar(Scalar::Undefined));
         map.insert(

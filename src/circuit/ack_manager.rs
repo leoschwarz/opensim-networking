@@ -127,9 +127,9 @@ impl AckManagerRx {
                                 .map(|num| PacketAck_Packets { id: *num })
                                 .collect(),
                         }.into(),
-                        future: SendMessage::new(
-                            SendMessageStatus::PendingSend { reliable: false },
-                        ),
+                        future: SendMessage::new(SendMessageStatus::PendingSend {
+                            reliable: false,
+                        }),
                     })
                 }
             }

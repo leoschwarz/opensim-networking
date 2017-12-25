@@ -213,23 +213,17 @@ impl<'a> PacketReader<'a> {
         let b1 = self.read_u8()?;
         let bytes = if b1 != 0xff {
             // High frequency messages.
-            [
-                0, 0, 0, b1
-            ]
+            [0, 0, 0, b1]
         } else {
             let b2 = self.read_u8()?;
             if b2 != 0xff {
                 // Medium frequency messages.
-                [
-                    0, 0, b2, 0xff
-                ]
+                [0, 0, b2, 0xff]
             } else {
                 // Low and fixed frequency messages.
                 let b3 = self.read_u8()?;
                 let b4 = self.read_u8()?;
-                [
-                    b4, b3, 0xff, 0xff
-                ]
+                [b4, b3, 0xff, 0xff]
             }
         };
 
@@ -298,29 +292,18 @@ mod tests {
 
     #[test]
     fn read_simple() {
-        let data: [u8; 6] = [
-            2, 4, 6, 8, 10, 12
-        ];
+        let data: [u8; 6] = [2, 4, 6, 8, 10, 12];
         let mut reader = PacketReader::new(&data);
 
-        let mut buffer: [u8; 6] = [
-            0, 0, 0, 0, 0, 0
-        ];
+        let mut buffer: [u8; 6] = [0, 0, 0, 0, 0, 0];
         let bytes = reader.read(&mut buffer).unwrap();
         assert_eq!(bytes, 6);
-        assert_eq!(
-            buffer,
-            [
-                2, 4, 6, 8, 10, 12
-            ]
-        );
+        assert_eq!(buffer, [2, 4, 6, 8, 10, 12]);
     }
 
     #[test]
     fn read_in_chunks() {
-        let data: [u8; 5] = [
-            2, 4, 6, 8, 10
-        ];
+        let data: [u8; 5] = [2, 4, 6, 8, 10];
         let mut reader = PacketReader::new(&data);
 
         let mut buffer: [u8; 2] = [0, 0];
@@ -341,17 +324,10 @@ mod tests {
         let mut reader = PacketReader::new(&data);
         reader.zerocoding_enabled = true;
 
-        let mut buffer: [u8; 10] = [
-            1, 1, 1, 1, 1, 1, 1, 1, 1, 1
-        ];
+        let mut buffer: [u8; 10] = [1, 1, 1, 1, 1, 1, 1, 1, 1, 1];
         let bytes = reader.read(&mut buffer).unwrap();
         assert_eq!(bytes, 5);
-        assert_eq!(
-            buffer,
-            [
-                0, 0, 0, 0, 0, 1, 1, 1, 1, 1
-            ]
-        );
+        assert_eq!(buffer, [0, 0, 0, 0, 0, 1, 1, 1, 1, 1]);
     }
 
     #[test]
@@ -373,9 +349,7 @@ mod tests {
 
     #[test]
     fn reader_skip() {
-        let data: [u8; 6] = [
-            0, 1, 2, 3, 4, 5
-        ];
+        let data: [u8; 6] = [0, 1, 2, 3, 4, 5];
         let mut reader = PacketReader::new(&data);
         assert!(reader.skip_bytes(2).is_ok());
         assert_eq!(reader.read_u8().unwrap(), 2);

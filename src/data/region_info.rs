@@ -38,19 +38,28 @@ impl RegionInfo {
             water_height: info.water_height,
             cache_id: info.cache_id,
             terrain_base: [
-                info.terrain_base0, info.terrain_base1, info.terrain_base2, info.terrain_base3
+                info.terrain_base0,
+                info.terrain_base1,
+                info.terrain_base2,
+                info.terrain_base3,
             ],
             terrain_detail: [
-                info.terrain_detail0, info.terrain_detail1, info.terrain_detail2,
+                info.terrain_detail0,
+                info.terrain_detail1,
+                info.terrain_detail2,
                 info.terrain_detail3,
             ],
             terrain_start_height: [
-                info.terrain_start_height00, info.terrain_start_height01,
-                info.terrain_start_height10, info.terrain_start_height11,
+                info.terrain_start_height00,
+                info.terrain_start_height01,
+                info.terrain_start_height10,
+                info.terrain_start_height11,
             ],
             terrain_height_range: [
-                info.terrain_height_range00, info.terrain_height_range01,
-                info.terrain_height_range10, info.terrain_height_range11,
+                info.terrain_height_range00,
+                info.terrain_height_range01,
+                info.terrain_height_range10,
+                info.terrain_height_range11,
             ],
         }
     }

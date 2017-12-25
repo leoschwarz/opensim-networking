@@ -1,8 +1,10 @@
-use capabilities::Capabilities;
+use capabilities::{Capabilities, CapabilitiesError};
 use circuit::{Circuit, CircuitConfig, SendMessage};
 pub use circuit::MessageHandlers;
 use data::RegionInfo;
-use futures::Future;
+use failure::Error;
+use futures::prelude::*;
+use hyper::Uri;
 use login::LoginResponse;
 use logging::Log;
 use messages::MessageInstance;
@@ -21,8 +23,8 @@ use tokio_core::reactor::Handle;
 pub struct SimLocator {
     pub sim_ip: Ip4Addr,
     pub sim_port: u16,
-    //grid: Url,
-    //grid_position: (u32, u32),
+    /* grid: Url, */
+    /* grid_position: (u32, u32), */
 }
 
 #[derive(Clone, Debug)]
@@ -64,32 +66,33 @@ pub struct Simulator {
     region_info: RegionInfo,
 }
 
-#[derive(Debug, ErrorChain)]
-#[error_chain(error = "ConnectError")]
-#[error_chain(result = "")]
-pub enum ConnectErrorKind {
-    #[error_chain(foreign)] CapabilitiesError(::capabilities::CapabilitiesError),
-    #[error_chain(foreign)] IoError(::std::io::Error),
-    #[error_chain(foreign)] MpscError(::std::sync::mpsc::RecvError),
-    #[error_chain(foreign)] ReadMessageError(::circuit::ReadMessageError),
-    #[error_chain(foreign)] SendMessageError(::circuit::SendMessageError),
-    #[error_chain(custom)] Msg(String),
+#[derive(Debug, Fail)]
+pub enum ConnectError {
+    #[fail(display = "capabilities error: {}", 0)]
+    CapabilitiesError(#[cause] ::capabilities::CapabilitiesError),
+    #[fail(display = "I/O error: {}", 0)] IoError(#[cause] ::std::io::Error),
+    #[fail(display = "Mpsc error: {}", 0)] MpscError(#[cause] ::std::sync::mpsc::RecvError),
+    #[fail(display = "Read message error: {}", 0)]
+    ReadMessageError(#[cause] ::circuit::ReadMessageError),
+    #[fail(display = "Send message error: {}", 0)]
+    SendMessageError(#[cause] ::circuit::SendMessageError),
+    #[fail(display = "error: {}", 0)] Msg(String),
 }
 
 impl Simulator {
+    #[async]
     pub fn connect(
-        connect_info: &ConnectInfo,
+        connect_info: ConnectInfo,
         handlers: MessageHandlers,
         handle: Handle,
-        log: &Log,
-    ) -> Result<Simulator, ConnectError> {
-        let capabilities = Self::setup_capabilities(connect_info)?;
-        info!(
-            log.slog_logger(),
-            "received capabilities from sim: {:?}",
-            capabilities
-        );
-        let (circuit, region_info) = Self::setup_circuit(connect_info, handlers, log)?;
+        log: Log,
+    ) -> Result<Simulator, Error> {
+        let capabilities = await!(Self::setup_capabilities(
+            connect_info.clone(),
+            handle.clone()
+        ))?;
+
+        let (circuit, region_info) = Self::setup_circuit(&connect_info, handlers, &log)?;
         let texture_service = Self::setup_texture_service(&capabilities, log.clone());
         let locator = SimLocator {
             sim_ip: connect_info.sim_ip.clone(),
@@ -131,7 +134,7 @@ impl Simulator {
         connect_info: &ConnectInfo,
         handlers: MessageHandlers,
         log: &Log,
-    ) -> Result<(Circuit, RegionInfo), ConnectError> {
+    ) -> Result<(Circuit, RegionInfo), Error> {
         let config = CircuitConfig {
             send_timeout: Duration::from_millis(5000),
             send_attempts: 5,
@@ -157,7 +160,7 @@ impl Simulator {
             MessageInstance::RegionHandshake(handshake) => {
                 Ok(RegionInfo::extract_message(handshake))
             }
-            _ => Err(ConnectError::from("Did not receive RegionHandshake")),
+            _ => Err(ConnectError::Msg("Did not receive RegionHandshake".into())),
         }?;
         info!(
             log.slog_logger(),
@@ -193,10 +196,21 @@ impl Simulator {
         Ok((circuit, region_info))
     }
 
-    fn setup_capabilities(info: &ConnectInfo) -> Result<Capabilities, ConnectError> {
-        Ok(Capabilities::setup_capabilities(
-            info.capabilities_seed.clone(),
-        )?)
+    #[async]
+    fn setup_capabilities(
+        info: ConnectInfo,
+        handle: Handle,
+    ) -> Result<Capabilities, CapabilitiesError> {
+        /* TODO
+        info!(
+            log.slog_logger(),
+            "received capabilities from sim: {:?}",
+            capabilities
+        );
+        */
+        // TODO see: https://github.com/hyperium/hyper/issues/1219
+        let caps_seed_uri: Uri = info.capabilities_seed.into_string().parse().unwrap();
+        await!(Capabilities::setup_capabilities(caps_seed_uri, handle)).map_err(|e| e.into())
     }
 
     fn setup_texture_service(caps: &Capabilities, log: Log) -> TextureService {

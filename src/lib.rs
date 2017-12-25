@@ -1,5 +1,6 @@
 // TODO: Remove at some later time.
 #![allow(dead_code)]
+#![feature(proc_macro, conservative_impl_trait, generators)]
 
 #[macro_use]
 extern crate bitflags;
@@ -9,7 +10,9 @@ extern crate crypto;
 #[macro_use]
 extern crate derive_error_chain;
 extern crate error_chain;
-extern crate futures;
+#[macro_use]
+extern crate failure;
+extern crate futures_await as futures;
 extern crate hyper;
 extern crate image;
 extern crate jpeg2000;

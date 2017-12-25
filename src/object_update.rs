@@ -200,12 +200,10 @@ fn read_texture_entry<R: BytesReader + ::std::io::Read>(
     //       should have been extracted or there should have been an early return of
     //       this function.
     let default = default.full().unwrap();
-    Ok(
-        partial
-            .into_iter()
-            .map(|item| item.complete(&default))
-            .collect(),
-    )
+    Ok(partial
+        .into_iter()
+        .map(|item| item.complete(&default))
+        .collect())
 }
 
 pub fn read_object_data<R: BytesReader>(
