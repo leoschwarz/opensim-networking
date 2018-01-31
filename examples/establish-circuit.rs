@@ -63,7 +63,7 @@ fn main() {
 
     let message_handlers = MessageHandlers::default();
     let sim_connect_info = ConnectInfo::from(resp);
-    let sim = Simulator::connect(&sim_connect_info, message_handlers, core.handle(), &log).unwrap();
+    let sim = Simulator::connect(sim_connect_info, message_handlers, core.handle(), log).wait().unwrap();
 
     // Exemplary texture request.
     let texture_id = sim.region_info().terrain_detail[0].clone();

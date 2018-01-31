@@ -1,5 +1,5 @@
 use {Vector3, Vector4, Quaternion, Ip4Addr, IpPort, Uuid, WriteMessageResult, Message,
-     ReadError, ReadErrorKind};
+     ReadError};
 
 use arrayvec::ArrayVec;
 use byteorder::{LittleEndian, ReadBytesExt, WriteBytesExt};

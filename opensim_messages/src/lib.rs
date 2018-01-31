@@ -3,14 +3,13 @@ extern crate opensim_types;
 extern crate arrayvec;
 extern crate byteorder;
 #[macro_use]
-extern crate derive_error_chain;
-extern crate error_chain;
+extern crate failure;
 
 use opensim_types::*;
 use std::io::{Read, Write};
 
 mod errors;
-pub use self::errors::{ReadError, ReadErrorKind, ReadResult};
+pub use self::errors::ReadError;
 
 pub type WriteMessageResult = ::std::io::Result<()>;
 

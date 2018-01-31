@@ -2,6 +2,7 @@ use messages::MessageInstance;
 use types::SequenceNumber;
 
 use byteorder::{BigEndian, ReadBytesExt, WriteBytesExt};
+use failure::Fail;
 use std::io::{Read, Write};
 
 bitflags! {
@@ -155,7 +156,13 @@ impl Packet {
 pub enum ReadPacketErrorKind {
     #[error_chain(foreign)] IoError(::std::io::Error),
 
-    #[error_chain(link = "::messages::ReadError")] ReadError(::messages::ReadErrorKind),
+    #[error_chain(custom)] ReadError(::failure::Compat<::messages::ReadError>),
+}
+
+impl From<::messages::ReadError> for ReadPacketError {
+    fn from(e: ::messages::ReadError) -> Self {
+        ReadPacketErrorKind::ReadError(e.compat()).into()
+    }
 }
 
 /// Used internally to read the content of packages.

@@ -253,7 +253,7 @@ def generate_message_instance_enum(all_msgnames, messages):
     code += "\t\tmatch message_num {\n"
     for message in messages:
         code += "\t\t\t%s => %s::read_from(buffer),\n" % (message.message_num, message.name)
-    code += "\t\t\t_ => Err(ReadErrorKind::UnknownMessageNumber(message_num).into())\n"
+    code += "\t\t\t_ => Err(ReadError::UnknownMessageNumber(message_num))\n"
     code += "\t\t}\n"
     code += "\t}\n"
 
