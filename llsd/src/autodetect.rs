@@ -28,15 +28,15 @@ fn determine_representation(buf: &[u8]) -> Representation {
     }
 }
 
-#[derive(Debug, ErrorChain)]
-#[error_chain(error = "ReadError")]
-#[error_chain(result = "")]
-pub enum ReadErrorKind {
-    #[error_chain(link = "::binary::ReadError")] ReadBinary(::binary::ReadErrorKind),
+#[derive(Debug, Fail)]
+pub enum ReadError {
+    #[fail(display = "Reading binary LLSD failed: {}", _0)]
+    ReadBinary(#[cause] ::binary::ReadError),
 
-    #[error_chain(link = "::xml::ReadError")] ReadXml(::xml::ReadErrorKind),
+    #[fail(display = "Reading xml LLSD failed: {}", _0)] ReadXml(#[cause] ::xml::ReadError),
 
-    #[error_chain(custom)] InvalidRepresentation(Representation),
+    #[fail(display = "Invalid LLSD representation: {:?}", _0)]
+    InvalidRepresentation(Representation),
 }
 
 /// Read a value from either Binary or XML LLSD representation.
@@ -49,11 +49,11 @@ pub fn read_value(buf: &[u8]) -> Result<Value, ReadError> {
             use std::io::BufReader;
 
             let mut reader = BufReader::new(&buf[PREFIX_BINARY.len()..]);
-            Ok(::binary::read_value(&mut reader)?)
+            ::binary::read_value(&mut reader).map_err(|e| ReadError::ReadBinary(e))
         }
-        Representation::Xml => Ok(::xml::read_value(buf)?),
+        Representation::Xml => ::xml::read_value(buf).map_err(|e| ReadError::ReadXml(e)),
         Representation::Notation | Representation::Unknown => {
-            Err(ReadErrorKind::InvalidRepresentation(repr).into())
+            Err(ReadError::InvalidRepresentation(repr))
         }
     }
 }

@@ -2,8 +2,7 @@ extern crate byteorder;
 extern crate chrono;
 extern crate data_encoding;
 #[macro_use]
-extern crate derive_error_chain;
-extern crate error_chain;
+extern crate failure;
 #[macro_use]
 extern crate lazy_static;
 extern crate quick_xml;

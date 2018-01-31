@@ -38,33 +38,47 @@ lazy_static! {
 
 /// WARNING (TODO): Don't depend on this yet, this type will have to be
 /// refactored in the future.
-#[derive(Debug, ErrorChain)]
-#[error_chain(error = "ReadError")]
-#[error_chain(result = "")]
-pub enum ReadErrorKind {
-    #[error_chain(foreign)] Xml(::quick_xml::errors::Error),
+#[derive(Debug, Fail)]
+pub enum ReadError {
+    #[fail(display = "{}", _0)] Xml(#[cause] ::quick_xml::errors::Error),
 
-    #[error_chain(foreign)] BinaryDecode(::data_encoding::DecodeError),
+    #[fail(display = "{}", _0)] BinaryDecode(#[cause] ::data_encoding::DecodeError),
 
-    #[error_chain(custom)] UnexpectedEof,
+    #[fail(display = "Unexpected EOF")] UnexpectedEof,
 
-    #[error_chain(custom)] UnexpectedText,
+    // TODO: This should probably include the text in question.
+    #[fail(display = "Unexpected text")] UnexpectedText,
 
-    #[error_chain(custom)] UnexpectedTag(String),
+    #[fail(display = "Unexpected tag: {}", _0)] UnexpectedTag(String),
 
-    #[error_chain(custom)] InvalidContainerType(String),
+    #[fail(display = "Unsupported feature: {}", _0)] Unsupported(String),
 
-    #[error_chain(custom)] InvalidPartialValue(String),
+    #[fail(display = "Invalid container type: {}", _0)] InvalidContainerType(String),
 
-    #[error_chain(custom)] InvalidStructure,
+    #[fail(display = "Invalid partial value: {}", _0)] InvalidPartialValue(String),
 
-    #[error_chain(custom)] EmptyValue,
+    #[fail(display = "Invalid document structure: {}", _0)] InvalidDocument(String),
 
-    /// Type conversion failed.
-    #[error_chain(custom)]
-    ConversionFailed,
+    #[fail(display = "Type conversion failed.")] ConversionFailed,
 
-    Msg(String),
+    /// Included here since this is not tested thoroughly yet.
+    #[fail(display = "This error should never occur.")]
+    ShouldNeverFail,
+
+    // TODO: Should probably not be used.
+    #[fail(display = "{}", _0)] Msg(String),
+}
+
+impl From<::quick_xml::errors::Error> for ReadError {
+    fn from(e: ::quick_xml::errors::Error) -> Self {
+        ReadError::Xml(e)
+    }
+}
+
+impl From<::data_encoding::DecodeError> for ReadError {
+    fn from(e: ::data_encoding::DecodeError) -> Self {
+        ReadError::BinaryDecode(e)
+    }
 }
 
 #[derive(Debug, PartialEq)]
@@ -128,7 +142,7 @@ impl PartialValue {
                 ScalarType::Undefined,
                 Value::Scalar(Scalar::Undefined),
             )),
-            t => Err(ReadErrorKind::InvalidPartialValue(t.to_string()).into()),
+            t => Err(ReadError::InvalidPartialValue(t.to_string())),
         }
     }
 
@@ -140,9 +154,9 @@ impl PartialValue {
                 Ok(val.unwrap_or_else(|| Value::new_binary(Vec::new())))
             }
             PartialValue::Scalar(_, val) => Ok(val),
-            PartialValue::Llsd | PartialValue::Key(_) => {
-                Err("Tried extracting PartialValue that cannot be extracted.".into())
-            }
+            PartialValue::Llsd | PartialValue::Key(_) => Err(ReadError::InvalidDocument(
+                "Tried extracting PartialValue that cannot be extracted.".into(),
+            )),
         }
     }
 }
@@ -173,7 +187,9 @@ pub fn read_value<B: BufRead>(buf_reader: B) -> Result<Value, ReadError> {
 
                 let mut vt = PartialValue::parse_name(name)?;
                 if vt == PartialValue::Llsd && val_stack.len() > 0 {
-                    return Err(ReadErrorKind::InvalidStructure.into());
+                    return Err(ReadError::InvalidDocument(
+                        "</llsd> encountered while some elements were not closed.".into(),
+                    ));
                 } else if let PartialValue::ScalarBinary(_, ref mut enc) = vt {
                     for attr in e.attributes() {
                         let attr = attr?;
@@ -183,7 +199,7 @@ pub fn read_value<B: BufRead>(buf_reader: B) -> Result<Value, ReadError> {
                                 let attr_value = String::from_utf8_lossy(&attr.value);
                                 *enc = match attr_value.as_ref() {
                                     "base16" => BinaryEncoding::Base16,
-                                    "base85" => return Err("base85 unsupported.".into()),
+                                    "base85" => return Err(ReadError::Unsupported("base85".into())),
                                     "base64" | _ => BinaryEncoding::Base64,
                                 }
                             }
@@ -206,27 +222,29 @@ pub fn read_value<B: BufRead>(buf_reader: B) -> Result<Value, ReadError> {
                     PartialValue::Scalar(ref s_type, ref mut s_val) => {
                         let scalar = s_type
                             .parse_scalar(e.unescaped()?.as_ref())
-                            .ok_or_else(|| ReadError::from(ReadErrorKind::ConversionFailed))?;
+                            .ok_or_else(|| ReadError::ConversionFailed)?;
                         *s_val = Value::Scalar(scalar);
                     }
                     PartialValue::Key(ref mut key) => {
                         let string = e.unescape_and_decode(&mut reader)?;
                         *key = Some(string);
                     }
-                    _ => return Err("Only <key> and scalar elements can contain text.".into()),
+                    _ => {
+                        return Err(ReadError::InvalidDocument(
+                            "Only <key> and scalar elements can contain text.".into(),
+                        ))
+                    }
                 }
                 val_stack.push(target);
             }
             Event::End(_) => {
                 // Get the current value from the stack, this should never fail.
-                let curr_val = val_stack
-                    .pop()
-                    .ok_or_else(|| ReadError::from(ReadErrorKind::InvalidStructure))?;
+                let curr_val = val_stack.pop().ok_or_else(|| ReadError::ShouldNeverFail)?;
 
                 // Get the previous value, this shouldn't fail in any valid LLSD XML instance.
                 let prev_val = val_stack
                     .pop()
-                    .ok_or_else(|| ReadError::from(ReadErrorKind::InvalidStructure))?;
+                    .ok_or_else(|| ReadError::InvalidDocument("No root value".into()))?;
 
                 match prev_val {
                     PartialValue::Llsd => return Ok(curr_val.extract()?),
@@ -241,31 +259,41 @@ pub fn read_value<B: BufRead>(buf_reader: B) -> Result<Value, ReadError> {
                                 val_stack.push(prev_val);
                                 val_stack.push(curr_val);
                             }
-                            _ => return Err(ReadErrorKind::InvalidStructure.into()),
+                            _ => {
+                                return Err(ReadError::InvalidDocument(
+                                    "<map> value not preceeded by <key>".into(),
+                                ))
+                            }
                         }
                     }
                     PartialValue::Scalar(_, _) | PartialValue::ScalarBinary(_, _) => {
-                        return Err(ReadErrorKind::InvalidStructure.into());
+                        return Err(ReadError::InvalidDocument("Value can't be followed by another value, if it is not in a container.".into()));
                     }
                     PartialValue::Key(Some(key)) => {
                         // If the preprevious value is a Map, insert, otherwise error.
-                        let mut prev2_val = val_stack
-                            .pop()
-                            .ok_or_else(|| ReadError::from(ReadErrorKind::InvalidStructure))?;
+                        let mut prev2_val = val_stack.pop().ok_or_else(|| {
+                            ReadError::InvalidDocument("<key> is only a child of <map>".into())
+                        })?;
                         match prev2_val {
                             PartialValue::Map(ref mut m) => {
                                 m.insert(key, curr_val.extract()?);
                             }
-                            _ => return Err(ReadErrorKind::InvalidStructure.into()),
+                            _ => {
+                                return Err(ReadError::InvalidDocument(
+                                    "<key> is only as a child of a <map>".to_string(),
+                                ))
+                            }
                         }
                         val_stack.push(prev2_val);
                     }
                     PartialValue::Key(None) => {
-                        return Err("Empty key.".into());
+                        return Err(ReadError::InvalidDocument(
+                            "Empty <key/> encountered.".into(),
+                        ));
                     }
                 };
             }
-            Event::Eof => return Err(ReadErrorKind::UnexpectedEof.into()),
+            Event::Eof => return Err(ReadError::UnexpectedEof),
             _ => {}
         }
     }

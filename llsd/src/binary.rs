@@ -4,17 +4,27 @@ use data::*;
 use std::io::{Read, Write};
 use byteorder::{BigEndian, LittleEndian, ReadBytesExt, WriteBytesExt};
 
-#[derive(Debug, ErrorChain)]
-#[error_chain(error = "ReadError")]
-#[error_chain(result = "")]
-pub enum ReadErrorKind {
-    #[error_chain(foreign)] Io(::std::io::Error),
+#[derive(Debug, Fail)]
+pub enum ReadError {
+    #[fail(display = "{}", _0)] Io(#[cause] ::std::io::Error),
 
-    #[error_chain(foreign)] Uuid(::uuid::ParseError),
+    #[fail(display = "{}", _0)] Uuid(#[cause] ::uuid::ParseError),
 
-    #[error_chain(custom)] InvalidKey,
+    #[fail(display = "key was not a scalar that can be converted to a string")] InvalidKey,
 
-    #[error_chain(custom)] InvalidTypePrefix,
+    #[fail(display = "Invalid type prefix: {:?}", _0)] InvalidTypePrefix(char),
+}
+
+impl From<::std::io::Error> for ReadError {
+    fn from(e: ::std::io::Error) -> Self {
+        ReadError::Io(e)
+    }
+}
+
+impl From<::uuid::ParseError> for ReadError {
+    fn from(e: ::uuid::ParseError) -> Self {
+        ReadError::Uuid(e)
+    }
 }
 
 fn read_n_bytes<R: Read>(reader: &mut R, n_bytes: u32) -> Result<Vec<u8>, ReadError> {
@@ -76,7 +86,7 @@ pub fn read_value<R: Read>(reader: &mut R) -> Result<Value, ReadError> {
             for _ in 0..len {
                 let key = match read_value(reader)? {
                     Value::Scalar(Scalar::String(s)) => s,
-                    _ => return Err(ReadErrorKind::InvalidKey.into()),
+                    _ => return Err(ReadError::InvalidKey),
                 };
                 let value = read_value(reader)?;
                 items.insert(key, value);
@@ -86,7 +96,7 @@ pub fn read_value<R: Read>(reader: &mut R) -> Result<Value, ReadError> {
             reader.read_u8()?;
             Ok(Value::Map(items))
         }
-        _ => Err(ReadErrorKind::InvalidTypePrefix.into()),
+        prefix => Err(ReadError::InvalidTypePrefix(prefix)),
     }
 }
 
