@@ -51,4 +51,7 @@ pub mod systems;
 pub mod textures;
 
 /// experimental
+pub mod grid_map;
+
+/// experimental
 pub mod object_update;
