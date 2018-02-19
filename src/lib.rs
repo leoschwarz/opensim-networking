@@ -32,6 +32,7 @@ extern crate slog;
 extern crate slog_async;
 extern crate slog_term;
 extern crate tokio_core;
+extern crate url;
 extern crate xmlrpc;
 
 pub extern crate opensim_messages as messages;

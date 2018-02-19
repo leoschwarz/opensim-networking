@@ -13,8 +13,9 @@ use messages::all::{CompleteAgentMovement, CompleteAgentMovement_AgentData, UseC
 use systems::agent_update::{AgentState, Modality};
 use std::sync::Mutex;
 use textures::{GetTexture, TextureService};
-use types::{Duration, Ip4Addr, UnitQuaternion, Url, Uuid, Vector3};
+use types::{Duration, Ip4Addr, UnitQuaternion, Uuid, Vector3};
 use tokio_core::reactor::Handle;
+use url::Url;
 
 // TODO: Reconsider how useful this is.
 // It might actually just be making something rather convenient which should

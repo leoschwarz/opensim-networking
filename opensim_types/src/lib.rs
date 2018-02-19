@@ -12,7 +12,6 @@ pub type IpPort = u16;
 pub use uuid::Uuid;
 pub use uuid::ParseError as UuidParseError;
 
-pub use url::Url;
 pub use url::ParseError as UrlParseError;
 
 pub type SequenceNumber = u32;

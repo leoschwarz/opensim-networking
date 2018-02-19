@@ -8,7 +8,8 @@ use slog::Logger;
 use std::error::Error;
 use std::io::Error as IoError;
 use tokio_core::reactor::Handle;
-use types::{Url, Uuid};
+use types::Uuid;
+use url::Url;
 
 pub mod cache;
 mod decode;

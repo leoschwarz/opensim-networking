@@ -1,10 +1,11 @@
 //! Implementation of the Capabilities protocol.
 
-use {hyper, llsd};
+use hyper;
+use llsd;
 use futures::prelude::*;
 use hyper::header::{ContentLength, ContentType};
 use tokio_core::reactor::Handle;
-use types::Url;
+use url::Url;
 
 #[derive(Debug)]
 pub struct Urls {
@@ -85,7 +86,7 @@ impl Capabilities {
                     let get_texture = map.remove("GetTexture")
                         .and_then(|v| v.scalar())
                         .and_then(|s| s.as_uri())
-                        .and_then(|u| u.parse().ok())
+                        .and_then(|u| u.ok())
                         .ok_or_else(|| CapabilitiesError::Msg("No GetTexture cap.".into()))?;
 
                     Ok(Capabilities {
