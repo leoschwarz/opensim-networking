@@ -2419,13 +2419,12 @@ pub struct CompleteAuction {
 
 #[derive(Clone, Debug)]
 pub struct CompletePingCheck_PingID {
-    /// TODO
+    /// The ID of the ping to reply to.
     pub ping_id: u8,
 }
 
 ///
-/// TODO:
-///
+/// Response to a StartPingCheck message.
 ///
 #[derive(Clone, Debug)]
 pub struct CompletePingCheck {
@@ -6922,7 +6921,7 @@ pub struct MapBlockRequest {
 
 #[derive(Clone, Debug)]
 pub struct MapItemReply_AgentData {
-    /// TODO
+    /// Agent id of the sender.
     pub agent_id: Uuid,
     /// TODO
     pub flags: u32,
@@ -6930,29 +6929,116 @@ pub struct MapItemReply_AgentData {
 
 #[derive(Clone, Debug)]
 pub struct MapItemReply_RequestData {
-    /// TODO
+    ///
+    ///
+    /// Possible values and correspondation:
+    ///
+    /// <table>
+    ///     <tr>
+    ///         <th>Value</th>
+    ///         <th>Name</th>
+    ///         <th>Description</th>
+    ///         <th>Extra</th>
+    ///         <th>Extra2</th>
+    ///     </tr>
+    ///     <tr>
+    ///         <td>1</td>
+    ///         <td>Telehub</td>
+    ///         <td></td>
+    ///         <td>-</td>
+    ///         <td>-</td>
+    ///     </tr>
+    ///     <tr>
+    ///         <td>2</td>
+    ///         <td>PgEvent</td>
+    ///         <td>PG rated event</td>
+    ///         <td>-</td>
+    ///         <td>See `ContentRating`.</td>
+    ///     </tr>
+    ///     <tr>
+    ///         <td>3</td>
+    ///         <td>MatureEvent</td>
+    ///         <td>Mature rated event</td>
+    ///         <td>-</td>
+    ///         <td>See `ContentRating`.</td>
+    ///     </tr>
+    ///     <tr>
+    ///         <td>4</td>
+    ///         <td>Popular</td>
+    ///         <td>Popular location</td>
+    ///         <td></td>
+    ///         <td></td>
+    ///     </tr>
+    ///     <tr>
+    ///         <td>6</td>
+    ///         <td>AgentLocations</td>
+    ///         <td>Locations of avatar groups in a region</td>
+    ///         <td>Avatar count</td>
+    ///         <td>-</td>
+    ///     </tr>
+    ///     <tr>
+    ///         <td>7</td>
+    ///         <td>LandForSale</td>
+    ///         <td></td>
+    ///         <td>Size of region.</td>
+    ///         <td>Price of region.</td>
+    ///     </tr>
+    ///     <tr>
+    ///         <td>8</td>
+    ///         <td>Classified</td>
+    ///         <td>Classified ad</td>
+    ///         <td></td>
+    ///         <td></td>
+    ///     </tr>
+    ///     <tr>
+    ///         <td>9</td>
+    ///         <td>AdultEvent</td>
+    ///         <td>Adult rated event</td>
+    ///         <td>-</td>
+    ///         <td>See `ContentRating`.</td>
+    ///     </tr>
+    ///     <tr>
+    ///         <td>10</td>
+    ///         <td>AdultLandForSale</td>
+    ///         <td></td>
+    ///         <td>Size of region.</td>
+    ///         <td>Price of region.</td>
+    ///     </tr>
+    /// </table>
+    ///
+    /// ContentRating:
+    ///
+    /// - 0: Event is PG rated.
+    /// - 1: Event is Mature rated.
+    /// - 2: Event is Adult rated.
+    ///
+    ///
     pub item_type: u32,
 }
 
 #[derive(Clone, Debug)]
 pub struct MapItemReply_Data {
-    /// TODO
+    /// Absolute, global x coordinate of the item.
     pub x: u32,
-    /// TODO
+    /// Absolute, global y coordinate of the item.
     pub y: u32,
-    /// TODO
+    /// Landsale ID, if items are land deals.
     pub id: Uuid,
-    /// TODO
+    ///
+    /// See ItemType for a table of meanings of this field.
+    ///
     pub extra: i32,
-    /// TODO
+    ///
+    /// See ItemType for a table of meanings of this field.
+    ///
     pub extra2: i32,
-    /// TODO
+    /// Name of the item.
     pub name: Vec<u8>,
 }
 
 ///
-/// TODO:
-/// /// sim -> viewer
+/// Messages sent from the simulator to the viewer, carrying various pieces
+/// of information to be displayed in the grid map.
 ///
 #[derive(Clone, Debug)]
 pub struct MapItemReply {
@@ -10678,11 +10764,11 @@ pub struct RegionHandshake_RegionInfo {
     pub region_flags: u32,
     /// TODO
     pub sim_access: u8,
-    /// TODO
+    /// Name of the sim.
     pub sim_name: Vec<u8>,
-    /// TODO
+    /// ID of the sim owner.
     pub sim_owner: Uuid,
-    /// TODO
+    /// Whether the client is the estate manager of this sim.
     pub is_estate_manager: bool,
     /// TODO
     pub water_height: f32,
@@ -10745,12 +10831,7 @@ pub struct RegionHandshake_RegionInfo3 {
 }
 
 ///
-/// 		TODO:
-/// 		/// RegionHandshake
-/// /// Sent by region to viewer after it has received UseCircuitCode
-/// /// from that viewer.
-/// /// sim -> viewer
-/// /// reliable
+/// First message sent to viewer after sim has received the UseCircuitCode message.
 ///
 #[derive(Clone, Debug)]
 pub struct RegionHandshake {
@@ -13313,17 +13394,14 @@ pub struct StartLure {
 
 #[derive(Clone, Debug)]
 pub struct StartPingCheck_PingID {
-    /// TODO
+    /// ID of the ping, should be included in the response.
     pub ping_id: u8,
-    /// TODO
+    /// Should not be used apparently.
     pub oldest_unacked: u32,
 }
 
 ///
-/// 		TODO:
-/// 		/// StartPingCheck - used to measure circuit ping times
-/// /// PingID is used to determine how backlogged the ping was that was
-/// /// returned (or how hosed the other side is)
+/// Start a ping request, which should be responded with a CompletePingCheck message.
 ///
 #[derive(Clone, Debug)]
 pub struct StartPingCheck {
