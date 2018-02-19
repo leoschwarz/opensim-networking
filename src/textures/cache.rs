@@ -20,9 +20,9 @@ pub trait TextureCache {
 ///       remove old items once the disk is full, however most likely a better
 ///       cache architecture should be followed anyway.
 ///
-///       Relevant reading:
-///       - http://wiki.secondlife.com/wiki/Talk:Texture_cache
-///       - [more on efficient key value storage and caching]
+/// Relevant reading:
+/// - http://wiki.secondlife.com/wiki/Talk:Texture_cache
+/// - [more on efficient key value storage and caching]
 pub struct GreedyCache {
     dir: PathBuf,
 }

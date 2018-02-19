@@ -1,3 +1,5 @@
+// TODO: This crate should probably be deprecated.
+
 extern crate nalgebra;
 extern crate url;
 extern crate uuid;
