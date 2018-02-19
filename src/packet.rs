@@ -154,9 +154,11 @@ impl Packet {
 #[error_chain(error = "ReadPacketError")]
 #[error_chain(result = "")]
 pub enum ReadPacketErrorKind {
-    #[error_chain(foreign)] IoError(::std::io::Error),
+    #[error_chain(foreign)]
+    IoError(::std::io::Error),
 
-    #[error_chain(custom)] ReadError(::failure::Compat<::messages::ReadError>),
+    #[error_chain(custom)]
+    ReadError(::failure::Compat<::messages::ReadError>),
 }
 
 impl From<::messages::ReadError> for ReadPacketError {

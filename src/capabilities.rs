@@ -20,7 +20,8 @@ pub struct Capabilities {
 
 #[derive(Debug, Fail)]
 pub enum CapabilitiesError {
-    #[fail(display = "capabilities error: {}", 0)] Msg(String),
+    #[fail(display = "capabilities error: {}", 0)]
+    Msg(String),
 }
 
 impl Capabilities {

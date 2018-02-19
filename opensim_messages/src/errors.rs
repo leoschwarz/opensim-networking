@@ -10,15 +10,18 @@ use std::io::Error as IoError;
 
 #[derive(Debug, Fail)]
 pub enum ReadError {
-    #[fail(display = "IO error: {}", _0)] IoError(#[cause] ::std::io::Error),
+    #[fail(display = "IO error: {}", _0)]
+    IoError(#[cause] ::std::io::Error),
 
-    #[fail(display = "Parse UUID: {}", _0)] ParseUuid(UuidParseError),
+    #[fail(display = "Parse UUID: {}", _0)]
+    ParseUuid(UuidParseError),
 
     /*
     #[fail(display = "Failed parsing value: {}", _0)]
     ParseValue(ParseError),
     */
-    #[fail(display = "No definition for message number {} found.", _0)] UnknownMessageNumber(u32),
+    #[fail(display = "No definition for message number {} found.", _0)]
+    UnknownMessageNumber(u32),
 }
 
 impl From<UuidParseError> for ReadError {

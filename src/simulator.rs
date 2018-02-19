@@ -71,13 +71,16 @@ pub struct Simulator {
 pub enum ConnectError {
     #[fail(display = "capabilities error: {}", 0)]
     CapabilitiesError(#[cause] ::capabilities::CapabilitiesError),
-    #[fail(display = "I/O error: {}", 0)] IoError(#[cause] ::std::io::Error),
-    #[fail(display = "Mpsc error: {}", 0)] MpscError(#[cause] ::std::sync::mpsc::RecvError),
+    #[fail(display = "I/O error: {}", 0)]
+    IoError(#[cause] ::std::io::Error),
+    #[fail(display = "Mpsc error: {}", 0)]
+    MpscError(#[cause] ::std::sync::mpsc::RecvError),
     #[fail(display = "Read message error: {}", 0)]
     ReadMessageError(#[cause] ::circuit::ReadMessageError),
     #[fail(display = "Send message error: {}", 0)]
     SendMessageError(#[cause] ::circuit::SendMessageError),
-    #[fail(display = "error: {}", 0)] Msg(String),
+    #[fail(display = "error: {}", 0)]
+    Msg(String),
 }
 
 impl Simulator {

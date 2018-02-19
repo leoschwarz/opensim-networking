@@ -34,17 +34,23 @@ pub fn hash_password(password_raw: &str) -> String {
 #[error_chain(error = "LoginError")]
 #[error_chain(result = "")]
 pub enum LoginErrorKind {
-    #[error_chain(foreign)] RequestError(::xmlrpc::RequestError),
+    #[error_chain(foreign)]
+    RequestError(::xmlrpc::RequestError),
 
-    #[error_chain(foreign)] HttpError(::reqwest::Error),
+    #[error_chain(foreign)]
+    HttpError(::reqwest::Error),
 
-    #[error_chain(foreign)] ParseFloatError(::std::num::ParseFloatError),
+    #[error_chain(foreign)]
+    ParseFloatError(::std::num::ParseFloatError),
 
-    #[error_chain(foreign)] AddrParseError(::std::net::AddrParseError),
+    #[error_chain(foreign)]
+    AddrParseError(::std::net::AddrParseError),
 
-    #[error_chain(foreign)] UuidParseError(::types::UuidParseError),
+    #[error_chain(foreign)]
+    UuidParseError(::types::UuidParseError),
 
-    #[error_chain(foreign)] UrlParseError(::types::UrlParseError),
+    #[error_chain(foreign)]
+    UrlParseError(::types::UrlParseError),
 
     /// Login failed.
     #[error_chain(custom)]
