@@ -1,6 +1,5 @@
 use capabilities::{Capabilities, CapabilitiesError};
-use circuit::{Circuit, CircuitConfig, SendMessage};
-pub use circuit::MessageHandlers;
+use circuit::{message_handlers, Circuit, CircuitConfig, SendMessage};
 use data::RegionInfo;
 use failure::Error;
 use futures::prelude::*;
@@ -86,7 +85,7 @@ pub enum ConnectError {
 impl Simulator {
     pub fn connect(
         connect_info: ConnectInfo,
-        handlers: MessageHandlers,
+        handlers: message_handlers::Handlers,
         handle: Handle,
         log: Log,
     ) -> impl Future<Item = Simulator, Error = Error> {
@@ -137,7 +136,7 @@ impl Simulator {
 
     fn setup_circuit(
         connect_info: &ConnectInfo,
-        handlers: MessageHandlers,
+        handlers: message_handlers::Handlers,
         log: &Log,
     ) -> Result<(Circuit, RegionInfo), Error> {
         let config = CircuitConfig {

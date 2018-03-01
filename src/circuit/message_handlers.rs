@@ -15,14 +15,14 @@ struct FilterHandler {
     handler: HandlerFn,
 }
 
-pub struct MessageHandlers {
+pub struct Handlers {
     type_handlers: HashMap<MessageType, HandlerFn>,
     filter_handlers: Vec<FilterHandler>,
 }
 
-impl MessageHandlers {
-    pub fn new() -> MessageHandlers {
-        MessageHandlers {
+impl Handlers {
+    pub fn new() -> Handlers {
+        Handlers {
             type_handlers: HashMap::new(),
             filter_handlers: Vec::new(),
         }
@@ -77,9 +77,9 @@ pub enum ErrorKind {
     Other(Box<error::Error>),
 }
 
-impl Default for MessageHandlers {
+impl Default for Handlers {
     fn default() -> Self {
-        let mut handlers = MessageHandlers::new();
+        let mut handlers = Handlers::new();
         handlers.register_type(MessageType::StartPingCheck, Box::new(handle_ping_check));
         handlers
     }

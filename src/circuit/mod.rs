@@ -54,9 +54,7 @@ mod status;
 pub use self::status::{SendMessage, SendMessageError};
 use self::status::SendMessageStatus;
 
-// TODO: Rename to message_handlers or msg_handlers ?
-pub mod handlers;
-pub use self::handlers::MessageHandlers;
+pub mod message_handlers;
 
 #[derive(Debug)]
 pub enum ReadMessageError {
@@ -127,7 +125,7 @@ impl Circuit {
     pub fn initiate(
         connect_info: &ConnectInfo,
         config: CircuitConfig,
-        message_handlers: MessageHandlers,
+        msg_handlers: message_handlers::Handlers,
         log: Log,
     ) -> Result<Circuit, IoError> {
         let sim_address = SocketAddr::V4(SocketAddrV4::new(
@@ -220,11 +218,11 @@ impl Circuit {
                         }
                     }
                     msg => {
-                        let _ = message_handlers
+                        let _ = msg_handlers
                             .handle(msg, &message_sender)
                             .map_err(|err| {
                                 match err.kind {
-                                    handlers::ErrorKind::NoHandler => {
+                                    message_handlers::ErrorKind::NoHandler => {
                                         // Yield the message to the incoming message channel.
                                         incoming_tx.send(err.msg).unwrap();
                                     }

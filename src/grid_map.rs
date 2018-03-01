@@ -5,7 +5,7 @@ mod region_handle {
     use std::collections::HashMap;
     use std::sync::{Arc, Mutex};
     use circuit::{MessageSender, SendMessage};
-    use circuit::handlers::{self, MessageHandlers};
+    use circuit::message_handlers;
     use types::Uuid;
     use futures::Future;
     use futures::sync::oneshot;
@@ -18,7 +18,7 @@ mod region_handle {
 
     impl LookupService {
         pub fn register_service(
-            handlers: &mut MessageHandlers,
+            handlers: &mut message_handlers::Handlers,
             message_sender: MessageSender,
         ) -> Self {
             let pending = Arc::new(Mutex::new(HashMap::new()));
@@ -41,9 +41,9 @@ mod region_handle {
                         Ok(())
                         // TODO: Report unregistered incoming messages?
                     }
-                    _ => Err(handlers::Error {
+                    _ => Err(message_handlers::Error {
                         msg: msg,
-                        kind: handlers::ErrorKind::WrongHandler,
+                        kind: message_handlers::ErrorKind::WrongHandler,
                     }),
                 }
             });
