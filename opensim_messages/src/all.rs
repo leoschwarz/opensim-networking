@@ -6935,11 +6935,11 @@ pub struct MapItemReply_RequestData {
     ///
     /// <table>
     ///     <tr>
-    ///         <th>Value</th>
+    ///         <th>Code</th>
     ///         <th>Name</th>
     ///         <th>Description</th>
-    ///         <th>Extra</th>
-    ///         <th>Extra2</th>
+    ///         <th>Extra*</th>
+    ///         <th>Extra2*</th>
     ///     </tr>
     ///     <tr>
     ///         <td>1</td>
@@ -7006,6 +7006,8 @@ pub struct MapItemReply_RequestData {
     ///     </tr>
     /// </table>
     ///
+    /// *: only relevant for reply.
+    ///
     /// ContentRating:
     ///
     /// - 0: Event is PG rated.
@@ -7049,9 +7051,10 @@ pub struct MapItemReply {
 
 #[derive(Clone, Debug)]
 pub struct MapItemRequest_AgentData {
-    /// TODO
+    /// Agent id of the sender.
     pub agent_id: Uuid,
-    /// TODO
+    /// Temporary id assigned to this session by the simulator on login, used
+    /// to verify our identity in packets.
     pub session_id: Uuid,
     /// TODO
     pub flags: u32,
@@ -7063,19 +7066,110 @@ pub struct MapItemRequest_AgentData {
 
 #[derive(Clone, Debug)]
 pub struct MapItemRequest_RequestData {
-    /// TODO
+    ///
+    ///
+    /// Possible values and correspondation:
+    ///
+    /// <table>
+    ///     <tr>
+    ///         <th>Code</th>
+    ///         <th>Name</th>
+    ///         <th>Description</th>
+    ///         <th>Extra*</th>
+    ///         <th>Extra2*</th>
+    ///     </tr>
+    ///     <tr>
+    ///         <td>1</td>
+    ///         <td>Telehub</td>
+    ///         <td></td>
+    ///         <td>-</td>
+    ///         <td>-</td>
+    ///     </tr>
+    ///     <tr>
+    ///         <td>2</td>
+    ///         <td>PgEvent</td>
+    ///         <td>PG rated event</td>
+    ///         <td>-</td>
+    ///         <td>See `ContentRating`.</td>
+    ///     </tr>
+    ///     <tr>
+    ///         <td>3</td>
+    ///         <td>MatureEvent</td>
+    ///         <td>Mature rated event</td>
+    ///         <td>-</td>
+    ///         <td>See `ContentRating`.</td>
+    ///     </tr>
+    ///     <tr>
+    ///         <td>4</td>
+    ///         <td>Popular</td>
+    ///         <td>Popular location</td>
+    ///         <td></td>
+    ///         <td></td>
+    ///     </tr>
+    ///     <tr>
+    ///         <td>6</td>
+    ///         <td>AgentLocations</td>
+    ///         <td>Locations of avatar groups in a region</td>
+    ///         <td>Avatar count</td>
+    ///         <td>-</td>
+    ///     </tr>
+    ///     <tr>
+    ///         <td>7</td>
+    ///         <td>LandForSale</td>
+    ///         <td></td>
+    ///         <td>Size of region.</td>
+    ///         <td>Price of region.</td>
+    ///     </tr>
+    ///     <tr>
+    ///         <td>8</td>
+    ///         <td>Classified</td>
+    ///         <td>Classified ad</td>
+    ///         <td></td>
+    ///         <td></td>
+    ///     </tr>
+    ///     <tr>
+    ///         <td>9</td>
+    ///         <td>AdultEvent</td>
+    ///         <td>Adult rated event</td>
+    ///         <td>-</td>
+    ///         <td>See `ContentRating`.</td>
+    ///     </tr>
+    ///     <tr>
+    ///         <td>10</td>
+    ///         <td>AdultLandForSale</td>
+    ///         <td></td>
+    ///         <td>Size of region.</td>
+    ///         <td>Price of region.</td>
+    ///     </tr>
+    /// </table>
+    ///
+    /// *: only relevant for reply.
+    ///
+    /// ContentRating:
+    ///
+    /// - 0: Event is PG rated.
+    /// - 1: Event is Mature rated.
+    /// - 2: Event is Adult rated.
+    ///
+    ///
     pub item_type: u32,
-    /// TODO
+    ///
+    /// Combines the global x and y coordinates (subtract modulo 256 to get the correct
+    /// corner) of a region into a single value, i.e.
+    ///
+    ///         ```
+    ///         let (c_x, c_y) = (x,y) - ((x,y) % 256);
+    ///         let handle = c_x << | c_y;
+    ///         ```
+    ///
     pub region_handle: u64,
 }
 
 ///
-/// 		TODO:
-/// 		/// viewer -> sim
-/// /// This message is sent up from the viewer to get a list
-/// /// of the items of a particular type on the map.
-/// /// Used for Telehubs, Agents, Events, Popular Places, etc.
-/// /// Returns: MapBlockReply
+/// Sent by the viewer to a simulator, to get a list of items of a particular
+/// type on the grid map.
+///
+/// The simulator then responds with a `MapItemReply`.
 ///
 #[derive(Clone, Debug)]
 pub struct MapItemRequest {

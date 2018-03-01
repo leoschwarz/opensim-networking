@@ -1,6 +1,63 @@
 use messages::all::MapItemReply;
 use types::Uuid;
 
+mod region_handle {
+    use std::sync::Mutex;
+
+    pub struct LookupService {
+
+    }
+
+    #[derive(Clone, Debug, Eq, PartialEq)]
+    pub struct RegionHandle {
+        x: u32,
+        y: u32,
+        handle: u64,
+    }
+
+    impl RegionHandle {
+        pub fn from_handle(h: u64) -> RegionHandle {
+            let x = h >> 32;
+            let y = h & 0xffffffff;
+
+            RegionHandle {
+                x: x as u32,
+                y: y as u32,
+                handle: h,
+            }
+        }
+
+        pub fn from_xy(x: u32, y: u32) -> RegionHandle {
+            let x = x as u64;
+            let y = y as u64;
+            let x = x - (x % 256);
+            let y = y - (y % 256);
+            let h = x << 32 | y;
+
+            RegionHandle {
+                x: x as u32,
+                y: y as u32,
+                handle: h,
+            }
+        }
+
+        pub fn xy(&self) -> (u32, u32) {
+            (self.x, self.y)
+        }
+
+        pub fn handle(&self) -> u64 {
+            self.handle
+        }
+    }
+
+}
+
+
+
+
+
+
+
 // TODO: Move this macro to a better place, and include an example
 // in its accompanying documentation (can just be copied from below).
 macro_rules! enum_from_u8
@@ -72,6 +129,7 @@ enum_from_u8! {
     }
 }
 
+#[derive(Clone, Debug)]
 pub enum MapItem {
     Telehub {
         global_pos: (u32, u32),
@@ -90,8 +148,8 @@ pub enum MapItem {
         global_pos: (u32, u32),
         sale_id: Uuid,
         name: String,
-        size: i32,
-        price: i32,
+        size: u32,
+        price: u32,
         rating: ContentRating,
     },
 }
@@ -131,8 +189,8 @@ fn extract_map_item_reply(msg: MapItemReply) -> Result<Vec<MapItem>, ()> {
                     global_pos: (data.x, data.y),
                     sale_id: data.id,
                     name: String::from_utf8_lossy(&data.name).into(),
-                    size: data.extra,
-                    price: data.extra2,
+                    size: data.extra as u32,
+                    price: data.extra2 as u32,
                     rating: match item_type {
                         ItemType::LandForSale => ContentRating::PG,
                         ItemType::AdultLandForSale => ContentRating::Adult,
@@ -145,7 +203,7 @@ fn extract_map_item_reply(msg: MapItemReply) -> Result<Vec<MapItem>, ()> {
 }
 
 enum_from_u8! {
-    #[derive(Clone, Debug)]
+    #[derive(Clone, Debug, Eq, PartialEq)]
     pub enum ContentRating {
         PG = 0,
         Mature = 1,

@@ -1,7 +1,19 @@
 //! Circuit and message management for viewer <-> server communication.
 //!
-//! Things not implemented for now.
-//! - Ipv6 support. (Not implemented in opensimulator yet.)
+//! # Message handlers
+//!
+//! When a message is received, it will be attempted to find a handler for this message.
+//!
+//! First it will be checked if there is a handler specific to the `MessageType` of the message,
+//! if none is found, handlers with a filter will be queried for the message (TODO implement when needed),
+//! giving the message to the first handler found to accept it.
+//!
+//! If no handler was found for a message, it will remain in the queue and can be received from
+//! the Circuit with the `read` and `try_read` functions.
+//!
+//! # Backlog (TODO)
+//!
+//! - IPv6 support (blocked by OpenSim support)
 
 // TODO:
 // - Proper shutdown of circuit
@@ -40,8 +52,9 @@ mod status;
 pub use self::status::{SendMessage, SendMessageError};
 use self::status::SendMessageStatus;
 
-mod handlers;
-pub use self::handlers::{MessageHandlerError, MessageHandlers};
+// TODO: Rename to message_handlers or msg_handlers ?
+pub mod handlers;
+pub use self::handlers::MessageHandlers;
 use self::handlers::MessageSender;
 
 #[derive(Debug)]
@@ -193,15 +206,18 @@ impl Circuit {
                         }
                     }
                     msg => {
-                        if let Some(handler) = message_handlers.get(&msg.message_type()) {
-                            // Let the handler handle this message.
-                            // TODO: Handle error better.
-                            handler(msg, &message_sender).unwrap();
-                        } else {
-                            // There is no registered message handler, so yield the message to the
-                            // incoming message channel.
-                            incoming_tx.send(msg).unwrap();
-                        }
+                        let _ = message_handlers.handle(msg, &message_sender).map_err(|err| {
+                            match err.kind {
+                                handlers::ErrorKind::NoHandler => {
+                                    // Yield the message to the incoming message channel.
+                                    incoming_tx.send(err.msg).unwrap();
+                                },
+                                _ => {
+                                    // TODO: handle the error somewhere
+                                    panic!("unhandled error: {:?}", err);
+                                }
+                            }
+                        });
                     }
                 }
             }
