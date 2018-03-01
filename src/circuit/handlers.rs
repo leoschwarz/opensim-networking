@@ -1,5 +1,6 @@
 use circuit::ack_manager::AckManagerTx;
 use circuit::status::SendMessage;
+use circuit::MessageSender;
 use messages::{MessageInstance, MessageType};
 use std::collections::HashMap;
 use std::error;
@@ -101,17 +102,4 @@ fn handle_ping_check(msg: MessageInstance, circuit: &MessageSender) -> Result<()
     };
     circuit.send(response, false);
     Ok(())
-}
-
-/// Can be used by MessageHandler instances to send a message through the
-/// Circuit.
-pub struct MessageSender {
-    pub(crate) ackmgr_tx: AckManagerTx,
-}
-
-impl MessageSender {
-    /// See: `Ciruit::send()` for more information.
-    pub fn send<M: Into<MessageInstance>>(&self, msg: M, reliable: bool) -> SendMessage {
-        self.ackmgr_tx.send_msg(msg.into(), reliable)
-    }
 }

@@ -57,7 +57,6 @@ use self::status::SendMessageStatus;
 // TODO: Rename to message_handlers or msg_handlers ?
 pub mod handlers;
 pub use self::handlers::MessageHandlers;
-use self::handlers::MessageSender;
 
 #[derive(Debug)]
 pub enum ReadMessageError {
@@ -98,6 +97,19 @@ impl From<mpsc::RecvTimeoutError> for ReadMessageError {
 impl From<mpsc::TryRecvError> for ReadMessageError {
     fn from(_: mpsc::TryRecvError) -> Self {
         ReadMessageError::Disconnected
+    }
+}
+
+/// Interface for sending messages through the circuit.
+#[derive(Clone)]
+pub struct MessageSender {
+    pub(super) ackmgr_tx: AckManagerTx,
+}
+
+impl MessageSender {
+    /// See: `Ciruit::send()` for more information.
+    pub fn send<M: Into<MessageInstance>>(&self, msg: M, reliable: bool) -> SendMessage {
+        self.ackmgr_tx.send_msg(msg.into(), reliable)
     }
 }
 
