@@ -2,14 +2,16 @@
 //!
 //! # Message handlers
 //!
-//! When a message is received, it will be attempted to find a handler for this message.
+//! When a message is received, it will be attempted to find a handler for this
+//! message.
 //!
-//! First it will be checked if there is a handler specific to the `MessageType` of the message,
-//! if none is found, handlers with a filter will be queried for the message (TODO implement when needed),
-//! giving the message to the first handler found to accept it.
+//! First it will be checked if there is a handler specific to the
+//! `MessageType` of the message, if none is found, handlers with a filter will
+//! be queried for the message (TODO implement when needed), giving the message
+//! to the first handler found to accept it.
 //!
-//! If no handler was found for a message, it will remain in the queue and can be received from
-//! the Circuit with the `read` and `try_read` functions.
+//! If no handler was found for a message, it will remain in the queue and can
+//! be received from the Circuit with the `read` and `try_read` functions.
 //!
 //! # Backlog (TODO)
 //!
@@ -206,18 +208,20 @@ impl Circuit {
                         }
                     }
                     msg => {
-                        let _ = message_handlers.handle(msg, &message_sender).map_err(|err| {
-                            match err.kind {
-                                handlers::ErrorKind::NoHandler => {
-                                    // Yield the message to the incoming message channel.
-                                    incoming_tx.send(err.msg).unwrap();
-                                },
-                                _ => {
-                                    // TODO: handle the error somewhere
-                                    panic!("unhandled error: {:?}", err);
+                        let _ = message_handlers
+                            .handle(msg, &message_sender)
+                            .map_err(|err| {
+                                match err.kind {
+                                    handlers::ErrorKind::NoHandler => {
+                                        // Yield the message to the incoming message channel.
+                                        incoming_tx.send(err.msg).unwrap();
+                                    }
+                                    _ => {
+                                        // TODO: handle the error somewhere
+                                        panic!("unhandled error: {:?}", err);
+                                    }
                                 }
-                            }
-                        });
+                            });
                     }
                 }
             }

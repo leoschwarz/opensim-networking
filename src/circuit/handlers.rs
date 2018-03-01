@@ -7,7 +7,8 @@ use std::error;
 type FilterFn = Box<Fn(&MessageInstance) -> bool + Send>;
 type HandlerFn = Box<Fn(MessageInstance, &MessageSender) -> Result<(), Error> + Send>;
 
-/// A message handler which handles all messages for which filter evaluates to true.
+/// A message handler which handles all messages for which filter evaluates to
+/// true.
 struct FilterHandler {
     filter: FilterFn,
     handler: HandlerFn,
@@ -31,7 +32,8 @@ impl MessageHandlers {
         self.type_handlers.insert(m_type, handler);
     }
 
-    /// Register a handler for all messages for which the filter evaluates to true.
+    /// Register a handler for all messages for which the filter evaluates to
+    /// true.
     pub fn register_filter(&mut self, filter: FilterFn, handler: HandlerFn) {
         self.filter_handlers.push(FilterHandler {
             filter: filter,
@@ -39,13 +41,17 @@ impl MessageHandlers {
         });
     }
 
-    pub(crate) fn handle(&self, msg: MessageInstance, msg_sender: &MessageSender) -> Result<(), Error> {
+    pub(crate) fn handle(
+        &self,
+        msg: MessageInstance,
+        msg_sender: &MessageSender,
+    ) -> Result<(), Error> {
         if let Some(h) = self.type_handlers.get(&msg.message_type()) {
             h(msg, msg_sender)
         } else {
             for fh in &self.filter_handlers {
                 if (fh.filter)(&msg) {
-                    return (fh.handler)(msg, msg_sender)
+                    return (fh.handler)(msg, msg_sender);
                 }
             }
             Err(Error {
@@ -78,18 +84,15 @@ impl Default for MessageHandlers {
     }
 }
 
-fn handle_ping_check(
-    msg: MessageInstance,
-    circuit: &MessageSender,
-) -> Result<(), Error> {
+fn handle_ping_check(msg: MessageInstance, circuit: &MessageSender) -> Result<(), Error> {
     use messages::all::{CompletePingCheck, CompletePingCheck_PingID};
 
     let start_ping_check = match msg {
         MessageInstance::StartPingCheck(m) => Ok(m),
         _ => Err(Error {
-                msg: msg,
-                kind: ErrorKind::WrongHandler
-            })
+            msg: msg,
+            kind: ErrorKind::WrongHandler,
+        }),
     }?;
     let response = CompletePingCheck {
         ping_id: CompletePingCheck_PingID {

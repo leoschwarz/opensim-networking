@@ -4,9 +4,7 @@ use types::Uuid;
 mod region_handle {
     use std::sync::Mutex;
 
-    pub struct LookupService {
-
-    }
+    pub struct LookupService {}
 
     #[derive(Clone, Debug, Eq, PartialEq)]
     pub struct RegionHandle {
@@ -51,12 +49,6 @@ mod region_handle {
     }
 
 }
-
-
-
-
-
-
 
 // TODO: Move this macro to a better place, and include an example
 // in its accompanying documentation (can just be copied from below).
