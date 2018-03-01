@@ -38,13 +38,13 @@ use simulator::ConnectInfo;
 use types::SequenceNumber;
 use util::FifoCache;
 
+use futures_cpupool::CpuPool;
 use std::error::Error;
 use std::io::Error as IoError;
 use std::net::{SocketAddr, SocketAddrV4, UdpSocket};
 use std::sync::mpsc;
 use std::thread;
 use std::time::Duration;
-
 use std::fmt;
 
 mod ack_manager;
@@ -175,6 +175,11 @@ impl Circuit {
             // workaround could be to use our own struct directly reading
             // from a Read and using a larger array as needed?
             let mut packet_log = FifoCache::<SequenceNumber>::new(10000);
+            let cpupool = CpuPool::new(2);
+            let handler_context = message_handlers::HandlerContext {
+                message_sender: message_sender,
+                cpupool: &cpupool,
+            };
 
             loop {
                 // TODO: move back up after debugging
@@ -218,7 +223,7 @@ impl Circuit {
                         }
                     }
                     msg => {
-                        let _ = msg_handlers.handle(msg, &message_sender).map_err(|err| {
+                        let _ = msg_handlers.handle(msg, &handler_context).map_err(|err| {
                             match err.kind {
                                 message_handlers::ErrorKind::NoHandler => {
                                     // Yield the message to the incoming message channel.

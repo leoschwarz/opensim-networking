@@ -2,15 +2,21 @@ use circuit::MessageSender;
 use messages::{MessageInstance, MessageType};
 use std::collections::HashMap;
 use failure::Fail;
+use futures_cpupool::CpuPool;
 
 type FilterFn = Box<Fn(&MessageInstance) -> bool + Send>;
-type HandlerFn = Box<Fn(MessageInstance, &MessageSender) -> Result<(), Error> + Send>;
+type HandlerFn = Box<Fn(MessageInstance, &HandlerContext) -> Result<(), Error> + Send>;
 
 /// A message handler which handles all messages for which filter evaluates to
 /// true.
 struct FilterHandler {
     filter: FilterFn,
     handler: HandlerFn,
+}
+
+pub struct HandlerContext<'a> {
+    pub message_sender: MessageSender,
+    pub cpupool: &'a CpuPool,
 }
 
 pub struct Handlers {
@@ -43,14 +49,14 @@ impl Handlers {
     pub(crate) fn handle(
         &self,
         msg: MessageInstance,
-        msg_sender: &MessageSender,
+        context: &HandlerContext,
     ) -> Result<(), Error> {
         if let Some(h) = self.type_handlers.get(&msg.message_type()) {
-            h(msg, msg_sender)
+            h(msg, context)
         } else {
             for fh in &self.filter_handlers {
                 if (fh.filter)(&msg) {
-                    return (fh.handler)(msg, msg_sender);
+                    return (fh.handler)(msg, context);
                 }
             }
             Err(Error {
@@ -83,7 +89,7 @@ impl Default for Handlers {
     }
 }
 
-fn handle_ping_check(msg: MessageInstance, circuit: &MessageSender) -> Result<(), Error> {
+fn handle_ping_check(msg: MessageInstance, context: &HandlerContext) -> Result<(), Error> {
     use messages::all::{CompletePingCheck, CompletePingCheck_PingID};
 
     let start_ping_check = match msg {
@@ -98,6 +104,6 @@ fn handle_ping_check(msg: MessageInstance, circuit: &MessageSender) -> Result<()
             ping_id: start_ping_check.ping_id.ping_id,
         },
     };
-    circuit.send(response, false);
+    context.message_sender.send(response, false);
     Ok(())
 }

@@ -1,3 +1,5 @@
+//! RegionHandle lookup.
+
 use grid_map::region_handle::RegionHandle;
 use std::collections::HashMap;
 use std::sync::{Arc, Mutex};
@@ -17,41 +19,43 @@ impl Service for LookupService {
         let pending = Arc::new(Mutex::new(HashMap::new()));
         let pending2 = Arc::clone(&pending);
 
-        let handler = Box::new(move |message: MessageInstance, _sender: &MessageSender| {
-            match message {
-                MessageInstance::RegionIDAndHandleReply(msg) => {
-                    let mut p = pending.lock().unwrap();
-                    let uuid = msg.reply_block.region_id;
-                    let handle = RegionHandle::from_handle(msg.reply_block.region_handle);
+        let handler = Box::new(
+            move |message: MessageInstance, _context: &message_handlers::HandlerContext| {
+                match message {
+                    MessageInstance::RegionIDAndHandleReply(msg) => {
+                        let mut p = pending.lock().unwrap();
+                        let uuid = msg.reply_block.region_id;
+                        let handle = RegionHandle::from_handle(msg.reply_block.region_handle);
 
-                    if let Some(sender) = p.remove(&uuid) {
-                        let sender: oneshot::Sender<LookupResult> = sender;
-                        sender
-                            .send(LookupResult {
-                                uuid: uuid,
-                                handle: handle,
-                            })
-                            .map_err(|_| message_handlers::Error {
+                        if let Some(sender) = p.remove(&uuid) {
+                            let sender: oneshot::Sender<LookupResult> = sender;
+                            sender
+                                .send(LookupResult {
+                                    uuid: uuid,
+                                    handle: handle,
+                                })
+                                .map_err(|_| message_handlers::Error {
+                                    msg: MessageInstance::RegionIDAndHandleReply(msg),
+                                    kind: message_handlers::ErrorKind::Other(Box::new(
+                                        Error::ChannelClosed,
+                                    )),
+                                })
+                        } else {
+                            Err(message_handlers::Error {
                                 msg: MessageInstance::RegionIDAndHandleReply(msg),
                                 kind: message_handlers::ErrorKind::Other(Box::new(
-                                    Error::ChannelClosed,
+                                    Error::NotRegistered,
                                 )),
                             })
-                    } else {
-                        Err(message_handlers::Error {
-                            msg: MessageInstance::RegionIDAndHandleReply(msg),
-                            kind: message_handlers::ErrorKind::Other(Box::new(
-                                Error::NotRegistered,
-                            )),
-                        })
+                        }
                     }
+                    _ => Err(message_handlers::Error {
+                        msg: message,
+                        kind: message_handlers::ErrorKind::WrongHandler,
+                    }),
                 }
-                _ => Err(message_handlers::Error {
-                    msg: message,
-                    kind: message_handlers::ErrorKind::WrongHandler,
-                }),
-            }
-        });
+            },
+        );
         handlers.register_type(MessageType::RegionIDAndHandleReply, handler);
 
         LookupService {

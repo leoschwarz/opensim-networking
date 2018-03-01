@@ -13,6 +13,7 @@ extern crate error_chain;
 #[macro_use]
 extern crate failure;
 extern crate futures_await as futures;
+extern crate futures_cpupool;
 extern crate hyper;
 extern crate image;
 extern crate jpeg2000;

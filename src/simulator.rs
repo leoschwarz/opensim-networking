@@ -53,6 +53,7 @@ impl From<LoginResponse> for ConnectInfo {
 
 pub struct Services {
     pub region_handle: services::region_handle::LookupService,
+    pub terrain: services::terrain::TerrainService,
 }
 
 /// This struct manages all connections from the viewer to a (single) simulator
@@ -104,11 +105,13 @@ impl Simulator {
             let mut handlers = handlers;
             let mut services = Services {
                 region_handle: services::region_handle::LookupService::register_service(&mut handlers),
+                terrain: services::terrain::TerrainService::register_service(&mut handlers),
             };
 
             let (circuit, region_info) = Self::setup_circuit(&connect_info, handlers, &log)?;
             let texture_service = Self::setup_texture_service(&capabilities, log.clone());
             services.region_handle.register_message_sender(circuit.message_sender());
+            services.terrain.register_message_sender(circuit.message_sender());
             let locator = SimLocator {
                 sim_ip: connect_info.sim_ip.clone(),
                 sim_port: connect_info.sim_port.clone(),

@@ -12,3 +12,4 @@ pub trait Service {
 }
 
 pub mod region_handle;
+pub mod terrain;
