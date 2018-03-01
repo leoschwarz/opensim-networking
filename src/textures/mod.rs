@@ -139,6 +139,7 @@ impl TextureService {
                                 .concat2()
                                 .map_err(|e| TextureServiceError::NetworkError(format!("{:?}", e)))
                                 .and_then(move |data| {
+                                    // TODO: Perform the work on a thread pool!
                                     decode::extract_j2k(id, &data[..], log)
                                         .map_err(|e| TextureServiceError::DecodeError(Box::new(e)))
                                 }),
