@@ -9,6 +9,7 @@ use logging::Log;
 use messages::MessageInstance;
 use messages::all::{CompleteAgentMovement, CompleteAgentMovement_AgentData, UseCircuitCode,
                     UseCircuitCode_CircuitCode};
+use services::{self, Service};
 use systems::agent_update::{AgentState, Modality};
 use std::sync::Mutex;
 use textures::{GetTexture, TextureService};
@@ -50,12 +51,17 @@ impl From<LoginResponse> for ConnectInfo {
     }
 }
 
+pub struct Services {
+    pub region_handle: services::region_handle::LookupService,
+}
+
 /// This struct manages all connections from the viewer to a (single) simulator
 /// instance.
 pub struct Simulator {
     caps: Mutex<Capabilities>,
     circuit: Mutex<Circuit>,
     texture_service: Mutex<TextureService>,
+    services: Services,
 
     handle: Handle,
     locator: SimLocator,
@@ -95,8 +101,14 @@ impl Simulator {
                 handle.clone()
             ))?;
 
+            let mut handlers = handlers;
+            let mut services = Services {
+                region_handle: services::region_handle::LookupService::register_service(&mut handlers),
+            };
+
             let (circuit, region_info) = Self::setup_circuit(&connect_info, handlers, &log)?;
             let texture_service = Self::setup_texture_service(&capabilities, log.clone());
+            services.region_handle.register_message_sender(circuit.message_sender());
             let locator = SimLocator {
                 sim_ip: connect_info.sim_ip.clone(),
                 sim_port: connect_info.sim_port.clone(),
@@ -106,6 +118,7 @@ impl Simulator {
                 caps: Mutex::new(capabilities),
                 circuit: Mutex::new(circuit),
                 region_info: region_info,
+                services: services,
                 texture_service: Mutex::new(texture_service),
                 handle: handle,
                 locator: locator,
@@ -115,6 +128,10 @@ impl Simulator {
 
     pub fn locator(&self) -> SimLocator {
         self.locator.clone()
+    }
+
+    pub fn services(&self) -> &Services {
+        &self.services
     }
 
     pub fn region_info(&self) -> &RegionInfo {

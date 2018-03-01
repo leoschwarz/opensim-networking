@@ -241,6 +241,12 @@ impl Circuit {
         })
     }
 
+    pub fn message_sender(&self) -> MessageSender {
+        MessageSender {
+            ackmgr_tx: self.ackmgr_tx.clone(),
+        }
+    }
+
     /// Send a message through the circuit.
     ///
     /// This returns a `SendMessage` instance which is a `Future`.
