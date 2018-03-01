@@ -48,6 +48,7 @@ pub mod layer_data;
 pub mod logging;
 pub mod login;
 pub mod packet;
+pub mod services;
 pub mod simulator;
 pub mod systems;
 pub mod textures;

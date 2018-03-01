@@ -218,20 +218,18 @@ impl Circuit {
                         }
                     }
                     msg => {
-                        let _ = msg_handlers
-                            .handle(msg, &message_sender)
-                            .map_err(|err| {
-                                match err.kind {
-                                    message_handlers::ErrorKind::NoHandler => {
-                                        // Yield the message to the incoming message channel.
-                                        incoming_tx.send(err.msg).unwrap();
-                                    }
-                                    _ => {
-                                        // TODO: handle the error somewhere
-                                        panic!("unhandled error: {:?}", err);
-                                    }
+                        let _ = msg_handlers.handle(msg, &message_sender).map_err(|err| {
+                            match err.kind {
+                                message_handlers::ErrorKind::NoHandler => {
+                                    // Yield the message to the incoming message channel.
+                                    incoming_tx.send(err.msg).unwrap();
                                 }
-                            });
+                                _ => {
+                                    // TODO: handle the error somewhere
+                                    panic!("unhandled error: {:?}", err);
+                                }
+                            }
+                        });
                     }
                 }
             }

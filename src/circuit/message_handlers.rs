@@ -1,9 +1,7 @@
-use circuit::ack_manager::AckManagerTx;
-use circuit::status::SendMessage;
 use circuit::MessageSender;
 use messages::{MessageInstance, MessageType};
 use std::collections::HashMap;
-use std::error;
+use failure::Fail;
 
 type FilterFn = Box<Fn(&MessageInstance) -> bool + Send>;
 type HandlerFn = Box<Fn(MessageInstance, &MessageSender) -> Result<(), Error> + Send>;
@@ -74,7 +72,7 @@ pub enum ErrorKind {
     NoHandler,
     // TODO: Make impossible and remove the variant.
     WrongHandler,
-    Other(Box<error::Error>),
+    Other(Box<Fail>),
 }
 
 impl Default for Handlers {
