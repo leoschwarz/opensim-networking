@@ -53,7 +53,7 @@ impl TerrainService {
     }
 }
 
-struct Receiver<'a> {
+pub struct Receiver<'a> {
     service: &'a TerrainService,
 }
 

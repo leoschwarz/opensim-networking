@@ -3,6 +3,9 @@ use messages::all::RegionHandshake;
 
 #[derive(Clone, Debug)]
 pub struct RegionInfo {
+    /// The unique ID of the region.
+    pub region_id: Uuid,
+
     // TODO: region_flags, sim_access
     /// Name of the sim.
     pub sim_name: String,
@@ -31,6 +34,7 @@ impl RegionInfo {
         let info = msg.region_info;
 
         RegionInfo {
+            region_id: msg.region_info2.region_id,
             sim_name: String::from_utf8_lossy(&info.sim_name[0..(info.sim_name.len() - 1)])
                 .to_string(),
             sim_owner: info.sim_owner,
