@@ -104,7 +104,7 @@ impl AckManagerRx {
 
         // First check if there is a message waiting too long for an ack already, then
         // check the other pending messages for sending.
-        if let Some(wait_oldest) = self.acks_wait.remove_head() {
+        if let Some((_, wait_oldest)) = self.acks_wait.remove_head() {
             if wait_oldest.is_too_old() {
                 return Some(wait_oldest);
             } else {
