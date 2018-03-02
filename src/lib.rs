@@ -2,6 +2,7 @@
 #![allow(dead_code)]
 #![feature(proc_macro, conservative_impl_trait, generators)]
 
+extern crate addressable_queue;
 #[macro_use]
 extern crate bitflags;
 extern crate bitreader;

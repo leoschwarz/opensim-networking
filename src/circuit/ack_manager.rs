@@ -15,11 +15,11 @@
 // → register ack for timeout queue, either append it to the next packet or
 // send it in a     dedicated packet if waiting for too long.
 
+use addressable_queue::fifo::Queue as AddressableQueue;
 use circuit::{CircuitConfig, SendMessage, SendMessageError, SendMessageStatus};
 use packet::{Packet, PacketFlags};
 use types::SequenceNumber;
 use util::{mpsc_read_many, AtomicU32Counter};
-use util::addressable_queue::Queue as AddressableQueue;
 use messages::{MessageInstance, PacketAck, PacketAck_Packets};
 
 use std::sync::mpsc;

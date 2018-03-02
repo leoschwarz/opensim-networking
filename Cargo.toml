@@ -13,6 +13,7 @@ license = "GPL-3.0"
 members = ["opensim_messages", "opensim_types"]
 
 [dependencies]
+addressable_queue = "0.1.0"
 bitflags = "1.0"
 bitreader = { git = "https://github.com/irauta/bitreader", branch = "master" }
 byteorder = "1.0"

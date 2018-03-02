@@ -6,7 +6,6 @@ use std::sync::mpsc;
 use std::sync::atomic::AtomicUsize;
 use std::time::{Duration, Instant};
 
-pub mod addressable_queue;
 pub mod bitsreader;
 
 #[cfg(test)]
