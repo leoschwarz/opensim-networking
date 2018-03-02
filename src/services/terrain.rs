@@ -1,14 +1,18 @@
 //! Terrain data management.
 
 use circuit::message_handlers;
-use futures::{Async, Poll, Stream};
 use layer_data::{extract_land_patch, Patch};
 use services::Service;
+use std::cell::Cell;
 use std::sync::{mpsc, Arc, Mutex};
 use messages::{MessageInstance, MessageType};
 
+pub struct Receivers {
+    pub land_patches: mpsc::Receiver<Vec<Patch>>,
+}
+
 pub struct TerrainService {
-    land_patches: mpsc::Receiver<Vec<Patch>>,
+    receivers: Cell<Option<Receivers>>,
 }
 
 impl Service for TerrainService {
@@ -41,31 +45,20 @@ impl Service for TerrainService {
         };
         handlers.register_type(MessageType::LayerData, Box::new(handler));
 
-        TerrainService {
+        let receivers = Receivers {
             land_patches: patch_rx,
+        };
+
+        TerrainService {
+            receivers: Cell::new(Some(receivers)),
         }
     }
 }
 
 impl TerrainService {
-    pub fn receive_land<'a>(&'a self) -> Receiver<'a> {
-        Receiver { service: self }
-    }
-}
-
-pub struct Receiver<'a> {
-    service: &'a TerrainService,
-}
-
-impl<'a> Stream for Receiver<'a> {
-    type Item = Vec<Patch>;
-    type Error = ();
-
-    fn poll(&mut self) -> Poll<Option<Self::Item>, Self::Error> {
-        match self.service.land_patches.try_recv() {
-            Ok(patches) => Ok(Async::Ready(Some(patches))),
-            Err(mpsc::TryRecvError::Empty) => Ok(Async::NotReady),
-            Err(mpsc::TryRecvError::Disconnected) => Ok(Async::Ready(None)),
-        }
+    /// Returns the Receivers on the first invocation, afterwards only None
+    /// will be returned.
+    pub fn receivers(&self) -> Option<Receivers> {
+        self.receivers.replace(None)
     }
 }
