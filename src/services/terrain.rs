@@ -6,6 +6,7 @@ use services::Service;
 use std::cell::Cell;
 use std::sync::{mpsc, Arc, Mutex};
 use messages::{MessageInstance, MessageType};
+use futures::Future;
 
 pub struct Receivers {
     pub land_patches: mpsc::Receiver<Vec<Patch>>,
@@ -24,17 +25,19 @@ impl Service for TerrainService {
             let patch_tx = Arc::clone(&patch_tx);
             match msg {
                 MessageInstance::LayerData(msg) => {
-                    let _ = context.cpupool.spawn_fn(move || {
-                        extract_land_patch(&msg)
-                            .map(|patches| {
-                                let tx = patch_tx.lock().unwrap();
-                                tx.send(patches).unwrap();
-                            })
-                            .map_err(|_| {
-                                // TODO
-                                ()
-                            })
-                    });
+                    let patches = context.cpupool.spawn_fn(move || extract_land_patch(&msg));
+                    let fut = patches
+                        .map(move |patches| {
+                            let tx = patch_tx.lock().unwrap();
+                            tx.send(patches).unwrap();
+                        })
+                        .map_err(|_| {
+                            // TODO
+                            ()
+                        });
+
+                    context.reactor.spawn(|_handle| fut);
+
                     Ok(())
                 }
                 _ => Err(message_handlers::Error {

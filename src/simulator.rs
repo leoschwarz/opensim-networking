@@ -14,7 +14,7 @@ use systems::agent_update::{AgentState, Modality};
 use std::sync::Mutex;
 use textures::{GetTexture, TextureService};
 use types::{Duration, Ip4Addr, UnitQuaternion, Uuid, Vector3};
-use tokio_core::reactor::Handle;
+use tokio_core::reactor::{self, Handle};
 use url::Url;
 
 // TODO: Reconsider how useful this is.
@@ -108,7 +108,7 @@ impl Simulator {
                 terrain: services::terrain::TerrainService::register_service(&mut handlers),
             };
 
-            let (circuit, region_info) = Self::setup_circuit(&connect_info, handlers, &log)?;
+            let (circuit, region_info) = Self::setup_circuit(&connect_info, handlers, handle.remote().clone(), &log)?;
             let texture_service = Self::setup_texture_service(&capabilities, log.clone());
             services.region_handle.register_message_sender(circuit.message_sender());
             services.terrain.register_message_sender(circuit.message_sender());
@@ -157,6 +157,7 @@ impl Simulator {
     fn setup_circuit(
         connect_info: &ConnectInfo,
         handlers: message_handlers::Handlers,
+        reactor_remote: reactor::Remote,
         log: &Log,
     ) -> Result<(Circuit, RegionInfo), Error> {
         let config = CircuitConfig {
@@ -167,7 +168,8 @@ impl Simulator {
         let session_id = connect_info.session_id.clone();
         let circuit_code = connect_info.circuit_code.clone();
 
-        let circuit = Circuit::initiate(connect_info, config, handlers, log.clone())?;
+        let circuit =
+            Circuit::initiate(connect_info, config, handlers, reactor_remote, log.clone())?;
 
         let message = UseCircuitCode {
             circuit_code: UseCircuitCode_CircuitCode {

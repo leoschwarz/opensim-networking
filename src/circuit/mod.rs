@@ -46,6 +46,7 @@ use std::sync::mpsc;
 use std::thread;
 use std::time::Duration;
 use std::fmt;
+use tokio_core::reactor;
 
 mod ack_manager;
 use self::ack_manager::AckManagerTx;
@@ -126,6 +127,7 @@ impl Circuit {
         connect_info: &ConnectInfo,
         config: CircuitConfig,
         msg_handlers: message_handlers::Handlers,
+        reactor_remote: reactor::Remote,
         log: Log,
     ) -> Result<Circuit, IoError> {
         let sim_address = SocketAddr::V4(SocketAddrV4::new(
@@ -179,6 +181,7 @@ impl Circuit {
             let handler_context = message_handlers::HandlerContext {
                 message_sender: message_sender,
                 cpupool: &cpupool,
+                reactor: reactor_remote,
             };
 
             loop {

@@ -3,6 +3,7 @@ use messages::{MessageInstance, MessageType};
 use std::collections::HashMap;
 use failure::Fail;
 use futures_cpupool::CpuPool;
+use tokio_core::reactor;
 
 type FilterFn = Box<Fn(&MessageInstance) -> bool + Send>;
 type HandlerFn = Box<Fn(MessageInstance, &HandlerContext) -> Result<(), Error> + Send>;
@@ -17,6 +18,7 @@ struct FilterHandler {
 pub struct HandlerContext<'a> {
     pub message_sender: MessageSender,
     pub cpupool: &'a CpuPool,
+    pub reactor: reactor::Remote,
 }
 
 pub struct Handlers {
