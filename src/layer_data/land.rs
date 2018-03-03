@@ -24,6 +24,9 @@ pub enum ExtractSurfaceErrorKind {
     UnknownLayerType(u8),
 
     #[error_chain(custom)]
+    WrongLayerType(LayerType),
+
+    #[error_chain(custom)]
     UnsupportedPatchsize(u32),
 }
 

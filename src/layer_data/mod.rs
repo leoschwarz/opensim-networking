@@ -108,9 +108,10 @@ impl Patch {
 }
 
 pub fn extract_land_patch(msg: &LayerData) -> Result<Vec<Patch>, ExtractSurfaceError> {
-    // TODO remove unwrap
-    let layer_type = LayerType::from_code(msg.layer_id.type_)?
-        .land_layer()
-        .unwrap();
-    land::extract_land_patches(&msg.layer_data.data[..], layer_type)
+    let layer_type = LayerType::from_code(msg.layer_id.type_)?;
+    if let Some(land_layer_type) = layer_type.land_layer() {
+        land::extract_land_patches(&msg.layer_data.data[..], land_layer_type)
+    } else {
+        Err(ExtractSurfaceErrorKind::WrongLayerType(layer_type).into())
+    }
 }
