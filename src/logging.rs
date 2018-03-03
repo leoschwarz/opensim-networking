@@ -24,6 +24,8 @@ use slog::Drain;
 use slog_async;
 use slog_term;
 
+pub use slog::Logger;
+
 /// This provides interfaces to the various logs maintained by this crate.
 ///
 /// Design:

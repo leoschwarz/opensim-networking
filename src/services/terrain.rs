@@ -7,6 +7,7 @@ use std::cell::Cell;
 use std::sync::{mpsc, Arc, Mutex};
 use messages::{MessageInstance, MessageType};
 use futures::Future;
+use logging::{Log, Logger};
 
 pub struct Receivers {
     pub land_patches: mpsc::Receiver<Vec<Patch>>,
@@ -17,14 +18,16 @@ pub struct TerrainService {
 }
 
 impl Service for TerrainService {
-    fn register_service(handlers: &mut message_handlers::Handlers) -> Self {
+    fn register_service(handlers: &mut message_handlers::Handlers, log: &Log) -> Self {
         let (patch_tx, patch_rx) = mpsc::channel();
         let patch_tx = Arc::new(Mutex::new(patch_tx));
+        let logger = Logger::root(log.clone(), o!("service" => "TerrainService"));
 
         let handler = move |msg: MessageInstance, context: &message_handlers::HandlerContext| {
             let patch_tx = Arc::clone(&patch_tx);
             match msg {
                 MessageInstance::LayerData(msg) => {
+                    debug!(logger, "Received new layer data msg: {:?}", msg);
                     let patches = context.cpupool.spawn_fn(move || extract_land_patch(&msg));
                     let fut = patches
                         .map(move |patches| {

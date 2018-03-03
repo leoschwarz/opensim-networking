@@ -104,8 +104,8 @@ impl Simulator {
 
             let mut handlers = handlers;
             let mut services = Services {
-                region_handle: services::region_handle::LookupService::register_service(&mut handlers),
-                terrain: services::terrain::TerrainService::register_service(&mut handlers),
+                region_handle: services::region_handle::LookupService::register_service(&mut handlers, &log),
+                terrain: services::terrain::TerrainService::register_service(&mut handlers, &log),
             };
 
             let (circuit, region_info) = Self::setup_circuit(&connect_info, handlers, handle.remote().clone(), &log)?;

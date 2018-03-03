@@ -1,7 +1,8 @@
 use circuit::{message_handlers, MessageSender};
+use logging::Log;
 
 pub trait Service {
-    fn register_service(handlers: &mut message_handlers::Handlers) -> Self;
+    fn register_service(handlers: &mut message_handlers::Handlers, log: &Log) -> Self;
 
     /// Called by the initialization code once the message sender becomes
     /// available.

@@ -8,6 +8,7 @@ use types::Uuid;
 use futures::sync::oneshot;
 use messages::{MessageInstance, MessageType};
 use services::Service;
+use logging::Log;
 
 pub struct LookupService {
     message_sender: Option<MessageSender>,
@@ -15,7 +16,7 @@ pub struct LookupService {
 }
 
 impl Service for LookupService {
-    fn register_service(handlers: &mut message_handlers::Handlers) -> Self {
+    fn register_service(handlers: &mut message_handlers::Handlers, _log: &Log) -> Self {
         let pending = Arc::new(Mutex::new(HashMap::new()));
         let pending2 = Arc::clone(&pending);
 
