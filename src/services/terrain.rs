@@ -21,20 +21,24 @@ impl Service for TerrainService {
     fn register_service(handlers: &mut message_handlers::Handlers, log: &Log) -> Self {
         let (patch_tx, patch_rx) = mpsc::channel();
         let patch_tx = Arc::new(Mutex::new(patch_tx));
-        let logger = Logger::root(log.clone(), o!("service" => "TerrainService"));
+        let logger = Arc::new(Logger::root(log.clone(), o!("service" => "TerrainService")));
 
         let handler = move |msg: MessageInstance, context: &message_handlers::HandlerContext| {
             let patch_tx = Arc::clone(&patch_tx);
             match msg {
                 MessageInstance::LayerData(msg) => {
-                    debug!(logger, "Received new layer data msg: {:?}", msg);
+                    debug!(logger, "Received new layer data msg");
                     let patches = context.cpupool.spawn_fn(move || extract_land_patch(&msg));
+                    let logger2 = Arc::clone(&logger);
+                    let logger3 = Arc::clone(&logger);
                     let fut = patches
                         .map(move |patches| {
+                            debug!(logger2, "Decoding layer data ok.");
                             let tx = patch_tx.lock().unwrap();
                             tx.send(patches).unwrap();
                         })
-                        .map_err(|_| {
+                        .map_err(move |_| {
+                            debug!(logger3, "Decoding layer data failed.");
                             // TODO
                             ()
                         });
