@@ -28,15 +28,16 @@ impl Service for TerrainService {
             match msg {
                 MessageInstance::LayerData(msg) => {
                     debug!(logger, "Received new layer data msg");
-                    let patches = context.cpupool.spawn_fn(move || extract_land_patch(&msg));
                     let logger2 = Arc::clone(&logger);
                     let logger3 = Arc::clone(&logger);
-                    let fut = patches
-                        .map(move |patches| {
+                    let patches = context.cpupool.spawn_fn(move || {
+                        extract_land_patch(&msg).map(|patches| {
                             debug!(logger2, "Decoding layer data ok.");
                             let tx = patch_tx.lock().unwrap();
                             tx.send(patches).unwrap();
                         })
+                    });
+                    let fut = patches
                         .map_err(move |_| {
                             debug!(logger3, "Decoding layer data failed.");
                             // TODO
