@@ -108,7 +108,7 @@ impl Simulator {
                 terrain: services::terrain::TerrainService::register_service(&mut handlers, &log),
             };
 
-            let (circuit, region_info) = Self::setup_circuit(&connect_info, handlers, handle.remote().clone(), &log)?;
+            let (circuit, region_info) = await!(Self::setup_circuit(connect_info.clone(), handlers, handle.remote().clone(), log.clone()))?;
             let texture_service = Self::setup_texture_service(&capabilities, log.clone());
             services.region_handle.register_message_sender(circuit.message_sender());
             services.terrain.register_message_sender(circuit.message_sender());
@@ -154,11 +154,16 @@ impl Simulator {
         self.texture_service.lock().unwrap().get_texture(id, handle)
     }
 
+    // TODO: Introduce commented out references again, once it becomes possible
+    // (futures 0.2)
+    #[async]
     fn setup_circuit(
-        connect_info: &ConnectInfo,
+        //connect_info: &ConnectInfo,
+        connect_info: ConnectInfo,
         handlers: message_handlers::Handlers,
         reactor_remote: reactor::Remote,
-        log: &Log,
+        log: Log,
+        //log: &Log,
     ) -> Result<(Circuit, RegionInfo), Error> {
         let config = CircuitConfig {
             send_timeout: Duration::from_millis(5000),
@@ -169,7 +174,7 @@ impl Simulator {
         let circuit_code = connect_info.circuit_code.clone();
 
         let circuit =
-            Circuit::initiate(connect_info, config, handlers, reactor_remote, log.clone())?;
+            Circuit::initiate(&connect_info, config, handlers, reactor_remote, log.clone())?;
 
         let message = UseCircuitCode {
             circuit_code: UseCircuitCode_CircuitCode {
@@ -178,7 +183,7 @@ impl Simulator {
                 id: agent_id,
             },
         };
-        circuit.send(message, true).wait()?;
+        await!(circuit.send(message, true))?;
 
         // Now wait for the RegionHandshake message.
         let timeout = Duration::from_millis(15_000);
@@ -201,7 +206,7 @@ impl Simulator {
                 circuit_code: circuit_code,
             },
         };
-        circuit.send(message, true).wait()?;
+        await!(circuit.send(message, true))?;
 
         // let region_x = 256000.;
         // let region_y = 256000.;
@@ -217,7 +222,7 @@ impl Simulator {
             head_rotation: UnitQuaternion::from_axis_angle(&z_axis, 0.),
         };
         let message = agent_state.to_update_message(agent_id, session_id);
-        circuit.send(message, true).wait()?;
+        await!(circuit.send(message, true))?;
 
         Ok((circuit, region_info))
     }
