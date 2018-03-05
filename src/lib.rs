@@ -25,10 +25,10 @@ extern crate mio;
 extern crate nalgebra;
 extern crate regex;
 extern crate reqwest;
-extern crate rmp_serde;
 extern crate serde;
 #[macro_use]
 extern crate serde_derive;
+extern crate simple_disk_cache;
 #[macro_use]
 extern crate slog;
 extern crate slog_async;

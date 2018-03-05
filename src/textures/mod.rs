@@ -5,13 +5,14 @@ use logging::Log;
 use hyper;
 use hyper::header::ContentType;
 use slog::Logger;
+use std::cell::RefCell;
 use std::error::Error;
 use std::io::Error as IoError;
 use tokio_core::reactor::Handle;
 use types::Uuid;
 use url::Url;
 
-pub mod cache;
+mod cache;
 mod decode;
 
 use self::cache::*;
@@ -57,7 +58,7 @@ impl From<::jpeg2000::error::DecodeError> for TextureServiceError {
 
 pub struct TextureService {
     get_texture: Url,
-    caches: Vec<Box<TextureCache + Send>>,
+    caches: Vec<RefCell<TextureCache>>,
     log: Log,
 }
 
@@ -73,7 +74,7 @@ impl TextureService {
     /// Register a TextureCache as the next layer in the cache hierarchy.
     ///
     /// Caches will be queried on lookup in the order they were inserted here.
-    pub fn register_cache(&mut self, cache: Box<TextureCache + Send>) {
+    pub fn register_cache(&mut self, cache: RefCell<TextureCache>) {
         self.caches.push(cache);
     }
 
@@ -82,8 +83,8 @@ impl TextureService {
     pub fn get_texture(&self, id: &Uuid, handle: &Handle) -> GetTexture {
         // Get the texture from a cache if possible.
         // TODO: Currently this is performed with blocking IO.
-        for cache in &self.caches {
-            match cache.get_texture(id) {
+        for cache_refcell in &self.caches {
+            match cache_refcell.borrow_mut().get(id) {
                 Ok(Some(t)) => return Box::new(futures::future::result(Ok(t))),
                 _ => {}
             }
