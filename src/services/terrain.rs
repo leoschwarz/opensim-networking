@@ -1,16 +1,17 @@
 //! Terrain data management.
 
 use circuit::message_handlers;
+use crossbeam_channel;
 use layer_data::{extract_land_patch, Patch};
 use services::Service;
 use std::cell::Cell;
-use std::sync::{mpsc, Arc, Mutex};
+use std::sync::{Arc, Mutex};
 use messages::{MessageInstance, MessageType};
 use futures::Future;
 use logging::{Log, Logger};
 
 pub struct Receivers {
-    pub land_patches: mpsc::Receiver<Vec<Patch>>,
+    pub land_patches: crossbeam_channel::Receiver<Vec<Patch>>,
 }
 
 pub struct TerrainService {
@@ -19,7 +20,7 @@ pub struct TerrainService {
 
 impl Service for TerrainService {
     fn register_service(handlers: &mut message_handlers::Handlers, log: &Log) -> Self {
-        let (patch_tx, patch_rx) = mpsc::channel();
+        let (patch_tx, patch_rx) = crossbeam_channel::bounded(100);
         let patch_tx = Arc::new(Mutex::new(patch_tx));
         let logger = Arc::new(Logger::root(log.clone(), o!("service" => "TerrainService")));
 

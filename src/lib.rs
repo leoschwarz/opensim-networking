@@ -7,6 +7,7 @@ extern crate addressable_queue;
 extern crate bitflags;
 extern crate bitreader;
 extern crate byteorder;
+extern crate crossbeam_channel;
 extern crate crypto;
 #[macro_use]
 extern crate derive_error_chain;
