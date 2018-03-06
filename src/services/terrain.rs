@@ -38,8 +38,8 @@ impl Service for TerrainService {
                             tx.send(patches).unwrap();
                         })
                     });
-                    let fut = patches.map_err(move |_| {
-                        debug!(logger3, "Decoding layer data failed.");
+                    let fut = patches.map_err(move |e| {
+                        debug!(logger3, "Decoding layer data failed: {:?}", e);
                         // TODO
                         ()
                     });
