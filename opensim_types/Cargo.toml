@@ -4,8 +4,16 @@ version = "0.1.0"
 authors = ["Leo Schwarz <mail@leoschwarz.com>"]
 license = "GPL-3.0"
 
+[dependencies.nalgebra]
+git = "https://github.com/leoschwarz/nalgebra"
+version = "0.14"
+features = ["serde-serialize"]
+branch = "more-dims"
+
+
 [dependencies]
-nalgebra = { version = "0.14", features = ["serde-serialize"] }
+# issue: https://github.com/sebcrozet/nalgebra/issues/324
+#nalgebra = { version = "0.14", features = ["serde-serialize"] }
 num-traits = "0.1.40"
 serde = "1.0"
 url = "1.2"
