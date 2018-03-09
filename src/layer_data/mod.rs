@@ -4,7 +4,7 @@
 mod idct;
 mod land;
 
-use nalgebra::DMatrix;
+use types::DMatrix;
 
 use messages::all::LayerData;
 pub use self::land::{ExtractSurfaceError, ExtractSurfaceErrorKind};

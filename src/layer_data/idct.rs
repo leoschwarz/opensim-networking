@@ -3,7 +3,7 @@
 use layer_data::land::PatchHeader;
 use std::f32::consts::PI;
 
-use nalgebra::DMatrix;
+use types::DMatrix;
 
 pub trait PatchSize {
     /// Return the number of cells in one direction.

@@ -23,7 +23,6 @@ extern crate jpeg2000;
 extern crate lazy_static;
 extern crate llsd;
 extern crate mio;
-extern crate nalgebra;
 extern crate regex;
 extern crate reqwest;
 extern crate serde;

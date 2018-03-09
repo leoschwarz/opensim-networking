@@ -31,7 +31,6 @@ jpeg2000 = "0.1.1"
 lazy_static = "1.0"
 llsd = { git = "https://github.com/teleportlab/llsd" }
 mio = "0.6"
-nalgebra = "0.14.0"
 opensim_messages = { path = "opensim_messages" }
 opensim_types = { path = "opensim_types" }
 regex = "0.2.2"
