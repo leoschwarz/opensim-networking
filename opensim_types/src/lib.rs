@@ -1,6 +1,6 @@
-// TODO: This crate should probably be deprecated.
+// TODO: This crate should be renamed.
 
-extern crate nalgebra;
+pub extern crate nalgebra;
 extern crate url;
 extern crate uuid;
 
