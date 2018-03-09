@@ -5,7 +5,7 @@ authors = ["Leo Schwarz <mail@leoschwarz.com>"]
 license = "GPL-3.0"
 
 [dependencies]
-nalgebra = "0.13.1"
+nalgebra = "0.14"
 num-traits = "0.1.40"
 serde = "1.0"
 url = "1.2"
