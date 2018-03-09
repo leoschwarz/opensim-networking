@@ -7,8 +7,10 @@ use byteorder::LittleEndian;
 const END_OF_PATCH: u8 = 97u8;
 
 lazy_static! {
-    static ref TABLES_NORMAL: PatchTables = PatchTables::compute::<idct::NormalPatch>();
-    static ref TABLES_LARGE: PatchTables = PatchTables::compute::<idct::LargePatch>();
+    static ref TABLES_NORMAL: PatchTables<idct::NormalPatch>
+        = PatchTables::compute();
+    static ref TABLES_LARGE: PatchTables<idct::LargePatch>
+        = PatchTables::compute();
 }
 
 #[derive(Debug, ErrorChain)]
@@ -158,7 +160,7 @@ pub fn extract_land_patches(
 fn decode_patch_data<PS: PatchSize, BR: BitsReader>(
     reader: &mut BR,
     header: &PatchHeader,
-    tables: &PatchTables,
+    tables: &PatchTables<PS>,
 ) -> Result<Patch, ExtractSurfaceError> {
     // Read raw patch data.
     let mut patch_data = Vec::<i32>::new();

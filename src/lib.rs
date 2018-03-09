@@ -16,6 +16,7 @@ extern crate error_chain;
 extern crate failure;
 extern crate futures_await as futures;
 extern crate futures_cpupool;
+extern crate generic_array;
 extern crate hyper;
 extern crate image;
 extern crate jpeg2000;
@@ -34,6 +35,7 @@ extern crate slog;
 extern crate slog_async;
 extern crate slog_term;
 extern crate tokio_core;
+extern crate typenum;
 extern crate url;
 extern crate xmlrpc;
 

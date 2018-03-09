@@ -1,13 +1,32 @@
 //! Code for the DCT patch decompression.
 
+use layer_data::PatchMatrix;
 use layer_data::land::PatchHeader;
 use std::f32::consts::PI;
+use std::ops::Mul;
+use typenum;
+use types::{Matrix};
+use types::nalgebra::core::{MatrixArray, NamedDim};
+use types::nalgebra::core::dimension::{Dim, DimName, U16, U32};
+use generic_array;
 
-use types::DMatrix;
+type MatrixD<S, PS: PatchSize> =
+    Matrix<S, PS::DimName, PS::DimName, MatrixArray<
+    <<<PS as PatchSize>::DimName as DimName>::Value as Mul>::Output, PS::DimName, PS::DimName>>;
 
-pub trait PatchSize {
+pub trait PatchSize where
+{
+    // e.g. typenum::U16
+    type DimValue: Mul + NamedDim<Name = Self::DimName>;
+    // e.g. nalgebra::core::dimension::U16
+    type DimName: DimName<Value=Self::DimValue>;
+    //type DimName: DimName;
+
     /// Return the number of cells in one direction.
-    fn per_direction() -> usize;
+    fn per_direction() -> usize {
+        // Note: Should never fail for U16, U32.
+        Self::MatDim::try_to_usize().unwrap()
+    }
 
     fn per_patch() -> usize {
         Self::per_direction() * Self::per_direction()
@@ -16,16 +35,14 @@ pub trait PatchSize {
 
 pub enum NormalPatch {}
 impl PatchSize for NormalPatch {
-    fn per_direction() -> usize {
-        16
-    }
+    type DimValue = typenum::U16;
+    type DimName = U16;
 }
 
 pub enum LargePatch {}
 impl PatchSize for LargePatch {
-    fn per_direction() -> usize {
-        32
-    }
+    type DimValue = typenum::U32;
+    type DimName = U32;
 }
 
 /// Store these somewhere so they don't have to be computed every time,
@@ -33,18 +50,20 @@ impl PatchSize for LargePatch {
 ///
 /// All tables are per_direction x per_direction square matrices stored
 /// in column major fashion.
-pub struct PatchTables {
-    dequantize: DMatrix<f32>,
-    icosines: DMatrix<f32>,
-    decopy: DMatrix<usize>,
+pub struct PatchTables<PS: PatchSize>
+{
+    dequantize: MatrixD<f32, PS>,
+    icosines: MatrixD<f32, PS>,
+    decopy: MatrixD<usize, PS>,
 }
 
-impl PatchTables {
-    pub fn compute<PS: PatchSize>() -> Self {
-        let dequantize = DMatrix::from_fn(PS::per_direction(), PS::per_direction(), |i, j| {
+impl<PS: PatchSize> PatchTables<PS>
+{
+    pub fn compute() -> Self {
+        let dequantize = MatrixD::from_fn(PS::per_direction(), PS::per_direction(), |i, j| {
             1. + 2. * ((i + j) as f32)
         });
-        let icosines = DMatrix::from_fn(PS::per_direction(), PS::per_direction(), |i, j| {
+        let icosines = MatrixD::from_fn(PS::per_direction(), PS::per_direction(), |i, j| {
             ((2. * (i as f32) + 1.) * (j as f32) * PI / (2. * (PS::per_direction() as f32))).cos()
         });
 
@@ -52,7 +71,7 @@ impl PatchTables {
         // My initial idea of using Cantor's pairing function for this are complicated
         // by the fact, that as soon as we reach the lower-right diagonal part
         // of the matrix things get more complicated.
-        let mut decopy = DMatrix::from_element(PS::per_direction(), PS::per_direction(), 0);
+        let mut decopy = MatrixD::from_element(PS::per_direction(), PS::per_direction(), 0);
         let mut move_diag = false;
         let mut move_right = true;
         let mut i = 0;
@@ -103,12 +122,12 @@ impl PatchTables {
         PatchTables {
             dequantize: dequantize,
             icosines: icosines,
-            decopy: decopy.clone(),
+            decopy: decopy,
         }
     }
 }
 
-fn idct_patch<PS: PatchSize>(block: &mut DMatrix<f32>, tables: &PatchTables) {
+fn idct_patch<PS: PatchSize>(block: &mut MatrixD<f32, PS>, tables: &PatchTables<PS>) {
     let mut temp = block.clone();
 
     for j in 0..PS::per_direction() {
@@ -120,10 +139,10 @@ fn idct_patch<PS: PatchSize>(block: &mut DMatrix<f32>, tables: &PatchTables) {
 }
 
 fn idct_column<PS: PatchSize>(
-    data_in: &DMatrix<f32>,
-    data_out: &mut DMatrix<f32>,
+    data_in: &MatrixD<f32, PS>,
+    data_out: &mut MatrixD<f32, PS>,
     column: usize,
-    tables: &PatchTables,
+    tables: &PatchTables<PS>,
 ) {
     for n in 0..PS::per_direction() {
         let mut total: f32 = (2f32).sqrt() / 2. * data_in[(column, 0)];
@@ -135,10 +154,10 @@ fn idct_column<PS: PatchSize>(
 }
 
 fn idct_row<PS: PatchSize>(
-    data_in: &DMatrix<f32>,
-    data_out: &mut DMatrix<f32>,
+    data_in: &MatrixD<f32, PS>,
+    data_out: &mut MatrixD<f32, PS>,
     row: usize,
-    tables: &PatchTables,
+    tables: &PatchTables<PS>,
 ) {
     for n in 0..PS::per_direction() {
         let mut total: f32 = (2f32).sqrt() / 2. * data_in[(0, row)];
@@ -152,10 +171,10 @@ fn idct_row<PS: PatchSize>(
 pub(super) fn decompress_patch<PS: PatchSize>(
     patch_in: &Vec<i32>,
     header: &PatchHeader,
-    tables: &PatchTables,
-) -> DMatrix<f32> {
-    let mut block: DMatrix<f32> =
-        DMatrix::from_element(PS::per_direction(), PS::per_direction(), 0.);
+    tables: &PatchTables<PS>,
+) -> MatrixD<f32, PS> {
+    let mut block: MatrixD<f32, PS> =
+        MatrixD::from_element(PS::per_direction(), PS::per_direction(), 0.);
     for k in 0..PS::per_patch() {
         block[k] = patch_in[tables.decopy[k]] as f32 * tables.dequantize[k];
     }
@@ -165,7 +184,7 @@ pub(super) fn decompress_patch<PS: PatchSize>(
     // Inverse the bijection applied before the DCT.
     let fact_mult: f32 = (header.range as f32) / 2f32.powi(header.quant as i32);
     let fact_add: f32 = (header.range as f32) / 2. + header.dc_offset;
-    DMatrix::from_fn(PS::per_direction(), PS::per_direction(), |i, j| {
+    MatrixD::from_fn(PS::per_direction(), PS::per_direction(), |i, j| {
         block[(i, j)] * fact_mult + fact_add
     })
 }
