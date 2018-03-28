@@ -98,6 +98,10 @@ impl Patch {
         &self.data
     }
 
+    pub fn to_data(self) -> DMatrix<f32> {
+        self.data
+    }
+
     pub fn z_min(&self) -> f32 {
         self.z_min
     }
