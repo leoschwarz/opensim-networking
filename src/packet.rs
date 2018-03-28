@@ -150,20 +150,24 @@ impl Packet {
     }
 }
 
-#[derive(Debug, ErrorChain)]
-#[error_chain(error = "ReadPacketError")]
-#[error_chain(result = "")]
-pub enum ReadPacketErrorKind {
-    #[error_chain(foreign)]
-    IoError(::std::io::Error),
+#[derive(Debug, Fail)]
+pub enum ReadPacketError {
+    #[fail(display = "There was an IO error while reading the data: {:?}", 0)]
+    IoError(#[cause] ::std::io::Error),
 
-    #[error_chain(custom)]
-    ReadError(::failure::Compat<::messages::ReadError>),
+    #[fail(display = "Reading the received message failed: {}", 0)]
+    ReadError(::messages::ReadError),
+}
+
+impl From<::std::io::Error> for ReadPacketError {
+    fn from(e: ::std::io::Error) -> Self {
+        ReadPacketError::IoError(e)
+    }
 }
 
 impl From<::messages::ReadError> for ReadPacketError {
     fn from(e: ::messages::ReadError) -> Self {
-        ReadPacketErrorKind::ReadError(e.compat()).into()
+        ReadPacketError::ReadError(e)
     }
 }
 

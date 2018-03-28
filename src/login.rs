@@ -1,5 +1,6 @@
 use crypto::digest::Digest;
 use crypto::md5::Md5;
+use failure::Error;
 use regex::Regex;
 use std::collections::BTreeMap;
 use std::str::FromStr;
@@ -30,44 +31,16 @@ pub fn hash_password(password_raw: &str) -> String {
     "$1$".to_string() + &digest.result_str()
 }
 
-#[derive(Debug, ErrorChain)]
-#[error_chain(error = "LoginError")]
-#[error_chain(result = "")]
-pub enum LoginErrorKind {
-    #[error_chain(foreign)]
-    RequestError(::xmlrpc::RequestError),
+#[derive(Debug, Fail)]
+pub enum LoginError {
+    #[fail(display = "There was a network error: {}", 0)]
+    Network(Error),
 
-    #[error_chain(foreign)]
-    HttpError(::reqwest::Error),
+    #[fail(display = "Parsing the response failed: {}", 0)]
+    ParseResponse(Error),
 
-    #[error_chain(foreign)]
-    ParseFloatError(::std::num::ParseFloatError),
-
-    #[error_chain(foreign)]
-    AddrParseError(::std::net::AddrParseError),
-
-    #[error_chain(foreign)]
-    UuidParseError(::types::UuidParseError),
-
-    #[error_chain(foreign)]
-    UrlParseError(::types::UrlParseError),
-
-    /// Login failed.
-    #[error_chain(custom)]
-    #[error_chain(description = r#"|_| "login failed""#)]
-    #[error_chain(display = r#"|fault| write!(f, "login failed: {:?}", fault)"#)]
-    XmlRpcFault(::xmlrpc::Fault),
-
-    #[error_chain(custom)]
-    #[error_chain(description = r#"|_| "extracting response failed""#)]
-    #[error_chain(display = r#"|field| write!(f, "extracting {} from response failed", field)"#)]
-    ExtractResponseError(String),
-}
-
-impl From<::xmlrpc::Fault> for LoginError {
-    fn from(err: ::xmlrpc::Fault) -> LoginError {
-        LoginErrorKind::XmlRpcFault(err).into()
-    }
+    #[fail(display = "Login failed due to server denying it: {:?}", 0)]
+    LoginDenied(#[cause] ::xmlrpc::Fault),
 }
 
 #[derive(Clone, Debug)]
@@ -91,18 +64,21 @@ impl LoginResponse {
         let re = Regex::new(r"\[r([0-9\.-]+),r([0-9\.-]+),r([0-9\.-]+)\]").unwrap();
         match re.captures(raw) {
             Some(caps) => {
-                let x = try!(caps.get(1).unwrap().as_str().parse::<f32>());
-                let y = try!(caps.get(2).unwrap().as_str().parse::<f32>());
-                let z = try!(caps.get(3).unwrap().as_str().parse::<f32>());
+                let x = f32::from_str(&caps[1]).map_err(|e| LoginError::ParseResponse(e.into()))?;
+                let y = f32::from_str(&caps[2]).map_err(|e| LoginError::ParseResponse(e.into()))?;
+                let z = f32::from_str(&caps[3]).map_err(|e| LoginError::ParseResponse(e.into()))?;
                 Ok(Vector3::new(x, y, z))
             }
-            _ => Err(LoginErrorKind::ExtractResponseError(format!("vector3='{}'", raw)).into()),
+            _ => Err(LoginError::ParseResponse(format_err!(
+                "Invalid vector3: '{}'",
+                raw
+            ))),
         }
     }
 
     fn extract(response: BTreeMap<String, XmlValue>) -> Result<LoginResponse, LoginError> {
         fn err(msg: &'static str) -> LoginError {
-            LoginErrorKind::ExtractResponseError(msg.to_string()).into()
+            LoginError::ParseResponse(format_err!("Missing response field: {}", msg))
         }
 
         // TODO: Check if additional items should be extracted.
@@ -115,19 +91,27 @@ impl LoginResponse {
             _ => return Err(err("circuit_code")),
         };
         let session_id = match response.get("session_id") {
-            Some(&XmlValue::String(ref id)) => try!(Uuid::parse_str(id)),
+            Some(&XmlValue::String(ref id)) => {
+                Uuid::parse_str(id).map_err(|e| LoginError::ParseResponse(e.into()))?
+            }
             _ => return Err(err("session_id")),
         };
         let agent_id = match response.get("agent_id") {
-            Some(&XmlValue::String(ref id)) => try!(Uuid::parse_str(id)),
+            Some(&XmlValue::String(ref id)) => {
+                Uuid::parse_str(id).map_err(|e| LoginError::ParseResponse(e.into()))?
+            }
             _ => return Err(err("agent_id")),
         };
         let seed_capability = match response.get("seed_capability") {
-            Some(&XmlValue::String(ref u)) => u.parse()?,
+            Some(&XmlValue::String(ref u)) => {
+                Url::parse(u).map_err(|e| LoginError::ParseResponse(e.into()))?
+            }
             _ => return Err(err("seed_caps")),
         };
         let sim_ip = match response.get("sim_ip") {
-            Some(&XmlValue::String(ref ip_raw)) => try!(Ip4Addr::from_str(ip_raw)),
+            Some(&XmlValue::String(ref ip_raw)) => {
+                Ip4Addr::from_str(ip_raw).map_err(|e| LoginError::ParseResponse(e.into()))?
+            }
             _ => return Err(err("sim_ip")),
         };
         let sim_port = match response.get("sim_port") {
@@ -178,11 +162,15 @@ impl LoginRequest {
 
         let value = ::xmlrpc::Request::new("login_to_simulator")
             .arg(XmlValue::Struct(data))
-            .call(&client, url)??;
+            .call(&client, url)
+            .map_err(|e| LoginError::Network(e.into()))?
+            .map_err(|e| LoginError::LoginDenied(e))?;
 
         match value {
             XmlValue::Struct(s) => LoginResponse::extract(s),
-            _ => Err(LoginErrorKind::ExtractResponseError("value is not a struct".into()).into()),
+            _ => Err(LoginError::ParseResponse(format_err!(
+                "value is not a struct"
+            ))),
         }
     }
 }

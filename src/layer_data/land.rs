@@ -13,23 +13,25 @@ lazy_static! {
         = PatchTables::compute::<idct::LargePatch>();
 }
 
-#[derive(Debug, ErrorChain)]
-#[error_chain(error = "ExtractSurfaceError")]
-#[error_chain(result = "")]
-pub enum ExtractSurfaceErrorKind {
-    #[error_chain(foreign)]
-    BitReader(::util::bitsreader::ReadError),
+#[derive(Debug, Fail)]
+pub enum ExtractSurfaceError {
+    #[fail(display = "Reading the input failed: {}", 0)]
+    BitReader(#[cause] ::util::bitsreader::ReadError),
 
-    #[error_chain(custom)]
-    #[error_chain(description = r#"|_| "unknown layer type""#)]
-    #[error_chain(display = r#"|code| write!(f, "unknown layer type: {}", code)"#)]
+    #[fail(display = "Unknown layer type: {}", 0)]
     UnknownLayerType(u8),
 
-    #[error_chain(custom)]
+    #[fail(display = "Wrong layer type: {:?}", 0)]
     WrongLayerType(LayerType),
 
-    #[error_chain(custom)]
+    #[fail(display = "Unsupported patch size: {}", 0)]
     UnsupportedPatchsize(u32),
+}
+
+impl From<::util::bitsreader::ReadError> for ExtractSurfaceError {
+    fn from(e: ::util::bitsreader::ReadError) -> Self {
+        ExtractSurfaceError::BitReader(e)
+    }
 }
 
 #[derive(Debug)]
@@ -150,7 +152,7 @@ pub fn extract_land_patches(
                 &header,
                 &TABLES_LARGE,
             ),
-            ps => Err(ExtractSurfaceErrorKind::UnsupportedPatchsize(ps).into()),
+            ps => Err(ExtractSurfaceError::UnsupportedPatchsize(ps)),
         }?;
 
         decoded_patches.push(patch);

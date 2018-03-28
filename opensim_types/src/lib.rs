@@ -11,7 +11,7 @@ pub use std::net::IpAddr;
 pub use std::time::{Duration, Instant};
 
 use nalgebra::{MatrixArray, MatrixVec};
-use nalgebra::core::dimension::{U16, U32, U256, U512};
+use nalgebra::core::dimension::{U16, U32};
 
 /// Stack allocated square matrix.
 pub type MatrixSN<S, N> = Matrix<S, N, N, MatrixArray<S, N, N>>;
@@ -21,8 +21,6 @@ pub type MatrixHN<S, N> = Matrix<S, N, N, MatrixVec<S, N, N>>;
 
 pub type Matrix16<S> = Matrix<S, U16, U16, MatrixVec<S, U16, U16>>;
 pub type Matrix32<S> = Matrix<S, U32, U32, MatrixVec<S, U32, U32>>;
-pub type Matrix256<S> = Matrix<S, U256, U256, MatrixVec<S, U256, U256>>;
-pub type Matrix512<S> = Matrix<S, U512, U512, MatrixVec<S, U512, U512>>;
 
 pub type IpPort = u16;
 

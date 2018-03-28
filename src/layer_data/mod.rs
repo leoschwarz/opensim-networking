@@ -6,7 +6,7 @@ mod land;
 
 use types::DMatrix;
 use messages::all::LayerData;
-pub use self::land::{ExtractSurfaceError, ExtractSurfaceErrorKind};
+pub use self::land::ExtractSurfaceError;
 
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub enum LayerType {
@@ -37,7 +37,7 @@ impl LayerType {
             b'X' => Ok(LayerType::VarWind),
             b'9' => Ok(LayerType::VarCloud),
             b':' => Ok(LayerType::VarWater),
-            code => return Err(ExtractSurfaceErrorKind::UnknownLayerType(code).into()),
+            code => return Err(ExtractSurfaceError::UnknownLayerType(code)),
         }
     }
 
@@ -115,6 +115,6 @@ pub fn extract_land_patch(msg: &LayerData) -> Result<Vec<Patch>, ExtractSurfaceE
     if let Some(land_layer_type) = layer_type.land_layer() {
         land::extract_land_patches(&msg.layer_data.data[..], land_layer_type)
     } else {
-        Err(ExtractSurfaceErrorKind::WrongLayerType(layer_type).into())
+        Err(ExtractSurfaceError::WrongLayerType(layer_type))
     }
 }
