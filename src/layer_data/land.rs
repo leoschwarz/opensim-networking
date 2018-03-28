@@ -7,10 +7,10 @@ use byteorder::LittleEndian;
 const END_OF_PATCH: u8 = 97u8;
 
 lazy_static! {
-    static ref TABLES_NORMAL: PatchTables<idct::NormalPatch>
-        = PatchTables::compute();
-    static ref TABLES_LARGE: PatchTables<idct::LargePatch>
-        = PatchTables::compute();
+    static ref TABLES_NORMAL: PatchTables
+        = PatchTables::compute::<idct::NormalPatch>();
+    static ref TABLES_LARGE: PatchTables
+        = PatchTables::compute::<idct::LargePatch>();
 }
 
 #[derive(Debug, ErrorChain)]
@@ -160,7 +160,7 @@ pub fn extract_land_patches(
 fn decode_patch_data<PS: PatchSize, BR: BitsReader>(
     reader: &mut BR,
     header: &PatchHeader,
-    tables: &PatchTables<PS>,
+    tables: &PatchTables,
 ) -> Result<Patch, ExtractSurfaceError> {
     // Read raw patch data.
     let mut patch_data = Vec::<i32>::new();
@@ -186,6 +186,8 @@ fn decode_patch_data<PS: PatchSize, BR: BitsReader>(
 
     // Decompress the data.
     let data = idct::decompress_patch::<PS>(&patch_data, &header, &tables);
+    debug_assert!(data.ncols() == PS::per_direction());
+    debug_assert!(data.nrows() == PS::per_direction());
     Ok(Patch {
         size: PS::per_direction() as u32,
         z_min: header.dc_offset,

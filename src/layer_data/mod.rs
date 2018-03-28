@@ -4,8 +4,7 @@
 mod idct;
 mod land;
 
-use types::{Matrix16, Matrix32};
-use types::nalgebra::core::Scalar;
+use types::DMatrix;
 use messages::all::LayerData;
 pub use self::land::{ExtractSurfaceError, ExtractSurfaceErrorKind};
 
@@ -60,24 +59,6 @@ impl LayerType {
     }
 }
 
-#[derive(Debug)]
-pub enum PatchMatrix<S: Scalar> {
-    Normal(Matrix16<S>),
-    Large(Matrix32<S>),
-}
-
-impl<S: Scalar> From<Matrix16<S>> for PatchMatrix<S> {
-    fn from(m: Matrix16<S>) -> Self {
-        PatchMatrix::Normal(m)
-    }
-}
-
-impl<S: Scalar> From<Matrix32<S>> for PatchMatrix<S> {
-    fn from(m: Matrix32<S>) -> Self {
-        PatchMatrix::Large(m)
-    }
-}
-
 /// One patch of a region's heightmap.
 ///
 /// A region's heightmap is split into many square shaped patches.
@@ -95,7 +76,7 @@ pub struct Patch {
 
     /// Decoded height map, square matrix of size `size`x`size`.
     /// TODO: (x,y)<->(i,j) ?
-    data: PatchMatrix<f32>,
+    data: DMatrix<f32>,
 }
 
 impl Patch {
@@ -113,7 +94,7 @@ impl Patch {
         self.patch_pos.clone()
     }
 
-    pub fn data(&self) -> &PatchMatrix<f32> {
+    pub fn data(&self) -> &DMatrix<f32> {
         &self.data
     }
 
