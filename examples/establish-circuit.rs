@@ -5,9 +5,10 @@ extern crate serde_derive;
 extern crate tokio_core;
 extern crate toml;
 
+use opensim_networking::circuit::message_handlers;
 use opensim_networking::logging::{Log, LogLevel};
 use opensim_networking::login::{hash_password, LoginRequest};
-use opensim_networking::simulator::{ConnectInfo, MessageHandlers, Simulator};
+use opensim_networking::simulator::{ConnectInfo, Simulator};
 use opensim_networking::systems::agent_update::{AgentState, Modality, MoveDirection};
 use opensim_networking::types::{Duration, UnitQuaternion, Vector3};
 
@@ -61,7 +62,7 @@ fn main() {
 
     let mut core = Core::new().unwrap();
 
-    let message_handlers = MessageHandlers::default();
+    let message_handlers = message_handlers::Handlers::default();
     let sim_connect_info = ConnectInfo::from(resp);
     let sim = Simulator::connect(sim_connect_info, message_handlers, core.handle(), log)
         .wait()
