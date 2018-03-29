@@ -5977,7 +5977,7 @@ pub struct ImprovedTerseObjectUpdate_ObjectData {
     ///     <th>description</th>
     /// </tr>
     /// <tr><td>4</td><td>local_id</td><td>u32</td><td>should be the same as
-    /// `client.local_id`</td></tr>
+    /// client.local_id.</td></tr>
     /// <tr><td>1</td><td>state</td><td>u8</td><td>TODO</td></tr>
     /// <tr><td>1</td><td>collision_exists</td><td>bool</td><td>If 0 the next
     /// field is not specified (zero bytes), if 1 read as usual.</td></tr>
