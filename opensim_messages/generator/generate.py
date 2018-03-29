@@ -4,6 +4,7 @@ import itertools
 import os
 import sys
 import textwrap
+import subprocess
 
 import gen.code
 import gen.types
@@ -12,6 +13,7 @@ sys.path.append("protocol/messages-util")
 import message_xml
 
 SCRIPT_DIR = os.path.dirname(__file__)
+TARGET_DIR = os.path.join(SCRIPT_DIR, "..")
 TARGET_FILE = os.path.join(SCRIPT_DIR, "../src/all.rs")
 PREAMBLE_FILE = os.path.join(SCRIPT_DIR, "./preamble.rs")
 
@@ -72,5 +74,5 @@ if __name__ == "__main__":
             f.write(code)
 
     # Format the file.
-    os.system("rustup run nightly cargo fmt")
+    subprocess.run(["cargo", "fmt"], cwd=TARGET_DIR)
 
