@@ -1,9 +1,9 @@
 #![allow(unused)]
 
-use std::collections::{BinaryHeap, VecDeque};
 use std::cmp::Ordering;
-use std::sync::mpsc;
+use std::collections::{BinaryHeap, VecDeque};
 use std::sync::atomic::AtomicUsize;
+use std::sync::mpsc;
 use std::time::{Duration, Instant};
 
 pub mod bitsreader;

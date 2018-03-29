@@ -5,7 +5,6 @@
 /// THIS FILE WAS AUTOMATICALLY GENERATED.
 /// Don't edit manually, instead edit the generator.
 ///
-
 use {Ip4Addr, IpPort, Message, Quaternion, ReadError, Uuid, Vector3, Vector4, WriteMessageResult};
 
 use arrayvec::ArrayVec;
@@ -276,8 +275,8 @@ pub struct AgentCachedTextureResponse_WearableData {
 ///
 /// 		TODO:
 /// 		/// AgentCachedTextureResponse
-/// /// response to viewer queries for cached textures on dataserver (via simulator)
-/// /// dataserver -> simulator -> viewer
+/// /// response to viewer queries for cached textures on dataserver (via
+/// simulator) /// dataserver -> simulator -> viewer
 /// /// reliable
 ///
 #[derive(Clone, Debug)]
@@ -307,8 +306,8 @@ pub struct AgentDataUpdate_AgentData {
 ///
 /// 		TODO:
 /// 		/// AgentDataUpdate
-/// /// Updates a viewer or simulator's impression of agent-specific information.
-/// /// Used, for example, when an agent's group changes.
+/// /// Updates a viewer or simulator's impression of agent-specific
+/// information. /// Used, for example, when an agent's group changes.
 /// /// dataserver -> simulator -> viewer
 /// /// reliable
 ///
@@ -345,8 +344,8 @@ pub struct AgentDropGroup_AgentData {
 ///
 /// 		TODO:
 /// 		/// AgentDropGroup
-/// /// Updates the viewer / simulator that an agent is no longer part of a group
-/// /// dataserver -> simulator -> viewer
+/// /// Updates the viewer / simulator that an agent is no longer part of a
+/// group /// dataserver -> simulator -> viewer
 /// /// dataserver -> userserver
 /// /// reliable
 ///
@@ -375,7 +374,8 @@ pub struct AgentFOV_FOVBlock {
 
 ///
 /// TODO:
-/// /// AgentFOV - Update to agent's field of view, angle is vertical, single F32 float in radians
+/// /// AgentFOV - Update to agent's field of view, angle is vertical, single
+/// F32 float in radians
 ///
 #[derive(Clone, Debug)]
 pub struct AgentFOV {
@@ -440,8 +440,8 @@ pub struct AgentHeightWidth_HeightWidthBlock {
 
 ///
 /// 		TODO:
-/// 		/// AgentHeightWidth - Update to height and aspect, sent as height/width to save space
-/// /// Usually sent when window resized or created
+/// /// AgentHeightWidth - Update to height and aspect, sent as height/width
+/// to save space /// Usually sent when window resized or created
 ///
 #[derive(Clone, Debug)]
 pub struct AgentHeightWidth {
@@ -507,8 +507,8 @@ pub struct AgentMovementComplete_SimData {
 }
 
 ///
-/// This is one of the very first packets sent from the sim to the viewer on connection,
-/// to provide the viewer with detailed information of its position.
+/// This is one of the very first packets sent from the sim to the viewer on
+/// connection, to provide the viewer with detailed information of its position.
 ///
 #[derive(Clone, Debug)]
 pub struct AgentMovementComplete {
@@ -529,7 +529,8 @@ pub struct AgentPause_AgentData {
 
 ///
 /// TODO:
-/// /// AgentPause - viewer occasionally will block, inform simulator of this fact
+/// /// AgentPause - viewer occasionally will block, inform simulator of this
+/// fact
 ///
 #[derive(Clone, Debug)]
 pub struct AgentPause {
@@ -683,9 +684,9 @@ pub struct AgentThrottle_Throttle {
     /// Clients can set this value to 0.
     pub gen_counter: u32,
     ///
-    /// Throttle values describe the maximum bits per second to be spent for various aspects of
-    /// the circuit. They are provided in the form of the following sequence of 32 bit floats of
-    /// little endian ordering:
+    /// Throttle values describe the maximum bits per second to be spent for
+    /// various aspects of the circuit. They are provided in the form of
+    /// the following sequence of 32 bit floats of little endian ordering:
     ///
     /// Resend:  traffic resending unacknowledged packets
     /// Land:    traffic for LayerData terrain
@@ -729,8 +730,8 @@ pub struct AgentUpdate_AgentData {
     /// Region local center coordinates of the camera.
     pub camera_center: Vector3<f32>,
     /// Camera coordinate axis in looking _at_ direction (forward).
-    /// TODO: Check how these are provided? Most likely unit distance from camera
-    /// center into the direction of the coordinate axis?
+    /// TODO: Check how these are provided? Most likely unit distance from
+    /// camera center into the direction of the coordinate axis?
     ///
     pub camera_at_axis: Vector3<f32>,
     /// Camera coordinate axis, left direction.
@@ -740,19 +741,22 @@ pub struct AgentUpdate_AgentData {
     /// TODO
     pub far: f32,
     ///
-    /// On/off bits for movement keys which the server then feeds into the physics engine
-    /// to compute actual movement of the client. The server then sends updates back to the
-    /// clients (TODO: which packet?).
+    /// On/off bits for movement keys which the server then feeds into the
+    /// physics engine to compute actual movement of the client. The server
+    /// then sends updates back to the clients (TODO: which packet?).
     ///
     /// TODO:
-    ///  - If we send a flag and then stop what happens with the agent? According to what I saw
-    ///    so far the agent derenders but maybe this is also due to bugs in my code.
+    /// - If we send a flag and then stop what happens with the agent?
+    /// According to what I saw so far the agent derenders but maybe
+    /// this is also due to bugs in my code.
     ///
-    /// The official viewer rapidly polls for currently pressed keys, sets the flags and sends the
-    /// packet, then resets the flags until the next polling interval.
+    /// The official viewer rapidly polls for currently pressed keys, sets the
+    /// flags and sends the packet, then resets the flags until the next
+    /// polling interval.
     ///
-    /// Flags (encoded as 32 bit integer, in the encoding column the bit number from least
-    /// significant to most significant bit is listed for each flag):
+    /// Flags (encoded as 32 bit integer, in the encoding column the bit number
+    /// from least significant to most significant bit is listed for each
+    /// flag):
     ///
     /// | Encoding | Flag            | Description
     /// | SL keybinding         |
@@ -762,24 +766,25 @@ pub struct AgentUpdate_AgentData {
     /// | W/Up arrow            | | 2        | MOVE_FWD_NEG    | Move backward
     /// | s/down arrow          | | 3        | MOVE_LEFT_POS   | Move left
     /// | shift-(a/left arrow)  | | 4        | MOVE_LEFT_NEG   | Move right
-    /// | shift-(d/right arrow) | | 5        | MOVE_UP_POS     | not flying: jump; flying:
-    /// move up                             | e                     | | 6        | MOVE_UP_NEG
-    /// | not flying: croutch; flying: move down                        | c                     |
-    /// | 7        |                 | unused
+    /// | shift-(d/right arrow) | | 5        | MOVE_UP_POS     | not flying:
+    /// jump; flying: move up                             | e
+    /// | | 6        | MOVE_UP_NEG | not flying: croutch; flying: move down
+    /// | c                     | | 7        |                 | unused
     /// |                       | | 8        |                 | unused
     /// |                       | | 9        |                 | unused
     /// |                       | | 10       |                 | unused
     /// |                       | | 11       | FAST_FWD        | OR-ed with
-    /// agent_control_fwd_* if the keyboard is being used  | todo                  | | 12
-    /// | FAST_LEFT       | OR-ed with agent_control_left_* if the keyboard is being used | todo
-    /// | | 13       | FAST_UP         | OR-ed with agent_control_up_* if the keyboard is
-    /// being used   | todo                  | | 14       | FLY             | Fly
-    /// |                       | | 15       | STOP            | TODO
-    /// |                       | | 16       | FINISH_ANIM     | Finish the current animation
-    /// |                       | | 17       | STAND_UP        | Stand up from the ground or a
-    /// prim seat                       |                       | | 18       | SIT_ON_GROUND
-    /// | Sit on the ground at the current location                     |                       |
-    /// | 19       | MOUSELOOK       |
+    /// agent_control_fwd_* if the keyboard is being used  | todo
+    /// | | 12 | FAST_LEFT       | OR-ed with agent_control_left_* if the
+    /// keyboard is being used | todo | | 13       | FAST_UP         |
+    /// OR-ed with agent_control_up_* if the keyboard is being used   |
+    /// todo                  | | 14       | FLY             | Fly |
+    /// | | 15       | STOP            | TODO |                       | |
+    /// 16       | FINISH_ANIM     | Finish the current animation |
+    /// | | 17       | STAND_UP        | Stand up from the ground or a prim
+    /// seat                       |                       | | 18       |
+    /// SIT_ON_GROUND | Sit on the ground at the current location
+    /// |                       | | 19       | MOUSELOOK       |
     /// |                       | | 20       |                 | legacy
     /// |                       | | 21       |                 | legacy
     /// |                       | | 22       |                 | legacy
@@ -788,11 +793,11 @@ pub struct AgentUpdate_AgentData {
     /// |                       | | 25       |                 | legacy
     /// |                       | | 26       | TURN_LEFT       |
     /// |                       | | 27       | TURN_RIGHT      |
-    /// |                       | | 28       | AWAY            | Set when the avatar is idled
-    /// or set to away. Note that the away animation is activated separately from setting this
-    /// flag. |  | | 29       | LBUTTON_DOWN    |
-    /// |                       | | 30       | LBUTTON_UP      |
-    /// |                       | | 31       | ML_LBUTTON_DOWN |
+    /// |                       | | 28       | AWAY            | Set when the
+    /// avatar is idled or set to away. Note that the away animation is
+    /// activated separately from setting this flag. |  | | 29       |
+    /// LBUTTON_DOWN    | |                       | | 30       | LBUTTON_UP
+    /// | |                       | | 31       | ML_LBUTTON_DOWN |
     /// |                       | | 32       | ML_LBUTTON_UP   |
     /// |                       |
     ///
@@ -804,9 +809,11 @@ pub struct AgentUpdate_AgentData {
 }
 
 ///
-///         Camera and movement info about an agent sent from viewer to simulator.
+/// Camera and movement info about an agent sent from viewer to
+/// simulator.
 ///
-///         Sent up to 10 times per second, but must be sent at least every now and then.
+/// Sent up to 10 times per second, but must be sent at least every now
+/// and then.
 ///
 ///         TODO:
 ///         /// AgentUpdate - Camera info sent from viewer to simulator
@@ -973,7 +980,8 @@ pub struct AttachedSound_DataBlock {
 
 ///
 /// TODO:
-/// /// AttachedSound - Sent by simulator to viewer to play sound attached with an object
+/// /// AttachedSound - Sent by simulator to viewer to play sound attached with
+/// an object
 ///
 #[derive(Clone, Debug)]
 pub struct AttachedSound {
@@ -1690,7 +1698,8 @@ pub struct CameraConstraint_CameraCollidePlane {
 
 ///
 /// TODO:
-/// /// CameraConstraint - new camera distance limit (based on collision with objects)
+/// /// CameraConstraint - new camera distance limit (based on collision with
+/// objects)
 ///
 #[derive(Clone, Debug)]
 pub struct CameraConstraint {
@@ -1928,8 +1937,8 @@ pub struct ChildAgentDying_AgentData {
 
 ///
 /// 		TODO:
-/// 		/// Obituary for child agents - make sure the parent know the child is dead
-/// /// This way, children can be reliably restarted
+/// /// Obituary for child agents - make sure the parent know the child is
+/// dead /// This way, children can be reliably restarted
 ///
 #[derive(Clone, Debug)]
 pub struct ChildAgentDying {
@@ -2313,7 +2322,8 @@ pub struct ClearFollowCamProperties {
 
 ///
 /// TODO:
-/// /// CloseCircuit - Tells the recipient's messaging system to close the descibed circuit
+/// /// CloseCircuit - Tells the recipient's messaging system to close the
+/// descibed circuit
 ///
 #[derive(Clone, Debug)]
 pub struct CloseCircuit {}
@@ -2394,7 +2404,8 @@ pub struct CompleteAgentMovement_AgentData {
 
 ///
 /// Move an agent into the simulator.
-/// This is the last packet needed to complete the transition into a new simulator.
+/// This is the last packet needed to complete the transition into a new
+/// simulator.
 ///
 #[derive(Clone, Debug)]
 pub struct CompleteAgentMovement {
@@ -3050,7 +3061,8 @@ pub struct DenyTrustedCircuit_DataBlock {
 /// /// - in response to failed CreateTrustedCircuit
 /// /// - to force the remote end-point to try to establish a trusted circuit
 /// /// - the reception of a trusted message on a non-trusted circuit
-/// /// This allows us to re-auth a circuit if it gets closed due to timeouts or network failures.
+/// /// This allows us to re-auth a circuit if it gets closed due to timeouts
+/// or network failures.
 ///
 #[derive(Clone, Debug)]
 pub struct DenyTrustedCircuit {
@@ -3912,8 +3924,9 @@ pub struct EmailMessageReply_DataBlock {
 
 ///
 /// 		TODO:
-/// 		/// Dataserver gives simulator the oldest email message in the queue, along with
-/// /// how many messages are left in the queue.  And passes back the filter used to request emails.
+/// /// Dataserver gives simulator the oldest email message in the queue,
+/// along with /// how many messages are left in the queue.  And passes back
+/// the filter used to request emails.
 ///
 #[derive(Clone, Debug)]
 pub struct EmailMessageReply {
@@ -3964,7 +3977,8 @@ pub struct Error_AgentData {
     /// Agent id of the sender.
     ///
     /// TODO: What is the value of this field in the case of sim → agent: is it the
-    /// receiver?                      And what is the value in the case of sim → sim?
+    /// receiver?                      And what is the value in the case of sim
+    /// → sim?
     ///
     pub agent_id: Uuid,
 }
@@ -3992,8 +4006,8 @@ pub struct Error_Data {
 ///
 /// Any error message to be sent to the UDP recipient.
 ///
-/// Receivers are supposed to at least log the message, or detect a specific error and for example
-/// display a relevant UI widget.
+/// Receivers are supposed to at least log the message, or detect a specific
+/// error and for example display a relevant UI widget.
 ///
 #[derive(Clone, Debug)]
 pub struct Error {
@@ -5115,8 +5129,8 @@ pub struct GroupDataUpdate_AgentGroupData {
 ///
 /// 		TODO:
 /// 		/// GroupDataUpdate
-/// /// This is a bunch of group data that needs to be appropriatly routed based on presence info.
-/// /// dataserver -> simulator
+/// /// This is a bunch of group data that needs to be appropriatly routed
+/// based on presence info. /// dataserver -> simulator
 ///
 #[derive(Clone, Debug)]
 pub struct GroupDataUpdate {
@@ -5857,8 +5871,8 @@ pub struct ImageNotInDatabase_ImageID {
 ///
 /// 		TODO:
 /// 		/// ImageNotInDatabase
-/// /// Simulator informs viewer that a requsted image definitely does not exist in the asset
-/// database
+/// /// Simulator informs viewer that a requsted image definitely does not
+/// exist in the asset database
 ///
 #[derive(Clone, Debug)]
 pub struct ImageNotInDatabase {
@@ -5959,27 +5973,27 @@ pub struct ImprovedTerseObjectUpdate_ObjectData {
     ///
     /// | bytes | field            | type        | description |
     /// | ----- | ---------------- | ----------- | ----------- |
-    /// | 4     | local_id         | u32         | should be the same as client.local_id |
-    /// | 1     | state            | u8          | TODO |
-    /// | 1     | collision_exists | bool        | If 0 the next field is not specified (zero
-    /// bytes), if 1 read as usual. | | 16?   | collision_plane  | Vector4 f32 | |
-    /// | 12    | position         | Vector3 f32 | |
-    /// | 6     | velocity         | Vector3 u16f [-128;128] | |
-    /// | 6     | acceleration     | Vector3 u16f [-64;64] | |
-    /// | 8     | rotation (theta) | Quat4 u16f [-1;1] | |
+    /// | 4     | local_id         | u32         | should be the same as
+    /// client.local_id | | 1     | state            | u8          | TODO |
+    /// | 1     | collision_exists | bool        | If 0 the next field is not
+    /// specified (zero bytes), if 1 read as usual. | | 16?   |
+    /// collision_plane  | Vector4 f32 | | | 12    | position         |
+    /// Vector3 f32 | | | 6     | velocity         | Vector3 u16f
+    /// [-128;128] | | | 6     | acceleration     | Vector3 u16f [-64;64] |
+    /// | | 8     | rotation (theta) | Quat4 u16f [-1;1] | |
     /// | 6     | angular vel. (omega) | Vector3 u16f [-64;64] | |
     ///
     /// u16f: Means that the data is encoded as u16 (0-255), and is to be mapped
     ///       into the f32 range specified in square brackets afterwards.
-    ///       Note that here we have to be careful that we set the value to zero,
-    ///       if `abs(fval) < (upper-lower) as f32 / 255`, so exact zeros can
-    ///       be decoded.
+    /// Note that here we have to be careful that we set the value to
+    /// zero, if `abs(fval) < (upper-lower) as f32 / 255`, so exact
+    /// zeros can       be decoded.
     ///
     pub data: Vec<u8>,
     ///
-    /// If this field's value is even shorter than 16 bytes, the OpenMetaverse code
-    /// did not fail but report an absence of value, so probably we should do
-    /// the same thing. (TODO: Decide on that.)
+    /// If this field's value is even shorter than 16 bytes, the OpenMetaverse
+    /// code did not fail but report an absence of value, so probably we
+    /// should do the same thing. (TODO: Decide on that.)
     ///
     /// A TextureEntry specifies the properties of up to 32 faces.
     /// Each of the properties is encoded for all specified faces as an array,
@@ -6000,8 +6014,8 @@ pub struct ImprovedTerseObjectUpdate_ObjectData {
     /// | Material   | u8 (1)             | TODO |
     /// | Media      | u8 (1)             | TODO |
     /// | Glow       | f32 (1) *C         | TODO |
-    /// | MaterialID | UUID (16)          | TODO, note this value can also be missing like texture
-    /// |
+    /// | MaterialID | UUID (16)          | TODO, note this value can also be
+    /// missing like texture |
     ///
     /// f32 encoding:
     /// ============
@@ -6014,9 +6028,9 @@ pub struct ImprovedTerseObjectUpdate_ObjectData {
     /// - encode: default value for faces without an explicitly specified value
     /// - repeat
     ///     - encode: faces bit field
-    ///         - if bit is 1 set the face property to the following value otherwise ignore
-    ///         - if the whole bitset is zero, end of array is reached.
-    ///     - encode: value
+    /// - if bit is 1 set the face property to the following value
+    /// otherwise ignore - if the whole bitset is zero, end of
+    /// array is reached.     - encode: value
     ///
     /// Arrays are preceeded with a default value for all unspecified faces,
     /// and then followed by values for a selection of faces.
@@ -6028,9 +6042,9 @@ pub struct ImprovedTerseObjectUpdate_ObjectData {
     /// |1XXXXXXX| ... |1XXXXXXX|0XXXXXXX|
     /// +--------+     +--------+--------+
     /// ```
-    /// - The value is obtained by gluing together the X bits in the same order as above,
-    ///   (assuming zero padding on the left side) then interpreting this as a little endian
-    ///   u32 number.
+    /// - The value is obtained by gluing together the X bits in the same order
+    /// as above, (assuming zero padding on the left side) then
+    /// interpreting this as a little endian   u32 number.
     /// - Note that there can be even zero bytes with a 1 at the beginning.
     /// - Bits refer right to left to faces 0, 1, 2, etc.
     ///
@@ -6038,8 +6052,8 @@ pub struct ImprovedTerseObjectUpdate_ObjectData {
 }
 
 ///
-/// A terse object update is sent, when a transformation matrix, velocity or acceleration of an
-/// object changes, but the rest does not change.
+/// A terse object update is sent, when a transformation matrix, velocity or
+/// acceleration of an object changes, but the rest does not change.
 ///
 ///
 #[derive(Clone, Debug)]
@@ -6370,8 +6384,8 @@ pub struct KillChildAgents_IDBlock {
 
 ///
 /// TODO:
-/// /// KillChildAgents - A new agent has connected to the simulator . . . make sure that any old
-/// child cameras are blitzed
+/// /// KillChildAgents - A new agent has connected to the simulator . . . make
+/// sure that any old child cameras are blitzed
 ///
 #[derive(Clone, Debug)]
 pub struct KillChildAgents {
@@ -6497,7 +6511,8 @@ pub struct LayerData_LayerData {
 }
 
 ///
-/// With this packet the simulator sends information about the region to be rendered.
+/// With this packet the simulator sends information about the region to be
+/// rendered.
 ///
 /// TODO:
 ///
@@ -6626,8 +6641,8 @@ pub struct LiveHelpGroupRequest_RequestData {
 
 ///
 /// 		TODO:
-/// 		/// Request the members of the live help group needed for requesting agent.
-/// /// userserver -> dataserver
+/// /// Request the members of the live help group needed for requesting
+/// agent. /// userserver -> dataserver
 ///
 #[derive(Clone, Debug)]
 pub struct LiveHelpGroupRequest {
@@ -7154,8 +7169,8 @@ pub struct MapItemRequest_RequestData {
     ///
     pub item_type: u32,
     ///
-    /// Combines the global x and y coordinates (subtract modulo 256 to get the correct
-    /// corner) of a region into a single value, i.e.
+    /// Combines the global x and y coordinates (subtract modulo 256 to get the
+    /// correct corner) of a region into a single value, i.e.
     ///
     ///         ```
     ///         let (c_x, c_y) = (x,y) - ((x,y) % 256);
@@ -7698,8 +7713,8 @@ pub struct NameValuePair_NameValueData {
 
 ///
 /// TODO:
-/// /// NameValuePair - if the specific task exists on simulator, add or replace this name value
-/// pair
+/// /// NameValuePair - if the specific task exists on simulator, add or
+/// replace this name value pair
 ///
 #[derive(Clone, Debug)]
 pub struct NameValuePair {
@@ -8160,7 +8175,8 @@ pub struct ObjectDetach_ObjectData {
 
 ///
 /// TODO:
-/// /// ObjectDetach -- derezzes an attachment, marking its item in your inventory as not "(worn)"
+/// /// ObjectDetach -- derezzes an attachment, marking its item in your
+/// inventory as not "(worn)"
 ///
 #[derive(Clone, Debug)]
 pub struct ObjectDetach {
@@ -9327,7 +9343,8 @@ pub struct OpenCircuit_CircuitInfo {
 
 ///
 /// TODO:
-/// /// OpenCircuit - Tells the recipient's messaging system to open the descibed circuit
+/// /// OpenCircuit - Tells the recipient's messaging system to open the
+/// descibed circuit
 ///
 #[derive(Clone, Debug)]
 pub struct OpenCircuit {
@@ -9341,7 +9358,8 @@ pub struct PacketAck_Packets {
 }
 
 ///
-/// Informs the receiver that the provided list of packets was successfully received.
+/// Informs the receiver that the provided list of packets was successfully
+/// received.
 ///
 #[derive(Clone, Debug)]
 pub struct PacketAck {
@@ -10803,7 +10821,8 @@ pub struct RebakeAvatarTextures_TextureData {
 ///
 /// 		TODO:
 /// 		/// RebakeAvatarTextures
-/// /// simulator -> viewer request when a temporary baked avatar texture is not found
+/// /// simulator -> viewer request when a temporary baked avatar texture is
+/// not found
 ///
 #[derive(Clone, Debug)]
 pub struct RebakeAvatarTextures {
@@ -10925,7 +10944,8 @@ pub struct RegionHandshake_RegionInfo3 {
 }
 
 ///
-/// First message sent to viewer after sim has received the UseCircuitCode message.
+/// First message sent to viewer after sim has received the UseCircuitCode
+/// message.
 ///
 #[derive(Clone, Debug)]
 pub struct RegionHandshake {
@@ -11259,8 +11279,8 @@ pub struct RemoveNameValuePair_NameValueData {
 
 ///
 /// TODO:
-/// /// NameValuePair - if the specific task exists on simulator or dataserver, remove the name
-/// value pair (value is ignored)
+/// /// NameValuePair - if the specific task exists on simulator or dataserver,
+/// remove the name value pair (value is ignored)
 ///
 #[derive(Clone, Debug)]
 pub struct RemoveNameValuePair {
@@ -11396,8 +11416,8 @@ pub struct RequestImage_RequestImage {
     /// 0 = Original version with all detail preserved.
     /// 1 = Second highest detail, half the size in each dimension.
     ///
-    /// TODO: According to a screenshot values > 1 are possible, however it's unclear what kind of
-    /// detail they correspond to.
+    /// TODO: According to a screenshot values > 1 are possible, however it's
+    /// unclear what kind of detail they correspond to.
     ///
     pub discard_level: i8,
     ///
@@ -11408,22 +11428,24 @@ pub struct RequestImage_RequestImage {
     ///
     /// Specifies which part of the file should be transmitted.
     ///
-    /// It's not possible to transmit large images in one single message, hence they are split into
-    /// multiple packets by the server and the client can specify a value ≥ 0 to select a specific
-    /// chunk of data.
+    /// It's not possible to transmit large images in one single message, hence
+    /// they are split into multiple packets by the server and the client
+    /// can specify a value ≥ 0 to select a specific chunk of data.
     ///
     /// In the code we find the following definition:
     /// last_packet = (mFileSize - FIRST_PACKET_SIZE + MAX_IMG_PACKET_SIZE-1) /
-    /// MAX_IMG_PACKET_SIZE + 1; where everything in caps is hard coded, with the following
-    /// values:
+    /// MAX_IMG_PACKET_SIZE + 1; where everything in caps is hard coded, with
+    /// the following values:
     ///
     /// FIRST_PACKET_SIZE: 600
     /// MAX_IMG_PACKET_SIZE: 1000
     ///
-    /// TODO: But I'm still not convinced, is only the first packet 600 bytes long, and every
-    /// other packet size is 1000 until for the last one? Or is there some other mechanism to
-    /// communicate the packet sizes. (Also they misleadingly call this packet sizes, but it's
-    /// more like a chunk size since it seems to only indicate the size of the image payload.)
+    /// TODO: But I'm still not convinced, is only the first packet 600 bytes
+    /// long, and every other packet size is 1000 until for the last one?
+    /// Or is there some other mechanism to communicate the packet sizes.
+    /// (Also they misleadingly call this packet sizes, but it's more like
+    /// a chunk size since it seems to only indicate the size of the image
+    /// payload.)
     ///
     pub packet: u32,
     ///
@@ -11436,8 +11458,8 @@ pub struct RequestImage_RequestImage {
 ///
 /// Used to request textures over UDP from a simulator.
 ///
-/// It's also possible to cancel a texture transmission using this message, by specifying certain
-/// values. TODO: which ones (lines 3381-3386)
+/// It's also possible to cancel a texture transmission using this message, by
+/// specifying certain values. TODO: which ones (lines 3381-3386)
 ///
 #[derive(Clone, Debug)]
 pub struct RequestImage {
@@ -11521,9 +11543,9 @@ pub struct RequestObjectPropertiesFamily_ObjectData {
 ///
 /// 		TODO:
 /// 		/// RequestObjectPropertiesFamily
-/// /// Ask for extended information, such as creator, permissions, resources, etc.
-/// /// Medium frequency because it is driven by mouse hovering over objects, which
-/// /// occurs at high rates.
+/// /// Ask for extended information, such as creator, permissions, resources,
+/// etc. /// Medium frequency because it is driven by mouse hovering over
+/// objects, which /// occurs at high rates.
 ///
 #[derive(Clone, Debug)]
 pub struct RequestObjectPropertiesFamily {
@@ -11668,11 +11690,12 @@ pub struct RequestXfer_XferID {
 }
 
 ///
-/// This message can be sent from the viewer to the sim to request initiating a Xfer.
+/// This message can be sent from the viewer to the sim to request initiating a
+/// Xfer.
 ///
 /// A file can be either requested by specifying its filename or its UUID.
-/// In the later case the `VFileType` has to be specified, otherwise the filetype is
-/// determined according to its extension.
+/// In the later case the `VFileType` has to be specified, otherwise the
+/// filetype is determined according to its extension.
 ///
 /// | Asset type  | Code | Ext | Description |
 /// | ----------  | ---- | --- | ----------- |
@@ -11682,22 +11705,22 @@ pub struct RequestXfer_XferID {
 /// | CallingCard | 2    | | Calling card for another avatar |
 /// | Landmark    | 3    | | Link to a location in world |
 /// | [obsolete]  | 4    | | |
-/// | Clothing    | 5    | | Collection of textures and parameters that can be  worn by an avatar |
-/// | Object      | 6    | | Primitive that can contain textures, sounds, scripts and more |
-/// | Notecard    | 7    | | Notecard asset |
-/// | Folder      | 8    | | Holds a collection of inventory items |
+/// | Clothing    | 5    | | Collection of textures and parameters that can be
+/// worn by an avatar | | Object      | 6    | | Primitive that can contain
+/// textures, sounds, scripts and more | | Notecard    | 7    | | Notecard
+/// asset | | Folder      | 8    | | Holds a collection of inventory items |
 /// | RootFolder  | 9    | | Root inventory folder |
 /// | LSLText     | 10   | | Linden scripting language script |
 /// | LSLBytecode | 11   | | LSO bytecode for a script |
 /// | TextureTGA  | 12   | | Uncompressed TGA texture |
-/// | Bodypart    | 13   | | Collection of textures and shape parameters that can be worn |
-/// | TrashFolder | 14   | | Trash folder |
+/// | Bodypart    | 13   | | Collection of textures and shape parameters that
+/// can be worn | | TrashFolder | 14   | | Trash folder |
 /// | SnapshotFolder | 15 | | Snapshot folder |
 /// | LostAndFoundFolder | 16 | | Lost and found folder |
 /// | SoundWAV | 17 | | Uncompressed sound |
-/// | ImageTGA | 18 | | Uncompressed TGA non-square image, not to be used as a texture |
-/// | ImageJPEG | 19 | | Compressed JPEG non-square image, not to be used as a texture |
-/// | Animation | 20 | | Animation |
+/// | ImageTGA | 18 | | Uncompressed TGA non-square image, not to be used as a
+/// texture | | ImageJPEG | 19 | | Compressed JPEG non-square image, not to be
+/// used as a texture | | Animation | 20 | | Animation |
 /// | Gesture | 21 | | Sequence of animations, sounds, chat, and pauses |
 /// | Simstate | 22 | | Simstate file |
 /// | FavoriteFolder | 23 | | Contains landmarks for favorites |
@@ -11705,10 +11728,11 @@ pub struct RequestXfer_XferID {
 /// | LinkFolder | 25 | | Asset is a link to another inventory folder |
 /// | EnsembleStart | 26 | | Beginning of the range reserved for ensembles |
 /// | EnsembleEnd | 45 | | End of the range reserved for ensembles |
-/// | CurrentOutfitFolder | 46 | | Folder containing inventory links to wearables and attachments
-/// that are part of the current outfit | | OutfitFolder | 47 | | Folder containing inventory items
-/// or links to inventory items of wearables and attachments together make a full outfit |
-/// | MyOutfitsFolder | 48 | | Root folder for the folders of type OutfitFolder |
+/// | CurrentOutfitFolder | 46 | | Folder containing inventory links to
+/// wearables and attachments that are part of the current outfit | |
+/// OutfitFolder | 47 | | Folder containing inventory items or links to
+/// inventory items of wearables and attachments together make a full outfit | |
+/// MyOutfitsFolder | 48 | | Root folder for the folders of type OutfitFolder |
 /// | Mesh | 49 | | Linden mesh format |
 /// | Inbox | 50 | | Marketplace direct delivery inbox ("Received Items") |
 /// | Outbox | 51 | | Marketplace direct delivery outbox |
@@ -12658,7 +12682,8 @@ pub struct ScriptSensorReply_SensedData {
 
 ///
 /// TODO:
-/// /// ScriptSensorReply - returns the request script search information back to the requester
+/// /// ScriptSensorReply - returns the request script search information back
+/// to the requester
 ///
 #[derive(Clone, Debug)]
 pub struct ScriptSensorReply {
@@ -12694,7 +12719,8 @@ pub struct ScriptSensorRequest_Requester {
 
 ///
 /// TODO:
-/// /// ScriptSensorRequest - causes the receiving sim to run a script sensor and return the results
+/// /// ScriptSensorRequest - causes the receiving sim to run a script sensor
+/// and return the results
 ///
 #[derive(Clone, Debug)]
 pub struct ScriptSensorRequest {
@@ -13110,7 +13136,8 @@ pub struct SimStats_PidStat {
 
 ///
 /// TODO:
-/// /// Simulator statistics packet (goes out to viewer and dataserver/spaceserver)
+/// /// Simulator statistics packet (goes out to viewer and
+/// dataserver/spaceserver)
 ///
 #[derive(Clone, Debug)]
 pub struct SimStats {
@@ -13258,8 +13285,8 @@ pub struct SimulatorPresentAtLocation_TelehubBlock {
 
 ///
 /// 		TODO:
-/// 		/// SimulatorPresentAtLocation - indicates that the sim is present at a grid
-/// /// location and passes what it believes its neighbors are
+/// /// SimulatorPresentAtLocation - indicates that the sim is present at a
+/// grid /// location and passes what it believes its neighbors are
 ///
 #[derive(Clone, Debug)]
 pub struct SimulatorPresentAtLocation {
@@ -13319,7 +13346,8 @@ pub struct SimulatorSetMap_MapData {
 /// 		/// SimulatorSetMap
 /// /// simulator -> dataserver
 /// /// reliable
-/// /// Used to upload a map image into the database (currently used only for Land For Sale)
+/// /// Used to upload a map image into the database (currently used only for
+/// Land For Sale)
 ///
 #[derive(Clone, Debug)]
 pub struct SimulatorSetMap {
@@ -13328,7 +13356,8 @@ pub struct SimulatorSetMap {
 
 ///
 /// TODO:
-/// /// Simulator Shutdown Request - Tells spaceserver that a simulator is trying to shutdown
+/// /// Simulator Shutdown Request - Tells spaceserver that a simulator is
+/// trying to shutdown
 ///
 #[derive(Clone, Debug)]
 pub struct SimulatorShutdownRequest {}
@@ -13378,7 +13407,8 @@ pub struct SoundTrigger_SoundData {
 
 ///
 /// TODO:
-/// /// SoundTrigger - Sent by simulator to viewer to trigger sound outside current region
+/// /// SoundTrigger - Sent by simulator to viewer to trigger sound outside
+/// current region
 ///
 #[derive(Clone, Debug)]
 pub struct SoundTrigger {
@@ -13495,7 +13525,8 @@ pub struct StartPingCheck_PingID {
 }
 
 ///
-/// Start a ping request, which should be responded with a CompletePingCheck message.
+/// Start a ping request, which should be responded with a CompletePingCheck
+/// message.
 ///
 #[derive(Clone, Debug)]
 pub struct StartPingCheck {
@@ -13973,7 +14004,8 @@ pub struct TransferAbort_TransferInfo {
 
 ///
 /// TODO:
-/// /// Abort a transfer in progress (either from target->source or source->target)
+/// /// Abort a transfer in progress (either from target->source or
+/// source->target)
 ///
 #[derive(Clone, Debug)]
 pub struct TransferAbort {
@@ -14958,8 +14990,8 @@ pub struct ViewerEffect_Effect {
 ///
 /// 		TODO:
 /// 		/// ViewerEffect
-/// /// Viewer side effect that's sent from one viewer, and broadcast to other agents nearby
-/// /// viewer-->sim (single effect created by viewer)
+/// /// Viewer side effect that's sent from one viewer, and broadcast to other
+/// agents nearby /// viewer-->sim (single effect created by viewer)
 /// /// sim-->viewer (multiple effects that can be seen by viewer)
 /// /// the AgentData block used for authentication for viewer-->sim messages
 ///

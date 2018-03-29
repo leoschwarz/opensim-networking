@@ -8,9 +8,9 @@ use image::{GenericImage, ImageBuffer};
 use nalgebra::DMatrix;
 use std::fs::File;
 
-use opensim_networking::packet::Packet;
 use opensim_networking::layer_data::{self, Patch};
 use opensim_networking::messages::MessageInstance;
+use opensim_networking::packet::Packet;
 
 fn extract_patches(raw_messages: Vec<Vec<u8>>) -> Vec<Patch> {
     raw_messages

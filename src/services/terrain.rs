@@ -2,13 +2,13 @@
 
 use circuit::message_handlers;
 use crossbeam_channel;
+use futures::Future;
 use layer_data::{extract_land_patch, Patch};
+use logging::{Log, Logger};
+use messages::{MessageInstance, MessageType};
 use services::Service;
 use std::cell::Cell;
 use std::sync::{Arc, Mutex};
-use messages::{MessageInstance, MessageType};
-use futures::Future;
-use logging::{Log, Logger};
 
 pub struct Receivers {
     pub land_patches: crossbeam_channel::Receiver<Vec<Patch>>,

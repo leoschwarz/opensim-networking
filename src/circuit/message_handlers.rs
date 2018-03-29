@@ -1,8 +1,8 @@
 use circuit::MessageSender;
-use messages::{MessageInstance, MessageType};
-use std::collections::HashMap;
 use failure::Fail;
 use futures_cpupool::CpuPool;
+use messages::{MessageInstance, MessageType};
+use std::collections::HashMap;
 use tokio_core::reactor;
 
 type FilterFn = Box<Fn(&MessageInstance) -> bool + Send>;

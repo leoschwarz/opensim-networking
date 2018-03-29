@@ -1,7 +1,7 @@
 // TODO
 
-use util::bitsreader::{BytesReader, LittleEndian};
 use types::{Quaternion, Uuid, Vector3, Vector4};
+use util::bitsreader::{BytesReader, LittleEndian};
 
 #[derive(Debug)]
 pub struct ObjectData {
@@ -153,11 +153,7 @@ fn read_texture_entry<R: BytesReader + ::std::io::Read>(
     let mut partial: Vec<PartialFaceProperties> = Vec::new();
 
     macro_rules! decode_prop_vec {
-        (
-            $f_name:ident = $read:expr
-        )
-            =>
-        (
+        ($f_name:ident = $read:expr) => {
             default.$f_name = Some($read);
             loop {
                 let (bitset, bitset_size) = read_face_bitfield(reader)?;
@@ -173,7 +169,7 @@ fn read_texture_entry<R: BytesReader + ::std::io::Read>(
                     partial[i].$f_name = Some(value.clone());
                 }
             }
-        )
+        };
     }
 
     decode_prop_vec!(texture_id = read_uuid(reader)?);

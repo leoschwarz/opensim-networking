@@ -9,12 +9,12 @@
 // reading
 //       bits or bytes.)
 
-use byteorder::{ByteOrder, ReadBytesExt};
-pub use byteorder::{BigEndian, LittleEndian};
 use bitreader::BitReader;
 use bitreader::BitReaderError;
-use std::io::Read as IoRead;
+pub use byteorder::{BigEndian, LittleEndian};
+use byteorder::{ByteOrder, ReadBytesExt};
 use std::io::Error as IoError;
+use std::io::Read as IoRead;
 
 // TODO: This should be improved in the future,
 // especially the BitReader variant should fall away.

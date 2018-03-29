@@ -12,10 +12,10 @@ use opensim_networking::simulator::{ConnectInfo, Simulator};
 use opensim_networking::systems::agent_update::{AgentState, Modality, MoveDirection};
 use opensim_networking::types::{Duration, UnitQuaternion, Vector3};
 
-use std::io::prelude::*;
-use std::fs::File;
-use std::thread;
 use futures::future::Future;
+use std::fs::File;
+use std::io::prelude::*;
+use std::thread;
 use tokio_core::reactor::Core;
 
 #[derive(Deserialize)]

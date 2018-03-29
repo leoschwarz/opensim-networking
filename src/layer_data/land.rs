@@ -1,16 +1,14 @@
-use util::bitsreader::{BitsReader, BufBitsReader};
 use layer_data::idct::{PatchSize, PatchTables};
 use layer_data::{idct, LandLayerType, LayerType, Patch};
+use util::bitsreader::{BitsReader, BufBitsReader};
 
 use byteorder::LittleEndian;
 
 const END_OF_PATCH: u8 = 97u8;
 
 lazy_static! {
-    static ref TABLES_NORMAL: PatchTables
-        = PatchTables::compute::<idct::NormalPatch>();
-    static ref TABLES_LARGE: PatchTables
-        = PatchTables::compute::<idct::LargePatch>();
+    static ref TABLES_NORMAL: PatchTables = PatchTables::compute::<idct::NormalPatch>();
+    static ref TABLES_LARGE: PatchTables = PatchTables::compute::<idct::LargePatch>();
 }
 
 #[derive(Debug, Fail)]

@@ -6,12 +6,12 @@ extern crate uuid;
 
 pub use nalgebra::{DMatrix, Matrix, Matrix3, Matrix4, Quaternion, UnitQuaternion, Vector2,
                    Vector3, Vector4};
-pub use std::net::Ipv4Addr as Ip4Addr;
 pub use std::net::IpAddr;
+pub use std::net::Ipv4Addr as Ip4Addr;
 pub use std::time::{Duration, Instant};
 
-use nalgebra::{MatrixArray, MatrixVec};
 use nalgebra::core::dimension::{U16, U32};
+use nalgebra::{MatrixArray, MatrixVec};
 
 /// Stack allocated square matrix.
 pub type MatrixSN<S, N> = Matrix<S, N, N, MatrixArray<S, N, N>>;
@@ -24,8 +24,8 @@ pub type Matrix32<S> = Matrix<S, U32, U32, MatrixVec<S, U32, U32>>;
 
 pub type IpPort = u16;
 
-pub use uuid::Uuid;
 pub use uuid::ParseError as UuidParseError;
+pub use uuid::Uuid;
 
 pub use url::ParseError as UrlParseError;
 

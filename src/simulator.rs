@@ -4,17 +4,17 @@ use data::RegionInfo;
 use failure::Error;
 use futures::prelude::*;
 use hyper::Uri;
-use login::LoginResponse;
 use logging::Log;
+use login::LoginResponse;
 use messages::MessageInstance;
 use messages::all::{CompleteAgentMovement, CompleteAgentMovement_AgentData, UseCircuitCode,
                     UseCircuitCode_CircuitCode};
 use services::{self, Service};
-use systems::agent_update::{AgentState, Modality};
 use std::sync::Mutex;
+use systems::agent_update::{AgentState, Modality};
 use textures::{GetTexture, TextureService};
-use types::{Duration, Ip4Addr, UnitQuaternion, Uuid, Vector3};
 use tokio_core::reactor::{self, Handle};
+use types::{Duration, Ip4Addr, UnitQuaternion, Uuid, Vector3};
 use url::Url;
 
 // TODO: Reconsider how useful this is.

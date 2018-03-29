@@ -1,14 +1,14 @@
 //! RegionHandle lookup.
 
-use grid_map::region_handle::RegionHandle;
-use std::collections::HashMap;
-use std::sync::{Arc, Mutex};
 use circuit::{message_handlers, MessageSender};
-use types::Uuid;
 use futures::sync::oneshot;
+use grid_map::region_handle::RegionHandle;
+use logging::Log;
 use messages::{MessageInstance, MessageType};
 use services::Service;
-use logging::Log;
+use std::collections::HashMap;
+use std::sync::{Arc, Mutex};
+use types::Uuid;
 
 pub struct LookupService {
     message_sender: Option<MessageSender>,

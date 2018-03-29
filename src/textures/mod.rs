@@ -1,9 +1,9 @@
 //! Contains the texture manager.
 use capabilities::Capabilities;
 use futures::{self, Future, Stream};
-use logging::Log;
 use hyper;
 use hyper::header::ContentType;
+use logging::Log;
 use slog::Logger;
 use std::cell::RefCell;
 use std::error::Error;
@@ -78,8 +78,8 @@ impl TextureService {
         self.caches.push(cache);
     }
 
-    /// Get a texture by first checking the cache, then performing a network request
-    /// if it was not found.
+    /// Get a texture by first checking the cache, then performing a network
+    /// request if it was not found.
     pub fn get_texture(&self, id: &Uuid, handle: &Handle) -> GetTexture {
         // Get the texture from a cache if possible.
         // TODO: Currently this is performed with blocking IO.

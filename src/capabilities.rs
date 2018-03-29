@@ -1,9 +1,9 @@
 //! Implementation of the Capabilities protocol.
 
-use hyper;
-use llsd;
 use futures::prelude::*;
+use hyper;
 use hyper::header::{ContentLength, ContentType};
+use llsd;
 use tokio_core::reactor::Handle;
 use url::Url;
 

@@ -17,15 +17,15 @@
 
 use addressable_queue::fifo::Queue as AddressableQueue;
 use circuit::{CircuitConfig, SendMessage, SendMessageError, SendMessageStatus};
+use messages::{MessageInstance, PacketAck, PacketAck_Packets};
 use packet::{Packet, PacketFlags};
 use types::SequenceNumber;
 use util::{mpsc_read_many, AtomicU32Counter};
-use messages::{MessageInstance, PacketAck, PacketAck_Packets};
 
 use std::sync::mpsc;
 use std::sync::mpsc::TryRecvError;
-use std::time::{Duration, Instant};
 use std::thread;
+use std::time::{Duration, Instant};
 
 pub struct AckManagerRx {
     /// Messages waiting for their confirmation.

@@ -1,5 +1,5 @@
-use types::Uuid;
 use messages::all::RegionHandshake;
+use types::Uuid;
 
 #[derive(Clone, Debug)]
 pub struct RegionInfo {
@@ -71,9 +71,9 @@ impl RegionInfo {
 
 #[cfg(test)]
 mod tests {
-    use packet::Packet;
-    use messages::MessageInstance;
     use super::*;
+    use messages::MessageInstance;
+    use packet::Packet;
 
     #[test]
     fn extract_message() {

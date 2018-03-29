@@ -36,7 +36,6 @@ extern crate xmlrpc;
 pub extern crate opensim_messages as messages;
 pub extern crate opensim_types as types;
 
-mod util;
 pub mod capabilities;
 pub mod circuit;
 /// experimental (TODO)
@@ -50,6 +49,7 @@ pub mod services;
 pub mod simulator;
 pub mod systems;
 pub mod textures;
+mod util;
 
 /// experimental
 pub mod grid_map;

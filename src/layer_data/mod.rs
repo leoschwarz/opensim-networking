@@ -4,9 +4,9 @@
 mod idct;
 mod land;
 
-use types::DMatrix;
-use messages::all::LayerData;
 pub use self::land::ExtractSurfaceError;
+use messages::all::LayerData;
+use types::DMatrix;
 
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub enum LayerType {

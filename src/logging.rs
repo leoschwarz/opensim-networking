@@ -11,18 +11,18 @@ use packet::{Packet, ReadPacketError};
 use types::SequenceNumber;
 use util::AtomicU32Counter;
 
-use std;
-use std::fs::File;
-use std::io::Write;
-use std::io::Error as IoError;
-use std::io::ErrorKind as IoErrorKind;
-use std::path::PathBuf;
-use std::sync::{Arc, Mutex, PoisonError};
-use std::panic::RefUnwindSafe;
 use slog;
 use slog::Drain;
 use slog_async;
 use slog_term;
+use std;
+use std::fs::File;
+use std::io::Error as IoError;
+use std::io::ErrorKind as IoErrorKind;
+use std::io::Write;
+use std::panic::RefUnwindSafe;
+use std::path::PathBuf;
+use std::sync::{Arc, Mutex, PoisonError};
 
 pub use slog::Logger;
 

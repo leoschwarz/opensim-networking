@@ -40,20 +40,20 @@ use util::FifoCache;
 
 use futures_cpupool::CpuPool;
 use std::error::Error;
+use std::fmt;
 use std::io::Error as IoError;
 use std::net::{SocketAddr, SocketAddrV4, UdpSocket};
 use std::sync::mpsc;
 use std::thread;
 use std::time::Duration;
-use std::fmt;
 use tokio_core::reactor;
 
 mod ack_manager;
 use self::ack_manager::AckManagerTx;
 
 mod status;
-pub use self::status::{SendMessage, SendMessageError};
 use self::status::SendMessageStatus;
+pub use self::status::{SendMessage, SendMessageError};
 
 pub mod message_handlers;
 
