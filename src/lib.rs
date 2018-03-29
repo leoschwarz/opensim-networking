@@ -1,6 +1,6 @@
 // TODO: Remove at some later time.
 #![allow(dead_code)]
-#![feature(proc_macro, conservative_impl_trait, generators)]
+#![feature(proc_macro, generators)]
 
 extern crate addressable_queue;
 #[macro_use]
