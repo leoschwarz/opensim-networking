@@ -10,6 +10,8 @@ use services::Service;
 use std::cell::Cell;
 use std::sync::{Arc, Mutex};
 
+// TODO: Implement an iterator method, which deletes all disconnected channels
+// when iterating through this in a safe manner.
 pub struct Receivers {
     pub land_patches: crossbeam_channel::Receiver<Vec<Patch>>,
 }
