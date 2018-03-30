@@ -2,7 +2,7 @@
 name = "opensim_networking"
 version = "0.1.0"
 authors = ["Leo Schwarz <mail@leoschwarz.com>"]
-license = "GPL-3.0"
+license = "GPL-3.0-or-later"
 
 #[profile.rel]
 # opt-level='z' minimizes binary size, however this is not available in stable rustc yet
