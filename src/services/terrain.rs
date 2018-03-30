@@ -58,8 +58,8 @@ impl Receivers {
     }
 
     /// Iterates through all currently available patches and invokes
-    /// `handler` for each of them.
-    pub fn receive_patches<F: Fn(Patch)>(&mut self, handler: F) {
+    /// `handler` for each of them with (&region_id, patch) as arguments.
+    pub fn receive_patches<F: Fn(&Uuid, Patch)>(&mut self, handler: F) {
         let mut disconnected = Vec::new();
 
         for (region_id, receiver) in self.receivers.iter_mut() {
@@ -69,7 +69,7 @@ impl Receivers {
                 match receiver.land_patches.try_recv() {
                     Ok(patches) => {
                         for patch in patches {
-                            handler(patch);
+                            handler(region_id, patch);
                         }
                     }
                     Err(crossbeam_channel::TryRecvError::Empty) => {
