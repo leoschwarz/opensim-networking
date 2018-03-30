@@ -1,22 +1,26 @@
 //! RegionHandle lookup.
 
-use circuit::{message_handlers, MessageSender};
+use circuit::message_handlers;
 use futures::sync::oneshot;
 use grid_map::region_handle::RegionHandle;
 use logging::Log;
 use messages::{MessageInstance, MessageType};
-use services::Service;
+use services::{CircuitDataHandle, Service};
 use std::collections::HashMap;
 use std::sync::{Arc, Mutex};
 use types::Uuid;
 
 pub struct LookupService {
-    message_sender: Option<MessageSender>,
+    circuit_data: CircuitDataHandle,
     pending: Arc<Mutex<HashMap<Uuid, oneshot::Sender<LookupResult>>>>,
 }
 
 impl Service for LookupService {
-    fn register_service(handlers: &mut message_handlers::Handlers, _log: &Log) -> Self {
+    fn register_service(
+        handlers: &mut message_handlers::Handlers,
+        circuit_data: CircuitDataHandle,
+        _log: &Log,
+    ) -> Self {
         let pending = Arc::new(Mutex::new(HashMap::new()));
         let pending2 = Arc::clone(&pending);
 
@@ -60,13 +64,9 @@ impl Service for LookupService {
         handlers.register_type(MessageType::RegionIDAndHandleReply, handler);
 
         LookupService {
-            message_sender: None,
+            circuit_data,
             pending: pending2,
         }
-    }
-
-    fn register_message_sender(&mut self, sender: MessageSender) {
-        self.message_sender = Some(sender);
     }
 }
 
@@ -96,7 +96,7 @@ impl LookupService {
         }
 
         // Send the request
-        let _ = self.message_sender.as_ref().unwrap().send(msg, true);
+        let _ = self.circuit_data.unwrap().message_sender.send(msg, true);
         receiver
     }
 }

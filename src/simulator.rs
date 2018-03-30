@@ -9,7 +9,7 @@ use login::LoginResponse;
 use messages::MessageInstance;
 use messages::all::{CompleteAgentMovement, CompleteAgentMovement_AgentData, UseCircuitCode,
                     UseCircuitCode_CircuitCode};
-use services::{self, Service};
+use services::{self, CircuitData, CircuitDataHandle, Service};
 use std::sync::Mutex;
 use systems::agent_update::{AgentState, Modality};
 use textures::{GetTexture, TextureService};
@@ -103,21 +103,30 @@ impl Simulator {
             ))?;
 
             let mut handlers = handlers;
-            let mut services = Services {
-                region_handle: services::region_handle::LookupService::register_service(&mut handlers, &log),
-                terrain: services::terrain::TerrainService::register_service(&mut handlers, &log),
+            let circuit_data_handle = CircuitDataHandle::new();
+            let services = Services {
+                region_handle: services::region_handle::LookupService::register_service(&mut handlers, circuit_data_handle.clone(), &log),
+                terrain: services::terrain::TerrainService::register_service(&mut handlers, circuit_data_handle.clone(), &log),
             };
 
             let (circuit, region_info) = await!(Self::setup_circuit(connect_info.clone(), handlers, handle.remote().clone(), log.clone()))?;
+
+            // Update circuit_data_handle.
+            circuit_data_handle.set(CircuitData {
+                capabilities: capabilities.clone(),
+                message_sender: circuit.message_sender(),
+                region_id: region_info.region_id.clone(),
+            });
+
+            // TODO: Move into Services.
             let texture_service = Self::setup_texture_service(&capabilities, log.clone());
-            services.region_handle.register_message_sender(circuit.message_sender());
-            services.terrain.register_message_sender(circuit.message_sender());
             let locator = SimLocator {
                 sim_ip: connect_info.sim_ip.clone(),
                 sim_port: connect_info.sim_port.clone(),
             };
 
             Ok(Simulator {
+                // TODO replace with circuit_data (or rename to sim_data)?
                 caps: Mutex::new(capabilities),
                 circuit: Mutex::new(circuit),
                 region_info: region_info,

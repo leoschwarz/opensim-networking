@@ -6,7 +6,7 @@ use futures::Future;
 use layer_data::{extract_land_patch, Patch};
 use logging::{Log, Logger};
 use messages::{MessageInstance, MessageType};
-use services::Service;
+use services::{CircuitDataHandle, Service};
 use std::cell::Cell;
 use std::collections::HashMap;
 use std::sync::{Arc, Mutex};
@@ -103,7 +103,11 @@ pub struct TerrainService {
 }
 
 impl Service for TerrainService {
-    fn register_service(handlers: &mut message_handlers::Handlers, log: &Log) -> Self {
+    fn register_service(
+        handlers: &mut message_handlers::Handlers,
+        _circuit_data: CircuitDataHandle,
+        log: &Log,
+    ) -> Self {
         // TODO: Refactor this code a bit, especially the many cloned Arc are a bit
         // ugly.
         let (patch_tx, patch_rx) = crossbeam_channel::bounded(100);

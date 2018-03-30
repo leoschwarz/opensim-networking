@@ -7,13 +7,13 @@ use llsd;
 use tokio_core::reactor::Handle;
 use url::Url;
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct Urls {
     pub get_texture: Url,
     // TODO: add more.
 }
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct Capabilities {
     urls: Urls,
 }
