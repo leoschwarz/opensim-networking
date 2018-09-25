@@ -25,7 +25,7 @@ pub type Matrix32<S> = Matrix<S, U32, U32, MatrixVec<S, U32, U32>>;
 
 pub type IpPort = u16;
 
-pub use uuid::ParseError as UuidParseError;
+pub use uuid::parser::ParseError as UuidParseError;
 pub use uuid::Uuid;
 
 pub use url::ParseError as UrlParseError;

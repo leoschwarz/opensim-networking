@@ -438,7 +438,7 @@ pub struct AgentHeightWidth_HeightWidthBlock {
 
 ///
 /// 		TODO:
-/// /// AgentHeightWidth - Update to height and aspect, sent as height/width
+/// 		/// AgentHeightWidth - Update to height and aspect, sent as height/width
 /// to save space /// Usually sent when window resized or created
 ///  
 #[derive(Clone, Debug)]
@@ -743,8 +743,8 @@ pub struct AgentUpdate_AgentData {
     /// then sends updates back to the clients (TODO: which packet?).
     ///
     /// TODO:
-    /// - If we send a flag and then stop what happens with the agent?
-    /// According to what I saw so far the agent derenders but maybe
+    ///  - If we send a flag and then stop what happens with the agent?
+    /// According to what I saw    so far the agent derenders but maybe
     /// this is also due to bugs in my code.
     ///
     /// The official viewer rapidly polls for currently pressed keys, sets the
@@ -756,38 +756,38 @@ pub struct AgentUpdate_AgentData {
     ///
     ///
     /// <table>
-    /// <tr><th>Encoding</th><th>Flag</th><th>Description</th><th>SL
+    ///     <tr><th>Encoding</th><th>Flag</th><th>Description</th><th>SL
     /// Keybinding</th></tr>
     ///     <tr><td>0</td><td>EMPTY</td><td>TODO</td><td></td></tr>
-    /// <tr><td>1</td><td>MOVE_FWD_POS</td><td>Move forward</td><td>W/Up
-    /// arrow</td></tr> <tr><td>2</td><td>MOVE_FWD_NEG</td><td>Move
+    ///     <tr><td>1</td><td>MOVE_FWD_POS</td><td>Move forward</td><td>W/Up
+    /// arrow</td></tr>     <tr><td>2</td><td>MOVE_FWD_NEG</td><td>Move
     /// backward</td><td>s/down arrow</td></tr>
-    /// <tr><td>3</td><td>MOVE_LEFT_POS</td><td>Move
+    ///     <tr><td>3</td><td>MOVE_LEFT_POS</td><td>Move
     /// left</td><td>shift-(a/left arrow)</td></tr>
-    /// <tr><td>4</td><td>MOVE_LEFT_NEG</td><td>Move
+    ///     <tr><td>4</td><td>MOVE_LEFT_NEG</td><td>Move
     /// right</td><td>shift-(d/right arrow)</td></tr>
-    /// <tr><td>5</td><td>MOVE_UP_POS</td><td>not flying: jump; flying:
+    ///     <tr><td>5</td><td>MOVE_UP_POS</td><td>not flying: jump; flying:
     /// move up</td><td>e</td></tr>
-    /// <tr><td>6</td><td>MOVE_UP_NEG</td><td>not flying: croutch; flying:
+    ///     <tr><td>6</td><td>MOVE_UP_NEG</td><td>not flying: croutch; flying:
     /// move down</td><td>c</td></tr>
     ///     <tr><td>7</td><td></td><td>unused</td><td></td></tr>
     ///     <tr><td>8</td><td></td><td>unused</td><td></td></tr>
     ///     <tr><td>9</td><td></td><td>unused</td><td></td></tr>
     ///     <tr><td>10</td><td></td><td>unused</td><td></td></tr>
-    /// <tr><td>11</td><td>FAST_FWD</td><td>OR-ed with agent_control_fwd_*
+    ///     <tr><td>11</td><td>FAST_FWD</td><td>OR-ed with agent_control_fwd_*
     /// if the keyboard is being used</td><td>todo</td></tr>
-    /// <tr><td>12</td><td>FAST_LEFT</td><td>OR-ed with
+    ///     <tr><td>12</td><td>FAST_LEFT</td><td>OR-ed with
     /// agent_control_left_* if the keyboard is being
-    /// used</td><td>todo</td></tr> <tr><td>13</td><td>FAST_UP</td><td>OR-ed
-    /// with agent_control_up_* if the keyboard is being
     /// used</td><td>todo</td></tr>
+    ///     <tr><td>13</td><td>FAST_UP</td><td>OR-ed with agent_control_up_* if
+    /// the keyboard is being used</td><td>todo</td></tr>
     ///     <tr><td>14</td><td>FLY</td><td>Fly</td><td></td></tr>
     ///     <tr><td>15</td><td>STOP</td><td>TODO</td><td></td></tr>
-    /// <tr><td>16</td><td>FINISH_ANIM</td><td>Finish the current
+    ///     <tr><td>16</td><td>FINISH_ANIM</td><td>Finish the current
     /// animation</td><td></td></tr>
-    /// <tr><td>17</td><td>STAND_UP</td><td>Stand up from the ground or a
+    ///     <tr><td>17</td><td>STAND_UP</td><td>Stand up from the ground or a
     /// prim seat</td><td></td></tr>
-    /// <tr><td>18</td><td>SIT_ON_GROUND</td><td>Sit on the ground at the
+    ///     <tr><td>18</td><td>SIT_ON_GROUND</td><td>Sit on the ground at the
     /// current location</td><td></td></tr>
     ///     <tr><td>19</td><td>MOUSELOOK</td><td></td><td></td></tr>
     ///     <tr><td>20</td><td></td><td>legacy</td><td></td></tr>
@@ -798,7 +798,7 @@ pub struct AgentUpdate_AgentData {
     ///     <tr><td>25</td><td></td><td>legacy</td><td></td></tr>
     ///     <tr><td>26</td><td>TURN_LEFT</td><td></td><td></td></tr>
     ///     <tr><td>27</td><td>TURN_RIGHT</td><td></td><td></td></tr>
-    /// <tr><td>28</td><td>AWAY</td><td>Set when the avatar is idled or set
+    ///     <tr><td>28</td><td>AWAY</td><td>Set when the avatar is idled or set
     /// to away. Note that the away animation is activated separately from
     /// setting this flag.</td><td></td></tr>
     ///     <tr><td>29</td><td>LBUTTON_DOWN</td><td></td><td></td></tr>
@@ -816,10 +816,10 @@ pub struct AgentUpdate_AgentData {
 }
 
 ///
-/// Camera and movement info about an agent sent from viewer to
+///         Camera and movement info about an agent sent from viewer to
 /// simulator.
 ///
-/// Sent up to 10 times per second, but must be sent at least every now
+///         Sent up to 10 times per second, but must be sent at least every now
 /// and then.
 ///
 ///         TODO:
@@ -1942,7 +1942,7 @@ pub struct ChildAgentDying_AgentData {
 
 ///
 /// 		TODO:
-/// /// Obituary for child agents - make sure the parent know the child is
+/// 		/// Obituary for child agents - make sure the parent know the child is
 /// dead /// This way, children can be reliably restarted
 ///  
 #[derive(Clone, Debug)]
@@ -3926,7 +3926,7 @@ pub struct EmailMessageReply_DataBlock {
 
 ///
 /// 		TODO:
-/// /// Dataserver gives simulator the oldest email message in the queue,
+/// 		/// Dataserver gives simulator the oldest email message in the queue,
 /// along with /// how many messages are left in the queue.  And passes back
 /// the filter used to request emails.  
 #[derive(Clone, Debug)]
@@ -3977,8 +3977,8 @@ pub struct EnableSimulator {
 pub struct Error_AgentData {
     /// Agent id of the sender.
     ///
-    /// TODO: What is the value of this field in the case of sim
-    /// → agent: is it the receiver? And what is the
+    ///                TODO: What is the value of this field in the case of sim
+    /// → agent: is it the receiver?                      And what is the
     /// value in the case of sim → sim?  
     pub agent_id: Uuid,
 }
@@ -5988,15 +5988,16 @@ pub struct ImprovedTerseObjectUpdate_ObjectData {
     /// u16f [-128;128]</td><td></td></tr>
     /// <tr><td>6</td><td>acceleration</td><td>Vector3 u16f
     /// [-64;64]</td><td></td></tr> <tr><td>8</td><td>rotation
-    /// (theta)</td><td>Quat4 u16f [-1;1]</td><td></td></tr>
-    /// <tr><td>6</td><td>angular vel. (omega)</td><td>Vector3 u16f
+    /// (theta)</td><td>Quat4 u16f
+    /// [-1;1]</td><td></td></tr> <tr><td>6</td><td>angular vel.
+    /// (omega)</td><td>Vector3 u16f
     /// [-64;64]</td><td></td></tr> </table>
     ///
     ///
     /// u16f: Means that the data is encoded as u16 (0-255), and is to be mapped
     ///       into the f32 range specified in square brackets afterwards.
-    /// Note that here we have to be careful that we set the value to
-    /// zero, if `abs(fval) < (upper-lower) as f32 / 255`, so exact
+    ///       Note that here we have to be careful that we set the value to
+    /// zero,       if `abs(fval) < (upper-lower) as f32 / 255`, so exact
     /// zeros can       be decoded.
     ///  
     pub data: Vec<u8>,
@@ -6030,8 +6031,8 @@ pub struct ImprovedTerseObjectUpdate_ObjectData {
     /// (1)</td><td>TODO</td></tr> <tr><td>Media</td><td>u8
     /// (1)</td><td>TODO</td></tr> <tr><td>Glow</td><td>f32 (1)
     /// *C</td><td>TODO</td></tr> <tr><td>MaterialID</td><td>UUID
-    /// (16)</td><td>TODO, note this value can also be missing like
-    /// texture</td></tr> </table>
+    /// (16)</td><td>TODO, note this value can
+    /// also be missing like texture</td></tr> </table>
     ///
     ///
     /// f32 encoding:
@@ -6045,8 +6046,8 @@ pub struct ImprovedTerseObjectUpdate_ObjectData {
     /// - encode: default value for faces without an explicitly specified value
     /// - repeat
     ///     - encode: faces bit field
-    /// - if bit is 1 set the face property to the following value
-    /// otherwise ignore - if the whole bitset is zero, end of
+    ///         - if bit is 1 set the face property to the following value
+    /// otherwise ignore         - if the whole bitset is zero, end of
     /// array is reached.     - encode: value
     ///
     /// Arrays are preceeded with a default value for all unspecified faces,
@@ -6060,7 +6061,7 @@ pub struct ImprovedTerseObjectUpdate_ObjectData {
     /// +--------+     +--------+--------+
     /// ```
     /// - The value is obtained by gluing together the X bits in the same order
-    /// as above, (assuming zero padding on the left side) then
+    /// as above,   (assuming zero padding on the left side) then
     /// interpreting this as a little endian   u32 number.
     /// - Note that there can be even zero bytes with a 1 at the beginning.
     /// - Bits refer right to left to faces 0, 1, 2, etc.
@@ -6657,7 +6658,7 @@ pub struct LiveHelpGroupRequest_RequestData {
 
 ///
 /// 		TODO:
-/// /// Request the members of the live help group needed for requesting
+/// 		/// Request the members of the live help group needed for requesting
 /// agent. /// userserver -> dataserver
 ///  
 #[derive(Clone, Debug)]
@@ -7185,7 +7186,7 @@ pub struct MapItemRequest_RequestData {
     ///      
     pub item_type: u32,
     ///
-    /// Combines the global x and y coordinates (subtract modulo 256 to
+    ///         Combines the global x and y coordinates (subtract modulo 256 to
     /// get the correct corner) of a region into a single value, i.e.
     ///
     ///         ```
@@ -11734,13 +11735,14 @@ pub struct RequestXfer_XferID {
 /// bytecode for a script</td></tr>
 /// <tr><td>TextureTGA</td><td>12</td><td></td><td>Uncompressed TGA
 /// texture</td></tr> <tr><td>Bodypart</td><td>13</td><td></td><td>Collection
-/// of textures and shape parameters that can be worn</td></tr>
-/// <tr><td>TrashFolder</td><td>14</td><td></td><td>Trash folder</td></tr>
-/// <tr><td>SnapshotFolder</td><td>15</td><td></td><td>Snapshot folder</td></tr>
-/// <tr><td>LostAndFoundFolder</td><td>16</td><td></td><td>Lost and found
-/// folder</td></tr> <tr><td>SoundWAV</td><td>17</td><td></td><td>Uncompressed
-/// sound</td></tr> <tr><td>ImageTGA</td><td>18</td><td></td><td>Uncompressed
-/// TGA non-square image, not to be used as a texture</td></tr>
+/// of textures and shape parameters that can be
+/// worn</td></tr> <tr><td>TrashFolder</td><td>14</td><td></td><td>Trash
+/// folder</td></tr> <tr><td>SnapshotFolder</td><td>15</td><td></td><td>Snapshot
+/// folder</td></tr> <tr><td>LostAndFoundFolder</td><td>16</td><td></td><td>Lost
+/// and found folder</td></tr>
+/// <tr><td>SoundWAV</td><td>17</td><td></td><td>Uncompressed sound</td></tr>
+/// <tr><td>ImageTGA</td><td>18</td><td></td><td>Uncompressed TGA non-square
+/// image, not to be used as a texture</td></tr>
 /// <tr><td>ImageJPEG</td><td>19</td><td></td><td>Compressed JPEG non-square
 /// image, not to be used as a texture</td></tr>
 /// <tr><td>Animation</td><td>20</td><td></td><td>Animation</td></tr>
@@ -11759,10 +11761,10 @@ pub struct RequestXfer_XferID {
 /// <tr><td>CurrentOutfitFolder</td><td>46</td><td></td><td>Folder containing
 /// inventory links to wearables and attachments that are part of the current
 /// outfit</td></tr> <tr><td>OutfitFolder</td><td>47</td><td></td><td>Folder
-/// containing inventory items or links to inventory items of wearables and
-/// attachments together make a full outfit</td></tr>
-/// <tr><td>MyOutfitsFolder</td><td>48</td><td></td><td>Root folder for the
-/// folders of type OutfitFolder</td></tr>
+/// containing inventory items or links to inventory items of
+/// wearables and attachments together make a full
+/// outfit</td></tr> <tr><td>MyOutfitsFolder</td><td>48</td><td></td><td>Root
+/// folder for the folders of type OutfitFolder</td></tr>
 /// <tr><td>Mesh</td><td>49</td><td></td><td>Linden mesh format</td></tr>
 /// <tr><td>Inbox</td><td>50</td><td></td><td>Marketplace direct delivery inbox
 /// ("Received Items")</td></tr>
@@ -13315,7 +13317,7 @@ pub struct SimulatorPresentAtLocation_TelehubBlock {
 
 ///
 /// 		TODO:
-/// /// SimulatorPresentAtLocation - indicates that the sim is present at a
+/// 		/// SimulatorPresentAtLocation - indicates that the sim is present at a
 /// grid /// location and passes what it believes its neighbors are
 ///  
 #[derive(Clone, Debug)]
@@ -20491,12 +20493,12 @@ impl AcceptCallingCard_AgentData {
             agent_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             session_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
         })
     }
@@ -20511,7 +20513,7 @@ impl AcceptCallingCard_TransactionBlock {
             transaction_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
         })
     }
@@ -20526,7 +20528,7 @@ impl AcceptCallingCard_FolderData {
             folder_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
         })
     }
@@ -20541,12 +20543,12 @@ impl AcceptFriendship_AgentData {
             agent_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             session_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
         })
     }
@@ -20561,7 +20563,7 @@ impl AcceptFriendship_TransactionBlock {
             transaction_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
         })
     }
@@ -20576,7 +20578,7 @@ impl AcceptFriendship_FolderData {
             folder_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
         })
     }
@@ -20591,12 +20593,12 @@ impl ActivateGestures_AgentData {
             agent_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             session_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             flags: buffer.read_u32::<LittleEndian>()?,
         })
@@ -20612,12 +20614,12 @@ impl ActivateGestures_Data {
             item_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             asset_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             gesture_flags: buffer.read_u32::<LittleEndian>()?,
         })
@@ -20633,17 +20635,17 @@ impl ActivateGroup_AgentData {
             agent_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             session_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             group_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
         })
     }
@@ -20659,12 +20661,12 @@ impl AddCircuitCode_CircuitCode {
             session_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             agent_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
         })
     }
@@ -20679,7 +20681,7 @@ impl AgentAlertMessage_AgentData {
             agent_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
         })
     }
@@ -20711,12 +20713,12 @@ impl AgentAnimation_AgentData {
             agent_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             session_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
         })
     }
@@ -20731,7 +20733,7 @@ impl AgentAnimation_AnimationList {
             anim_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             start_anim: buffer.read_u8()? == 1,
         })
@@ -20763,12 +20765,12 @@ impl AgentCachedTexture_AgentData {
             agent_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             session_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             serial_num: buffer.read_i32::<LittleEndian>()?,
         })
@@ -20784,7 +20786,7 @@ impl AgentCachedTexture_WearableData {
             id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             texture_index: buffer.read_u8()?,
         })
@@ -20800,12 +20802,12 @@ impl AgentCachedTextureResponse_AgentData {
             agent_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             session_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             serial_num: buffer.read_i32::<LittleEndian>()?,
         })
@@ -20821,7 +20823,7 @@ impl AgentCachedTextureResponse_WearableData {
             texture_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             texture_index: buffer.read_u8()?,
             host_name: {
@@ -20843,7 +20845,7 @@ impl AgentDataUpdate_AgentData {
             agent_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             first_name: {
                 let n = buffer.read_u8()? as usize;
@@ -20866,7 +20868,7 @@ impl AgentDataUpdate_AgentData {
             active_group_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             group_powers: buffer.read_u64::<LittleEndian>()?,
             group_name: {
@@ -20888,12 +20890,12 @@ impl AgentDataUpdateRequest_AgentData {
             agent_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             session_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
         })
     }
@@ -20908,12 +20910,12 @@ impl AgentDropGroup_AgentData {
             agent_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             group_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
         })
     }
@@ -20928,12 +20930,12 @@ impl AgentFOV_AgentData {
             agent_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             session_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             circuit_code: buffer.read_u32::<LittleEndian>()?,
         })
@@ -20961,7 +20963,7 @@ impl AgentGroupDataUpdate_AgentData {
             agent_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
         })
     }
@@ -20976,14 +20978,14 @@ impl AgentGroupDataUpdate_GroupData {
             group_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             group_powers: buffer.read_u64::<LittleEndian>()?,
             accept_notices: buffer.read_u8()? == 1,
             group_insignia_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             contribution: buffer.read_i32::<LittleEndian>()?,
             group_name: {
@@ -21005,12 +21007,12 @@ impl AgentHeightWidth_AgentData {
             agent_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             session_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             circuit_code: buffer.read_u32::<LittleEndian>()?,
         })
@@ -21039,12 +21041,12 @@ impl AgentIsNowWearing_AgentData {
             agent_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             session_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
         })
     }
@@ -21059,7 +21061,7 @@ impl AgentIsNowWearing_WearableData {
             item_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             wearable_type: buffer.read_u8()?,
         })
@@ -21075,12 +21077,12 @@ impl AgentMovementComplete_AgentData {
             agent_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             session_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
         })
     }
@@ -21133,12 +21135,12 @@ impl AgentPause_AgentData {
             agent_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             session_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             serial_num: buffer.read_u32::<LittleEndian>()?,
         })
@@ -21154,12 +21156,12 @@ impl AgentQuitCopy_AgentData {
             agent_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             session_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
         })
     }
@@ -21185,12 +21187,12 @@ impl AgentRequestSit_AgentData {
             agent_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             session_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
         })
     }
@@ -21205,7 +21207,7 @@ impl AgentRequestSit_TargetObject {
             target_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             offset: Vector3::new(
                 buffer.read_f32::<LittleEndian>()?,
@@ -21225,12 +21227,12 @@ impl AgentResume_AgentData {
             agent_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             session_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             serial_num: buffer.read_u32::<LittleEndian>()?,
         })
@@ -21246,12 +21248,12 @@ impl AgentSetAppearance_AgentData {
             agent_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             session_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             serial_num: buffer.read_u32::<LittleEndian>()?,
             size: Vector3::new(
@@ -21272,7 +21274,7 @@ impl AgentSetAppearance_WearableData {
             cache_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             texture_index: buffer.read_u8()?,
         })
@@ -21315,12 +21317,12 @@ impl AgentSit_AgentData {
             agent_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             session_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
         })
     }
@@ -21335,12 +21337,12 @@ impl AgentThrottle_AgentData {
             agent_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             session_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             circuit_code: buffer.read_u32::<LittleEndian>()?,
         })
@@ -21373,12 +21375,12 @@ impl AgentUpdate_AgentData {
             agent_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             session_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             body_rotation: Quaternion::from_parts(
                 1.,
@@ -21433,12 +21435,12 @@ impl AgentWearablesRequest_AgentData {
             agent_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             session_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
         })
     }
@@ -21453,12 +21455,12 @@ impl AgentWearablesUpdate_AgentData {
             agent_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             session_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             serial_num: buffer.read_u32::<LittleEndian>()?,
         })
@@ -21474,12 +21476,12 @@ impl AgentWearablesUpdate_WearableData {
             item_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             asset_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             wearable_type: buffer.read_u8()?,
         })
@@ -21533,7 +21535,7 @@ impl AssetUploadComplete_AssetBlock {
             uuid: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             type_: buffer.read_i8()?,
             success: buffer.read_u8()? == 1,
@@ -21550,7 +21552,7 @@ impl AssetUploadRequest_AssetBlock {
             transaction_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             type_: buffer.read_i8()?,
             tempfile: buffer.read_u8()? == 1,
@@ -21574,7 +21576,7 @@ impl AtomicPassObject_TaskData {
             task_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             attachment_needs_save: buffer.read_u8()? == 1,
         })
@@ -21590,17 +21592,17 @@ impl AttachedSound_DataBlock {
             sound_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             object_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             owner_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             gain: buffer.read_f32::<LittleEndian>()?,
             flags: buffer.read_u8()?,
@@ -21617,7 +21619,7 @@ impl AttachedSoundGainChange_DataBlock {
             object_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             gain: buffer.read_f32::<LittleEndian>()?,
         })
@@ -21633,7 +21635,7 @@ impl AvatarAnimation_Sender {
             id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
         })
     }
@@ -21648,7 +21650,7 @@ impl AvatarAnimation_AnimationList {
             anim_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             anim_sequence_id: buffer.read_i32::<LittleEndian>()?,
         })
@@ -21664,7 +21666,7 @@ impl AvatarAnimation_AnimationSourceList {
             object_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
         })
     }
@@ -21695,7 +21697,7 @@ impl AvatarAppearance_Sender {
             id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             is_trial: buffer.read_u8()? == 1,
         })
@@ -21738,12 +21740,12 @@ impl AvatarClassifiedReply_AgentData {
             agent_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             target_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
         })
     }
@@ -21758,7 +21760,7 @@ impl AvatarClassifiedReply_Data {
             classified_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             name: {
                 let n = buffer.read_u8()? as usize;
@@ -21779,12 +21781,12 @@ impl AvatarGroupsReply_AgentData {
             agent_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             avatar_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
         })
     }
@@ -21807,7 +21809,7 @@ impl AvatarGroupsReply_GroupData {
             group_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             group_name: {
                 let n = buffer.read_u8()? as usize;
@@ -21818,7 +21820,7 @@ impl AvatarGroupsReply_GroupData {
             group_insignia_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
         })
     }
@@ -21844,12 +21846,12 @@ impl AvatarInterestsReply_AgentData {
             agent_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             avatar_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
         })
     }
@@ -21894,12 +21896,12 @@ impl AvatarInterestsUpdate_AgentData {
             agent_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             session_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
         })
     }
@@ -21944,7 +21946,7 @@ impl AvatarNotesReply_AgentData {
             agent_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
         })
     }
@@ -21959,7 +21961,7 @@ impl AvatarNotesReply_Data {
             target_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             notes: {
                 let n = buffer.read_u16::<LittleEndian>()? as usize;
@@ -21980,12 +21982,12 @@ impl AvatarNotesUpdate_AgentData {
             agent_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             session_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
         })
     }
@@ -22000,7 +22002,7 @@ impl AvatarNotesUpdate_Data {
             target_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             notes: {
                 let n = buffer.read_u16::<LittleEndian>()? as usize;
@@ -22021,12 +22023,12 @@ impl AvatarPickerReply_AgentData {
             agent_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             query_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
         })
     }
@@ -22041,7 +22043,7 @@ impl AvatarPickerReply_Data {
             avatar_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             first_name: {
                 let n = buffer.read_u8()? as usize;
@@ -22068,17 +22070,17 @@ impl AvatarPickerRequest_AgentData {
             agent_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             session_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             query_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
         })
     }
@@ -22109,17 +22111,17 @@ impl AvatarPickerRequestBackend_AgentData {
             agent_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             session_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             query_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             god_level: buffer.read_u8()?,
         })
@@ -22151,12 +22153,12 @@ impl AvatarPicksReply_AgentData {
             agent_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             target_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
         })
     }
@@ -22171,7 +22173,7 @@ impl AvatarPicksReply_Data {
             pick_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             pick_name: {
                 let n = buffer.read_u8()? as usize;
@@ -22192,12 +22194,12 @@ impl AvatarPropertiesReply_AgentData {
             agent_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             avatar_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
         })
     }
@@ -22212,17 +22214,17 @@ impl AvatarPropertiesReply_PropertiesData {
             image_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             fl_image_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             partner_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             about_text: {
                 let n = buffer.read_u16::<LittleEndian>()? as usize;
@@ -22268,17 +22270,17 @@ impl AvatarPropertiesRequest_AgentData {
             agent_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             session_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             avatar_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
         })
     }
@@ -22293,12 +22295,12 @@ impl AvatarPropertiesRequestBackend_AgentData {
             agent_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             avatar_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             god_level: buffer.read_u8()?,
             web_profiles_disabled: buffer.read_u8()? == 1,
@@ -22315,12 +22317,12 @@ impl AvatarPropertiesUpdate_AgentData {
             agent_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             session_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
         })
     }
@@ -22335,12 +22337,12 @@ impl AvatarPropertiesUpdate_PropertiesData {
             image_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             fl_image_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             about_text: {
                 let n = buffer.read_u16::<LittleEndian>()? as usize;
@@ -22375,7 +22377,7 @@ impl AvatarSitResponse_SitObject {
             id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
         })
     }
@@ -22425,7 +22427,7 @@ impl AvatarTextureUpdate_AgentData {
             agent_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             textures_changed: buffer.read_u8()? == 1,
         })
@@ -22441,7 +22443,7 @@ impl AvatarTextureUpdate_WearableData {
             cache_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             texture_index: buffer.read_u8()?,
             host_name: {
@@ -22463,7 +22465,7 @@ impl AvatarTextureUpdate_TextureData {
             texture_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
         })
     }
@@ -22478,12 +22480,12 @@ impl BulkUpdateInventory_AgentData {
             agent_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             transaction_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
         })
     }
@@ -22498,12 +22500,12 @@ impl BulkUpdateInventory_FolderData {
             folder_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             parent_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             type_: buffer.read_i8()?,
             name: {
@@ -22525,28 +22527,28 @@ impl BulkUpdateInventory_ItemData {
             item_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             callback_id: buffer.read_u32::<LittleEndian>()?,
             folder_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             creator_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             owner_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             group_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             base_mask: buffer.read_u32::<LittleEndian>()?,
             owner_mask: buffer.read_u32::<LittleEndian>()?,
@@ -22557,7 +22559,7 @@ impl BulkUpdateInventory_ItemData {
             asset_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             type_: buffer.read_i8()?,
             inv_type: buffer.read_i8()?,
@@ -22591,12 +22593,12 @@ impl BuyObjectInventory_AgentData {
             agent_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             session_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
         })
     }
@@ -22611,17 +22613,17 @@ impl BuyObjectInventory_Data {
             object_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             item_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             folder_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
         })
     }
@@ -22652,7 +22654,7 @@ impl CancelAuction_ParcelData {
             parcel_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
         })
     }
@@ -22667,12 +22669,12 @@ impl ChangeInventoryItemFlags_AgentData {
             agent_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             session_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
         })
     }
@@ -22687,7 +22689,7 @@ impl ChangeInventoryItemFlags_InventoryData {
             item_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             flags: buffer.read_u32::<LittleEndian>()?,
         })
@@ -22703,7 +22705,7 @@ impl ChangeUserRights_AgentData {
             agent_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
         })
     }
@@ -22718,7 +22720,7 @@ impl ChangeUserRights_Rights {
             agent_related: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             related_rights: buffer.read_i32::<LittleEndian>()?,
         })
@@ -22740,12 +22742,12 @@ impl ChatFromSimulator_ChatData {
             source_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             owner_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             source_type: buffer.read_u8()?,
             chat_type: buffer.read_u8()?,
@@ -22774,12 +22776,12 @@ impl ChatFromViewer_AgentData {
             agent_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             session_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
         })
     }
@@ -22818,12 +22820,12 @@ impl ChatPass_ChatData {
             id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             owner_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             name: {
                 let n = buffer.read_u8()? as usize;
@@ -22878,12 +22880,12 @@ impl ChildAgentAlive_AgentData {
             agent_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             session_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
         })
     }
@@ -22898,12 +22900,12 @@ impl ChildAgentDying_AgentData {
             agent_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             session_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
         })
     }
@@ -22920,12 +22922,12 @@ impl ChildAgentPositionUpdate_AgentData {
             agent_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             session_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             agent_pos: Vector3::new(
                 buffer.read_f32::<LittleEndian>()?,
@@ -22976,12 +22978,12 @@ impl ChildAgentUnknown_AgentData {
             agent_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             session_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
         })
     }
@@ -22998,12 +23000,12 @@ impl ChildAgentUpdate_AgentData {
             agent_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             session_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             agent_pos: Vector3::new(
                 buffer.read_f32::<LittleEndian>()?,
@@ -23073,7 +23075,7 @@ impl ChildAgentUpdate_AgentData {
             prey_agent: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             agent_access: buffer.read_u8()?,
             agent_textures: {
@@ -23085,7 +23087,7 @@ impl ChildAgentUpdate_AgentData {
             active_group_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
         })
     }
@@ -23100,7 +23102,7 @@ impl ChildAgentUpdate_GroupData {
             group_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             group_powers: buffer.read_u64::<LittleEndian>()?,
             accept_notices: buffer.read_u8()? == 1,
@@ -23117,12 +23119,12 @@ impl ChildAgentUpdate_AnimationData {
             animation: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             object_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
         })
     }
@@ -23137,7 +23139,7 @@ impl ChildAgentUpdate_GranterBlock {
             granter_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
         })
     }
@@ -23202,12 +23204,12 @@ impl ClassifiedDelete_AgentData {
             agent_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             session_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
         })
     }
@@ -23222,7 +23224,7 @@ impl ClassifiedDelete_Data {
             classified_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
         })
     }
@@ -23237,12 +23239,12 @@ impl ClassifiedGodDelete_AgentData {
             agent_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             session_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
         })
     }
@@ -23257,12 +23259,12 @@ impl ClassifiedGodDelete_Data {
             classified_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             query_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
         })
     }
@@ -23277,7 +23279,7 @@ impl ClassifiedInfoReply_AgentData {
             agent_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
         })
     }
@@ -23292,12 +23294,12 @@ impl ClassifiedInfoReply_Data {
             classified_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             creator_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             creation_date: buffer.read_u32::<LittleEndian>()?,
             expiration_date: buffer.read_u32::<LittleEndian>()?,
@@ -23317,13 +23319,13 @@ impl ClassifiedInfoReply_Data {
             parcel_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             parent_estate: buffer.read_u32::<LittleEndian>()?,
             snapshot_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             sim_name: {
                 let n = buffer.read_u8()? as usize;
@@ -23357,12 +23359,12 @@ impl ClassifiedInfoRequest_AgentData {
             agent_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             session_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
         })
     }
@@ -23377,7 +23379,7 @@ impl ClassifiedInfoRequest_Data {
             classified_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
         })
     }
@@ -23392,12 +23394,12 @@ impl ClassifiedInfoUpdate_AgentData {
             agent_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             session_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
         })
     }
@@ -23412,7 +23414,7 @@ impl ClassifiedInfoUpdate_Data {
             classified_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             category: buffer.read_u32::<LittleEndian>()?,
             name: {
@@ -23430,13 +23432,13 @@ impl ClassifiedInfoUpdate_Data {
             parcel_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             parent_estate: buffer.read_u32::<LittleEndian>()?,
             snapshot_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             pos_global: Vector3::new(
                 buffer.read_f64::<LittleEndian>()?,
@@ -23458,7 +23460,7 @@ impl ClearFollowCamProperties_ObjectData {
             object_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
         })
     }
@@ -23498,7 +23500,7 @@ impl CoarseLocationUpdate_AgentData {
             agent_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
         })
     }
@@ -23513,12 +23515,12 @@ impl CompleteAgentMovement_AgentData {
             agent_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             session_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             circuit_code: buffer.read_u32::<LittleEndian>()?,
         })
@@ -23534,7 +23536,7 @@ impl CompleteAuction_ParcelData {
             parcel_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
         })
     }
@@ -23560,7 +23562,7 @@ impl ConfirmAuctionStart_AuctionData {
             parcel_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             auction_id: buffer.read_u32::<LittleEndian>()?,
         })
@@ -23576,12 +23578,12 @@ impl ConfirmEnableSimulator_AgentData {
             agent_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             session_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
         })
     }
@@ -23608,12 +23610,12 @@ impl CopyInventoryFromNotecard_AgentData {
             agent_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             session_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
         })
     }
@@ -23628,12 +23630,12 @@ impl CopyInventoryFromNotecard_NotecardData {
             notecard_item_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             object_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
         })
     }
@@ -23648,12 +23650,12 @@ impl CopyInventoryFromNotecard_InventoryData {
             item_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             folder_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
         })
     }
@@ -23668,12 +23670,12 @@ impl CopyInventoryItem_AgentData {
             agent_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             session_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
         })
     }
@@ -23689,17 +23691,17 @@ impl CopyInventoryItem_InventoryData {
             old_agent_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             old_item_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             new_folder_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             new_name: {
                 let n = buffer.read_u8()? as usize;
@@ -23720,7 +23722,7 @@ impl CreateGroupReply_AgentData {
             agent_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
         })
     }
@@ -23735,7 +23737,7 @@ impl CreateGroupReply_ReplyData {
             group_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             success: buffer.read_u8()? == 1,
             message: {
@@ -23757,12 +23759,12 @@ impl CreateGroupRequest_AgentData {
             agent_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             session_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
         })
     }
@@ -23790,7 +23792,7 @@ impl CreateGroupRequest_GroupData {
             insignia_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             membership_fee: buffer.read_i32::<LittleEndian>()?,
             open_enrollment: buffer.read_u8()? == 1,
@@ -23809,12 +23811,12 @@ impl CreateInventoryFolder_AgentData {
             agent_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             session_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
         })
     }
@@ -23829,12 +23831,12 @@ impl CreateInventoryFolder_FolderData {
             folder_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             parent_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             type_: buffer.read_i8()?,
             name: {
@@ -23856,12 +23858,12 @@ impl CreateInventoryItem_AgentData {
             agent_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             session_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
         })
     }
@@ -23877,12 +23879,12 @@ impl CreateInventoryItem_InventoryBlock {
             folder_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             transaction_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             next_owner_mask: buffer.read_u32::<LittleEndian>()?,
             type_: buffer.read_i8()?,
@@ -23913,12 +23915,12 @@ impl CreateLandmarkForEvent_AgentData {
             agent_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             session_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
         })
     }
@@ -23944,7 +23946,7 @@ impl CreateLandmarkForEvent_InventoryBlock {
             folder_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             name: {
                 let n = buffer.read_u8()? as usize;
@@ -23965,12 +23967,12 @@ impl CreateNewOutfitAttachments_AgentData {
             agent_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             session_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
         })
     }
@@ -23985,7 +23987,7 @@ impl CreateNewOutfitAttachments_HeaderData {
             new_folder_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
         })
     }
@@ -24000,12 +24002,12 @@ impl CreateNewOutfitAttachments_ObjectData {
             old_item_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             old_folder_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
         })
     }
@@ -24020,7 +24022,7 @@ impl CreateTrustedCircuit_DataBlock {
             end_point_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             digest: {
                 let mut raw = [0; 32];
@@ -24040,12 +24042,12 @@ impl CrossedRegion_AgentData {
             agent_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             session_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
         })
     }
@@ -24103,7 +24105,7 @@ impl DataHomeLocationReply_Info {
             agent_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             region_handle: buffer.read_u64::<LittleEndian>()?,
             position: Vector3::new(
@@ -24129,7 +24131,7 @@ impl DataHomeLocationRequest_Info {
             agent_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             kicked_from_estate_id: buffer.read_u32::<LittleEndian>()?,
         })
@@ -24156,7 +24158,7 @@ impl DataServerLogout_UserData {
             agent_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             viewer_ip: {
                 let mut raw = [0u8; 4];
@@ -24167,7 +24169,7 @@ impl DataServerLogout_UserData {
             session_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
         })
     }
@@ -24182,7 +24184,7 @@ impl DeRezAck_TransactionData {
             transaction_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             success: buffer.read_u8()? == 1,
         })
@@ -24198,12 +24200,12 @@ impl DeRezObject_AgentData {
             agent_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             session_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
         })
     }
@@ -24218,18 +24220,18 @@ impl DeRezObject_AgentBlock {
             group_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             destination: buffer.read_u8()?,
             destination_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             transaction_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             packet_count: buffer.read_u8()?,
             packet_number: buffer.read_u8()?,
@@ -24257,12 +24259,12 @@ impl DeactivateGestures_AgentData {
             agent_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             session_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             flags: buffer.read_u32::<LittleEndian>()?,
         })
@@ -24278,7 +24280,7 @@ impl DeactivateGestures_Data {
             item_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             gesture_flags: buffer.read_u32::<LittleEndian>()?,
         })
@@ -24294,12 +24296,12 @@ impl DeclineCallingCard_AgentData {
             agent_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             session_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
         })
     }
@@ -24314,7 +24316,7 @@ impl DeclineCallingCard_TransactionBlock {
             transaction_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
         })
     }
@@ -24329,12 +24331,12 @@ impl DeclineFriendship_AgentData {
             agent_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             session_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
         })
     }
@@ -24349,7 +24351,7 @@ impl DeclineFriendship_TransactionBlock {
             transaction_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
         })
     }
@@ -24364,7 +24366,7 @@ impl DenyTrustedCircuit_DataBlock {
             end_point_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
         })
     }
@@ -24379,7 +24381,7 @@ impl DerezContainer_Data {
             object_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             delete: buffer.read_u8()? == 1,
         })
@@ -24395,12 +24397,12 @@ impl DetachAttachmentIntoInv_ObjectData {
             agent_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             item_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
         })
     }
@@ -24415,12 +24417,12 @@ impl DirClassifiedQuery_AgentData {
             agent_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             session_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
         })
     }
@@ -24435,7 +24437,7 @@ impl DirClassifiedQuery_QueryData {
             query_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             query_text: {
                 let n = buffer.read_u8()? as usize;
@@ -24459,7 +24461,7 @@ impl DirClassifiedQueryBackend_AgentData {
             agent_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
         })
     }
@@ -24474,7 +24476,7 @@ impl DirClassifiedQueryBackend_QueryData {
             query_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             query_text: {
                 let n = buffer.read_u8()? as usize;
@@ -24500,7 +24502,7 @@ impl DirClassifiedReply_AgentData {
             agent_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
         })
     }
@@ -24515,7 +24517,7 @@ impl DirClassifiedReply_QueryData {
             query_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
         })
     }
@@ -24530,7 +24532,7 @@ impl DirClassifiedReply_QueryReplies {
             classified_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             name: {
                 let n = buffer.read_u8()? as usize;
@@ -24566,7 +24568,7 @@ impl DirEventsReply_AgentData {
             agent_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
         })
     }
@@ -24581,7 +24583,7 @@ impl DirEventsReply_QueryData {
             query_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
         })
     }
@@ -24596,7 +24598,7 @@ impl DirEventsReply_QueryReplies {
             owner_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             name: {
                 let n = buffer.read_u8()? as usize;
@@ -24637,12 +24639,12 @@ impl DirFindQuery_AgentData {
             agent_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             session_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
         })
     }
@@ -24657,7 +24659,7 @@ impl DirFindQuery_QueryData {
             query_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             query_text: {
                 let n = buffer.read_u8()? as usize;
@@ -24680,7 +24682,7 @@ impl DirFindQueryBackend_AgentData {
             agent_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
         })
     }
@@ -24695,7 +24697,7 @@ impl DirFindQueryBackend_QueryData {
             query_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             query_text: {
                 let n = buffer.read_u8()? as usize;
@@ -24720,7 +24722,7 @@ impl DirGroupsReply_AgentData {
             agent_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
         })
     }
@@ -24735,7 +24737,7 @@ impl DirGroupsReply_QueryData {
             query_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
         })
     }
@@ -24750,7 +24752,7 @@ impl DirGroupsReply_QueryReplies {
             group_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             group_name: {
                 let n = buffer.read_u8()? as usize;
@@ -24773,12 +24775,12 @@ impl DirLandQuery_AgentData {
             agent_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             session_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
         })
     }
@@ -24793,7 +24795,7 @@ impl DirLandQuery_QueryData {
             query_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             query_flags: buffer.read_u32::<LittleEndian>()?,
             search_type: buffer.read_u32::<LittleEndian>()?,
@@ -24813,7 +24815,7 @@ impl DirLandQueryBackend_AgentData {
             agent_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
         })
     }
@@ -24828,7 +24830,7 @@ impl DirLandQueryBackend_QueryData {
             query_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             query_flags: buffer.read_u32::<LittleEndian>()?,
             search_type: buffer.read_u32::<LittleEndian>()?,
@@ -24850,7 +24852,7 @@ impl DirLandReply_AgentData {
             agent_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
         })
     }
@@ -24865,7 +24867,7 @@ impl DirLandReply_QueryData {
             query_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
         })
     }
@@ -24880,7 +24882,7 @@ impl DirLandReply_QueryReplies {
             parcel_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             name: {
                 let n = buffer.read_u8()? as usize;
@@ -24905,7 +24907,7 @@ impl DirPeopleReply_AgentData {
             agent_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
         })
     }
@@ -24920,7 +24922,7 @@ impl DirPeopleReply_QueryData {
             query_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
         })
     }
@@ -24935,7 +24937,7 @@ impl DirPeopleReply_QueryReplies {
             agent_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             first_name: {
                 let n = buffer.read_u8()? as usize;
@@ -24970,12 +24972,12 @@ impl DirPlacesQuery_AgentData {
             agent_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             session_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
         })
     }
@@ -24990,7 +24992,7 @@ impl DirPlacesQuery_QueryData {
             query_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             query_text: {
                 let n = buffer.read_u8()? as usize;
@@ -25020,7 +25022,7 @@ impl DirPlacesQueryBackend_AgentData {
             agent_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
         })
     }
@@ -25035,7 +25037,7 @@ impl DirPlacesQueryBackend_QueryData {
             query_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             query_text: {
                 let n = buffer.read_u8()? as usize;
@@ -25067,7 +25069,7 @@ impl DirPlacesReply_AgentData {
             agent_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
         })
     }
@@ -25082,7 +25084,7 @@ impl DirPlacesReply_QueryData {
             query_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
         })
     }
@@ -25097,7 +25099,7 @@ impl DirPlacesReply_QueryReplies {
             parcel_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             name: {
                 let n = buffer.read_u8()? as usize;
@@ -25132,12 +25134,12 @@ impl DirPopularQuery_AgentData {
             agent_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             session_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
         })
     }
@@ -25152,7 +25154,7 @@ impl DirPopularQuery_QueryData {
             query_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             query_flags: buffer.read_u32::<LittleEndian>()?,
         })
@@ -25168,7 +25170,7 @@ impl DirPopularQueryBackend_AgentData {
             agent_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
         })
     }
@@ -25183,7 +25185,7 @@ impl DirPopularQueryBackend_QueryData {
             query_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             query_flags: buffer.read_u32::<LittleEndian>()?,
             estate_id: buffer.read_u32::<LittleEndian>()?,
@@ -25201,7 +25203,7 @@ impl DirPopularReply_AgentData {
             agent_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
         })
     }
@@ -25216,7 +25218,7 @@ impl DirPopularReply_QueryData {
             query_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
         })
     }
@@ -25231,7 +25233,7 @@ impl DirPopularReply_QueryReplies {
             parcel_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             name: {
                 let n = buffer.read_u8()? as usize;
@@ -25298,7 +25300,7 @@ impl EjectGroupMemberReply_AgentData {
             agent_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
         })
     }
@@ -25313,7 +25315,7 @@ impl EjectGroupMemberReply_GroupData {
             group_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
         })
     }
@@ -25339,12 +25341,12 @@ impl EjectGroupMemberRequest_AgentData {
             agent_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             session_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
         })
     }
@@ -25359,7 +25361,7 @@ impl EjectGroupMemberRequest_GroupData {
             group_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
         })
     }
@@ -25374,7 +25376,7 @@ impl EjectGroupMemberRequest_EjectData {
             ejectee_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
         })
     }
@@ -25389,12 +25391,12 @@ impl EjectUser_AgentData {
             agent_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             session_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
         })
     }
@@ -25409,7 +25411,7 @@ impl EjectUser_Data {
             target_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             flags: buffer.read_u32::<LittleEndian>()?,
         })
@@ -25425,7 +25427,7 @@ impl EmailMessageReply_DataBlock {
             object_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             more: buffer.read_u32::<LittleEndian>()?,
             time: buffer.read_u32::<LittleEndian>()?,
@@ -25466,7 +25468,7 @@ impl EmailMessageRequest_DataBlock {
             object_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             from_address: {
                 let n = buffer.read_u8()? as usize;
@@ -25510,7 +25512,7 @@ impl Error_AgentData {
             agent_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
         })
     }
@@ -25532,7 +25534,7 @@ impl Error_Data {
             id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             system: {
                 let n = buffer.read_u8()? as usize;
@@ -25565,7 +25567,7 @@ impl EstateCovenantReply_Data {
             covenant_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             covenant_timestamp: buffer.read_u32::<LittleEndian>()?,
             estate_name: {
@@ -25577,7 +25579,7 @@ impl EstateCovenantReply_Data {
             estate_owner_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
         })
     }
@@ -25592,12 +25594,12 @@ impl EstateCovenantRequest_AgentData {
             agent_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             session_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
         })
     }
@@ -25612,17 +25614,17 @@ impl EstateOwnerMessage_AgentData {
             agent_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             session_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             transaction_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
         })
     }
@@ -25643,7 +25645,7 @@ impl EstateOwnerMessage_MethodData {
             invoice: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
         })
     }
@@ -25674,12 +25676,12 @@ impl EventGodDelete_AgentData {
             agent_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             session_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
         })
     }
@@ -25705,7 +25707,7 @@ impl EventGodDelete_QueryData {
             query_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             query_text: {
                 let n = buffer.read_u8()? as usize;
@@ -25728,7 +25730,7 @@ impl EventInfoReply_AgentData {
             agent_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
         })
     }
@@ -25800,12 +25802,12 @@ impl EventInfoRequest_AgentData {
             agent_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             session_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
         })
     }
@@ -25831,7 +25833,7 @@ impl EventLocationReply_QueryData {
             query_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
         })
     }
@@ -25847,7 +25849,7 @@ impl EventLocationReply_EventData {
             region_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             region_pos: Vector3::new(
                 buffer.read_f32::<LittleEndian>()?,
@@ -25867,7 +25869,7 @@ impl EventLocationRequest_QueryData {
             query_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
         })
     }
@@ -25893,12 +25895,12 @@ impl EventNotificationAddRequest_AgentData {
             agent_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             session_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
         })
     }
@@ -25924,12 +25926,12 @@ impl EventNotificationRemoveRequest_AgentData {
             agent_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             session_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
         })
     }
@@ -25961,12 +25963,12 @@ impl FeatureDisabled_FailureInfo {
             agent_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             transaction_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
         })
     }
@@ -25981,12 +25983,12 @@ impl FetchInventory_AgentData {
             agent_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             session_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
         })
     }
@@ -26001,12 +26003,12 @@ impl FetchInventory_InventoryData {
             owner_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             item_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
         })
     }
@@ -26021,12 +26023,12 @@ impl FetchInventoryDescendents_AgentData {
             agent_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             session_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
         })
     }
@@ -26041,12 +26043,12 @@ impl FetchInventoryDescendents_InventoryData {
             folder_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             owner_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             sort_order: buffer.read_i32::<LittleEndian>()?,
             fetch_folders: buffer.read_u8()? == 1,
@@ -26064,7 +26066,7 @@ impl FetchInventoryReply_AgentData {
             agent_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
         })
     }
@@ -26079,27 +26081,27 @@ impl FetchInventoryReply_InventoryData {
             item_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             folder_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             creator_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             owner_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             group_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             base_mask: buffer.read_u32::<LittleEndian>()?,
             owner_mask: buffer.read_u32::<LittleEndian>()?,
@@ -26110,7 +26112,7 @@ impl FetchInventoryReply_InventoryData {
             asset_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             type_: buffer.read_i8()?,
             inv_type: buffer.read_i8()?,
@@ -26144,12 +26146,12 @@ impl FindAgent_AgentBlock {
             hunter: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             prey: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             space_ip: {
                 let mut raw = [0u8; 4];
@@ -26203,12 +26205,12 @@ impl ForceScriptControlRelease_AgentData {
             agent_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             session_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
         })
     }
@@ -26223,12 +26225,12 @@ impl FormFriendship_AgentBlock {
             source_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             dest_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
         })
     }
@@ -26243,12 +26245,12 @@ impl FreezeUser_AgentData {
             agent_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             session_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
         })
     }
@@ -26263,7 +26265,7 @@ impl FreezeUser_Data {
             target_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             flags: buffer.read_u32::<LittleEndian>()?,
         })
@@ -26279,17 +26281,17 @@ impl GenericMessage_AgentData {
             agent_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             session_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             transaction_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
         })
     }
@@ -26310,7 +26312,7 @@ impl GenericMessage_MethodData {
             invoice: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
         })
     }
@@ -26341,12 +26343,12 @@ impl GetScriptRunning_Script {
             object_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             item_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
         })
     }
@@ -26361,17 +26363,17 @@ impl GodKickUser_UserInfo {
             god_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             god_session_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             agent_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             kick_flags: buffer.read_u32::<LittleEndian>()?,
             reason: {
@@ -26393,12 +26395,12 @@ impl GodUpdateRegionInfo_AgentData {
             agent_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             session_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
         })
     }
@@ -26436,17 +26438,17 @@ impl GodlikeMessage_AgentData {
             agent_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             session_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             transaction_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
         })
     }
@@ -26467,7 +26469,7 @@ impl GodlikeMessage_MethodData {
             invoice: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
         })
     }
@@ -26498,12 +26500,12 @@ impl GrantGodlikePowers_AgentData {
             agent_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             session_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
         })
     }
@@ -26519,7 +26521,7 @@ impl GrantGodlikePowers_GrantData {
             token: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
         })
     }
@@ -26534,12 +26536,12 @@ impl GrantUserRights_AgentData {
             agent_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             session_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
         })
     }
@@ -26554,7 +26556,7 @@ impl GrantUserRights_Rights {
             agent_related: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             related_rights: buffer.read_i32::<LittleEndian>()?,
         })
@@ -26570,12 +26572,12 @@ impl GroupAccountDetailsReply_AgentData {
             agent_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             group_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
         })
     }
@@ -26590,7 +26592,7 @@ impl GroupAccountDetailsReply_MoneyData {
             request_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             interval_days: buffer.read_i32::<LittleEndian>()?,
             current_interval: buffer.read_i32::<LittleEndian>()?,
@@ -26630,17 +26632,17 @@ impl GroupAccountDetailsRequest_AgentData {
             agent_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             session_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             group_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
         })
     }
@@ -26655,7 +26657,7 @@ impl GroupAccountDetailsRequest_MoneyData {
             request_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             interval_days: buffer.read_i32::<LittleEndian>()?,
             current_interval: buffer.read_i32::<LittleEndian>()?,
@@ -26672,12 +26674,12 @@ impl GroupAccountSummaryReply_AgentData {
             agent_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             group_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
         })
     }
@@ -26692,7 +26694,7 @@ impl GroupAccountSummaryReply_MoneyData {
             request_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             interval_days: buffer.read_i32::<LittleEndian>()?,
             current_interval: buffer.read_i32::<LittleEndian>()?,
@@ -26741,17 +26743,17 @@ impl GroupAccountSummaryRequest_AgentData {
             agent_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             session_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             group_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
         })
     }
@@ -26766,7 +26768,7 @@ impl GroupAccountSummaryRequest_MoneyData {
             request_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             interval_days: buffer.read_i32::<LittleEndian>()?,
             current_interval: buffer.read_i32::<LittleEndian>()?,
@@ -26783,12 +26785,12 @@ impl GroupAccountTransactionsReply_AgentData {
             agent_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             group_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
         })
     }
@@ -26803,7 +26805,7 @@ impl GroupAccountTransactionsReply_MoneyData {
             request_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             interval_days: buffer.read_i32::<LittleEndian>()?,
             current_interval: buffer.read_i32::<LittleEndian>()?,
@@ -26856,17 +26858,17 @@ impl GroupAccountTransactionsRequest_AgentData {
             agent_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             session_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             group_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
         })
     }
@@ -26881,7 +26883,7 @@ impl GroupAccountTransactionsRequest_MoneyData {
             request_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             interval_days: buffer.read_i32::<LittleEndian>()?,
             current_interval: buffer.read_i32::<LittleEndian>()?,
@@ -26898,12 +26900,12 @@ impl GroupActiveProposalItemReply_AgentData {
             agent_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             group_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
         })
     }
@@ -26918,7 +26920,7 @@ impl GroupActiveProposalItemReply_TransactionData {
             transaction_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             total_num_items: buffer.read_u32::<LittleEndian>()?,
         })
@@ -26934,12 +26936,12 @@ impl GroupActiveProposalItemReply_ProposalData {
             vote_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             vote_initiator: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             terse_date_id: {
                 let n = buffer.read_u8()? as usize;
@@ -26987,12 +26989,12 @@ impl GroupActiveProposalsRequest_AgentData {
             agent_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             session_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
         })
     }
@@ -27007,7 +27009,7 @@ impl GroupActiveProposalsRequest_GroupData {
             group_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
         })
     }
@@ -27022,7 +27024,7 @@ impl GroupActiveProposalsRequest_TransactionData {
             transaction_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
         })
     }
@@ -27037,12 +27039,12 @@ impl GroupDataUpdate_AgentGroupData {
             agent_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             group_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             agent_powers: buffer.read_u64::<LittleEndian>()?,
             group_title: {
@@ -27064,7 +27066,7 @@ impl GroupMembersReply_AgentData {
             agent_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
         })
     }
@@ -27079,12 +27081,12 @@ impl GroupMembersReply_GroupData {
             group_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             request_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             member_count: buffer.read_i32::<LittleEndian>()?,
         })
@@ -27100,7 +27102,7 @@ impl GroupMembersReply_MemberData {
             agent_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             contribution: buffer.read_i32::<LittleEndian>()?,
             online_status: {
@@ -27130,12 +27132,12 @@ impl GroupMembersRequest_AgentData {
             agent_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             session_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
         })
     }
@@ -27150,12 +27152,12 @@ impl GroupMembersRequest_GroupData {
             group_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             request_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
         })
     }
@@ -27170,7 +27172,7 @@ impl GroupNoticeAdd_AgentData {
             agent_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
         })
     }
@@ -27185,12 +27187,12 @@ impl GroupNoticeAdd_MessageBlock {
             to_group_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             dialog: buffer.read_u8()?,
             from_agent_name: {
@@ -27224,12 +27226,12 @@ impl GroupNoticeRequest_AgentData {
             agent_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             session_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
         })
     }
@@ -27244,7 +27246,7 @@ impl GroupNoticeRequest_Data {
             group_notice_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
         })
     }
@@ -27259,12 +27261,12 @@ impl GroupNoticesListReply_AgentData {
             agent_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             group_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
         })
     }
@@ -27279,7 +27281,7 @@ impl GroupNoticesListReply_Data {
             notice_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             timestamp: buffer.read_u32::<LittleEndian>()?,
             from_name: {
@@ -27309,12 +27311,12 @@ impl GroupNoticesListRequest_AgentData {
             agent_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             session_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
         })
     }
@@ -27329,7 +27331,7 @@ impl GroupNoticesListRequest_Data {
             group_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
         })
     }
@@ -27344,7 +27346,7 @@ impl GroupProfileReply_AgentData {
             agent_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
         })
     }
@@ -27359,7 +27361,7 @@ impl GroupProfileReply_GroupData {
             group_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             name: {
                 let n = buffer.read_u8()? as usize;
@@ -27384,12 +27386,12 @@ impl GroupProfileReply_GroupData {
             insignia_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             founder_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             membership_fee: buffer.read_i32::<LittleEndian>()?,
             open_enrollment: buffer.read_u8()? == 1,
@@ -27401,7 +27403,7 @@ impl GroupProfileReply_GroupData {
             owner_role: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
         })
     }
@@ -27416,12 +27418,12 @@ impl GroupProfileRequest_AgentData {
             agent_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             session_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
         })
     }
@@ -27436,7 +27438,7 @@ impl GroupProfileRequest_GroupData {
             group_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
         })
     }
@@ -27451,12 +27453,12 @@ impl GroupProposalBallot_AgentData {
             agent_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             session_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
         })
     }
@@ -27471,12 +27473,12 @@ impl GroupProposalBallot_ProposalData {
             proposal_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             group_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             vote_cast: {
                 let n = buffer.read_u8()? as usize;
@@ -27497,17 +27499,17 @@ impl GroupRoleChanges_AgentData {
             agent_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             session_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             group_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
         })
     }
@@ -27522,12 +27524,12 @@ impl GroupRoleChanges_RoleChange {
             role_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             member_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             change: buffer.read_u32::<LittleEndian>()?,
         })
@@ -27543,7 +27545,7 @@ impl GroupRoleDataReply_AgentData {
             agent_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
         })
     }
@@ -27558,12 +27560,12 @@ impl GroupRoleDataReply_GroupData {
             group_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             request_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             role_count: buffer.read_i32::<LittleEndian>()?,
         })
@@ -27579,7 +27581,7 @@ impl GroupRoleDataReply_RoleData {
             role_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             name: {
                 let n = buffer.read_u8()? as usize;
@@ -27614,12 +27616,12 @@ impl GroupRoleDataRequest_AgentData {
             agent_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             session_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
         })
     }
@@ -27634,12 +27636,12 @@ impl GroupRoleDataRequest_GroupData {
             group_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             request_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
         })
     }
@@ -27654,17 +27656,17 @@ impl GroupRoleMembersReply_AgentData {
             agent_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             group_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             request_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             total_pairs: buffer.read_u32::<LittleEndian>()?,
         })
@@ -27680,12 +27682,12 @@ impl GroupRoleMembersReply_MemberData {
             role_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             member_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
         })
     }
@@ -27700,12 +27702,12 @@ impl GroupRoleMembersRequest_AgentData {
             agent_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             session_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
         })
     }
@@ -27720,12 +27722,12 @@ impl GroupRoleMembersRequest_GroupData {
             group_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             request_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
         })
     }
@@ -27740,17 +27742,17 @@ impl GroupRoleUpdate_AgentData {
             agent_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             session_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             group_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
         })
     }
@@ -27765,7 +27767,7 @@ impl GroupRoleUpdate_RoleData {
             role_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             name: {
                 let n = buffer.read_u8()? as usize;
@@ -27800,22 +27802,22 @@ impl GroupTitleUpdate_AgentData {
             agent_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             session_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             group_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             title_role_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
         })
     }
@@ -27830,17 +27832,17 @@ impl GroupTitlesReply_AgentData {
             agent_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             group_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             request_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
         })
     }
@@ -27861,7 +27863,7 @@ impl GroupTitlesReply_GroupData {
             role_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             selected: buffer.read_u8()? == 1,
         })
@@ -27877,22 +27879,22 @@ impl GroupTitlesRequest_AgentData {
             agent_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             session_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             group_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             request_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
         })
     }
@@ -27907,12 +27909,12 @@ impl GroupVoteHistoryItemReply_AgentData {
             agent_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             group_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
         })
     }
@@ -27927,7 +27929,7 @@ impl GroupVoteHistoryItemReply_TransactionData {
             transaction_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             total_num_items: buffer.read_u32::<LittleEndian>()?,
         })
@@ -27943,7 +27945,7 @@ impl GroupVoteHistoryItemReply_HistoryItemData {
             vote_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             terse_date_id: {
                 let n = buffer.read_u8()? as usize;
@@ -27966,7 +27968,7 @@ impl GroupVoteHistoryItemReply_HistoryItemData {
             vote_initiator: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             vote_type: {
                 let n = buffer.read_u8()? as usize;
@@ -28001,7 +28003,7 @@ impl GroupVoteHistoryItemReply_VoteItem {
             candidate_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             vote_cast: {
                 let n = buffer.read_u8()? as usize;
@@ -28023,12 +28025,12 @@ impl GroupVoteHistoryRequest_AgentData {
             agent_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             session_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
         })
     }
@@ -28043,7 +28045,7 @@ impl GroupVoteHistoryRequest_GroupData {
             group_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
         })
     }
@@ -28058,7 +28060,7 @@ impl GroupVoteHistoryRequest_TransactionData {
             transaction_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
         })
     }
@@ -28084,7 +28086,7 @@ impl ImageData_ImageID {
             id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             codec: buffer.read_u8()?,
             size: buffer.read_u32::<LittleEndian>()?,
@@ -28118,7 +28120,7 @@ impl ImageNotInDatabase_ImageID {
             id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
         })
     }
@@ -28133,7 +28135,7 @@ impl ImagePacket_ImageID {
             id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             packet: buffer.read_u16::<LittleEndian>()?,
         })
@@ -28165,12 +28167,12 @@ impl ImprovedInstantMessage_AgentData {
             agent_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             session_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
         })
     }
@@ -28186,13 +28188,13 @@ impl ImprovedInstantMessage_MessageBlock {
             to_agent_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             parent_estate_id: buffer.read_u32::<LittleEndian>()?,
             region_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             position: Vector3::new(
                 buffer.read_f32::<LittleEndian>()?,
@@ -28204,7 +28206,7 @@ impl ImprovedInstantMessage_MessageBlock {
             id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             timestamp: buffer.read_u32::<LittleEndian>()?,
             from_agent_name: {
@@ -28272,7 +28274,7 @@ impl InitiateDownload_AgentData {
             agent_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
         })
     }
@@ -28315,7 +28317,7 @@ impl InternalScriptMail_DataBlock {
             to: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             subject: {
                 let n = buffer.read_u8()? as usize;
@@ -28342,12 +28344,12 @@ impl InventoryAssetResponse_QueryData {
             query_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             asset_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             is_readable: buffer.read_u8()? == 1,
         })
@@ -28363,17 +28365,17 @@ impl InventoryDescendents_AgentData {
             agent_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             folder_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             owner_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             version: buffer.read_i32::<LittleEndian>()?,
             descendents: buffer.read_i32::<LittleEndian>()?,
@@ -28390,12 +28392,12 @@ impl InventoryDescendents_FolderData {
             folder_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             parent_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             type_: buffer.read_i8()?,
             name: {
@@ -28417,27 +28419,27 @@ impl InventoryDescendents_ItemData {
             item_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             folder_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             creator_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             owner_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             group_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             base_mask: buffer.read_u32::<LittleEndian>()?,
             owner_mask: buffer.read_u32::<LittleEndian>()?,
@@ -28448,7 +28450,7 @@ impl InventoryDescendents_ItemData {
             asset_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             type_: buffer.read_i8()?,
             inv_type: buffer.read_i8()?,
@@ -28482,12 +28484,12 @@ impl InviteGroupRequest_AgentData {
             agent_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             session_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
         })
     }
@@ -28502,7 +28504,7 @@ impl InviteGroupRequest_GroupData {
             group_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
         })
     }
@@ -28517,12 +28519,12 @@ impl InviteGroupRequest_InviteData {
             invitee_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             role_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
         })
     }
@@ -28537,22 +28539,22 @@ impl InviteGroupResponse_InviteData {
             agent_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             invitee_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             group_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             role_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             membership_fee: buffer.read_i32::<LittleEndian>()?,
         })
@@ -28568,7 +28570,7 @@ impl JoinGroupReply_AgentData {
             agent_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
         })
     }
@@ -28583,7 +28585,7 @@ impl JoinGroupReply_GroupData {
             group_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             success: buffer.read_u8()? == 1,
         })
@@ -28599,12 +28601,12 @@ impl JoinGroupRequest_AgentData {
             agent_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             session_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
         })
     }
@@ -28619,7 +28621,7 @@ impl JoinGroupRequest_GroupData {
             group_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
         })
     }
@@ -28650,12 +28652,12 @@ impl KickUser_UserInfo {
             agent_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             session_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             reason: {
                 let n = buffer.read_u16::<LittleEndian>()? as usize;
@@ -28676,7 +28678,7 @@ impl KickUserAck_UserInfo {
             session_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             flags: buffer.read_u32::<LittleEndian>()?,
         })
@@ -28692,7 +28694,7 @@ impl KillChildAgents_IDBlock {
             agent_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
         })
     }
@@ -28732,7 +28734,7 @@ impl LandStatReply_ReportData {
             task_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             location_x: buffer.read_f32::<LittleEndian>()?,
             location_y: buffer.read_f32::<LittleEndian>()?,
@@ -28763,12 +28765,12 @@ impl LandStatRequest_AgentData {
             agent_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             session_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
         })
     }
@@ -28829,7 +28831,7 @@ impl LeaveGroupReply_AgentData {
             agent_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
         })
     }
@@ -28844,7 +28846,7 @@ impl LeaveGroupReply_GroupData {
             group_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             success: buffer.read_u8()? == 1,
         })
@@ -28860,12 +28862,12 @@ impl LeaveGroupRequest_AgentData {
             agent_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             session_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
         })
     }
@@ -28880,7 +28882,7 @@ impl LeaveGroupRequest_GroupData {
             group_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
         })
     }
@@ -28895,12 +28897,12 @@ impl LinkInventoryItem_AgentData {
             agent_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             session_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
         })
     }
@@ -28916,17 +28918,17 @@ impl LinkInventoryItem_InventoryBlock {
             folder_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             transaction_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             old_item_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             type_: buffer.read_i8()?,
             inv_type: buffer.read_i8()?,
@@ -28955,12 +28957,12 @@ impl LiveHelpGroupReply_ReplyData {
             request_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             group_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             selection: {
                 let n = buffer.read_u8()? as usize;
@@ -28981,12 +28983,12 @@ impl LiveHelpGroupRequest_RequestData {
             request_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             agent_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
         })
     }
@@ -29007,12 +29009,12 @@ impl LoadURL_Data {
             object_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             owner_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             owner_is_group: buffer.read_u8()? == 1,
             message: {
@@ -29040,12 +29042,12 @@ impl LogDwellTime_DwellInfo {
             agent_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             session_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             duration: buffer.read_f32::<LittleEndian>()?,
             sim_name: {
@@ -29071,19 +29073,19 @@ impl LogFailedMoneyTransaction_TransactionData {
             transaction_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             transaction_time: buffer.read_u32::<LittleEndian>()?,
             transaction_type: buffer.read_i32::<LittleEndian>()?,
             source_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             dest_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             flags: buffer.read_u8()?,
             amount: buffer.read_i32::<LittleEndian>()?,
@@ -29108,7 +29110,7 @@ impl LogParcelChanges_AgentData {
             agent_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
         })
     }
@@ -29134,12 +29136,12 @@ impl LogParcelChanges_ParcelData {
             parcel_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             owner_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             is_owner_group: buffer.read_u8()? == 1,
             actual_area: buffer.read_i32::<LittleEndian>()?,
@@ -29147,7 +29149,7 @@ impl LogParcelChanges_ParcelData {
             transaction_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
         })
     }
@@ -29162,12 +29164,12 @@ impl LogTextMessage_DataBlock {
             from_agent_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             to_agent_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             global_x: buffer.read_f64::<LittleEndian>()?,
             global_y: buffer.read_f64::<LittleEndian>()?,
@@ -29191,12 +29193,12 @@ impl LogoutReply_AgentData {
             agent_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             session_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
         })
     }
@@ -29211,7 +29213,7 @@ impl LogoutReply_InventoryData {
             item_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
         })
     }
@@ -29226,12 +29228,12 @@ impl LogoutRequest_AgentData {
             agent_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             session_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
         })
     }
@@ -29246,7 +29248,7 @@ impl MapBlockReply_AgentData {
             agent_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             flags: buffer.read_u32::<LittleEndian>()?,
         })
@@ -29274,7 +29276,7 @@ impl MapBlockReply_Data {
             map_image_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
         })
     }
@@ -29289,12 +29291,12 @@ impl MapBlockRequest_AgentData {
             agent_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             session_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             flags: buffer.read_u32::<LittleEndian>()?,
             estate_id: buffer.read_u32::<LittleEndian>()?,
@@ -29326,7 +29328,7 @@ impl MapItemReply_AgentData {
             agent_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             flags: buffer.read_u32::<LittleEndian>()?,
         })
@@ -29355,7 +29357,7 @@ impl MapItemReply_Data {
             id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             extra: buffer.read_i32::<LittleEndian>()?,
             extra2: buffer.read_i32::<LittleEndian>()?,
@@ -29378,12 +29380,12 @@ impl MapItemRequest_AgentData {
             agent_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             session_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             flags: buffer.read_u32::<LittleEndian>()?,
             estate_id: buffer.read_u32::<LittleEndian>()?,
@@ -29413,7 +29415,7 @@ impl MapLayerReply_AgentData {
             agent_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             flags: buffer.read_u32::<LittleEndian>()?,
         })
@@ -29433,7 +29435,7 @@ impl MapLayerReply_LayerData {
             image_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
         })
     }
@@ -29448,12 +29450,12 @@ impl MapLayerRequest_AgentData {
             agent_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             session_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             flags: buffer.read_u32::<LittleEndian>()?,
             estate_id: buffer.read_u32::<LittleEndian>()?,
@@ -29471,12 +29473,12 @@ impl MapNameRequest_AgentData {
             agent_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             session_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             flags: buffer.read_u32::<LittleEndian>()?,
             estate_id: buffer.read_u32::<LittleEndian>()?,
@@ -29510,12 +29512,12 @@ impl MeanCollisionAlert_MeanCollision {
             victim: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             perp: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             time: buffer.read_u32::<LittleEndian>()?,
             mag: buffer.read_f32::<LittleEndian>()?,
@@ -29533,7 +29535,7 @@ impl MergeParcel_MasterParcelData {
             master_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
         })
     }
@@ -29548,7 +29550,7 @@ impl MergeParcel_SlaveParcelData {
             slave_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
         })
     }
@@ -29563,12 +29565,12 @@ impl ModifyLand_AgentData {
             agent_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             session_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
         })
     }
@@ -29623,12 +29625,12 @@ impl MoneyBalanceReply_MoneyData {
             agent_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             transaction_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             transaction_success: buffer.read_u8()? == 1,
             money_balance: buffer.read_i32::<LittleEndian>()?,
@@ -29654,13 +29656,13 @@ impl MoneyBalanceReply_TransactionInfo {
             source_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             is_source_group: buffer.read_u8()? == 1,
             dest_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             is_dest_group: buffer.read_u8()? == 1,
             amount: buffer.read_i32::<LittleEndian>()?,
@@ -29683,12 +29685,12 @@ impl MoneyBalanceRequest_AgentData {
             agent_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             session_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
         })
     }
@@ -29703,7 +29705,7 @@ impl MoneyBalanceRequest_MoneyData {
             transaction_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
         })
     }
@@ -29718,18 +29720,18 @@ impl MoneyTransferBackend_MoneyData {
             transaction_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             transaction_time: buffer.read_u32::<LittleEndian>()?,
             source_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             dest_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             flags: buffer.read_u8()?,
             amount: buffer.read_i32::<LittleEndian>()?,
@@ -29739,7 +29741,7 @@ impl MoneyTransferBackend_MoneyData {
             region_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             grid_x: buffer.read_u32::<LittleEndian>()?,
             grid_y: buffer.read_u32::<LittleEndian>()?,
@@ -29762,12 +29764,12 @@ impl MoneyTransferRequest_AgentData {
             agent_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             session_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
         })
     }
@@ -29782,12 +29784,12 @@ impl MoneyTransferRequest_MoneyData {
             source_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             dest_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             flags: buffer.read_u8()?,
             amount: buffer.read_i32::<LittleEndian>()?,
@@ -29813,12 +29815,12 @@ impl MoveInventoryFolder_AgentData {
             agent_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             session_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             stamp: buffer.read_u8()? == 1,
         })
@@ -29834,12 +29836,12 @@ impl MoveInventoryFolder_InventoryData {
             folder_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             parent_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
         })
     }
@@ -29854,12 +29856,12 @@ impl MoveInventoryItem_AgentData {
             agent_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             session_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             stamp: buffer.read_u8()? == 1,
         })
@@ -29875,12 +29877,12 @@ impl MoveInventoryItem_InventoryData {
             item_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             folder_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             new_name: {
                 let n = buffer.read_u8()? as usize;
@@ -29901,17 +29903,17 @@ impl MoveTaskInventory_AgentData {
             agent_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             session_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             folder_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
         })
     }
@@ -29927,7 +29929,7 @@ impl MoveTaskInventory_InventoryData {
             item_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
         })
     }
@@ -29942,12 +29944,12 @@ impl MultipleObjectUpdate_AgentData {
             agent_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             session_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
         })
     }
@@ -29980,12 +29982,12 @@ impl MuteListRequest_AgentData {
             agent_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             session_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
         })
     }
@@ -30011,7 +30013,7 @@ impl MuteListUpdate_MuteData {
             agent_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             filename: {
                 let n = buffer.read_u8()? as usize;
@@ -30032,7 +30034,7 @@ impl NameValuePair_TaskData {
             id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
         })
     }
@@ -30108,7 +30110,7 @@ impl NeighborList_NeighborBlock {
             region_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             name: {
                 let n = buffer.read_u8()? as usize;
@@ -30141,17 +30143,17 @@ impl ObjectAdd_AgentData {
             agent_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             session_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             group_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
         })
     }
@@ -30198,7 +30200,7 @@ impl ObjectAdd_ObjectData {
             ray_target_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             ray_end_is_intersection: buffer.read_u8()?,
             scale: Vector3::new(
@@ -30228,12 +30230,12 @@ impl ObjectAttach_AgentData {
             agent_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             session_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             attachment_point: buffer.read_u8()?,
         })
@@ -30268,22 +30270,22 @@ impl ObjectBuy_AgentData {
             agent_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             session_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             group_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             category_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
         })
     }
@@ -30311,12 +30313,12 @@ impl ObjectCategory_AgentData {
             agent_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             session_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
         })
     }
@@ -30343,12 +30345,12 @@ impl ObjectClickAction_AgentData {
             agent_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             session_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
         })
     }
@@ -30375,12 +30377,12 @@ impl ObjectDeGrab_AgentData {
             agent_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             session_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
         })
     }
@@ -30442,12 +30444,12 @@ impl ObjectDelete_AgentData {
             agent_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             session_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             force: buffer.read_u8()? == 1,
         })
@@ -30474,12 +30476,12 @@ impl ObjectDelink_AgentData {
             agent_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             session_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
         })
     }
@@ -30505,12 +30507,12 @@ impl ObjectDescription_AgentData {
             agent_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             session_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
         })
     }
@@ -30542,12 +30544,12 @@ impl ObjectDeselect_AgentData {
             agent_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             session_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
         })
     }
@@ -30573,12 +30575,12 @@ impl ObjectDetach_AgentData {
             agent_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             session_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
         })
     }
@@ -30604,12 +30606,12 @@ impl ObjectDrop_AgentData {
             agent_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             session_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
         })
     }
@@ -30635,17 +30637,17 @@ impl ObjectDuplicate_AgentData {
             agent_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             session_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             group_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
         })
     }
@@ -30687,17 +30689,17 @@ impl ObjectDuplicateOnRay_AgentData {
             agent_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             session_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             group_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             ray_start: Vector3::new(
                 buffer.read_f32::<LittleEndian>()?,
@@ -30716,7 +30718,7 @@ impl ObjectDuplicateOnRay_AgentData {
             ray_target_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             duplicate_flags: buffer.read_u32::<LittleEndian>()?,
         })
@@ -30743,12 +30745,12 @@ impl ObjectExportSelected_AgentData {
             agent_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             request_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             volume_detail: buffer.read_i16::<LittleEndian>()?,
         })
@@ -30764,7 +30766,7 @@ impl ObjectExportSelected_ObjectData {
             object_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
         })
     }
@@ -30779,12 +30781,12 @@ impl ObjectExtraParams_AgentData {
             agent_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             session_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
         })
     }
@@ -30819,12 +30821,12 @@ impl ObjectFlagUpdate_AgentData {
             agent_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             session_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             object_local_id: buffer.read_u32::<LittleEndian>()?,
             use_physics: buffer.read_u8()? == 1,
@@ -30844,12 +30846,12 @@ impl ObjectGrab_AgentData {
             agent_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             session_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
         })
     }
@@ -30916,12 +30918,12 @@ impl ObjectGrabUpdate_AgentData {
             agent_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             session_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
         })
     }
@@ -30936,7 +30938,7 @@ impl ObjectGrabUpdate_ObjectData {
             object_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             grab_offset_initial: Vector3::new(
                 buffer.read_f32::<LittleEndian>()?,
@@ -30998,17 +31000,17 @@ impl ObjectGroup_AgentData {
             agent_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             session_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             group_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
         })
     }
@@ -31034,12 +31036,12 @@ impl ObjectImage_AgentData {
             agent_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             session_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
         })
     }
@@ -31077,12 +31079,12 @@ impl ObjectIncludeInSearch_AgentData {
             agent_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             session_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
         })
     }
@@ -31109,12 +31111,12 @@ impl ObjectLink_AgentData {
             agent_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             session_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
         })
     }
@@ -31140,12 +31142,12 @@ impl ObjectMaterial_AgentData {
             agent_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             session_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
         })
     }
@@ -31172,12 +31174,12 @@ impl ObjectName_AgentData {
             agent_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             session_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
         })
     }
@@ -31209,12 +31211,12 @@ impl ObjectOwner_AgentData {
             agent_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             session_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
         })
     }
@@ -31230,12 +31232,12 @@ impl ObjectOwner_HeaderData {
             owner_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             group_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
         })
     }
@@ -31261,12 +31263,12 @@ impl ObjectPermissions_AgentData {
             agent_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             session_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
         })
     }
@@ -31306,12 +31308,12 @@ impl ObjectPosition_AgentData {
             agent_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             session_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
         })
     }
@@ -31342,22 +31344,22 @@ impl ObjectProperties_ObjectData {
             object_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             creator_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             owner_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             group_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             creation_date: buffer.read_u64::<LittleEndian>()?,
             base_mask: buffer.read_u32::<LittleEndian>()?,
@@ -31376,22 +31378,22 @@ impl ObjectProperties_ObjectData {
             item_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             folder_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             from_task_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             last_owner_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             name: {
                 let n = buffer.read_u8()? as usize;
@@ -31437,17 +31439,17 @@ impl ObjectPropertiesFamily_ObjectData {
             object_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             owner_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             group_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             base_mask: buffer.read_u32::<LittleEndian>()?,
             owner_mask: buffer.read_u32::<LittleEndian>()?,
@@ -31461,7 +31463,7 @@ impl ObjectPropertiesFamily_ObjectData {
             last_owner_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             name: {
                 let n = buffer.read_u8()? as usize;
@@ -31488,12 +31490,12 @@ impl ObjectRotation_AgentData {
             agent_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             session_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
         })
     }
@@ -31527,12 +31529,12 @@ impl ObjectSaleInfo_AgentData {
             agent_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             session_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
         })
     }
@@ -31560,12 +31562,12 @@ impl ObjectScale_AgentData {
             agent_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             session_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
         })
     }
@@ -31596,12 +31598,12 @@ impl ObjectSelect_AgentData {
             agent_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             session_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
         })
     }
@@ -31627,12 +31629,12 @@ impl ObjectShape_AgentData {
             agent_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             session_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
         })
     }
@@ -31676,12 +31678,12 @@ impl ObjectSpinStart_AgentData {
             agent_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             session_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
         })
     }
@@ -31696,7 +31698,7 @@ impl ObjectSpinStart_ObjectData {
             object_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
         })
     }
@@ -31711,12 +31713,12 @@ impl ObjectSpinStop_AgentData {
             agent_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             session_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
         })
     }
@@ -31731,7 +31733,7 @@ impl ObjectSpinStop_ObjectData {
             object_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
         })
     }
@@ -31746,12 +31748,12 @@ impl ObjectSpinUpdate_AgentData {
             agent_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             session_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
         })
     }
@@ -31766,7 +31768,7 @@ impl ObjectSpinUpdate_ObjectData {
             object_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             rotation: Quaternion::from_parts(
                 1.,
@@ -31803,7 +31805,7 @@ impl ObjectUpdate_ObjectData {
             full_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             crc: buffer.read_u32::<LittleEndian>()?,
             p_code: buffer.read_u8()?,
@@ -31896,12 +31898,12 @@ impl ObjectUpdate_ObjectData {
             sound: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             owner_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             gain: buffer.read_f32::<LittleEndian>()?,
             flags: buffer.read_u8()?,
@@ -31984,12 +31986,12 @@ impl OfferCallingCard_AgentData {
             agent_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             session_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
         })
     }
@@ -32004,12 +32006,12 @@ impl OfferCallingCard_AgentBlock {
             dest_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             transaction_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
         })
     }
@@ -32024,7 +32026,7 @@ impl OfflineNotification_AgentBlock {
             agent_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
         })
     }
@@ -32039,7 +32041,7 @@ impl OnlineNotification_AgentBlock {
             agent_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
         })
     }
@@ -32081,7 +32083,7 @@ impl ParcelAccessListReply_Data {
             agent_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             sequence_id: buffer.read_i32::<LittleEndian>()?,
             flags: buffer.read_u32::<LittleEndian>()?,
@@ -32099,7 +32101,7 @@ impl ParcelAccessListReply_List {
             id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             time: buffer.read_i32::<LittleEndian>()?,
             flags: buffer.read_u32::<LittleEndian>()?,
@@ -32116,12 +32118,12 @@ impl ParcelAccessListRequest_AgentData {
             agent_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             session_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
         })
     }
@@ -32149,12 +32151,12 @@ impl ParcelAccessListUpdate_AgentData {
             agent_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             session_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
         })
     }
@@ -32171,7 +32173,7 @@ impl ParcelAccessListUpdate_Data {
             transaction_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             sequence_id: buffer.read_i32::<LittleEndian>()?,
             sections: buffer.read_i32::<LittleEndian>()?,
@@ -32188,7 +32190,7 @@ impl ParcelAccessListUpdate_List {
             id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             time: buffer.read_i32::<LittleEndian>()?,
             flags: buffer.read_u32::<LittleEndian>()?,
@@ -32205,12 +32207,12 @@ impl ParcelAuctions_ParcelData {
             parcel_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             winner_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
         })
     }
@@ -32225,12 +32227,12 @@ impl ParcelBuy_AgentData {
             agent_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             session_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
         })
     }
@@ -32245,7 +32247,7 @@ impl ParcelBuy_Data {
             group_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             is_group_owned: buffer.read_u8()? == 1,
             remove_contribution: buffer.read_u8()? == 1,
@@ -32276,12 +32278,12 @@ impl ParcelBuyPass_AgentData {
             agent_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             session_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
         })
     }
@@ -32307,12 +32309,12 @@ impl ParcelClaim_AgentData {
             agent_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             session_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
         })
     }
@@ -32327,7 +32329,7 @@ impl ParcelClaim_Data {
             group_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             is_group_owned: buffer.read_u8()? == 1,
             final_: buffer.read_u8()? == 1,
@@ -32358,12 +32360,12 @@ impl ParcelDeedToGroup_AgentData {
             agent_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             session_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
         })
     }
@@ -32378,7 +32380,7 @@ impl ParcelDeedToGroup_Data {
             group_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             local_id: buffer.read_i32::<LittleEndian>()?,
         })
@@ -32394,12 +32396,12 @@ impl ParcelDisableObjects_AgentData {
             agent_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             session_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
         })
     }
@@ -32426,7 +32428,7 @@ impl ParcelDisableObjects_TaskIDs {
             task_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
         })
     }
@@ -32441,7 +32443,7 @@ impl ParcelDisableObjects_OwnerIDs {
             owner_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
         })
     }
@@ -32456,12 +32458,12 @@ impl ParcelDivide_AgentData {
             agent_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             session_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
         })
     }
@@ -32490,7 +32492,7 @@ impl ParcelDwellReply_AgentData {
             agent_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
         })
     }
@@ -32506,7 +32508,7 @@ impl ParcelDwellReply_Data {
             parcel_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             dwell: buffer.read_f32::<LittleEndian>()?,
         })
@@ -32522,12 +32524,12 @@ impl ParcelDwellRequest_AgentData {
             agent_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             session_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
         })
     }
@@ -32543,7 +32545,7 @@ impl ParcelDwellRequest_Data {
             parcel_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
         })
     }
@@ -32558,12 +32560,12 @@ impl ParcelGodForceOwner_AgentData {
             agent_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             session_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
         })
     }
@@ -32578,7 +32580,7 @@ impl ParcelGodForceOwner_Data {
             owner_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             local_id: buffer.read_i32::<LittleEndian>()?,
         })
@@ -32594,12 +32596,12 @@ impl ParcelGodMarkAsContent_AgentData {
             agent_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             session_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
         })
     }
@@ -32625,7 +32627,7 @@ impl ParcelInfoReply_AgentData {
             agent_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
         })
     }
@@ -32640,12 +32642,12 @@ impl ParcelInfoReply_Data {
             parcel_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             owner_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             name: {
                 let n = buffer.read_u8()? as usize;
@@ -32674,7 +32676,7 @@ impl ParcelInfoReply_Data {
             snapshot_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             dwell: buffer.read_f32::<LittleEndian>()?,
             sale_price: buffer.read_i32::<LittleEndian>()?,
@@ -32692,12 +32694,12 @@ impl ParcelInfoRequest_AgentData {
             agent_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             session_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
         })
     }
@@ -32712,7 +32714,7 @@ impl ParcelInfoRequest_Data {
             parcel_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
         })
     }
@@ -32727,12 +32729,12 @@ impl ParcelJoin_AgentData {
             agent_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             session_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
         })
     }
@@ -32780,7 +32782,7 @@ impl ParcelMediaUpdate_DataBlock {
             media_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             media_auto_scale: buffer.read_u8()?,
         })
@@ -32821,7 +32823,7 @@ impl ParcelObjectOwnersReply_Data {
             owner_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             is_group_owned: buffer.read_u8()? == 1,
             count: buffer.read_i32::<LittleEndian>()?,
@@ -32839,12 +32841,12 @@ impl ParcelObjectOwnersRequest_AgentData {
             agent_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             session_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
         })
     }
@@ -32894,7 +32896,7 @@ impl ParcelProperties_ParcelData {
             owner_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             is_group_owned: buffer.read_u8()? == 1,
             auction_id: buffer.read_u32::<LittleEndian>()?,
@@ -32958,13 +32960,13 @@ impl ParcelProperties_ParcelData {
             media_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             media_auto_scale: buffer.read_u8()?,
             group_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             pass_price: buffer.read_i32::<LittleEndian>()?,
             pass_hours: buffer.read_f32::<LittleEndian>()?,
@@ -32972,12 +32974,12 @@ impl ParcelProperties_ParcelData {
             auth_buyer_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             snapshot_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             user_location: Vector3::new(
                 buffer.read_f32::<LittleEndian>()?,
@@ -33018,12 +33020,12 @@ impl ParcelPropertiesRequest_AgentData {
             agent_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             session_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
         })
     }
@@ -33054,12 +33056,12 @@ impl ParcelPropertiesRequestByID_AgentData {
             agent_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             session_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
         })
     }
@@ -33086,12 +33088,12 @@ impl ParcelPropertiesUpdate_AgentData {
             agent_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             session_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
         })
     }
@@ -33134,13 +33136,13 @@ impl ParcelPropertiesUpdate_ParcelData {
             media_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             media_auto_scale: buffer.read_u8()?,
             group_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             pass_price: buffer.read_i32::<LittleEndian>()?,
             pass_hours: buffer.read_f32::<LittleEndian>()?,
@@ -33148,12 +33150,12 @@ impl ParcelPropertiesUpdate_ParcelData {
             auth_buyer_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             snapshot_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             user_location: Vector3::new(
                 buffer.read_f32::<LittleEndian>()?,
@@ -33179,12 +33181,12 @@ impl ParcelReclaim_AgentData {
             agent_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             session_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
         })
     }
@@ -33210,12 +33212,12 @@ impl ParcelRelease_AgentData {
             agent_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             session_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
         })
     }
@@ -33241,7 +33243,7 @@ impl ParcelRename_ParcelData {
             parcel_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             new_name: {
                 let n = buffer.read_u8()? as usize;
@@ -33262,12 +33264,12 @@ impl ParcelReturnObjects_AgentData {
             agent_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             session_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
         })
     }
@@ -33294,7 +33296,7 @@ impl ParcelReturnObjects_TaskIDs {
             task_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
         })
     }
@@ -33309,7 +33311,7 @@ impl ParcelReturnObjects_OwnerIDs {
             owner_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
         })
     }
@@ -33324,12 +33326,12 @@ impl ParcelSales_ParcelData {
             parcel_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             buyer_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
         })
     }
@@ -33344,12 +33346,12 @@ impl ParcelSelectObjects_AgentData {
             agent_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             session_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
         })
     }
@@ -33376,7 +33378,7 @@ impl ParcelSelectObjects_ReturnIDs {
             return_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
         })
     }
@@ -33391,12 +33393,12 @@ impl ParcelSetOtherCleanTime_AgentData {
             agent_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             session_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
         })
     }
@@ -33423,7 +33425,7 @@ impl PayPriceReply_ObjectData {
             object_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             default_pay_price: buffer.read_i32::<LittleEndian>()?,
         })
@@ -33450,12 +33452,12 @@ impl PickDelete_AgentData {
             agent_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             session_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
         })
     }
@@ -33470,7 +33472,7 @@ impl PickDelete_Data {
             pick_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
         })
     }
@@ -33485,12 +33487,12 @@ impl PickGodDelete_AgentData {
             agent_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             session_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
         })
     }
@@ -33505,12 +33507,12 @@ impl PickGodDelete_Data {
             pick_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             query_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
         })
     }
@@ -33525,7 +33527,7 @@ impl PickInfoReply_AgentData {
             agent_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
         })
     }
@@ -33540,18 +33542,18 @@ impl PickInfoReply_Data {
             pick_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             creator_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             top_pick: buffer.read_u8()? == 1,
             parcel_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             name: {
                 let n = buffer.read_u8()? as usize;
@@ -33568,7 +33570,7 @@ impl PickInfoReply_Data {
             snapshot_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             user: {
                 let n = buffer.read_u8()? as usize;
@@ -33608,12 +33610,12 @@ impl PickInfoUpdate_AgentData {
             agent_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             session_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
         })
     }
@@ -33628,18 +33630,18 @@ impl PickInfoUpdate_Data {
             pick_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             creator_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             top_pick: buffer.read_u8()? == 1,
             parcel_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             name: {
                 let n = buffer.read_u8()? as usize;
@@ -33656,7 +33658,7 @@ impl PickInfoUpdate_Data {
             snapshot_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             pos_global: Vector3::new(
                 buffer.read_f64::<LittleEndian>()?,
@@ -33678,17 +33680,17 @@ impl PlacesQuery_AgentData {
             agent_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             session_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             query_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
         })
     }
@@ -33703,7 +33705,7 @@ impl PlacesQuery_TransactionData {
             transaction_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
         })
     }
@@ -33742,12 +33744,12 @@ impl PlacesReply_AgentData {
             agent_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             query_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
         })
     }
@@ -33762,7 +33764,7 @@ impl PlacesReply_TransactionData {
             transaction_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
         })
     }
@@ -33777,7 +33779,7 @@ impl PlacesReply_QueryData {
             owner_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             name: {
                 let n = buffer.read_u8()? as usize;
@@ -33806,7 +33808,7 @@ impl PlacesReply_QueryData {
             snapshot_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             dwell: buffer.read_f32::<LittleEndian>()?,
             price: buffer.read_i32::<LittleEndian>()?,
@@ -33823,17 +33825,17 @@ impl PreloadSound_DataBlock {
             object_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             owner_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             sound_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
         })
     }
@@ -33848,12 +33850,12 @@ impl PurgeInventoryDescendents_AgentData {
             agent_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             session_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
         })
     }
@@ -33868,7 +33870,7 @@ impl PurgeInventoryDescendents_InventoryData {
             folder_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
         })
     }
@@ -33883,7 +33885,7 @@ impl RebakeAvatarTextures_TextureData {
             texture_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
         })
     }
@@ -33898,17 +33900,17 @@ impl Redo_AgentData {
             agent_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             session_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             group_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
         })
     }
@@ -33923,7 +33925,7 @@ impl Redo_ObjectData {
             object_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
         })
     }
@@ -33938,7 +33940,7 @@ impl RegionHandleRequest_RequestBlock {
             region_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
         })
     }
@@ -33961,7 +33963,7 @@ impl RegionHandshake_RegionInfo {
             sim_owner: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             is_estate_manager: buffer.read_u8()? == 1,
             water_height: buffer.read_f32::<LittleEndian>()?,
@@ -33969,47 +33971,47 @@ impl RegionHandshake_RegionInfo {
             cache_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             terrain_base0: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             terrain_base1: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             terrain_base2: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             terrain_base3: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             terrain_detail0: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             terrain_detail1: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             terrain_detail2: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             terrain_detail3: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             terrain_start_height00: buffer.read_f32::<LittleEndian>()?,
             terrain_start_height01: buffer.read_f32::<LittleEndian>()?,
@@ -34032,7 +34034,7 @@ impl RegionHandshake_RegionInfo2 {
             region_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
         })
     }
@@ -34077,12 +34079,12 @@ impl RegionHandshakeReply_AgentData {
             agent_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             session_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
         })
     }
@@ -34108,7 +34110,7 @@ impl RegionIDAndHandleReply_ReplyBlock {
             region_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             region_handle: buffer.read_u64::<LittleEndian>()?,
         })
@@ -34124,12 +34126,12 @@ impl RegionInfo_AgentData {
             agent_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             session_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
         })
     }
@@ -34211,7 +34213,7 @@ impl RegionPresenceRequestByRegionID_RegionData {
             region_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
         })
     }
@@ -34226,7 +34228,7 @@ impl RegionPresenceResponse_RegionData {
             region_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             region_handle: buffer.read_u64::<LittleEndian>()?,
             internal_region_ip: {
@@ -34260,12 +34262,12 @@ impl RemoveAttachment_AgentData {
             agent_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             session_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
         })
     }
@@ -34281,7 +34283,7 @@ impl RemoveAttachment_AttachmentBlock {
             item_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
         })
     }
@@ -34296,12 +34298,12 @@ impl RemoveInventoryFolder_AgentData {
             agent_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             session_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
         })
     }
@@ -34316,7 +34318,7 @@ impl RemoveInventoryFolder_FolderData {
             folder_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
         })
     }
@@ -34331,12 +34333,12 @@ impl RemoveInventoryItem_AgentData {
             agent_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             session_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
         })
     }
@@ -34351,7 +34353,7 @@ impl RemoveInventoryItem_InventoryData {
             item_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
         })
     }
@@ -34366,12 +34368,12 @@ impl RemoveInventoryObjects_AgentData {
             agent_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             session_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
         })
     }
@@ -34386,7 +34388,7 @@ impl RemoveInventoryObjects_FolderData {
             folder_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
         })
     }
@@ -34401,7 +34403,7 @@ impl RemoveInventoryObjects_ItemData {
             item_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
         })
     }
@@ -34416,12 +34418,12 @@ impl RemoveMuteListEntry_AgentData {
             agent_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             session_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
         })
     }
@@ -34436,7 +34438,7 @@ impl RemoveMuteListEntry_MuteData {
             mute_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             mute_name: {
                 let n = buffer.read_u8()? as usize;
@@ -34457,7 +34459,7 @@ impl RemoveNameValuePair_TaskData {
             id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
         })
     }
@@ -34488,7 +34490,7 @@ impl RemoveParcel_ParcelData {
             parcel_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
         })
     }
@@ -34503,12 +34505,12 @@ impl RemoveTaskInventory_AgentData {
             agent_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             session_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
         })
     }
@@ -34524,7 +34526,7 @@ impl RemoveTaskInventory_InventoryData {
             item_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
         })
     }
@@ -34539,7 +34541,7 @@ impl ReplyTaskInventory_InventoryData {
             task_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             serial: buffer.read_i16::<LittleEndian>()?,
             filename: {
@@ -34573,12 +34575,12 @@ impl RequestGodlikePowers_AgentData {
             agent_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             session_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
         })
     }
@@ -34594,7 +34596,7 @@ impl RequestGodlikePowers_RequestBlock {
             token: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
         })
     }
@@ -34609,12 +34611,12 @@ impl RequestImage_AgentData {
             agent_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             session_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
         })
     }
@@ -34629,7 +34631,7 @@ impl RequestImage_RequestImage {
             image: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             discard_level: buffer.read_i8()?,
             download_priority: buffer.read_f32::<LittleEndian>()?,
@@ -34648,22 +34650,22 @@ impl RequestInventoryAsset_QueryData {
             query_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             agent_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             owner_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             item_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
         })
     }
@@ -34678,12 +34680,12 @@ impl RequestMultipleObjects_AgentData {
             agent_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             session_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
         })
     }
@@ -34710,12 +34712,12 @@ impl RequestObjectPropertiesFamily_AgentData {
             agent_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             session_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
         })
     }
@@ -34731,7 +34733,7 @@ impl RequestObjectPropertiesFamily_ObjectData {
             object_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
         })
     }
@@ -34746,23 +34748,23 @@ impl RequestParcelTransfer_Data {
             transaction_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             transaction_time: buffer.read_u32::<LittleEndian>()?,
             source_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             dest_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             owner_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             flags: buffer.read_u8()?,
             transaction_type: buffer.read_i32::<LittleEndian>()?,
@@ -34783,7 +34785,7 @@ impl RequestParcelTransfer_RegionData {
             region_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             grid_x: buffer.read_u32::<LittleEndian>()?,
             grid_y: buffer.read_u32::<LittleEndian>()?,
@@ -34800,7 +34802,7 @@ impl RequestPayPrice_ObjectData {
             object_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
         })
     }
@@ -34815,12 +34817,12 @@ impl RequestRegionInfo_AgentData {
             agent_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             session_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
         })
     }
@@ -34835,12 +34837,12 @@ impl RequestTaskInventory_AgentData {
             agent_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             session_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
         })
     }
@@ -34876,7 +34878,7 @@ impl RequestXfer_XferID {
             v_file_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             v_file_type: buffer.read_i16::<LittleEndian>()?,
         })
@@ -34892,12 +34894,12 @@ impl RetrieveInstantMessages_AgentData {
             agent_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             session_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
         })
     }
@@ -34912,12 +34914,12 @@ impl RevokePermissions_AgentData {
             agent_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             session_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
         })
     }
@@ -34932,7 +34934,7 @@ impl RevokePermissions_Data {
             object_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             object_permissions: buffer.read_u32::<LittleEndian>()?,
         })
@@ -34948,12 +34950,12 @@ impl RezMultipleAttachmentsFromInv_AgentData {
             agent_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             session_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
         })
     }
@@ -34968,7 +34970,7 @@ impl RezMultipleAttachmentsFromInv_HeaderData {
             compound_msg_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             total_objects: buffer.read_u8()?,
             first_detach_all: buffer.read_u8()? == 1,
@@ -34985,12 +34987,12 @@ impl RezMultipleAttachmentsFromInv_ObjectData {
             item_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             owner_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             attachment_pt: buffer.read_u8()?,
             item_flags: buffer.read_u32::<LittleEndian>()?,
@@ -35022,17 +35024,17 @@ impl RezObject_AgentData {
             agent_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             session_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             group_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
         })
     }
@@ -35047,7 +35049,7 @@ impl RezObject_RezData {
             from_task_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             bypass_raycast: buffer.read_u8()?,
             ray_start: Vector3::new(
@@ -35063,7 +35065,7 @@ impl RezObject_RezData {
             ray_target_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             ray_end_is_intersection: buffer.read_u8()? == 1,
             rez_selected: buffer.read_u8()? == 1,
@@ -35085,27 +35087,27 @@ impl RezObject_InventoryData {
             item_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             folder_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             creator_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             owner_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             group_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             base_mask: buffer.read_u32::<LittleEndian>()?,
             owner_mask: buffer.read_u32::<LittleEndian>()?,
@@ -35116,7 +35118,7 @@ impl RezObject_InventoryData {
             transaction_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             type_: buffer.read_i8()?,
             inv_type: buffer.read_i8()?,
@@ -35150,17 +35152,17 @@ impl RezObjectFromNotecard_AgentData {
             agent_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             session_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             group_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
         })
     }
@@ -35175,7 +35177,7 @@ impl RezObjectFromNotecard_RezData {
             from_task_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             bypass_raycast: buffer.read_u8()?,
             ray_start: Vector3::new(
@@ -35191,7 +35193,7 @@ impl RezObjectFromNotecard_RezData {
             ray_target_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             ray_end_is_intersection: buffer.read_u8()? == 1,
             rez_selected: buffer.read_u8()? == 1,
@@ -35213,12 +35215,12 @@ impl RezObjectFromNotecard_NotecardData {
             notecard_item_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             object_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
         })
     }
@@ -35233,7 +35235,7 @@ impl RezObjectFromNotecard_InventoryData {
             item_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
         })
     }
@@ -35248,12 +35250,12 @@ impl RezRestoreToWorld_AgentData {
             agent_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             session_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
         })
     }
@@ -35268,27 +35270,27 @@ impl RezRestoreToWorld_InventoryData {
             item_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             folder_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             creator_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             owner_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             group_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             base_mask: buffer.read_u32::<LittleEndian>()?,
             owner_mask: buffer.read_u32::<LittleEndian>()?,
@@ -35299,7 +35301,7 @@ impl RezRestoreToWorld_InventoryData {
             transaction_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             type_: buffer.read_i8()?,
             inv_type: buffer.read_i8()?,
@@ -35333,17 +35335,17 @@ impl RezScript_AgentData {
             agent_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             session_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             group_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
         })
     }
@@ -35370,27 +35372,27 @@ impl RezScript_InventoryBlock {
             item_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             folder_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             creator_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             owner_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             group_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             base_mask: buffer.read_u32::<LittleEndian>()?,
             owner_mask: buffer.read_u32::<LittleEndian>()?,
@@ -35401,7 +35403,7 @@ impl RezScript_InventoryBlock {
             transaction_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             type_: buffer.read_i8()?,
             inv_type: buffer.read_i8()?,
@@ -35435,12 +35437,12 @@ impl RezSingleAttachmentFromInv_AgentData {
             agent_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             session_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
         })
     }
@@ -35455,12 +35457,12 @@ impl RezSingleAttachmentFromInv_ObjectData {
             item_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             owner_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             attachment_pt: buffer.read_u8()?,
             item_flags: buffer.read_u32::<LittleEndian>()?,
@@ -35508,12 +35510,12 @@ impl RoutedMoneyBalanceReply_MoneyData {
             agent_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             transaction_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             transaction_success: buffer.read_u8()? == 1,
             money_balance: buffer.read_i32::<LittleEndian>()?,
@@ -35539,13 +35541,13 @@ impl RoutedMoneyBalanceReply_TransactionInfo {
             source_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             is_source_group: buffer.read_u8()? == 1,
             dest_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             is_dest_group: buffer.read_u8()? == 1,
             amount: buffer.read_i32::<LittleEndian>()?,
@@ -35568,17 +35570,17 @@ impl RpcChannelReply_DataBlock {
             task_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             item_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             channel_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
         })
     }
@@ -35595,12 +35597,12 @@ impl RpcChannelRequest_DataBlock {
             task_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             item_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
         })
     }
@@ -35615,17 +35617,17 @@ impl RpcScriptReplyInbound_DataBlock {
             task_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             item_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             channel_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             int_value: buffer.read_u32::<LittleEndian>()?,
             string_value: {
@@ -35659,17 +35661,17 @@ impl RpcScriptRequestInbound_DataBlock {
             task_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             item_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             channel_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             int_value: buffer.read_u32::<LittleEndian>()?,
             string_value: {
@@ -35697,17 +35699,17 @@ impl RpcScriptRequestInboundForward_DataBlock {
             task_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             item_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             channel_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             int_value: buffer.read_u32::<LittleEndian>()?,
             string_value: {
@@ -35729,7 +35731,7 @@ impl SaveAssetIntoInventory_AgentData {
             agent_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
         })
     }
@@ -35744,12 +35746,12 @@ impl SaveAssetIntoInventory_InventoryData {
             item_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             new_asset_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
         })
     }
@@ -35764,12 +35766,12 @@ impl ScriptAnswerYes_AgentData {
             agent_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             session_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
         })
     }
@@ -35784,12 +35786,12 @@ impl ScriptAnswerYes_Data {
             task_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             item_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             questions: buffer.read_i32::<LittleEndian>()?,
         })
@@ -35853,7 +35855,7 @@ impl ScriptDialog_Data {
             object_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             first_name: {
                 let n = buffer.read_u8()? as usize;
@@ -35883,7 +35885,7 @@ impl ScriptDialog_Data {
             image_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
         })
     }
@@ -35914,7 +35916,7 @@ impl ScriptDialog_OwnerData {
             owner_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
         })
     }
@@ -35929,12 +35931,12 @@ impl ScriptDialogReply_AgentData {
             agent_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             session_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
         })
     }
@@ -35949,7 +35951,7 @@ impl ScriptDialogReply_Data {
             object_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             chat_channel: buffer.read_i32::<LittleEndian>()?,
             button_index: buffer.read_i32::<LittleEndian>()?,
@@ -35979,7 +35981,7 @@ impl ScriptMailRegistration_DataBlock {
             task_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             flags: buffer.read_u32::<LittleEndian>()?,
         })
@@ -35995,12 +35997,12 @@ impl ScriptQuestion_Data {
             task_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             item_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             object_name: {
                 let n = buffer.read_u8()? as usize;
@@ -36028,12 +36030,12 @@ impl ScriptReset_AgentData {
             agent_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             session_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
         })
     }
@@ -36048,12 +36050,12 @@ impl ScriptReset_Script {
             object_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             item_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
         })
     }
@@ -36068,12 +36070,12 @@ impl ScriptRunningReply_Script {
             object_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             item_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             running: buffer.read_u8()? == 1,
         })
@@ -36089,7 +36091,7 @@ impl ScriptSensorReply_Requester {
             source_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
         })
     }
@@ -36104,17 +36106,17 @@ impl ScriptSensorReply_SensedData {
             object_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             owner_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             group_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             position: Vector3::new(
                 buffer.read_f32::<LittleEndian>()?,
@@ -36155,17 +36157,17 @@ impl ScriptSensorRequest_Requester {
             source_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             request_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             search_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             search_pos: Vector3::new(
                 buffer.read_f32::<LittleEndian>()?,
@@ -36236,17 +36238,17 @@ impl SendPostcard_AgentData {
             agent_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             session_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             asset_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             pos_global: Vector3::new(
                 buffer.read_f64::<LittleEndian>()?,
@@ -36326,12 +36328,12 @@ impl SetAlwaysRun_AgentData {
             agent_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             session_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             always_run: buffer.read_u8()? == 1,
         })
@@ -36358,7 +36360,7 @@ impl SetFollowCamProperties_ObjectData {
             object_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
         })
     }
@@ -36385,12 +36387,12 @@ impl SetGroupAcceptNotices_AgentData {
             agent_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             session_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
         })
     }
@@ -36405,7 +36407,7 @@ impl SetGroupAcceptNotices_Data {
             group_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             accept_notices: buffer.read_u8()? == 1,
         })
@@ -36432,12 +36434,12 @@ impl SetGroupContribution_AgentData {
             agent_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             session_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
         })
     }
@@ -36452,7 +36454,7 @@ impl SetGroupContribution_Data {
             group_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             contribution: buffer.read_i32::<LittleEndian>()?,
         })
@@ -36468,12 +36470,12 @@ impl SetScriptRunning_AgentData {
             agent_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             session_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
         })
     }
@@ -36488,12 +36490,12 @@ impl SetScriptRunning_Script {
             object_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             item_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             running: buffer.read_u8()? == 1,
         })
@@ -36509,7 +36511,7 @@ impl SetSimPresenceInDatabase_SimData {
             region_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             host_name: {
                 let n = buffer.read_u8()? as usize;
@@ -36541,7 +36543,7 @@ impl SetSimStatusInDatabase_Data {
             region_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             host_name: {
                 let n = buffer.read_u8()? as usize;
@@ -36573,12 +36575,12 @@ impl SetStartLocation_StartLocationData {
             agent_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             region_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             location_id: buffer.read_u32::<LittleEndian>()?,
             region_handle: buffer.read_u64::<LittleEndian>()?,
@@ -36605,12 +36607,12 @@ impl SetStartLocationRequest_AgentData {
             agent_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             session_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
         })
     }
@@ -36664,7 +36666,7 @@ impl SimCrashed_Users {
             agent_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
         })
     }
@@ -36728,12 +36730,12 @@ impl SimWideDeletes_AgentData {
             agent_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             session_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
         })
     }
@@ -36748,7 +36750,7 @@ impl SimWideDeletes_DataBlock {
             target_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             flags: buffer.read_u32::<LittleEndian>()?,
         })
@@ -36843,7 +36845,7 @@ impl SimulatorPresentAtLocation_SimulatorBlock {
             region_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             estate_id: buffer.read_u32::<LittleEndian>()?,
             parent_estate_id: buffer.read_u32::<LittleEndian>()?,
@@ -36884,7 +36886,7 @@ impl SimulatorReady_SimulatorBlock {
             region_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             estate_id: buffer.read_u32::<LittleEndian>()?,
             parent_estate_id: buffer.read_u32::<LittleEndian>()?,
@@ -36919,7 +36921,7 @@ impl SimulatorSetMap_MapData {
             map_image: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
         })
     }
@@ -36958,22 +36960,22 @@ impl SoundTrigger_SoundData {
             sound_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             owner_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             object_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             parent_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             handle: buffer.read_u64::<LittleEndian>()?,
             position: Vector3::new(
@@ -36995,7 +36997,7 @@ impl StartAuction_AgentData {
             agent_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
         })
     }
@@ -37010,12 +37012,12 @@ impl StartAuction_ParcelData {
             parcel_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             snapshot_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             name: {
                 let n = buffer.read_u8()? as usize;
@@ -37036,12 +37038,12 @@ impl StartGroupProposal_AgentData {
             agent_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             session_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
         })
     }
@@ -37056,7 +37058,7 @@ impl StartGroupProposal_ProposalData {
             group_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             quorum: buffer.read_i32::<LittleEndian>()?,
             majority: buffer.read_f32::<LittleEndian>()?,
@@ -37080,12 +37082,12 @@ impl StartLure_AgentData {
             agent_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             session_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
         })
     }
@@ -37117,7 +37119,7 @@ impl StartLure_TargetData {
             target_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
         })
     }
@@ -37144,12 +37146,12 @@ impl StateSave_AgentData {
             agent_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             session_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
         })
     }
@@ -37180,7 +37182,7 @@ impl SystemKickUser_AgentInfo {
             agent_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
         })
     }
@@ -37201,7 +37203,7 @@ impl SystemMessage_MethodData {
             invoice: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             digest: {
                 let mut raw = [0; 32];
@@ -37237,7 +37239,7 @@ impl TelehubInfo_TelehubBlock {
             object_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             object_name: {
                 let n = buffer.read_u8()? as usize;
@@ -37286,12 +37288,12 @@ impl TeleportCancel_Info {
             agent_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             session_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
         })
     }
@@ -37306,7 +37308,7 @@ impl TeleportFailed_Info {
             agent_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             reason: {
                 let n = buffer.read_u8()? as usize;
@@ -37349,7 +37351,7 @@ impl TeleportFinish_Info {
             agent_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             location_id: buffer.read_u32::<LittleEndian>()?,
             sim_ip: {
@@ -37393,17 +37395,17 @@ impl TeleportLandmarkRequest_Info {
             agent_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             session_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             landmark_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
         })
     }
@@ -37418,7 +37420,7 @@ impl TeleportLocal_Info {
             agent_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             location_id: buffer.read_u32::<LittleEndian>()?,
             position: Vector3::new(
@@ -37445,12 +37447,12 @@ impl TeleportLocationRequest_AgentData {
             agent_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             session_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
         })
     }
@@ -37486,17 +37488,17 @@ impl TeleportLureRequest_Info {
             agent_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             session_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             lure_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             teleport_flags: buffer.read_u32::<LittleEndian>()?,
         })
@@ -37512,7 +37514,7 @@ impl TeleportProgress_AgentData {
             agent_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
         })
     }
@@ -37544,12 +37546,12 @@ impl TeleportRequest_AgentData {
             agent_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             session_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
         })
     }
@@ -37564,7 +37566,7 @@ impl TeleportRequest_Info {
             region_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             position: Vector3::new(
                 buffer.read_f32::<LittleEndian>()?,
@@ -37600,12 +37602,12 @@ impl TerminateFriendship_AgentData {
             agent_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             session_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
         })
     }
@@ -37620,7 +37622,7 @@ impl TerminateFriendship_ExBlock {
             other_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
         })
     }
@@ -37659,12 +37661,12 @@ impl TrackAgent_AgentData {
             agent_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             session_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
         })
     }
@@ -37679,7 +37681,7 @@ impl TrackAgent_TargetData {
             prey_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
         })
     }
@@ -37694,7 +37696,7 @@ impl TransferAbort_TransferInfo {
             transfer_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             channel_type: buffer.read_i32::<LittleEndian>()?,
         })
@@ -37710,7 +37712,7 @@ impl TransferInfo_TransferInfo {
             transfer_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             channel_type: buffer.read_i32::<LittleEndian>()?,
             target_type: buffer.read_i32::<LittleEndian>()?,
@@ -37735,17 +37737,17 @@ impl TransferInventory_InfoBlock {
             source_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             dest_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             transaction_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
         })
     }
@@ -37760,7 +37762,7 @@ impl TransferInventory_InventoryBlock {
             inventory_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             type_: buffer.read_i8()?,
         })
@@ -37776,12 +37778,12 @@ impl TransferInventoryAck_InfoBlock {
             transaction_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             inventory_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
         })
     }
@@ -37796,7 +37798,7 @@ impl TransferPacket_TransferData {
             transfer_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             channel_type: buffer.read_i32::<LittleEndian>()?,
             packet: buffer.read_i32::<LittleEndian>()?,
@@ -37820,7 +37822,7 @@ impl TransferRequest_TransferInfo {
             transfer_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             channel_type: buffer.read_i32::<LittleEndian>()?,
             source_type: buffer.read_i32::<LittleEndian>()?,
@@ -37844,7 +37846,7 @@ impl UUIDGroupNameReply_UUIDNameBlock {
             id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             group_name: {
                 let n = buffer.read_u8()? as usize;
@@ -37865,7 +37867,7 @@ impl UUIDGroupNameRequest_UUIDNameBlock {
             id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
         })
     }
@@ -37880,7 +37882,7 @@ impl UUIDNameReply_UUIDNameBlock {
             id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             first_name: {
                 let n = buffer.read_u8()? as usize;
@@ -37907,7 +37909,7 @@ impl UUIDNameRequest_UUIDNameBlock {
             id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
         })
     }
@@ -37922,17 +37924,17 @@ impl Undo_AgentData {
             agent_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             session_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             group_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
         })
     }
@@ -37947,7 +37949,7 @@ impl Undo_ObjectData {
             object_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
         })
     }
@@ -37962,12 +37964,12 @@ impl UndoLand_AgentData {
             agent_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             session_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
         })
     }
@@ -37982,12 +37984,12 @@ impl UpdateAttachment_AgentData {
             agent_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             session_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
         })
     }
@@ -38025,27 +38027,27 @@ impl UpdateAttachment_InventoryData {
             item_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             folder_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             creator_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             owner_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             group_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             base_mask: buffer.read_u32::<LittleEndian>()?,
             owner_mask: buffer.read_u32::<LittleEndian>()?,
@@ -38056,7 +38058,7 @@ impl UpdateAttachment_InventoryData {
             asset_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             type_: buffer.read_i8()?,
             inv_type: buffer.read_i8()?,
@@ -38090,13 +38092,13 @@ impl UpdateCreateInventoryItem_AgentData {
             agent_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             sim_approved: buffer.read_u8()? == 1,
             transaction_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
         })
     }
@@ -38111,28 +38113,28 @@ impl UpdateCreateInventoryItem_InventoryData {
             item_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             folder_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             callback_id: buffer.read_u32::<LittleEndian>()?,
             creator_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             owner_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             group_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             base_mask: buffer.read_u32::<LittleEndian>()?,
             owner_mask: buffer.read_u32::<LittleEndian>()?,
@@ -38143,7 +38145,7 @@ impl UpdateCreateInventoryItem_InventoryData {
             asset_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             type_: buffer.read_i8()?,
             inv_type: buffer.read_i8()?,
@@ -38177,12 +38179,12 @@ impl UpdateGroupInfo_AgentData {
             agent_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             session_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
         })
     }
@@ -38197,7 +38199,7 @@ impl UpdateGroupInfo_GroupData {
             group_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             charter: {
                 let n = buffer.read_u16::<LittleEndian>()? as usize;
@@ -38209,7 +38211,7 @@ impl UpdateGroupInfo_GroupData {
             insignia_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             membership_fee: buffer.read_i32::<LittleEndian>()?,
             open_enrollment: buffer.read_u8()? == 1,
@@ -38228,12 +38230,12 @@ impl UpdateInventoryFolder_AgentData {
             agent_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             session_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
         })
     }
@@ -38248,12 +38250,12 @@ impl UpdateInventoryFolder_FolderData {
             folder_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             parent_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             type_: buffer.read_i8()?,
             name: {
@@ -38275,17 +38277,17 @@ impl UpdateInventoryItem_AgentData {
             agent_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             session_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             transaction_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
         })
     }
@@ -38300,28 +38302,28 @@ impl UpdateInventoryItem_InventoryData {
             item_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             folder_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             callback_id: buffer.read_u32::<LittleEndian>()?,
             creator_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             owner_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             group_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             base_mask: buffer.read_u32::<LittleEndian>()?,
             owner_mask: buffer.read_u32::<LittleEndian>()?,
@@ -38332,7 +38334,7 @@ impl UpdateInventoryItem_InventoryData {
             transaction_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             type_: buffer.read_i8()?,
             inv_type: buffer.read_i8()?,
@@ -38366,12 +38368,12 @@ impl UpdateMuteListEntry_AgentData {
             agent_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             session_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
         })
     }
@@ -38386,7 +38388,7 @@ impl UpdateMuteListEntry_MuteData {
             mute_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             mute_name: {
                 let n = buffer.read_u8()? as usize;
@@ -38409,13 +38411,13 @@ impl UpdateParcel_ParcelData {
             parcel_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             region_handle: buffer.read_u64::<LittleEndian>()?,
             owner_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             group_owned: buffer.read_u8()? == 1,
             status: buffer.read_u8()?,
@@ -38447,7 +38449,7 @@ impl UpdateParcel_ParcelData {
             snapshot_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             user_location: Vector3::new(
                 buffer.read_f32::<LittleEndian>()?,
@@ -38458,7 +38460,7 @@ impl UpdateParcel_ParcelData {
             authorized_buyer_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             allow_publish: buffer.read_u8()? == 1,
             mature_publish: buffer.read_u8()? == 1,
@@ -38475,7 +38477,7 @@ impl UpdateSimulator_SimulatorInfo {
             region_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             sim_name: {
                 let n = buffer.read_u8()? as usize;
@@ -38498,12 +38500,12 @@ impl UpdateTaskInventory_AgentData {
             agent_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             session_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
         })
     }
@@ -38530,27 +38532,27 @@ impl UpdateTaskInventory_InventoryData {
             item_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             folder_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             creator_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             owner_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             group_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             base_mask: buffer.read_u32::<LittleEndian>()?,
             owner_mask: buffer.read_u32::<LittleEndian>()?,
@@ -38561,7 +38563,7 @@ impl UpdateTaskInventory_InventoryData {
             transaction_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             type_: buffer.read_i8()?,
             inv_type: buffer.read_i8()?,
@@ -38595,12 +38597,12 @@ impl UpdateUserInfo_AgentData {
             agent_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             session_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
         })
     }
@@ -38632,7 +38634,7 @@ impl UseCachedMuteList_AgentData {
             agent_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
         })
     }
@@ -38648,12 +38650,12 @@ impl UseCircuitCode_CircuitCode {
             session_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
         })
     }
@@ -38668,7 +38670,7 @@ impl UserInfoReply_AgentData {
             agent_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
         })
     }
@@ -38706,12 +38708,12 @@ impl UserInfoRequest_AgentData {
             agent_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             session_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
         })
     }
@@ -38726,12 +38728,12 @@ impl UserReport_AgentData {
             agent_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             session_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
         })
     }
@@ -38754,17 +38756,17 @@ impl UserReport_ReportData {
             screenshot_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             object_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             abuser_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             abuse_region_name: {
                 let n = buffer.read_u8()? as usize;
@@ -38775,7 +38777,7 @@ impl UserReport_ReportData {
             abuse_region_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             summary: {
                 let n = buffer.read_u8()? as usize;
@@ -38810,7 +38812,7 @@ impl UserReportInternal_ReportData {
             reporter_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             viewer_position: Vector3::new(
                 buffer.read_f32::<LittleEndian>()?,
@@ -38825,37 +38827,37 @@ impl UserReportInternal_ReportData {
             screenshot_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             object_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             owner_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             last_owner_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             creator_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             region_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             abuser_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             abuse_region_name: {
                 let n = buffer.read_u8()? as usize;
@@ -38866,7 +38868,7 @@ impl UserReportInternal_ReportData {
             abuse_region_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             summary: {
                 let n = buffer.read_u8()? as usize;
@@ -38899,12 +38901,12 @@ impl VelocityInterpolateOff_AgentData {
             agent_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             session_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
         })
     }
@@ -38919,12 +38921,12 @@ impl VelocityInterpolateOn_AgentData {
             agent_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             session_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
         })
     }
@@ -38939,12 +38941,12 @@ impl ViewerEffect_AgentData {
             agent_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             session_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
         })
     }
@@ -38959,12 +38961,12 @@ impl ViewerEffect_Effect {
             id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             agent_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             type_: buffer.read_u8()?,
             duration: buffer.read_f32::<LittleEndian>()?,
@@ -39003,12 +39005,12 @@ impl ViewerStartAuction_AgentData {
             agent_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             session_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
         })
     }
@@ -39024,7 +39026,7 @@ impl ViewerStartAuction_ParcelData {
             snapshot_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
         })
     }
@@ -39039,12 +39041,12 @@ impl ViewerStats_AgentData {
             agent_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             session_id: {
                 let mut raw = [0u8; 16];
                 buffer.read_exact(&mut raw)?;
-                Uuid::from_bytes(&raw)?
+                Uuid::from_bytes(raw)
             },
             ip: {
                 let mut raw = [0u8; 4];

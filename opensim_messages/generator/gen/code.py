@@ -95,7 +95,7 @@ def generate_field_reader(field):
     elif r_type in "u8 i8":
         return "buffer.read_%s()?" % r_type
     elif r_type == "Uuid":
-        return "{ let mut raw = [0u8; 16]; buffer.read_exact(&mut raw)?; Uuid::from_bytes(&raw)? }"
+        return "{ let mut raw = [0u8; 16]; buffer.read_exact(&mut raw)?; Uuid::from_bytes(raw) }"
     elif r_type == "Ip4Addr":
         return "{ let mut raw = [0u8; 4]; buffer.read_exact(&mut raw)?; Ip4Addr::from(raw) }"
     elif r_type == "IpPort":

@@ -137,8 +137,7 @@ fn read_f32_c<R: BytesReader>(reader: &mut R) -> Result<f32, ::util::bitsreader:
 fn read_uuid<R: BytesReader>(reader: &mut R) -> Result<Uuid, ::util::bitsreader::ReadError> {
     let mut bytes = [0u8; 16];
     reader.read_bytes_exact(&mut bytes)?;
-    // TODO: remove unwrap
-    Ok(Uuid::from_bytes(&bytes).unwrap())
+    Ok(Uuid::from_bytes(bytes))
 }
 
 // TODO: It's really bad that the Read bound has to be added here, but
