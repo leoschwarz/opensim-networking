@@ -2,7 +2,7 @@
 use capabilities::Capabilities;
 use futures::{self, Future, Stream};
 use hyper;
-use hyper::header::ContentType;
+use hyper::header::CONTENT_TYPE;
 use logging::Log;
 use slog::Logger;
 use std::cell::RefCell;
@@ -91,7 +91,8 @@ impl TextureService {
         }
 
         // Get the texture from the network instead.
-        let url_res = self.get_texture
+        let url_res = self
+            .get_texture
             .join(format!("?texture_id={}", id).as_str());
         let url = match url_res {
             Ok(u) => u,
@@ -105,7 +106,7 @@ impl TextureService {
             }
         };
 
-        let client = hyper::Client::new(handle);
+        let client = hyper::Client::new();
         let logger = Logger::root(self.log.clone(), o!("texture request" => format!("{}",id)));
         debug!(logger, "request url: {:?}", url.clone());
         // TODO see: https://github.com/hyperium/hyper/issues/1219
@@ -122,12 +123,12 @@ impl TextureService {
                     let f: Box<
                         Future<Item = Texture, Error = TextureServiceError>,
                     > = if resp.status().is_success() {
-                        let content_type = match resp.headers().get::<ContentType>() {
+                        let content_type = match resp.headers().get(CONTENT_TYPE) {
                             None => Err(TextureServiceError::NetworkError(
                                 "No content type found.".to_string(),
                             )),
                             Some(ct) => {
-                                println!("content_type: {}", ct);
+                                println!("content_type: {:?}", ct);
                                 // this should equal "image/x-j2c".
 
                                 Ok(())
@@ -136,7 +137,7 @@ impl TextureService {
 
                         // TODO: This is bad for big textures!!!
                         Box::new(
-                            resp.body()
+                            resp.into_body()
                                 .concat2()
                                 .map_err(|e| TextureServiceError::NetworkError(format!("{:?}", e)))
                                 .and_then(move |data| {

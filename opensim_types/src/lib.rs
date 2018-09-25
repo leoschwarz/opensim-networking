@@ -4,8 +4,9 @@ pub extern crate nalgebra;
 extern crate url;
 extern crate uuid;
 
-pub use nalgebra::{DMatrix, Matrix, Matrix3, Matrix4, Quaternion, UnitQuaternion, Vector2,
-                   Vector3, Vector4};
+pub use nalgebra::{
+    DMatrix, Matrix, Matrix3, Matrix4, Quaternion, UnitQuaternion, Vector2, Vector3, Vector4,
+};
 pub use std::net::IpAddr;
 pub use std::net::Ipv4Addr as Ip4Addr;
 pub use std::time::{Duration, Instant};

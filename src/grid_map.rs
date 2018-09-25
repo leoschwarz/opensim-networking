@@ -186,8 +186,7 @@ fn extract_map_item_reply(msg: MapItemReply) -> Result<Vec<MapItem>, ()> {
                     },
                 }),
             }
-        })
-        .collect()
+        }).collect()
 }
 
 enum_from_u8! {

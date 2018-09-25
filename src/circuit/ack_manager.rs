@@ -123,7 +123,8 @@ impl AckManagerRx {
                 } else {
                     Some(PendingMessage {
                         message: PacketAck {
-                            packets: acks.iter()
+                            packets: acks
+                                .iter()
                                 .map(|num| PacketAck_Packets { id: *num })
                                 .collect(),
                         }.into(),

@@ -23,8 +23,7 @@ fn extract_patches(raw_messages: Vec<Vec<u8>>) -> Vec<Patch> {
                 _ => panic!("wrong message instance"),
             };
             layer_data::extract_land_patch(&msg).unwrap()
-        })
-        .collect()
+        }).collect()
 }
 
 fn write_image(patches: Vec<Patch>, region_size: usize, image_path: &str) {

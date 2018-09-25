@@ -1,8 +1,8 @@
 //! Implementation of the Capabilities protocol.
 
-use futures::prelude::*;
+use futures::prelude::{await, *};
 use hyper;
-use hyper::header::{ContentLength, ContentType};
+use hyper::header::{CONTENT_LENGTH, CONTENT_TYPE};
 use llsd;
 use tokio_core::reactor::Handle;
 use url::Url;
@@ -45,26 +45,27 @@ impl Capabilities {
         let requested_caps =
             llsd::data::Value::Array(vec![llsd::data::Value::new_string("GetTexture")]);
 
-        let client = hyper::Client::new(&handle);
+        let client = hyper::Client::new();
         let request_body = await!(Self::build_request_body(requested_caps))?;
-        let mut request = hyper::Request::new(hyper::Method::Post, seed_caps_uri);
-        request
-            .headers_mut()
-            .set(ContentType("application/llsd+xml".parse().unwrap()));
-        request
-            .headers_mut()
-            .set(ContentLength(request_body.len() as u64));
-        request.set_body(request_body);
+        let mut request = hyper::Request::post(seed_caps_uri)
+            .header(CONTENT_TYPE, "application/llsd+xml")
+            .header(CONTENT_LENGTH, request_body.len())
+            .body(hyper::Body::from(request_body))
+            .map_err(|e| CapabilitiesError::Msg(format!("Constructing request failed: {}", e)))?;
         let response = await!(client.request(request))
             .map_err(|_| CapabilitiesError::Msg("Request failed.".into()))?;
 
         if response.status().is_success() {
             {
-                let c_type: &ContentType = response
+                let c_type = response
                     .headers()
-                    .get()
+                    .get(CONTENT_TYPE)
                     .ok_or_else(|| CapabilitiesError::Msg("Content type not specified.".into()))?;
-                if c_type.0.as_ref() != "application/xml" {
+                if c_type
+                    .to_str()
+                    .map_err(|e| CapabilitiesError::Msg(format!("{}", e)))?
+                    != "application/xml"
+                {
                     return Err(CapabilitiesError::Msg(format!(
                         "wrong content type: {:?}",
                         c_type
@@ -75,7 +76,7 @@ impl Capabilities {
             // Read full response body.
             let raw_data = await!(
                 response
-                    .body()
+                    .into_body()
                     .concat2()
                     .map_err(|_| CapabilitiesError::Msg("Collecting body failed.".into()))
             )?;
@@ -84,7 +85,8 @@ impl Capabilities {
 
             match val {
                 llsd::data::Value::Map(mut map) => {
-                    let get_texture = map.remove("GetTexture")
+                    let get_texture = map
+                        .remove("GetTexture")
                         .and_then(|v| v.scalar())
                         .and_then(|s| s.as_uri())
                         .and_then(|u| u.ok())

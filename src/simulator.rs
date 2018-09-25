@@ -2,13 +2,15 @@ use capabilities::{Capabilities, CapabilitiesError};
 use circuit::{message_handlers, Circuit, CircuitConfig, SendMessage};
 use data::RegionInfo;
 use failure::Error;
-use futures::prelude::*;
+use futures::prelude::{await, *};
 use hyper::Uri;
 use logging::Log;
 use login::LoginResponse;
+use messages::all::{
+    CompleteAgentMovement, CompleteAgentMovement_AgentData, UseCircuitCode,
+    UseCircuitCode_CircuitCode,
+};
 use messages::MessageInstance;
-use messages::all::{CompleteAgentMovement, CompleteAgentMovement_AgentData, UseCircuitCode,
-                    UseCircuitCode_CircuitCode};
 use services::{self, CircuitData, CircuitDataHandle, Service};
 use std::sync::Mutex;
 use systems::agent_update::{AgentState, Modality};

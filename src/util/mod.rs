@@ -36,8 +36,10 @@ impl AtomicU32Counter {
         use std::sync::atomic::Ordering;
         loop {
             let current = self.value.load(Ordering::SeqCst);
-            if self.value
-                .compare_and_swap(current, current + 1, Ordering::SeqCst) == current
+            if self
+                .value
+                .compare_and_swap(current, current + 1, Ordering::SeqCst)
+                == current
             {
                 return current as u32;
             }

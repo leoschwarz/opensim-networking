@@ -1,5 +1,5 @@
-use UuidParseError;
 use std::io::Error as IoError;
+use UuidParseError;
 
 // TODO: Evaluate if we need context here.
 // - The original version with error-chain and backtrace, resulted in a 35 MiB

@@ -4,7 +4,6 @@
 ///
 /// THIS FILE WAS AUTOMATICALLY GENERATED.
 /// Don't edit manually, instead edit the generator.
-///
 use {Ip4Addr, IpPort, Message, Quaternion, ReadError, Uuid, Vector3, Vector4, WriteMessageResult};
 
 use arrayvec::ArrayVec;
@@ -728,7 +727,8 @@ pub struct AgentUpdate_AgentData {
     /// Region local center coordinates of the camera.
     pub camera_center: Vector3<f32>,
     /// Camera coordinate axis in looking _at_ direction (forward).
-    ///                 TODO: Check how these are provided? Most likely unit distance from camera center into the direction of the coordinate axis?
+    ///                 TODO: Check how these are provided? Most likely unit
+    /// distance from camera center into the direction of the coordinate axis?
     ///  
     pub camera_at_axis: Vector3<f32>,
     /// Camera coordinate axis, left direction.
@@ -751,7 +751,8 @@ pub struct AgentUpdate_AgentData {
     /// flags and sends the packet, then resets the flags until the next
     /// polling interval.
     ///
-    /// Flags (encoded as 32 bit integer, in the encoding column the bit number from least significant to most significant bit is listed for each flag):
+    /// Flags (encoded as 32 bit integer, in the encoding column the bit number
+    /// from least significant to most significant bit is listed for each flag):
     ///
     ///
     /// <table>
