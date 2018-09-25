@@ -1,4 +1,4 @@
-use image::GenericImage;
+use image::GenericImageView;
 use jpeg2000;
 use jpeg2000::decode::{Codec, ColorSpace, DecodeConfig};
 use jpeg2000::error::DecodeError;

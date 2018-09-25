@@ -24,8 +24,8 @@ futures-await = "0.1.0"
 # TODO: Once futures 0.2 lands there will be ThreadExecutor.
 futures-cpupool = "0.1.8"
 hyper = "0.12"
-image = "0.18.0"
-jpeg2000 = "0.1.1"
+image = "0.20"
+jpeg2000 = "0.2"
 lazy_static = "1.0"
 llsd = { git = "https://github.com/teleportlab/llsd" }
 opensim_messages = { path = "opensim_messages" }
