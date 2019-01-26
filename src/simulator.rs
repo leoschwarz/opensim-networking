@@ -206,8 +206,7 @@ impl Simulator {
         }?;
         info!(
             log.slog_logger(),
-            "Connected to simulator successfully, received region_info: {:?}",
-            region_info
+            "Connected to simulator successfully, received region_info: {:?}", region_info
         );
 
         let message = CompleteAgentMovement {

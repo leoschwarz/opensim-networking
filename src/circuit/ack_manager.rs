@@ -3,11 +3,8 @@
 // Description of actions and events, for a potential future event based
 // implementation
 //
-// - packet out
-//   → Socket write
-//   → Register ack timeout
-// - packet in
-//   → Retrieve acks and remove pending timeouts
+// - packet out   → Socket write   → Register ack timeout
+// - packet in   → Retrieve acks and remove pending timeouts
 // TODO: This is currently the biggest problem how would I implement this
 // using Rust futures?
 //   → Queue the packet for retrieval by client application
@@ -127,7 +124,8 @@ impl AckManagerRx {
                                 .iter()
                                 .map(|num| PacketAck_Packets { id: *num })
                                 .collect(),
-                        }.into(),
+                        }
+                        .into(),
                         future: SendMessage::new(SendMessageStatus::PendingSend {
                             reliable: false,
                         }),

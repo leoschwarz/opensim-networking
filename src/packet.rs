@@ -152,10 +152,7 @@ impl Packet {
 
 #[derive(Debug, Fail)]
 pub enum ReadPacketError {
-    #[fail(
-        display = "There was an IO error while reading the data: {:?}",
-        0
-    )]
+    #[fail(display = "There was an IO error while reading the data: {:?}", 0)]
     IoError(#[cause] ::std::io::Error),
 
     #[fail(display = "Reading the received message failed: {}", 0)]

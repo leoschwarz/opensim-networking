@@ -7045,8 +7045,6 @@ pub struct MapItemReply_RequestData {
     /// - 0: Event is PG rated.
     /// - 1: Event is Mature rated.
     /// - 2: Event is Adult rated.
-    ///         
-    ///      
     pub item_type: u32,
 }
 
@@ -7182,8 +7180,6 @@ pub struct MapItemRequest_RequestData {
     /// - 0: Event is PG rated.
     /// - 1: Event is Mature rated.
     /// - 2: Event is Adult rated.
-    ///         
-    ///      
     pub item_type: u32,
     ///
     ///         Combines the global x and y coordinates (subtract modulo 256 to

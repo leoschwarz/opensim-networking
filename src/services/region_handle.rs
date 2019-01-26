@@ -38,7 +38,8 @@ impl Service for LookupService {
                                 .send(LookupResult {
                                     uuid: uuid,
                                     handle: handle,
-                                }).map_err(|_| message_handlers::Error {
+                                })
+                                .map_err(|_| message_handlers::Error {
                                     msg: MessageInstance::RegionIDAndHandleReply(msg),
                                     kind: message_handlers::ErrorKind::Other(Box::new(
                                         Error::ChannelClosed,

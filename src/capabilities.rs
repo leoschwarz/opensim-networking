@@ -74,12 +74,10 @@ impl Capabilities {
             }
 
             // Read full response body.
-            let raw_data = await!(
-                response
-                    .into_body()
-                    .concat2()
-                    .map_err(|_| CapabilitiesError::Msg("Collecting body failed.".into()))
-            )?;
+            let raw_data = await!(response
+                .into_body()
+                .concat2()
+                .map_err(|_| CapabilitiesError::Msg("Collecting body failed.".into())))?;
             let val = llsd::xml::read_value(&raw_data[..])
                 .map_err(|_| CapabilitiesError::Msg("Invalid LLSD".to_string()))?;
 

@@ -86,10 +86,10 @@ impl LoginResponse {
 
         println!("login response: {:#?}", response);
 
-
         // Check if the login was a success.
         let response_login = response.get("login");
-        let failure = response_login.is_none() || response_login.unwrap() != &XmlValue::String("true".into());
+        let failure =
+            response_login.is_none() || response_login.unwrap() != &XmlValue::String("true".into());
 
         if failure {
             // TODO: Emit information about the nature of the login failure.
@@ -100,9 +100,10 @@ impl LoginResponse {
 
             match err_message {
                 Some(&XmlValue::String(ref message)) => Err(LoginError::Explicit(message.clone())),
-                _ => Err(LoginError::ParseResponse(format_err!("Server indicated error but did not explain it."))),
+                _ => Err(LoginError::ParseResponse(format_err!(
+                    "Server indicated error but did not explain it."
+                ))),
             }
-
         } else {
             // Extract login output.
 
@@ -157,21 +158,18 @@ impl LoginResponse {
         }
 
         /*
-         *
-         * example failure response:
-             "login": String(
-        "false"
-    ),
-    "message": String(
-        "You appear to be already logged in. Please wait a a minute or two and retry. If this takes longer than a few minutes please contact the grid owner. "
-    ),
-    "reason": String(
-        "presence"
-    )
-   */
-
-
-
+              *
+              * example failure response:
+                  "login": String(
+             "false"
+         ),
+         "message": String(
+             "You appear to be already logged in. Please wait a a minute or two and retry. If this takes longer than a few minutes please contact the grid owner. "
+         ),
+         "reason": String(
+             "presence"
+         )
+        */
     }
 }
 

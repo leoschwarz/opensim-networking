@@ -14,10 +14,7 @@ use types::Uuid;
 
 #[derive(Debug, Fail)]
 pub enum ReceiversError {
-    #[fail(
-        display = "Attempted to register Receivers twice for region: {}",
-        0
-    )]
+    #[fail(display = "Attempted to register Receivers twice for region: {}", 0)]
     RegisterTwice(Uuid),
 
     #[fail(
