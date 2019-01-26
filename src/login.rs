@@ -39,6 +39,9 @@ pub enum LoginError {
     #[fail(display = "Parsing the response failed: {}", 0)]
     ParseResponse(Error),
 
+    #[fail(display = "Login failure: {}", 0)]
+    Explicit(String),
+
     #[fail(display = "Login failed due to server denying it: {:?}", 0)]
     LoginDenied(#[cause] ::xmlrpc::Fault),
 }
@@ -81,53 +84,94 @@ impl LoginResponse {
             LoginError::ParseResponse(format_err!("Missing response field: {}", msg))
         }
 
-        // TODO: Check if additional items should be extracted.
-        let look_at = match response.get("look_at") {
-            Some(&XmlValue::String(ref raw)) => LoginResponse::extract_vector3(raw)?,
-            _ => return Err(err("look_at")),
-        };
-        let circuit_code = match response.get("circuit_code") {
-            Some(&XmlValue::Int(code)) => code as u32,
-            _ => return Err(err("circuit_code")),
-        };
-        let session_id = match response.get("session_id") {
-            Some(&XmlValue::String(ref id)) => {
-                Uuid::parse_str(id).map_err(|e| LoginError::ParseResponse(e.into()))?
-            }
-            _ => return Err(err("session_id")),
-        };
-        let agent_id = match response.get("agent_id") {
-            Some(&XmlValue::String(ref id)) => {
-                Uuid::parse_str(id).map_err(|e| LoginError::ParseResponse(e.into()))?
-            }
-            _ => return Err(err("agent_id")),
-        };
-        let seed_capability = match response.get("seed_capability") {
-            Some(&XmlValue::String(ref u)) => {
-                Url::parse(u).map_err(|e| LoginError::ParseResponse(e.into()))?
-            }
-            _ => return Err(err("seed_caps")),
-        };
-        let sim_ip = match response.get("sim_ip") {
-            Some(&XmlValue::String(ref ip_raw)) => {
-                Ip4Addr::from_str(ip_raw).map_err(|e| LoginError::ParseResponse(e.into()))?
-            }
-            _ => return Err(err("sim_ip")),
-        };
-        let sim_port = match response.get("sim_port") {
-            Some(&XmlValue::Int(port)) => port as u16,
-            _ => return Err(err("sim_port")),
-        };
+        println!("login response: {:#?}", response);
 
-        Ok(LoginResponse {
-            look_at: look_at,
-            circuit_code: circuit_code,
-            session_id: session_id,
-            agent_id: agent_id,
-            seed_capability: seed_capability,
-            sim_ip: sim_ip,
-            sim_port: sim_port,
-        })
+
+        // Check if the login was a success.
+        let response_login = response.get("login");
+        let failure = response_login.is_none() || response_login.unwrap() != &XmlValue::String("true".into());
+
+        if failure {
+            // TODO: Emit information about the nature of the login failure.
+
+            let err_message = response.get("message");
+            // contains key of the message -> use for localization etc
+            //let err_reason = response.get("reason");
+
+            match err_message {
+                Some(&XmlValue::String(ref message)) => Err(LoginError::Explicit(message.clone())),
+                _ => Err(LoginError::ParseResponse(format_err!("Server indicated error but did not explain it."))),
+            }
+
+        } else {
+            // Extract login output.
+
+            // TODO: refactor
+            // TODO: Check if additional items should be extracted.
+            let look_at = match response.get("look_at") {
+                Some(&XmlValue::String(ref raw)) => LoginResponse::extract_vector3(raw)?,
+                _ => return Err(err("look_at")),
+            };
+            let circuit_code = match response.get("circuit_code") {
+                Some(&XmlValue::Int(code)) => code as u32,
+                _ => return Err(err("circuit_code")),
+            };
+            let session_id = match response.get("session_id") {
+                Some(&XmlValue::String(ref id)) => {
+                    Uuid::parse_str(id).map_err(|e| LoginError::ParseResponse(e.into()))?
+                }
+                _ => return Err(err("session_id")),
+            };
+            let agent_id = match response.get("agent_id") {
+                Some(&XmlValue::String(ref id)) => {
+                    Uuid::parse_str(id).map_err(|e| LoginError::ParseResponse(e.into()))?
+                }
+                _ => return Err(err("agent_id")),
+            };
+            let seed_capability = match response.get("seed_capability") {
+                Some(&XmlValue::String(ref u)) => {
+                    Url::parse(u).map_err(|e| LoginError::ParseResponse(e.into()))?
+                }
+                _ => return Err(err("seed_caps")),
+            };
+            let sim_ip = match response.get("sim_ip") {
+                Some(&XmlValue::String(ref ip_raw)) => {
+                    Ip4Addr::from_str(ip_raw).map_err(|e| LoginError::ParseResponse(e.into()))?
+                }
+                _ => return Err(err("sim_ip")),
+            };
+            let sim_port = match response.get("sim_port") {
+                Some(&XmlValue::Int(port)) => port as u16,
+                _ => return Err(err("sim_port")),
+            };
+
+            Ok(LoginResponse {
+                look_at: look_at,
+                circuit_code: circuit_code,
+                session_id: session_id,
+                agent_id: agent_id,
+                seed_capability: seed_capability,
+                sim_ip: sim_ip,
+                sim_port: sim_port,
+            })
+        }
+
+        /*
+         *
+         * example failure response:
+             "login": String(
+        "false"
+    ),
+    "message": String(
+        "You appear to be already logged in. Please wait a a minute or two and retry. If this takes longer than a few minutes please contact the grid owner. "
+    ),
+    "reason": String(
+        "presence"
+    )
+   */
+
+
+
     }
 }
 

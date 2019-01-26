@@ -2,7 +2,7 @@
 #![feature(custom_attribute)]
 #![allow(dead_code)]
 #![feature(generators)]
-#![feature(proc_macro_non_items)]
+#![feature(proc_macro_hygiene)]
 
 extern crate addressable_queue;
 #[macro_use]

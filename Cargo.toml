@@ -17,7 +17,7 @@ addressable_queue = "0.2.0"
 bitflags = "1.0"
 bitreader = { git = "https://github.com/irauta/bitreader", branch = "master" }
 byteorder = "1.0"
-crossbeam-channel = "0.1"
+crossbeam-channel = "0.3"
 failure = "0.1.1"
 futures = "0.1.10"
 futures-await = "0.1.0"
@@ -27,7 +27,7 @@ hyper = "0.12"
 image = "0.20"
 jpeg2000 = "0.2"
 lazy_static = "1.0"
-llsd = { git = "https://github.com/teleportlab/llsd" }
+llsd = { git = "https://framagit.org/teleportlab/llsd" }
 opensim_messages = { path = "opensim_messages" }
 opensim_types = { path = "opensim_types" }
 regex = "1.0"
